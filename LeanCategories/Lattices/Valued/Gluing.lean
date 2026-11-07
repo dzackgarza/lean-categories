@@ -196,4 +196,96 @@ noncomputable def glue (M : Overlattice R L) :
 
 end Overlattice
 
+/-! ## The inverse laws
+
+`overlatticeFromIsotropicSubgroup` and `Overlattice.glue` are inverse on the nose: gluing the
+overlattice of an isotropic subgroup returns the subgroup, and the overlattice of the gluing of an
+integral overlattice returns the overlattice. This is the exact identification of overlattices the
+correspondence uses: an overlattice *is* a submodule of the rational span between the lattice and
+its metric dual, so equality of overlattices is equality of carriers. -/
+
+/-- **Inverse law, subgroup side** (#25): the gluing subgroup of the overlattice built from an
+isotropic subgroup is the subgroup itself. Surjectivity of the discriminant projection
+`L^∨ → A_L` places every class of `H` in the image of the preimage. -/
+theorem glue_overlatticeFromIsotropicSubgroup
+    (H : DiscriminantIsotropicSubgroup R hL) :
+    (overlatticeFromIsotropicSubgroup R hL H).glueSubgroup = H.1 := by
+  apply le_antisymm
+  · rintro a ⟨x, rfl⟩
+    simp only [LinearMap.comp_apply]
+    have hx : (x : RationalSpan R L) ∈
+        (metricDualPreimage R hL H).map (metricDualInclusion R L) := x.2
+    obtain ⟨y, hy, hxy⟩ := Submodule.mem_map.mp hx
+    have hval : Overlattice.toMetricDual (overlatticeFromIsotropicSubgroup R hL H) x = y :=
+      Subtype.ext hxy.symm
+    rw [hval]
+    exact hy
+  · intro a ha
+    obtain ⟨y, rfl⟩ := metricDualToDiscriminant_surjective R L hL a
+    refine ⟨⟨(y : RationalSpan R L),
+      Submodule.mem_map_of_mem (f := metricDualInclusion R L) ha⟩, ?_⟩
+    rfl
+
+/-- **Inverse law, overlattice side** (#25): the overlattice built from the gluing subgroup of an
+integral overlattice is the overlattice itself. An element of the preimage of the image differs
+from an element of the overlattice by an element of the kernel — which is the image of the lattice
+(`ker_metricDualToDiscriminant`) — and the lattice lies in every overlattice. -/
+theorem overlatticeFromIsotropicSubgroup_glue (M : Overlattice R L) :
+    overlatticeFromIsotropicSubgroup R hL (M.glue hL) = M := by
+  apply Subtype.ext
+  apply le_antisymm
+  · intro z hz
+    have hx : (z : RationalSpan R L) ∈
+        (metricDualPreimage R hL (M.glue hL)).map (metricDualInclusion R L) := hz
+    obtain ⟨y, hy, hzy⟩ := Submodule.mem_map.mp hx
+    obtain ⟨m, hm⟩ := LinearMap.mem_range.mp hy
+    simp only [LinearMap.comp_apply] at hm
+    have hker : y - Overlattice.toMetricDual M m ∈
+        LinearMap.ker (metricDualToDiscriminant R L) := by
+      rw [LinearMap.mem_ker]
+      rw [show metricDualToDiscriminant R L (y - Overlattice.toMetricDual M m) =
+          metricDualToDiscriminant R L y -
+            metricDualToDiscriminant R L (Overlattice.toMetricDual M m) from
+        map_sub (metricDualToDiscriminant R L) y (Overlattice.toMetricDual M m)]
+      rw [← hm, sub_self]
+    rw [ker_metricDualToDiscriminant R L hL] at hker
+    obtain ⟨l, hl⟩ := LinearMap.mem_range.mp hker
+    have hsum : y = Overlattice.toMetricDual M m + toMetricDual R L l := by
+      rw [hl]
+      module
+    have hsplit : (y : RationalSpan R L) =
+        (Overlattice.toMetricDual M m : RationalSpan R L) +
+        (toMetricDual R L l : RationalSpan R L) := by
+      simpa using congrArg
+        (Subtype.val : ↥(metricDual R L) → RationalSpan R L) hsum
+    rw [← hzy]
+    show (y : RationalSpan R L) ∈ M.carrier
+    rw [hsplit]
+    have hm' : (Overlattice.toMetricDual M m : RationalSpan R L) ∈ M.carrier := m.2
+    have hl' : (toMetricDual R L l : RationalSpan R L) ∈ M.carrier := by
+      change toRationalSpan R L l ∈ M.carrier
+      exact M.integralImage_le (LinearMap.mem_range_self _ l)
+    exact M.carrier.add_mem hm' hl'
+  · intro z hz
+    have hzmem : (z : RationalSpan R L) ∈ metricDual R L := M.le_metricDual hz
+    refine Submodule.mem_map.mpr ⟨⟨(z : RationalSpan R L), hzmem⟩, ?_, rfl⟩
+    exact ⟨⟨z, hz⟩, rfl⟩
+
+/-- **Monotonicity, subgroup side** (#25): a larger isotropic subgroup gives a larger
+overlattice. -/
+theorem overlatticeSubmodule_mono
+    {H K : DiscriminantIsotropicSubgroup R hL} (hHK : H.1 ≤ K.1) :
+    overlatticeSubmodule R hL H ≤ overlatticeSubmodule R hL K := by
+  intro x hx
+  obtain ⟨y, hy, rfl⟩ := Submodule.mem_map.mp hx
+  exact Submodule.mem_map.mpr ⟨y, hHK hy, rfl⟩
+
+/-- **Monotonicity, overlattice side** (#25): a larger overlattice has a larger gluing subgroup. -/
+theorem glueSubgroup_mono {M N : Overlattice R L} (hMN : M.carrier ≤ N.carrier) :
+    M.glueSubgroup ≤ N.glueSubgroup := by
+  rintro a ⟨x, rfl⟩
+  simp only [LinearMap.comp_apply]
+  refine ⟨⟨(x : RationalSpan R L), hMN x.2⟩, ?_⟩
+  rfl
+
 end LeanCategories.Lattices.Valued

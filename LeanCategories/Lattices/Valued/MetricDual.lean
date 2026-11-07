@@ -408,6 +408,16 @@ noncomputable def metricDualToValueDual (L : IntegralLatticeCat R) :
     ext x
     simp [toIntegralImage]
 
+/-- The functional of a metric-dual element, evaluated on a lattice vector: its rationalized
+pairing with the vector, read back through the algebra map. -/
+theorem metricDualToValueDual_apply (v : metricDual R L) (x : L.obj.carrier) :
+    algebraMap R (FractionRing R) (metricDualToValueDual R L v x) =
+      rationalizedForm R L (v : RationalSpan R L) (toRationalSpan R L x) := by
+  change algebraMap R (FractionRing R)
+      ((rationalizedForm R L).dualSubmoduleParing v (toIntegralImage R L x)) = _
+  rw [LinearMap.BilinForm.dualSubmoduleParing_spec]
+  rfl
+
 theorem metricDualToValueDual_rieszToMetricDual (L : IntegralLatticeCat R)
     (hL : IsFractionFieldPerfect R L) (f : L.obj.valueDual) :
     metricDualToValueDual R L (rieszToMetricDual R L hL f) = f := by

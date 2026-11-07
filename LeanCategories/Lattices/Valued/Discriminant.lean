@@ -775,4 +775,15 @@ theorem discriminantValueEquiv_pairing (L : IntegralLatticeCat R)
     discriminant_pairing_metricDualToDiscriminant R hL]
   rfl
 
+/-- A metric-dual element projects to zero in the discriminant module exactly when it is in the
+image of the original lattice, by `ker_metricDualToDiscriminant`. -/
+theorem metricDualToDiscriminant_eq_zero_iff
+    (hL : IsFractionFieldPerfect R L) (x : metricDual R L) :
+    metricDualToDiscriminant R L x = 0 ↔ ∃ z : L.obj.carrier,
+      toMetricDual R L z = x := by
+  change metricDualToDiscriminant R L x = 0 ↔ ∃ z : L.obj.carrier,
+    toMetricDual R L z = x
+  rw [← LinearMap.mem_ker, ker_metricDualToDiscriminant R L hL]
+  exact LinearMap.mem_range.symm
+
 end LeanCategories.Lattices.Valued
