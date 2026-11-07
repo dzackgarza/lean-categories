@@ -674,12 +674,19 @@ theorem vectorStabilizerCosetsToFibre_surjective (v : PrimitiveIsotropicVector L
 
 /-- **The fibre theorem in vector form** (#113): for `Γ = ker ρ`, a primitive isotropic vector `v`
 with divisibility data `d`, `v/d`, the fibre of `Γ·g·Stab(v) ↦ ρ(g)·[v/d]` over the discriminant
-class `[v/d]` is the stabilizer of `[v/d]` in `ρ(O(L))` modulo `ρ(Stab_{O(L)}(v))`.
+class `[v/d]` is the stabilizer of `[v/d]` in the image `ρ(O(L))` modulo `ρ(Stab_{O(L)}(v))`.
 
-Here `ρ` runs into `O(q_L)` and the stabilizer is taken in its range `ρ(O(L))`; that range *is*
-`O(q_L)` exactly when `ρ` is surjective, which is the hypothesis the issue attaches to the
-discriminant-descent statement. Nothing else about `ρ` is assumed: `ρ.rangeRestrict` is always
-surjective onto the range, so the argument never needs surjectivity onto `O(q_L)`. -/
+The group here is the target of `discriminantRepresentation hL`, the isometry group of the
+**bilinear** discriminant form `BilinModuleCat.OrthogonalGroup (discriminantBilinObject R L hL)`. It
+is *not* the quadratic orthogonal group `O(q_L)` of the issue: an isometry of a bilinear form need
+not preserve a quadratic refinement of it, and on 2-primary discriminant modules it need not, so the
+two groups must not be identified. For an even lattice the quadratic homomorphism exists —
+`evenDiscriminantRepresentation hL hEven : O(L) →* QuadModuleCat.OrthogonalGroup
+(evenDiscriminantQuadraticObject L hL hEven)`, built from
+`evenDiscriminantQuadraticMap_actOnDefect` — and the issue's boundary is the fibre theorem at *that*
+homomorphism, with the stabilizer taken in `O(q_L)`. That statement is not proved here: what is
+proved is the fibre over the bilinear range `ρ(O(L))`, which needs no surjectivity of `ρ` because
+`ρ.rangeRestrict` is always surjective onto its range. -/
 noncomputable def vectorFibreEquivStabilizer (v : PrimitiveIsotropicVector L)
     (D : PrimitiveIsotropicVector.DivisibilityData v) :
     {q : DoubleCoset.Quotient (stableFiniteIndexSubgroup hL hΓ).toSubgroup
