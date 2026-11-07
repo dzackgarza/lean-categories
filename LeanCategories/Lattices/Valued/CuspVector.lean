@@ -235,7 +235,7 @@ theorem toLine_smul (g : OrthogonalGroup L) (v : PrimitiveIsotropicVector L) :
 section Lift
 
 /-- The divisibility data of a primitive isotropic vector: the vector is `d` times an element `w` of
-the metric dual, and `w` generates the saturation `L^∨ ∩ ℚ·v`. The divisor `d` is the divisibility
+the metric dual, and `w` generates the saturation `L^∨ ∩ ℚ·v`. The divisor `d` is the
 of `v` in the issue's sense and `w` is `v/d`; the class of `w` in `A_L` is the issue's `[v/d]`. -/
 structure DivisibilityData (v : PrimitiveIsotropicVector L) where
   /-- The divisibility `d` of the vector. -/
@@ -252,7 +252,7 @@ structure DivisibilityData (v : PrimitiveIsotropicVector L) where
     saturation (Submodule.span R {toMetricDual R L v.toVector}) = Submodule.span R {lift}
 
 omit [NoZeroSMulDivisors R L.obj.carrier] in
-/-- The metric dual is torsion-free: it is a submodule of the rational span, where a nonzero integral
+/-- The metric dual is torsion-free: it is a submodule of the rational span, where a nonzero
 scalar can be cancelled after moving it into the fraction field. This is what makes `v/d` unique. -/
 theorem metricDual_smul_inj (d : R) (hd : d ≠ 0) {x y : metricDual R L} (h : d • x = d • y) :
     x = y := by
@@ -285,7 +285,8 @@ theorem metricDualImage_toLine (v : PrimitiveIsotropicVector L) :
   rw [metricDualImage, toLine_toSubmodule, Submodule.map_span]
   simp
 
-/-- **The generator is the subgroup.** The isotropic subgroup `J_{R∙v} = (ℚ·v ∩ L^∨)/R∙v` is
+/-- **The generator is the subgroup.** The isotropic subgroup `J_{R∙v} = (ℚ·v ∩ L^∨)/R∙v`
+is
 exactly the cyclic subgroup of `A_L` spanned by the discriminant class `[v/d]` of `v/div(v)`. -/
 theorem isotropicSubgroup_toLine_eq_span_class {v : PrimitiveIsotropicVector L}
     (D : DivisibilityData v) :
@@ -303,7 +304,8 @@ theorem fixes_discriminantClass (hL : IsFractionFieldPerfect R L)
     (hfix : h • v = v) :
     OrthogonalGroup.actOnDefect h (discriminantClass D) = discriminantClass D := by
   have hvec : h.1 v.toVector = v.toVector := congrArg PrimitiveIsotropicVector.toVector hfix
-  have hlift : D.divisor • (OrthogonalGroup.actOnMetricDual h hL D.lift) = D.divisor • D.lift := by
+  have hlift : D.divisor • (OrthogonalGroup.actOnMetricDual h hL D.lift)
+      = D.divisor • D.lift := by
     rw [← map_smul, D.lift_spec, actOnMetricDual_toMetricDual hL h v.toVector, hvec]
   have hfixlift : OrthogonalGroup.actOnMetricDual h hL D.lift = D.lift :=
     metricDual_smul_inj D.divisor D.divisor_ne_zero hlift
@@ -343,6 +345,72 @@ theorem discriminantClass_smul (hL : IsFractionFieldPerfect R L) (g : Orthogonal
     discriminantClass (D.smul hL g) =
       OrthogonalGroup.actOnDefect g (discriminantClass D) := by
   exact OrthogonalGroup.metricDualToDiscriminant_actOnMetricDual g hL D.lift
+
+/-- If the discriminant module is subsingleton, the lattice is unimodular: `toMetricDual` is
+surjective, because the discriminant projection kills every element of the metric dual and its
+kernel is exactly the range of `toMetricDual` (`ker_metricDualToDiscriminant`). -/
+theorem toMetricDual_surjective_of_defect_subsingleton (hL : IsFractionFieldPerfect R L)
+    (hsub : Subsingleton L.obj.defect) :
+    Function.Surjective (toMetricDual R L) := by
+  intro x
+  have h0 : metricDualToDiscriminant R L x = 0 := hsub.elim _ _
+  have hker : x ∈ LinearMap.ker (metricDualToDiscriminant R L) := LinearMap.mem_ker.mpr h0
+  rw [ker_metricDualToDiscriminant R L hL] at hker
+  exact LinearMap.mem_range.mp hker
+
+/-- The saturation equation for the lift `toMetricDual v` of a vector whose line is primitive: the
+saturation of the line's image in the metric dual is the line's image itself. The argument chases
+elements through the bijective `toMetricDual`: a vector annihilated into the image line by a nonzero
+scalar is the image of a lattice vector annihilated into the primitive line, hence already on the
+line. This is what makes the divisor `1` — the vector is its own primitive lift — whenever
+`toMetricDual` is bijective. -/
+theorem saturation_span_toMetricDual (hbij : Function.Bijective (toMetricDual R L))
+    (v : PrimitiveIsotropicVector L)
+    (hprim : IsPrimitiveSubmodule (Submodule.span R {v.toVector})) :
+    saturation (Submodule.span R {toMetricDual R L v.toVector}) =
+      Submodule.span R {toMetricDual R L v.toVector} := by
+  apply le_antisymm
+  · intro x hx
+    obtain ⟨r, hr, hrx⟩ := hx
+    rw [Submodule.mem_span_singleton] at hrx
+    obtain ⟨c, hc⟩ := hrx
+    obtain ⟨a, ha⟩ := hbij.surjective x
+    have hvec : r • a = c • v.toVector := by
+      apply toMetricDual_injective R L
+      calc toMetricDual R L (r • a) = r • toMetricDual R L a := map_smul _ _ _
+        _ = r • x := by rw [ha]
+        _ = c • toMetricDual R L v.toVector := hc.symm
+        _ = toMetricDual R L (c • v.toVector) := (map_smul _ _ _).symm
+    have hmem : a ∈ saturation (Submodule.span R {v.toVector}) := by
+      rw [mem_saturation_iff]
+      exact ⟨r, hr, Submodule.mem_span_singleton.mpr ⟨c, hvec.symm⟩⟩
+    have hmem' : a ∈ Submodule.span R {v.toVector} := by
+      have hp := isPrimitiveSubmodule_iff_saturation_eq (Submodule.span R {v.toVector}) |>.mp
+        hprim
+      rw [hp] at hmem
+      exact hmem
+    rw [Submodule.mem_span_singleton] at hmem'
+    obtain ⟨m, hm⟩ := hmem'
+    exact Submodule.mem_span_singleton.mpr ⟨m, by
+      calc m • toMetricDual R L v.toVector = toMetricDual R L (m • v.toVector) :=
+            (map_smul _ _ _).symm
+        _ = toMetricDual R L a := by rw [hm]
+        _ = x := ha⟩
+  · exact le_saturation (Submodule.span R {toMetricDual R L v.toVector})
+
+/-- The divisibility data of a vector in a unimodular lattice: divisor `d = 1`, lift `v/d =
+toMetricDual v` — the vector is its own primitive lift — with the saturation equation by
+primitivity transfer. -/
+noncomputable def DivisibilityData.ofUnimodular (hL : IsFractionFieldPerfect R L)
+    (hsub : Subsingleton L.obj.defect) (v : PrimitiveIsotropicVector L)
+    (hprim : IsPrimitiveSubmodule (Submodule.span R {v.toVector})) :
+    DivisibilityData v where
+  divisor := 1
+  divisor_ne_zero := one_ne_zero
+  lift := toMetricDual R L v.toVector
+  lift_spec := by rw [one_smul]
+  saturation_eq := saturation_span_toMetricDual
+    ⟨toMetricDual_injective R L, toMetricDual_surjective_of_defect_subsingleton hL hsub⟩ v hprim
 
 end Lift
 

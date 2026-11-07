@@ -1227,39 +1227,64 @@ theorem twoHyperbolicPlanes_quadraticRepresentation_surjective :
   intro x
   exact Subsingleton.elim _ _
 
-/-- The kernel of the quadratic representation of `U ⊕ U` is all of `O(L)` — the discriminant is
-trivial, so every isometry acts as the identity on it — and hence has finite index (index 1). This
-is the finiteness hypothesis of `vectorFibreEquivQuadraticSurjective`, proved rather than assumed;
-it also identifies the theorem's `Γ = ker ρ` with `O(L)`, as in the line formulation. -/
+/-- The kernel of the quadratic representation is all of `O(L)`: the quadratic discriminant module
+is a subsingleton, so every isometry acts as the identity on it. This identifies the fibre
+theorem's `Γ = ker ρ` with `O(L)`, as in the line formulation. -/
+theorem twoHyperbolicPlanes_quadratic_kernel_eq_top :
+    MonoidHom.ker (OrthogonalGroup.evenDiscriminantRepresentation
+      twoHyperbolicPlanes_isFractionFieldPerfect twoHyperbolicPlanes_isEven) = ⊤ := by
+  refine (Subgroup.eq_top_iff' _).mpr (fun g => ?_)
+  letI : Subsingleton (evenDiscriminantQuadraticObject twoHyperbolicPlanes
+      twoHyperbolicPlanes_isFractionFieldPerfect twoHyperbolicPlanes_isEven).carrier :=
+    twoHyperbolicPlanes_defect_subsingleton
+  rw [MonoidHom.mem_ker]
+  apply Subtype.ext
+  apply LinearEquiv.ext
+  intro x
+  exact Subsingleton.elim _ _
+
+/-- The kernel of the quadratic representation has finite index (index 1). -/
 theorem twoHyperbolicPlanes_quadratic_kernel_finiteIndex :
     (MonoidHom.ker (OrthogonalGroup.evenDiscriminantRepresentation
       twoHyperbolicPlanes_isFractionFieldPerfect twoHyperbolicPlanes_isEven)).FiniteIndex := by
-  have hk : MonoidHom.ker (OrthogonalGroup.evenDiscriminantRepresentation
-      twoHyperbolicPlanes_isFractionFieldPerfect twoHyperbolicPlanes_isEven) = ⊤ := by
-    refine (Subgroup.eq_top_iff' _).mpr (fun g => ?_)
-    letI : Subsingleton (evenDiscriminantQuadraticObject twoHyperbolicPlanes
-        twoHyperbolicPlanes_isFractionFieldPerfect twoHyperbolicPlanes_isEven).carrier :=
-      twoHyperbolicPlanes_defect_subsingleton
-    rw [MonoidHom.mem_ker]
-    apply Subtype.ext
-    apply LinearEquiv.ext
-    intro x
-    exact Subsingleton.elim _ _
   refine ⟨?_⟩
-  rw [hk, Subgroup.index_top]
+  rw [twoHyperbolicPlanes_quadratic_kernel_eq_top, Subgroup.index_top]
   norm_num
 
-/-- The discriminant class `[v/d]` of the standard vector of `U ⊕ U`, read in the quadratic
-discriminant module: the image of the lift `toMetricDual v` under the discriminant projection,
-which is `[v/d]` for the divisor `d = 1`. That the divisor is `1` is unimodularity: the defect of
-`U ⊕ U` is trivial (`twoHyperbolicPlanes_defect_subsingleton`), so by
-`isUnimodular_iff_toMetricDual_surjective` the metric dual is the integral image and the primitive
-lift of `v` in `L^∨` is `toMetricDual v` itself. -/
+/-- `U ⊕ U` is unimodular: `toMetricDual` is surjective, since the discriminant module is
+subsingleton and the kernel of the discriminant projection is the range of `toMetricDual`
+(`PrimitiveIsotropicVector.toMetricDual_surjective_of_defect_subsingleton`). -/
+theorem twoHyperbolicPlanes_toMetricDual_surjective :
+    Function.Surjective (toMetricDual ℤ twoHyperbolicPlanes) :=
+  @PrimitiveIsotropicVector.toMetricDual_surjective_of_defect_subsingleton ℤ _ _
+    twoHyperbolicPlanes twoHyperbolicPlanesCarrierTorsionFree
+    twoHyperbolicPlanes_isFractionFieldPerfect twoHyperbolicPlanes_defect_subsingleton
+
+/-- The divisibility data of the standard vector of `U ⊕ U`: divisor `d = 1`, lift `v/d =
+toMetricDual v` — the vector is its own primitive lift, by unimodularity — and the saturation
+equation by primitivity transfer along the bijective `toMetricDual`
+(`PrimitiveIsotropicVector.DivisibilityData.ofUnimodular`). -/
+noncomputable def twoHyperbolicPlanesDivisibilityData :
+    PrimitiveIsotropicVector.DivisibilityData twoHyperbolicPlanesVector :=
+  @PrimitiveIsotropicVector.DivisibilityData.ofUnimodular ℤ _ _ twoHyperbolicPlanes
+    twoHyperbolicPlanesCarrierTorsionFree
+    twoHyperbolicPlanes_isFractionFieldPerfect twoHyperbolicPlanes_defect_subsingleton
+    twoHyperbolicPlanesVector standardVector_primitiveSpan
+
+/-- The discriminant class `[v/d]` of the standard vector of `U ⊕ U`: the class of the
+data above, which is `[v/1]` — the image of the lift `toMetricDual v` under the discriminant
+projection. -/
 noncomputable def twoHyperbolicPlanesQuadraticClass :
     quadraticDiscriminantCarrier twoHyperbolicPlanes_isFractionFieldPerfect
       twoHyperbolicPlanes_isEven :=
-  metricDualToDiscriminant ℤ twoHyperbolicPlanes
-    (toMetricDual ℤ twoHyperbolicPlanes twoHyperbolicPlanesVector.toVector)
+  quadraticDiscriminantClass twoHyperbolicPlanes_isFractionFieldPerfect
+    twoHyperbolicPlanes_isEven twoHyperbolicPlanesDivisibilityData
+
+@[simp]
+theorem twoHyperbolicPlanesQuadraticClass_eq_discriminantClass :
+    twoHyperbolicPlanesQuadraticClass =
+      PrimitiveIsotropicVector.discriminantClass twoHyperbolicPlanesDivisibilityData :=
+  rfl
 
 /-- The class `[v/d]` is trivial: the lift `toMetricDual v` lies in the image of `toMetricDual`,
 which is exactly the kernel of the discriminant projection. -/
@@ -1304,4 +1329,134 @@ noncomputable def twoHyperbolicPlanesQuadraticFibre :=
     (fun s hs => twoHyperbolicPlanes_quadratic_stabilizer_fixes_class s
       (MulAction.mem_stabilizer_iff.mp hs))
     twoHyperbolicPlanes_quadraticRepresentation_surjective
+
+/-- The `Γ` of the quadratic worked instance: `ker ρ`, which is all of `O(L)` by
+`twoHyperbolicPlanes_quadratic_kernel_eq_top`. -/
+noncomputable def twoHyperbolicPlanesQuadraticGamma : FiniteIndexSubgroup twoHyperbolicPlanes :=
+  ⟨MonoidHom.ker (OrthogonalGroup.evenDiscriminantRepresentation
+      twoHyperbolicPlanes_isFractionFieldPerfect twoHyperbolicPlanes_isEven),
+    twoHyperbolicPlanes_quadratic_kernel_finiteIndex⟩
+
+theorem twoHyperbolicPlanesQuadraticGamma_toSubgroup :
+    twoHyperbolicPlanesQuadraticGamma.toSubgroup = ⊤ :=
+  twoHyperbolicPlanes_quadratic_kernel_eq_top
+
+/-- `O(q_{U ⊕ U})` is trivial: the quadratic discriminant module is a subsingleton, so any two
+quadratic isometries agree pointwise. -/
+theorem twoHyperbolicPlanes_quadraticGroup_subsingleton :
+    Subsingleton (QuadModuleCat.OrthogonalGroup
+      (evenDiscriminantQuadraticObject twoHyperbolicPlanes
+        twoHyperbolicPlanes_isFractionFieldPerfect twoHyperbolicPlanes_isEven)) := by
+  refine ⟨fun g h => ?_⟩
+  apply Subtype.ext
+  apply LinearEquiv.ext
+  intro x
+  exact twoHyperbolicPlanes_defect_subsingleton.elim _ _
+
+/-- The stabilizer quotient on the fibre theorem's right-hand side is a subsingleton: the group is
+trivial, so the stabilizer is, and so is its quotient. -/
+theorem twoHyperbolicPlanes_quadraticStabilizerQuotient_subsingleton :
+    Subsingleton (MulAction.stabilizer (QuadModuleCat.OrthogonalGroup
+        (evenDiscriminantQuadraticObject twoHyperbolicPlanes
+          twoHyperbolicPlanes_isFractionFieldPerfect twoHyperbolicPlanes_isEven))
+        twoHyperbolicPlanesQuadraticClass ⧸
+      ((MulAction.stabilizer (OrthogonalGroup twoHyperbolicPlanes)
+          twoHyperbolicPlanesVector).map
+        (OrthogonalGroup.evenDiscriminantRepresentation
+          twoHyperbolicPlanes_isFractionFieldPerfect twoHyperbolicPlanes_isEven)).subgroupOf
+        (MulAction.stabilizer (QuadModuleCat.OrthogonalGroup
+          (evenDiscriminantQuadraticObject twoHyperbolicPlanes
+            twoHyperbolicPlanes_isFractionFieldPerfect twoHyperbolicPlanes_isEven))
+          twoHyperbolicPlanesQuadraticClass)) := by
+  haveI := twoHyperbolicPlanes_quadraticGroup_subsingleton
+  refine ⟨fun a b => ?_⟩
+  induction a using Quotient.inductionOn with
+  | _ x =>
+  induction b using Quotient.inductionOn with
+  | _ y =>
+  exact congrArg QuotientGroup.mk (Subtype.ext (Subsingleton.elim _ _))
+
+/-- The double cosets of `Γ = ker ρ` and the stabilizer of the standard vector form a
+**through the fibre theorem**: every double coset lies in the fibre over `[v/d]` (the class map is
+constant, its values living in the subsingleton quadratic discriminant module), and the fibre is
+identified by `twoHyperbolicPlanesQuadraticFibre` with the subsingleton stabilizer quotient. -/
+theorem twoHyperbolicPlanes_quadraticDoset_subsingleton :
+    Subsingleton (DoubleCoset.Quotient
+      (twoHyperbolicPlanesQuadraticGamma.toSubgroup :
+        Set (OrthogonalGroup twoHyperbolicPlanes))
+      (MulAction.stabilizer (OrthogonalGroup twoHyperbolicPlanes)
+        twoHyperbolicPlanesVector : Set (OrthogonalGroup twoHyperbolicPlanes))) := by
+  haveI := twoHyperbolicPlanes_quadraticStabilizerQuotient_subsingleton
+  have hconst : ∀ q : DoubleCoset.Quotient
+      (twoHyperbolicPlanesQuadraticGamma.toSubgroup :
+        Set (OrthogonalGroup twoHyperbolicPlanes))
+      (MulAction.stabilizer (OrthogonalGroup twoHyperbolicPlanes)
+        twoHyperbolicPlanesVector : Set (OrthogonalGroup twoHyperbolicPlanes)),
+      classMap (OrthogonalGroup.evenDiscriminantRepresentation
+          twoHyperbolicPlanes_isFractionFieldPerfect twoHyperbolicPlanes_isEven)
+        twoHyperbolicPlanesVector twoHyperbolicPlanesQuadraticClass
+        (fun s hs => twoHyperbolicPlanes_quadratic_stabilizer_fixes_class s
+          (MulAction.mem_stabilizer_iff.mp hs)) q =
+        twoHyperbolicPlanesQuadraticClass := by
+    intro q
+    induction q using Quotient.inductionOn with
+    | _ g => exact twoHyperbolicPlanes_defect_subsingleton.elim _ _
+  refine ⟨fun q₁ q₂ => ?_⟩
+  have h₁ := hconst q₁
+  have h₂ := hconst q₂
+  have he : twoHyperbolicPlanesQuadraticFibre ⟨q₁, h₁⟩ =
+      twoHyperbolicPlanesQuadraticFibre ⟨q₂, h₂⟩ := Subsingleton.elim _ _
+  exact congrArg Subtype.val (twoHyperbolicPlanesQuadraticFibre.injective he)
+
+/-- The `Γ`-orbit quotient of the primitive isotropic vectors of `U ⊕ U` is a subsingleton.
+proved vector transitivity (`twoHyperbolicPlanes_vectorOrbit_unique`) every vector lies in the
+`O(L)`-orbit of the standard vector, so every `Γ`-orbit appears in the subtype that
+`vectorOrbitsEquivDoubleCoset` identifies with the double cosets — and those are subsingleton
+through the fibre theorem. -/
+theorem twoHyperbolicPlanes_quadraticOrbitQuotient_subsingleton :
+    Subsingleton (Quotient (MulAction.orbitRel
+      twoHyperbolicPlanesQuadraticGamma.toSubgroup
+      (PrimitiveIsotropicVector twoHyperbolicPlanes))) := by
+  haveI := twoHyperbolicPlanes_quadraticDoset_subsingleton
+  have e := vectorOrbitsEquivDoubleCoset twoHyperbolicPlanesQuadraticGamma
+    twoHyperbolicPlanesVector
+  have hfull : ∀ o : Quotient (MulAction.orbitRel
+      twoHyperbolicPlanesQuadraticGamma.toSubgroup
+      (PrimitiveIsotropicVector twoHyperbolicPlanes)),
+      ∃ u : PrimitiveIsotropicVector twoHyperbolicPlanes,
+        u ∈ MulAction.orbit (OrthogonalGroup twoHyperbolicPlanes) twoHyperbolicPlanesVector ∧
+          Quotient.mk (MulAction.orbitRel twoHyperbolicPlanesQuadraticGamma.toSubgroup
+            (PrimitiveIsotropicVector twoHyperbolicPlanes)) u = o := by
+    intro o
+    induction o using Quotient.inductionOn with
+    | _ u =>
+      obtain ⟨g, hg⟩ := twoHyperbolicPlanes_vectorOrbit_unique twoHyperbolicPlanesVector u
+      exact ⟨u, MulAction.mem_orbit_iff.mpr ⟨g, hg⟩, rfl⟩
+  refine ⟨fun o₁ o₂ => ?_⟩
+  obtain ⟨u₁, hu₁, hm₁⟩ := hfull o₁
+  obtain ⟨u₂, hu₂, hm₂⟩ := hfull o₂
+  have he : e.symm ⟨o₁, u₁, hu₁, hm₁⟩ = e.symm ⟨o₂, u₂, hu₂, hm₂⟩ :=
+    Subsingleton.elim _ _
+  have h := congrArg e he
+  rw [Equiv.apply_symm_apply, Equiv.apply_symm_apply] at h
+  exact congrArg Subtype.val h
+
+/-- **The singleton arithmetic vector orbit, through the fibre theorem** (#113): for
+`Γ = ker ρ = O(L)`, any two primitive isotropic vectors of `U ⊕ U` are `Γ`-related. The orbit
+quotient is a subsingleton by the chain above — `vectorOrbitsEquivDoubleCoset` and the proved
+vector transitivity identify the orbits with the double cosets, and the fibre theorem makes those
+subsingleton — so the two orbit classes are equal, and their difference is a `Γ`-element. -/
+theorem twoHyperbolicPlanes_quadraticVectorOrbit_single
+    (u w : PrimitiveIsotropicVector twoHyperbolicPlanes) :
+    ∃ γ : twoHyperbolicPlanesQuadraticGamma.toSubgroup, γ • u = w := by
+  haveI := twoHyperbolicPlanes_quadraticOrbitQuotient_subsingleton
+  have h : (Quotient.mk (MulAction.orbitRel twoHyperbolicPlanesQuadraticGamma.toSubgroup
+        (PrimitiveIsotropicVector twoHyperbolicPlanes)) u) =
+      Quotient.mk (MulAction.orbitRel twoHyperbolicPlanesQuadraticGamma.toSubgroup
+        (PrimitiveIsotropicVector twoHyperbolicPlanes)) w :=
+    Subsingleton.elim _ _
+  obtain ⟨γ, hγ⟩ := MulAction.mem_orbit_iff.mp
+    (MulAction.orbitRel_apply.mp (Quotient.exact h))
+  exact ⟨γ⁻¹, by rw [← hγ, inv_smul_smul]⟩
+
 end LeanCategories.Lattices.Valued
