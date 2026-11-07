@@ -6,7 +6,9 @@ module
 
 public import LeanCategories.Lattices.Valued.Sublattice
 public import LeanCategories.Modules.FlagMatrices
+public import Mathlib.Algebra.Group.Subgroup.Map
 public import Mathlib.LinearAlgebra.FreeModule.PID
+public import Mathlib.LinearAlgebra.Matrix.ToLin
 public import Mathlib.LinearAlgebra.Basis.Prod
 public import Mathlib.LinearAlgebra.Projection
 public import Mathlib.Algebra.Module.Projective
@@ -260,5 +262,509 @@ theorem existsAdaptedBasis [IsDomain R] [IsPrincipalIdealRing R]
   obtain ⟨ι, hι, block, b, hadapt⟩ := existsAdaptedBasisLast F hbot hmono hsat
   letI : Fintype ι := hι
   exact ⟨ι, hι, block, b.map (LinearEquiv.ofTop (F (Fin.last r)) htop), hadapt⟩
+
+/-- Preservation of every stage of a flag by a linear map. -/
+def FlagPreserves (f : M →ₗ[R] M) (F : Fin (r + 1) → Submodule R M) : Prop :=
+  ∀ k x, x ∈ F k → f x ∈ F k
+
+/-- A linear map is block-triangular for an adapted basis exactly when it preserves the flag. -/
+theorem blockTriangular_iff_flagPreserves [Fintype ι] [DecidableEq ι]
+    (b : Module.Basis ι R M) (block : ι → Fin r)
+    {F : Fin (r + 1) → Submodule R M} (hadapt : BlockAdapted b block F)
+    (f : M →ₗ[R] M) :
+    (LinearMap.toMatrix b b f).BlockTriangular block ↔ FlagPreserves f F := by
+  constructor
+  · intro htri k x hx
+    rw [hadapt k] at hx ⊢
+    refine Submodule.span_induction (p := fun x _ => f x ∈ Submodule.span R
+      (b '' {i | (block i).castSucc < k})) ?_ (by simp) (fun x y _ _ hx hy => by
+        simpa using Submodule.add_mem _ hx hy) (fun a x _ hx => by
+        rw [map_smul]
+        exact Submodule.smul_mem _ a hx) hx
+    rintro _ ⟨j, hj, rfl⟩
+    rw [← b.sum_repr (f (b j))]
+    apply Submodule.sum_mem
+    intro i _
+    by_cases hi : (block i).castSucc < k
+    · exact Submodule.smul_mem _ _ (Submodule.subset_span ⟨i, hi, rfl⟩)
+    · have hlt : block j < block i := by
+        have hlt' : (block j).castSucc < (block i).castSucc :=
+          lt_of_lt_of_le hj (le_of_not_gt hi)
+        exact Fin.castSucc_lt_castSucc_iff.mp hlt'
+      have hz : (b.repr (f (b j))) i = 0 := by
+        rw [← LinearMap.toMatrix_apply]
+        exact htri hlt
+      rw [hz, zero_smul]
+      exact Submodule.zero_mem _
+  · intro hf i j hij
+    have hsource : b j ∈ F (block j).succ := by
+      rw [hadapt]
+      exact Submodule.subset_span ⟨j, Fin.castSucc_lt_succ, rfl⟩
+    have hker : F (block j).succ ≤ LinearMap.ker (b.coord i) := by
+      rw [hadapt]
+      apply Submodule.span_le.mpr
+      rintro _ ⟨l, hl, rfl⟩
+      have hli : block l < block i :=
+        lt_of_le_of_lt (Fin.castSucc_lt_succ_iff.mp hl) hij
+      have hne : i ≠ l := by
+        intro heq
+        subst l
+        exact hli.false
+      simp [Module.Basis.coord_apply, Finsupp.single_apply, hne]
+    rw [LinearMap.toMatrix_apply]
+    exact hker (hf _ _ hsource)
+
+/-- The stabilizer of a flag in the general-linear group: every stage is carried onto itself.
+
+For an invertible map "carries each stage onto itself" and "carries each stage into itself" have
+the same content (`flagPreserves_iff_mem_flagStabilizer`); the one-way form is the one that makes
+sense for an arbitrary, not necessarily invertible, linear map and is what
+`blockTriangular_iff_flagPreserves` matches against block triangularity. -/
+def flagStabilizer (F : Fin (r + 1) → Submodule R M) :
+    Subgroup (LinearMap.GeneralLinearGroup R M) where
+  carrier := {A | ∀ k, (F k).map A.1 = F k}
+  one_mem' := by
+    intro k
+    exact Submodule.map_id (F k)
+  mul_mem' := by
+    intro A B hA hB k
+    change (F k).map (A.1 * B.1 : Module.End R M) = F k
+    rw [Module.End.mul_eq_comp, Submodule.map_comp, hB k, hA k]
+  inv_mem' := by
+    intro A hA k
+    have hinv : ((A⁻¹ * A : LinearMap.GeneralLinearGroup R M) : Module.End R M) = 1 := by
+      rw [inv_mul_cancel]
+      rfl
+    rw [Units.val_mul, Module.End.mul_eq_comp] at hinv
+    rw [show (1 : Module.End R M) = LinearMap.id from rfl] at hinv
+    have hcomp : (↑A⁻¹ : M →ₗ[R] M) ∘ₗ (↑A : M →ₗ[R] M) = LinearMap.id := hinv
+    calc (F k).map (↑A⁻¹ : M →ₗ[R] M)
+        = ((F k).map (↑A : M →ₗ[R] M)).map (↑A⁻¹ : M →ₗ[R] M) := by rw [hA k]
+      _ = (F k).map ((↑A⁻¹ : M →ₗ[R] M) ∘ₗ (↑A : M →ₗ[R] M)) :=
+        (Submodule.map_comp _ _ _).symm
+      _ = (F k).map LinearMap.id := by rw [hcomp]
+      _ = F k := Submodule.map_id (F k)
+
+@[simp] theorem mem_flagStabilizer_iff (F : Fin (r + 1) → Submodule R M)
+    (A : LinearMap.GeneralLinearGroup R M) :
+    A ∈ flagStabilizer F ↔ ∀ k, (F k).map A.1 = F k :=
+  Iff.rfl
+
+/-- A member of the flag stabilizer carries each stage into itself. -/
+theorem flagPreserves_of_mem_flagStabilizer {F : Fin (r + 1) → Submodule R M}
+    {A : LinearMap.GeneralLinearGroup R M} (hA : A ∈ flagStabilizer F) :
+    FlagPreserves A.1 F :=
+  fun k _ hx => (hA k).symm ▸ Submodule.mem_map_of_mem hx
+
+/-- The inverse direction: a member carries each stage onto itself, so preimages of a stage stay
+in the stage. -/
+theorem flagPreserves_inv_of_mem_flagStabilizer {F : Fin (r + 1) → Submodule R M}
+    {A : LinearMap.GeneralLinearGroup R M} (hA : A ∈ flagStabilizer F) :
+    FlagPreserves (↑A⁻¹) F :=
+  flagPreserves_of_mem_flagStabilizer (inv_mem hA)
+
+/-- An automorphism preserves every stage in both directions exactly when it stabilizes the flag. -/
+theorem mem_flagStabilizer_iff_preserves_and_inv {F : Fin (r + 1) → Submodule R M}
+    (A : LinearMap.GeneralLinearGroup R M) :
+    A ∈ flagStabilizer F ↔ FlagPreserves A.1 F ∧ FlagPreserves (↑A⁻¹) F := by
+  refine ⟨fun h => ⟨flagPreserves_of_mem_flagStabilizer h,
+    flagPreserves_inv_of_mem_flagStabilizer h⟩, ?_⟩
+  rintro ⟨h1, h2⟩ k
+  refine le_antisymm (Submodule.map_le_iff_le_comap.mpr (h1 k)) ?_
+  intro x hx
+  refine ⟨(↑A⁻¹ : M →ₗ[R] M) x, h2 k x hx, ?_⟩
+  have hinv : ((A * A⁻¹ : LinearMap.GeneralLinearGroup R M) : Module.End R M) = 1 := by
+    rw [mul_inv_cancel]
+    rfl
+  rw [Units.val_mul, Module.End.mul_eq_comp] at hinv
+  rw [show (1 : Module.End R M) = LinearMap.id from rfl] at hinv
+  simpa using LinearMap.congr_fun hinv x
+
+/-- Applying an automorphism and then its inverse returns the input. -/
+theorem GeneralLinearGroup.apply_inv_apply (u : LinearMap.GeneralLinearGroup R M) (x : M) :
+    (u : M →ₗ[R] M) ((↑u⁻¹ : M →ₗ[R] M) x) = x := by
+  have h : ((u * u⁻¹ : LinearMap.GeneralLinearGroup R M) : Module.End R M) = 1 := by
+    rw [mul_inv_cancel]
+    rfl
+  rw [Units.val_mul, Module.End.mul_eq_comp] at h
+  rw [show (1 : Module.End R M) = LinearMap.id from rfl] at h
+  simpa using LinearMap.congr_fun h x
+
+/-- Applying an inverse and then the automorphism returns the input. -/
+theorem GeneralLinearGroup.inv_apply_apply (u : LinearMap.GeneralLinearGroup R M) (x : M) :
+    (↑u⁻¹ : M →ₗ[R] M) ((u : M →ₗ[R] M) x) = x := by
+  have h : ((u⁻¹ * u : LinearMap.GeneralLinearGroup R M) : Module.End R M) = 1 := by
+    rw [inv_mul_cancel]
+    rfl
+  rw [Units.val_mul, Module.End.mul_eq_comp] at h
+  rw [show (1 : Module.End R M) = LinearMap.id from rfl] at h
+  simpa using LinearMap.congr_fun h x
+
+section AdaptedTransport
+
+variable {ι : Type u} [Fintype ι] [DecidableEq ι]
+
+/-- The linear automorphism attached to a matrix in a basis. -/
+noncomputable abbrev basisGeneralLinear (b : Module.Basis ι R M) :
+    Matrix.GeneralLinearGroup ι R ≃* LinearMap.GeneralLinearGroup R M :=
+  Matrix.GeneralLinearGroup.toLin' b
+
+/-- The matrix of the linear automorphism attached to a matrix in a basis is that matrix. -/
+theorem toMatrix_basisGeneralLinear (b : Module.Basis ι R M)
+    (A : Matrix.GeneralLinearGroup ι R) :
+    LinearMap.toMatrix b b (basisGeneralLinear b A).1 = (A : Matrix ι ι R) := by
+  rw [show (basisGeneralLinear b A).1 = Matrix.toLin b b (A : Matrix ι ι R) from rfl,
+    LinearMap.toMatrix_toLin]
+
+/-- The matrix attached to a linear automorphism in a basis, as an element of the general linear
+group. -/
+theorem basisGeneralLinear_symm_apply_val (b : Module.Basis ι R M)
+    (u : LinearMap.GeneralLinearGroup R M) :
+    ((basisGeneralLinear b).symm u : Matrix ι ι R) =
+      LinearMap.toMatrix b b (u : M →ₗ[R] M) := by
+  have h2 : Matrix.toLin b b ((basisGeneralLinear b).symm u : Matrix ι ι R) =
+      (u : M →ₗ[R] M) := by
+    rw [show Matrix.toLin b b ((basisGeneralLinear b).symm u : Matrix ι ι R)
+        = (basisGeneralLinear b ((basisGeneralLinear b).symm u) : M →ₗ[R] M) from rfl,
+      MulEquiv.apply_symm_apply]
+  calc ((basisGeneralLinear b).symm u : Matrix ι ι R)
+      = LinearMap.toMatrix b b (Matrix.toLin b b ((basisGeneralLinear b).symm u :
+          Matrix ι ι R)) := (LinearMap.toMatrix_toLin _ _ _).symm
+    _ = LinearMap.toMatrix b b (u : M →ₗ[R] M) := by rw [h2]
+
+/-- A block-triangular matrix preserves the flag in its adapted basis. -/
+theorem flagPreserves_basisGeneralLinear (b : Module.Basis ι R M) (block : ι → Fin r)
+    {F : Fin (r + 1) → Submodule R M} (hadapt : BlockAdapted b block F)
+    {A : Matrix.GeneralLinearGroup ι R} (hA : Matrix.BlockTriangular (A : Matrix ι ι R) block) :
+    FlagPreserves (basisGeneralLinear b A).1 F :=
+  (blockTriangular_iff_flagPreserves b block hadapt _).mp (by
+    rw [toMatrix_basisGeneralLinear]
+    exact hA)
+
+/-- The inverse of a block-triangular automorphism preserves the flag as well. -/
+theorem flagPreserves_basisGeneralLinear_inv (b : Module.Basis ι R M) (block : ι → Fin r)
+    {F : Fin (r + 1) → Submodule R M} (hadapt : BlockAdapted b block F)
+    {A : Matrix.GeneralLinearGroup ι R} (hA : Matrix.BlockTriangular (A : Matrix ι ι R) block) :
+    FlagPreserves ((basisGeneralLinear b A)⁻¹).1 F := by
+  have he : (basisGeneralLinear b A)⁻¹ = basisGeneralLinear b A⁻¹ :=
+    (map_inv (basisGeneralLinear b) A).symm
+  rw [he]
+  exact flagPreserves_basisGeneralLinear b block hadapt (blockTriangular_inv hA)
+
+/-- A block-triangular matrix stabilizes the flag in its adapted basis. -/
+theorem basisGeneralLinear_mem_flagStabilizer (b : Module.Basis ι R M) (block : ι → Fin r)
+    {F : Fin (r + 1) → Submodule R M} (hadapt : BlockAdapted b block F)
+    {A : Matrix.GeneralLinearGroup ι R} (hA : Matrix.BlockTriangular (A : Matrix ι ι R) block) :
+    basisGeneralLinear b A ∈ flagStabilizer F := by
+  intro k
+  refine le_antisymm
+    (Submodule.map_le_iff_le_comap.mpr (flagPreserves_basisGeneralLinear b block hadapt hA k)) ?_
+  intro x hx
+  exact ⟨((basisGeneralLinear b A)⁻¹).1 x,
+    flagPreserves_basisGeneralLinear_inv b block hadapt hA k x hx,
+    GeneralLinearGroup.apply_inv_apply _ x⟩
+
+/-- A flag-preserving automorphism is block-triangular in an adapted basis. -/
+theorem blockTriangular_basisGeneralLinear_symm (b : Module.Basis ι R M) (block : ι → Fin r)
+    {F : Fin (r + 1) → Submodule R M} (hadapt : BlockAdapted b block F)
+    {e : LinearMap.GeneralLinearGroup R M} (he : e ∈ flagStabilizer F) :
+    Matrix.BlockTriangular (((basisGeneralLinear b).symm e : Matrix.GeneralLinearGroup ι R) :
+      Matrix ι ι R) block := by
+  have hmat : (((basisGeneralLinear b).symm e : Matrix.GeneralLinearGroup ι R) : Matrix ι ι R) =
+      LinearMap.toMatrix b b (e : M →ₗ[R] M) := basisGeneralLinear_symm_apply_val b e
+  rw [hmat]
+  exact (blockTriangular_iff_flagPreserves b block hadapt _).mpr
+    (flagPreserves_of_mem_flagStabilizer he)
+
+/-- In an adapted basis, the flag stabilizer is multiplicatively equivalent to the invertible
+block-triangular matrices: `A` is block-triangular exactly when the endomorphism it defines carries
+every stage of the flag onto itself. -/
+noncomputable def flagStabilizerMatrixEquiv (b : Module.Basis ι R M) (block : ι → Fin r)
+    {F : Fin (r + 1) → Submodule R M} (hadapt : BlockAdapted b block F) :
+    blockTriangularSubgroup (R := R) block ≃* flagStabilizer F where
+  toFun A :=
+    ⟨basisGeneralLinear b A.1, basisGeneralLinear_mem_flagStabilizer b block hadapt A.2⟩
+  invFun e := ⟨(basisGeneralLinear b).symm e.1,
+    blockTriangular_basisGeneralLinear_symm b block hadapt e.2⟩
+  left_inv A := Subtype.ext (MulEquiv.symm_apply_apply (basisGeneralLinear b) A.1)
+  right_inv e := Subtype.ext (MulEquiv.apply_symm_apply (basisGeneralLinear b) e.1)
+  map_mul' A B := Subtype.ext (map_mul (basisGeneralLinear b) A.1 B.1)
+
+/-- Composition of automorphisms is composition of the underlying linear maps. -/
+theorem GeneralLinearGroup.coe_mul_eq_comp (A B : LinearMap.GeneralLinearGroup R M) :
+    ((A * B : LinearMap.GeneralLinearGroup R M) : M →ₗ[R] M) =
+      (A : M →ₗ[R] M) ∘ₗ (B : M →ₗ[R] M) := by
+  simpa only [Module.End.mul_eq_comp] using Units.val_mul A B
+
+/-- The elementary automorphism of an adapted basis: the map `b j ↦ b j + a • b i`, whose matrix
+in the basis is `1 + a E_{ij}`. The index `i` lies in a strictly earlier block than `j`, so the map
+is block-triangular with identity diagonal blocks: it is a strict-block transvection. Every
+coefficient `a : R` occurs. -/
+noncomputable def basisTransvection (b : Module.Basis ι R M) (block : ι → Fin r) {i j : ι}
+    (hij : block i < block j) (a : R) : LinearMap.GeneralLinearGroup R M :=
+  basisGeneralLinear b (blockTransvection block hij a)
+
+/-- An elementary map lies in the flag stabilizer. -/
+theorem basisTransvection_mem_flagStabilizer (b : Module.Basis ι R M) (block : ι → Fin r)
+    {F : Fin (r + 1) → Submodule R M} (hadapt : BlockAdapted b block F) {i j : ι}
+    (hij : block i < block j) (a : R) :
+    basisTransvection b block hij a ∈ flagStabilizer F :=
+  basisGeneralLinear_mem_flagStabilizer b block hadapt (by
+    have h := Matrix.blockTriangular_transvection (b := block) hij.le a
+    rwa [blockTransvection_coe])
+
+/-- The action of a matrix on a basis vector: the `c`-th column, read in the basis. -/
+theorem toLin_basis_apply (b : Module.Basis ι R M) (A : Matrix ι ι R) (c : ι) :
+    (Matrix.toLin b b A) (b c) = ∑ l, A l c • b l := by
+  rw [Matrix.toLin_apply]
+  simp only [Module.Basis.repr_self]
+  rw [Finset.sum_congr rfl (fun l _ => ?_)]
+  congr 1
+  simp [Matrix.mulVec, dotProduct, Finsupp.single_apply]
+
+/-- The entries of an elementary matrix: the identity plus one off-diagonal entry. -/
+theorem transvection_apply_eq {i j : ι} (a : R) (r c : ι) :
+    Matrix.transvection i j a r c =
+      (if r = c then (1 : R) else 0) + (if i = r ∧ j = c then a else 0) := by
+  rw [Matrix.transvection, Matrix.add_apply, Matrix.one_apply, Matrix.single_apply]
+
+/-- The elementary map fixes every basis vector whose index is not `j`. -/
+theorem basisTransvection_apply_of_ne (b : Module.Basis ι R M) (block : ι → Fin r) {i j l : ι}
+    (hij : block i < block j) (a : R) (hl : l ≠ j) :
+    (basisTransvection b block hij a).1 (b l) = b l := by
+  have hjl : ¬ (j = l) := fun h => hl h.symm
+  rw [basisTransvection]
+  change (Matrix.toLin b b (blockTransvection block hij a : Matrix ι ι R)) (b l) = b l
+  rw [toLin_basis_apply, blockTransvection_coe]
+  have hsummand : ∀ q, Matrix.transvection i j a q l • b q =
+      (if q = l then (1 : R) else 0) • b q := by
+    intro q
+    rw [transvection_apply_eq]
+    by_cases hq : q = l
+    · subst hq
+      simp [hjl]
+    · simp [hq, hjl]
+  rw [Finset.sum_congr rfl (fun q _ => hsummand q), Finset.sum_eq_single l]
+  · simp
+  · intro q _ hq
+    simp [hq]
+  · intro h
+    exact absurd (Finset.mem_univ l) h
+
+/-- The elementary map sends `b j` to `b j + a • b i`. -/
+theorem basisTransvection_apply (b : Module.Basis ι R M) (block : ι → Fin r) {i j : ι}
+    (hij : block i < block j) (a : R) :
+    (basisTransvection b block hij a).1 (b j) = b j + a • b i := by
+  rw [basisTransvection]
+  change (Matrix.toLin b b (blockTransvection block hij a : Matrix ι ι R)) (b j) = b j + a • b i
+  rw [toLin_basis_apply, blockTransvection_coe]
+  have hsummand : ∀ q, Matrix.transvection i j a q j • b q =
+      (if q = j then (1 : R) else 0) • b q + (if q = i then a else 0) • b q := by
+    intro q
+    have hif : (if i = q ∧ j = j then a else 0) = (if q = i then a else 0) := by
+      by_cases h : q = i
+      · subst h
+        simp
+      · have h' : ¬ (i = q) := fun hh => h hh.symm
+        simp [h, h']
+    rw [transvection_apply_eq, add_smul, hif]
+  rw [Finset.sum_congr rfl (fun q _ => hsummand q), Finset.sum_add_distrib]
+  have h1 : (∑ q, (if q = j then (1 : R) else 0) • b q) = b j := by
+    rw [Finset.sum_eq_single j (fun q _ hq => by simp [hq])
+      (fun h => absurd (Finset.mem_univ j) h)]
+    simp
+  have h2 : (∑ q, (if q = i then a else 0) • b q) = a • b i := by
+    rw [Finset.sum_eq_single i (fun q _ hq => by simp [hq])
+      (fun h => absurd (Finset.mem_univ i) h)]
+    simp
+  rw [h1, h2]
+
+/-- The set of elementary maps between distinct blocks, with every coefficient in `R`. -/
+def flagTransvectionSet (b : Module.Basis ι R M) (block : ι → Fin r) :
+    Set (LinearMap.GeneralLinearGroup R M) :=
+  {g | ∃ (i j : ι) (hij : block i < block j) (a : R), g = basisTransvection b block hij a}
+
+/-- The subgroup generated by the elementary maps between distinct blocks. -/
+def flagTransvectionSubgroup (b : Module.Basis ι R M) (block : ι → Fin r) :
+    Subgroup (LinearMap.GeneralLinearGroup R M) :=
+  Subgroup.closure (flagTransvectionSet b block)
+
+theorem flagTransvectionSet_eq_image (b : Module.Basis ι R M) (block : ι → Fin r) :
+    flagTransvectionSet b block = basisGeneralLinear b '' blockTransvectionSet (R := R) block := by
+  ext g
+  constructor
+  · rintro ⟨i, j, hij, a, rfl⟩
+    exact ⟨blockTransvection block hij a, ⟨i, j, hij, a, rfl⟩, rfl⟩
+  · rintro ⟨A, ⟨i, j, hij, a, rfl⟩, rfl⟩
+    exact ⟨i, j, hij, a, rfl⟩
+
+theorem flagTransvectionSubgroup_eq_map (b : Module.Basis ι R M) (block : ι → Fin r) :
+    flagTransvectionSubgroup b block =
+      (blockTransvectionSubgroup (R := R) block).map (basisGeneralLinear b).toMonoidHom := by
+  simp only [flagTransvectionSubgroup, blockTransvectionSubgroup, flagTransvectionSet_eq_image]
+  exact (MonoidHom.map_closure (basisGeneralLinear b).toMonoidHom
+    (blockTransvectionSet (R := R) block)).symm
+
+/-- In an adapted basis, a linear automorphism preserves the flag exactly when it stabilizes it. -/
+theorem flagPreserves_iff_mem_flagStabilizer (b : Module.Basis ι R M) (block : ι → Fin r)
+    {F : Fin (r + 1) → Submodule R M} (hadapt : BlockAdapted b block F)
+    (A : LinearMap.GeneralLinearGroup R M) :
+    FlagPreserves A.1 F ↔ A ∈ flagStabilizer F := by
+  refine ⟨fun h => (mem_flagStabilizer_iff_preserves_and_inv A).mpr ⟨h, ?_⟩,
+    flagPreserves_of_mem_flagStabilizer⟩
+  have htri : Matrix.BlockTriangular ((basisGeneralLinear b).symm A : Matrix ι ι R) block := by
+    rw [basisGeneralLinear_symm_apply_val]
+    exact (blockTriangular_iff_flagPreserves b block hadapt _).mpr h
+  rw [show A = basisGeneralLinear b ((basisGeneralLinear b).symm A) from
+    (MulEquiv.apply_symm_apply (basisGeneralLinear b) A).symm]
+  exact flagPreserves_basisGeneralLinear_inv b block hadapt htri
+
+/-- The projection of the flag stabilizer to the product of the diagonal general-linear groups of
+the blocks, in an adapted basis. -/
+noncomputable def flagDiagonalHom (b : Module.Basis ι R M) (block : ι → Fin r)
+    {F : Fin (r + 1) → Submodule R M} (hadapt : BlockAdapted b block F) :
+    flagStabilizer F →* ∀ k, Matrix.GeneralLinearGroup (BlockIndex block k) R :=
+  (diagonalHom (R := R) block).comp (flagStabilizerMatrixEquiv b block hadapt).symm.toMonoidHom
+
+/-- The diagonal splitting of that projection: block-diagonal matrices, read in the flag
+stabilizer. -/
+noncomputable def flagDiagonalSection (b : Module.Basis ι R M) (block : ι → Fin r)
+    {F : Fin (r + 1) → Submodule R M} (hadapt : BlockAdapted b block F) :
+    (∀ k, Matrix.GeneralLinearGroup (BlockIndex block k) R) →* flagStabilizer F :=
+  (flagStabilizerMatrixEquiv b block hadapt).toMonoidHom.comp
+    (blockDiagonalSection (R := R) block)
+
+/-- The diagonal projection splits. -/
+theorem flagDiagonalHom_flagDiagonalSection (b : Module.Basis ι R M) (block : ι → Fin r)
+    {F : Fin (r + 1) → Submodule R M} (hadapt : BlockAdapted b block F)
+    (D : ∀ k, Matrix.GeneralLinearGroup (BlockIndex block k) R) :
+    flagDiagonalHom b block hadapt (flagDiagonalSection b block hadapt D) = D := by
+  simp only [flagDiagonalHom, flagDiagonalSection, MonoidHom.comp_apply,
+    MulEquiv.coe_toMonoidHom, MulEquiv.symm_apply_apply]
+  exact diagonalHom_blockDiagonalSection D
+
+/-- The diagonal projection is surjective. -/
+theorem flagDiagonalHom_surjective (b : Module.Basis ι R M) (block : ι → Fin r)
+    {F : Fin (r + 1) → Submodule R M} (hadapt : BlockAdapted b block F) :
+    Function.Surjective (flagDiagonalHom b block hadapt) :=
+  fun D =>
+    ⟨flagDiagonalSection b block hadapt D, flagDiagonalHom_flagDiagonalSection b block hadapt D⟩
+
+/-- The unipotent kernel of the flag stabilizer: the kernel of the graded diagonal projection. -/
+noncomputable def flagUnipotentSubgroup (b : Module.Basis ι R M) (block : ι → Fin r)
+    {F : Fin (r + 1) → Submodule R M} (hadapt : BlockAdapted b block F) :
+    Subgroup (flagStabilizer F) :=
+  (flagDiagonalHom b block hadapt).ker
+
+/-- The unipotent kernel is the image of the block-unipotent kernel along the adapted basis. -/
+theorem flagUnipotentSubgroup_eq_map (b : Module.Basis ι R M) (block : ι → Fin r)
+    {F : Fin (r + 1) → Submodule R M} (hadapt : BlockAdapted b block F) :
+    flagUnipotentSubgroup b block hadapt =
+      (blockUnipotentSubgroup (R := R) block).map
+        (flagStabilizerMatrixEquiv b block hadapt).toMonoidHom := by
+  ext x
+  constructor
+  · intro hx
+    exact ⟨(flagStabilizerMatrixEquiv b block hadapt).symm x, hx,
+      MulEquiv.apply_symm_apply (flagStabilizerMatrixEquiv b block hadapt) x⟩
+  · rintro ⟨A, hA, rfl⟩
+    change flagDiagonalHom b block hadapt (flagStabilizerMatrixEquiv b block hadapt A) = 1
+    simp only [flagDiagonalHom, MonoidHom.comp_apply, MulEquiv.coe_toMonoidHom,
+      MulEquiv.symm_apply_apply]
+    exact hA
+
+/-- The elementary subgroup lies in the flag stabilizer. -/
+theorem flagTransvectionSubgroup_le_flagStabilizer (b : Module.Basis ι R M) (block : ι → Fin r)
+    {F : Fin (r + 1) → Submodule R M} (hadapt : BlockAdapted b block F) :
+    flagTransvectionSubgroup b block ≤ flagStabilizer F := by
+  rw [flagTransvectionSubgroup]
+  refine (Subgroup.closure_le (K := flagStabilizer F)).mpr ?_
+  rintro g ⟨i, j, hij, a, rfl⟩
+  exact basisTransvection_mem_flagStabilizer b block hadapt hij a
+
+/-- The unipotent kernel, viewed in the general linear group, is exactly the subgroup generated
+by the elementary maps `b j ↦ b j + a • b i`, for `i` in an earlier block than `j` and every
+`a : R`. -/
+theorem flagUnipotentSubgroup_map_eq_transvectionSubgroup (b : Module.Basis ι R M)
+    (block : ι → Fin r) {F : Fin (r + 1) → Submodule R M} (hadapt : BlockAdapted b block F) :
+    (flagUnipotentSubgroup b block hadapt).map (flagStabilizer F).subtype =
+      flagTransvectionSubgroup b block := by
+  have hcomp : (flagStabilizer F).subtype.comp
+        (flagStabilizerMatrixEquiv b block hadapt).toMonoidHom =
+      (basisGeneralLinear b).toMonoidHom.comp (blockTriangularSubgroup (R := R) block).subtype := by
+    ext A
+    rfl
+  rw [flagUnipotentSubgroup_eq_map, Subgroup.map_map, hcomp, ← Subgroup.map_map,
+    blockUnipotent_map_eq_blockTransvectionSubgroup, flagTransvectionSubgroup_eq_map]
+
+/-- The unipotent kernel is normal in the flag stabilizer. -/
+theorem flagUnipotentSubgroup_normal (b : Module.Basis ι R M) (block : ι → Fin r)
+    {F : Fin (r + 1) → Submodule R M} (hadapt : BlockAdapted b block F) :
+    (flagUnipotentSubgroup b block hadapt).Normal :=
+  MonoidHom.normal_ker _
+
+/-- The split group extension of the flag stabilizer by its unipotent kernel, with quotient the
+product of the diagonal general-linear groups of the blocks. -/
+noncomputable def flagGroupExtension (b : Module.Basis ι R M) (block : ι → Fin r)
+    {F : Fin (r + 1) → Submodule R M} (hadapt : BlockAdapted b block F) :
+    GroupExtension (flagUnipotentSubgroup b block hadapt) (flagStabilizer F)
+      (∀ k, Matrix.GeneralLinearGroup (BlockIndex block k) R) where
+  inl := (flagUnipotentSubgroup b block hadapt).subtype
+  rightHom := flagDiagonalHom b block hadapt
+  inl_injective := Subtype.coe_injective
+  range_inl_eq_ker_rightHom := (flagUnipotentSubgroup b block hadapt).range_subtype
+  rightHom_surjective := flagDiagonalHom_surjective b block hadapt
+
+/-- The diagonal splitting of the flag stabilizer's extension. -/
+noncomputable def flagSplitting (b : Module.Basis ι R M) (block : ι → Fin r)
+    {F : Fin (r + 1) → Submodule R M} (hadapt : BlockAdapted b block F) :
+    (flagGroupExtension b block hadapt).Splitting where
+  toMonoidHom := flagDiagonalSection b block hadapt
+  rightInverse_rightHom := flagDiagonalHom_flagDiagonalSection b block hadapt
+
+/-- The flag stabilizer is the semidirect product of its unipotent kernel (the normal factor) with
+the product of the diagonal general-linear groups of the blocks. -/
+noncomputable def flagSemidirectEquiv (b : Module.Basis ι R M) (block : ι → Fin r)
+    {F : Fin (r + 1) → Submodule R M} (hadapt : BlockAdapted b block F) :
+    flagUnipotentSubgroup b block hadapt ⋊[(flagSplitting b block hadapt).conjAct]
+        (∀ k, Matrix.GeneralLinearGroup (BlockIndex block k) R) ≃* flagStabilizer F :=
+  (flagSplitting b block hadapt).semidirectProductMulEquiv
+
+/-- A pair `(u, d)` maps to the unipotent part followed by the diagonal section: the unipotent
+factor is on the left of the product. -/
+@[simp] theorem flagSemidirectEquiv_apply (b : Module.Basis ι R M) (block : ι → Fin r)
+    {F : Fin (r + 1) → Submodule R M} (hadapt : BlockAdapted b block F)
+    (u : flagUnipotentSubgroup b block hadapt)
+    (D : ∀ k, Matrix.GeneralLinearGroup (BlockIndex block k) R) :
+    flagSemidirectEquiv b block hadapt ⟨u, D⟩ = u.1 * flagDiagonalSection b block hadapt D :=
+  rfl
+
+/-- The action of the diagonal factor on the unipotent factor is conjugation by the diagonal
+section. -/
+theorem flagSplitting_conjAct_apply (b : Module.Basis ι R M) (block : ι → Fin r)
+    {F : Fin (r + 1) → Submodule R M} (hadapt : BlockAdapted b block F)
+    (D : ∀ k, Matrix.GeneralLinearGroup (BlockIndex block k) R)
+    (u : flagUnipotentSubgroup b block hadapt) :
+    ((flagSplitting b block hadapt).conjAct D u).1 =
+      flagDiagonalSection b block hadapt D * u.1 * (flagDiagonalSection b block hadapt D)⁻¹ := by
+  change (flagGroupExtension b block hadapt).inl
+      ((flagGroupExtension b block hadapt).conjAct (flagDiagonalSection b block hadapt D) u) =
+    flagDiagonalSection b block hadapt D * u.1 * (flagDiagonalSection b block hadapt D)⁻¹
+  exact GroupExtension.inl_conjAct_comm (S := flagGroupExtension b block hadapt)
+    (e := flagDiagonalSection b block hadapt D) (n := u)
+
+/-- Multiplication in the semidirect product: the unipotent factor is normal and the diagonal
+factor acts on it by conjugation. -/
+theorem flagSemidirectProduct_mul (b : Module.Basis ι R M) (block : ι → Fin r)
+    {F : Fin (r + 1) → Submodule R M} (hadapt : BlockAdapted b block F)
+    (u₁ u₂ : flagUnipotentSubgroup b block hadapt)
+    (D₁ D₂ : ∀ k, Matrix.GeneralLinearGroup (BlockIndex block k) R) :
+    (⟨u₁, D₁⟩ * ⟨u₂, D₂⟩ :
+      flagUnipotentSubgroup b block hadapt ⋊[(flagSplitting b block hadapt).conjAct]
+        (∀ k, Matrix.GeneralLinearGroup (BlockIndex block k) R)) =
+      ⟨u₁ * ((flagSplitting b block hadapt).conjAct D₁ u₂), D₁ * D₂⟩ :=
+  SemidirectProduct.mul_def ..
+
+end AdaptedTransport
 
 end LeanCategories.Modules
