@@ -5,7 +5,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import LeanCategories.Lattices.Valued.Sublattice
+public import LeanCategories.Modules.FlagMatrices
 public import Mathlib.LinearAlgebra.FreeModule.PID
+public import Mathlib.LinearAlgebra.Basis.Prod
+public import Mathlib.LinearAlgebra.Projection
 public import Mathlib.Algebra.Module.Projective
 
 /-!
@@ -38,7 +41,7 @@ variable {R : Type u} [CommRing R] {M : Type u} [AddCommGroup M] [Module R M]
 
 /-- Saturation gives projectivity of the quotient: finite torsion-free modules over a PID are free,
 so the quotient is projective. -/
-theorem saturated_projective [IsDomain R] [IsPrincipalIdealRing R] [Module.Finite R M] (N : Submodule R M)
+theorem saturatedProjective [IsDomain R] [IsPrincipalIdealRing R] [Module.Finite R M] (N : Submodule R M)
     (hN : Module.IsTorsionFree R (M ⧸ N)) :
     Module.Projective R (M ⧸ N) := by
   letI : Module.IsTorsionFree R (M ⧸ N) := hN
@@ -48,7 +51,7 @@ theorem saturated_projective [IsDomain R] [IsPrincipalIdealRing R] [Module.Finit
 
 /-- A saturated submodule of a projective quotient admits a complement. The complement is the range
 of a section of `M → M ⧸ N`, so the decomposition is internal to `M`. -/
-theorem exists_saturated_complement (N : Submodule R M)
+theorem existsSaturatedComplement (N : Submodule R M)
     [Module.Projective R (M ⧸ N)] :
     ∃ C : Submodule R M, N ⊔ C = ⊤ ∧ N ⊓ C = ⊥ := by
   obtain ⟨s, hs⟩ := LinearMap.exists_rightInverse_of_surjective N.mkQ
@@ -81,10 +84,10 @@ theorem exists_saturated_complement (N : Submodule R M)
 
 /-- If `P ≤ N` and the quotient by `P` is projective, `P` has a complement inside `N`. This is the
 step used to refine an adapted basis by one inclusion of a saturated flag. -/
-theorem exists_flag_complement (P N : Submodule R M) (hPN : P ≤ N)
+theorem existsFlagComplement (P N : Submodule R M) (hPN : P ≤ N)
     [Module.Projective R (M ⧸ P)] :
     ∃ Q : Submodule R M, P ⊔ Q = N ∧ P ⊓ Q = ⊥ := by
-  obtain ⟨C, htop, hbot⟩ := exists_saturated_complement P
+  obtain ⟨C, htop, hbot⟩ := existsSaturatedComplement P
   refine ⟨N ⊓ C, ?_, ?_⟩
   · apply le_antisymm
     · exact sup_le hPN inf_le_left
@@ -104,5 +107,158 @@ theorem exists_flag_complement (P N : Submodule R M) (hPN : P ≤ N)
     intro x hx
     have hx' : x ∈ P ⊓ C := ⟨hx.1, hx.2.2⟩
     simpa [hbot] using hx'
+
+/-- A family is adapted to a flag when the vectors whose block index is below `k` span exactly the
+`k`-th flag submodule. -/
+def BlockAdapted {ι : Type u} {r : ℕ} (v : ι → M) (block : ι → Fin r)
+    (F : Fin (r + 1) → Submodule R M) : Prop :=
+  ∀ k, F k = Submodule.span R (v '' {i | (block i).castSucc < k})
+
+/-- The equivalence between a complementary pair of submodules and its supremum. -/
+noncomputable def prodEquivOfIsComplSup {P C N : Submodule R M}
+    (hsup : P ⊔ C = N) (hinf : P ⊓ C = ⊥) : (P × C) ≃ₗ[R] N := by
+  let f : P × C →ₗ[R] N :=
+    (P.subtype.coprod C.subtype).codRestrict N (fun x => by
+      rw [← hsup]
+      exact Submodule.mem_sup.mpr ⟨(x.1 : M), x.1.2, (x.2 : M), x.2.2, rfl⟩)
+  refine { f, Equiv.ofBijective f ⟨?_, ?_⟩ with }
+  · intro x y hxy
+    have heq : (x.1 : M) + (x.2 : M) = (y.1 : M) + (y.2 : M) := congrArg Subtype.val hxy
+    have hmem : ((x.1 - y.1 : P) : M) ∈ P ⊓ C := by
+      refine ⟨P.sub_mem x.1.2 y.1.2, ?_⟩
+      have hval : (x.1 - y.1 : M) = -((x.2 - y.2 : M)) := by
+        change (x.1 : M) - (y.1 : M) = -((x.2 : M) - (y.2 : M))
+        calc
+          (x.1 : M) - (y.1 : M) =
+              ((x.1 : M) + (x.2 : M) - ((y.1 : M) + (y.2 : M))) +
+                ((y.2 : M) - (x.2 : M)) := by abel
+          _ = (y.2 : M) - (x.2 : M) := by rw [sub_eq_zero.mpr heq, zero_add]
+          _ = -((x.2 : M) - (y.2 : M)) := by abel
+      change (x.1 - y.1 : M) ∈ C
+      rw [hval]
+      exact C.neg_mem (C.sub_mem x.2.2 y.2.2)
+    have hz : x.1 - y.1 = 0 := by
+      apply Subtype.ext
+      have hzero : ((x.1 - y.1 : P) : M) = 0 := by
+        have hbotmem : ((x.1 - y.1 : P) : M) ∈ (⊥ : Submodule R M) := hinf ▸ hmem
+        simpa using hbotmem
+      exact hzero
+    have hp : x.1 = y.1 := sub_eq_zero.mp hz
+    apply Prod.ext hp
+    apply Subtype.ext
+    have heq' : (x.1 : M) + (x.2 : M) = (x.1 : M) + (y.2 : M) := by
+      calc
+        (x.1 : M) + (x.2 : M) = (y.1 : M) + (y.2 : M) := heq
+        _ = (x.1 : M) + (y.2 : M) := by rw [hp]
+    exact add_left_cancel heq'
+  · intro z
+    have hz : (z : M) ∈ P ⊔ C := by rw [hsup]; exact z.2
+    obtain ⟨p, hp, c, hc, hpc⟩ := Submodule.mem_sup.mp hz
+    exact ⟨(⟨p, hp⟩, ⟨c, hc⟩), Subtype.ext hpc⟩
+
+@[simp] theorem prodEquivOfIsComplSup_apply {P C N : Submodule R M}
+    (hsup : P ⊔ C = N) (hinf : P ⊓ C = ⊥) (x : P × C) :
+    ((prodEquivOfIsComplSup hsup hinf x : N) : M) = (x.1 : M) + (x.2 : M) := by
+  simp [prodEquivOfIsComplSup, LinearEquiv.ofBijective_apply]
+
+/-- Every finite saturated chain of submodules has an adapted basis of its last submodule. -/
+theorem existsAdaptedBasisLast [IsDomain R] [IsPrincipalIdealRing R]
+    [Module.Free R M] [Module.Finite R M] {r : ℕ} (F : Fin (r + 1) → Submodule R M)
+    (hbot : F 0 = ⊥) (hmono : Monotone F)
+    (hsat : ∀ i, Module.IsTorsionFree R (M ⧸ F i)) :
+    ∃ (ι : Type u) (_ : Fintype ι) (block : ι → Fin r) (b : Module.Basis ι R (F (Fin.last r))),
+      BlockAdapted (fun i => (b i : M)) block F := by
+  classical
+  induction r generalizing M with
+  | zero =>
+      have hN : F (Fin.last 0) = ⊥ := by simpa using hbot
+      let e : (⊥ : Submodule R M) ≃ₗ[R] F (Fin.last 0) := LinearEquiv.ofEq _ _ hN.symm
+      refine ⟨ULift.{u} (Fin 0), inferInstance, (fun i => i.down.elim0),
+        (Module.Basis.empty (ι := ULift.{u} (Fin 0)) (⊥ : Submodule R M)).map e, ?_⟩
+      intro k
+      have hk : k = 0 := by omega
+      subst k
+      simp [hbot]
+  | succ r ih =>
+      let N : Submodule R M := F (Fin.last r).castSucc
+      let T : Submodule R M := F (Fin.last (r + 1))
+      let G : Fin (r + 1) → Submodule R M := fun i => F i.castSucc
+      have hGbot : G 0 = ⊥ := hbot
+      have hGmono : Monotone G := fun _ _ hij => hmono (Fin.castSucc_le_castSucc_iff.mpr hij)
+      have hGsat : ∀ i, Module.IsTorsionFree R (M ⧸ G i) := fun i => hsat i.castSucc
+      obtain ⟨ι', hι', block', bN, hNadapt⟩ := ih G hGbot hGmono hGsat
+      letI : Fintype ι' := hι'
+      letI : Module.Projective R (M ⧸ N) := saturatedProjective N (hsat (Fin.last r).castSucc)
+      obtain ⟨C, hNC, hNCinf⟩ := existsFlagComplement N T (hmono (Fin.le_last _))
+      obtain ⟨nC, bC⟩ := Submodule.basisOfPid (Module.Free.chooseBasis R M) C
+      let bc : Module.Basis (ι' ⊕ Fin nC) R T :=
+        (bN.prod bC).map (prodEquivOfIsComplSup hNC hNCinf)
+      let block : ι' ⊕ Fin nC → Fin (r + 1) :=
+        Sum.elim (fun i => (block' i).castSucc) (fun _ => Fin.last r)
+      have hbc_inl (i : ι') : bc (Sum.inl i) = (bN i : M) := by
+        simp [bc]
+      have hbc_inr (j : Fin nC) : bc (Sum.inr j) = (bC j : M) := by
+        simp [bc]
+      refine ⟨ι' ⊕ Fin nC, inferInstance, block, bc, ?_⟩
+      intro k
+      by_cases hk : k = Fin.last (r + 1)
+      · subst k
+        have hsel : {i | (block i).castSucc < Fin.last (r + 1)} = Set.univ := by
+          ext i
+          simp only [Set.mem_setOf_eq, Set.mem_univ, iff_true]
+          cases i with
+          | inl i => exact Fin.castSucc_lt_last _
+          | inr j => exact Fin.castSucc_lt_last _
+        change T = Submodule.span R
+          ((fun i => (bc i : M)) '' {i | (block i).castSucc < Fin.last (r + 1)})
+        rw [hsel, Set.image_univ,
+          show (fun i => (bc i : M)) = T.subtype ∘ bc from rfl, Set.range_comp,
+          Submodule.span_image, bc.span_eq, Submodule.map_subtype_top]
+      · have hklt : k < Fin.last (r + 1) := Fin.lt_last_iff_ne_last.mpr hk
+        let k' : Fin (r + 1) := ⟨k.val, hklt⟩
+        have hk' : k'.castSucc = k := by ext; rfl
+        have hsets : (fun i => (bc i : M)) '' {i | (block i).castSucc < k} =
+            (fun i => (bN i : M)) '' {i | (block' i).castSucc < k'} := by
+          ext x
+          constructor
+          · rintro ⟨i, hi, rfl⟩
+            cases i with
+            | inl i =>
+                have hi' : (block' i).castSucc.castSucc < k := by simpa [block] using hi
+                refine ⟨i, ?_, (hbc_inl i).symm⟩
+                change (block' i).castSucc < k'
+                have hi'' : (block' i).castSucc.castSucc < k'.castSucc := by
+                  rw [hk']
+                  exact hi'
+                exact Fin.castSucc_lt_castSucc_iff.mpr hi''
+            | inr j =>
+                have hlast : (Fin.last r).castSucc < k := by simpa [block] using hi
+                exact (not_le_of_gt hklt hlast).elim
+          · rintro ⟨i, hi, rfl⟩
+            refine ⟨Sum.inl i, ?_, hbc_inl i⟩
+            change (block' i).castSucc.castSucc < k
+            rw [← hk']
+            exact Fin.castSucc_lt_castSucc_iff.mpr hi
+        change F k = Submodule.span R ((fun i => (bc i : M)) '' {i | (block i).castSucc < k})
+        calc
+          F k = G k' := by
+            change F k = F k'.castSucc
+            rw [hk']
+          _ = Submodule.span R ((fun i => (bN i : M)) '' {i | (block' i).castSucc < k'}) :=
+            hNadapt k'
+          _ = Submodule.span R ((fun i => (bc i : M)) '' {i | (block i).castSucc < k}) := by
+            rw [← hsets]
+
+/-- Over a PID, every strict saturated finite flag of a finite free module has an adapted basis. -/
+theorem existsAdaptedBasis [IsDomain R] [IsPrincipalIdealRing R]
+    [Module.Free R M] [Module.Finite R M] {r : ℕ} (F : Fin (r + 1) → Submodule R M)
+    (hbot : F 0 = ⊥) (htop : F (Fin.last r) = ⊤) (hmono : Monotone F)
+    (_hstrict : StrictMono F)
+    (hsat : ∀ i, Module.IsTorsionFree R (M ⧸ F i)) :
+    ∃ (ι : Type u) (_ : Fintype ι) (block : ι → Fin r) (b : Module.Basis ι R M),
+      BlockAdapted b block F := by
+  obtain ⟨ι, hι, block, b, hadapt⟩ := existsAdaptedBasisLast F hbot hmono hsat
+  letI : Fintype ι := hι
+  exact ⟨ι, hι, block, b.map (LinearEquiv.ofTop (F (Fin.last r)) htop), hadapt⟩
 
 end LeanCategories.Modules
