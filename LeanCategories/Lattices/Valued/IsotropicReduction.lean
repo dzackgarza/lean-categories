@@ -6,6 +6,7 @@ module
 
 public import LeanCategories.Modules.Bilinear.Valued.Witt
 public import LeanCategories.Modules.Bilinear.Valued.OrthogonalGroup
+public import LeanCategories.Lattices.Valued.PrimitiveReduction
 public import LeanCategories.Modules.Flags
 public import Mathlib.LinearAlgebra.BilinearForm.Orthogonal
 public import Mathlib.LinearAlgebra.Quotient.Basic
@@ -58,9 +59,12 @@ structure IsotropicReductionData (L : IntegralLatticeCat R) where
   submodule : Submodule R L.obj.carrier
   /-- The submodule is totally isotropic. -/
   isotropic : L.obj.IsTotallyIsotropic submodule
-  /-- The radical of the restriction to the orthogonal is exactly the submodule. -/
-  radical_le : L.obj.orthogonalSubmodule submodule ⊓
-    L.obj.orthogonalSubmodule (L.obj.orthogonalSubmodule submodule) ≤ submodule
+  /-- The submodule is primitive: its quotient is torsion-free. -/
+  primitive : IsPrimitiveSubmodule submodule
+  /-- The lattice is nondegenerate. -/
+  nondegenerate : L.obj.IsNondegenerate
+  /-- The carrier has finite rank. -/
+  finite : Module.Finite R L.obj.carrier
 
 namespace IsotropicReductionData
 
@@ -72,6 +76,15 @@ def perp : Submodule R L.obj.carrier :=
 
 theorem submodule_le_perp : D.submodule ≤ D.perp :=
   D.isotropic
+
+
+/-- Primitive totally isotropic submodules derive the radical equality from primitivity and
+nondegeneracy, rather than assuming it. -/
+theorem radical_le (D : IsotropicReductionData L) [IsDomain R]
+    {x : L.obj.carrier}
+    (hx : x ∈ D.perp ⊓ L.obj.orthogonalSubmodule D.perp) : x ∈ D.submodule := by
+  letI : Module.Finite R L.obj.carrier := D.finite
+  exact mem_primitive_of_isotropic_orthogonal_orthogonal L D.nondegenerate D.primitive hx.1 hx.2
 
 /-- The submodule `P` as a submodule of `P^⊥`, i.e. the kernel of the quotient map onto the
 reduction. -/
@@ -137,7 +150,7 @@ theorem reduction_isSymmetric (hL : L.obj.IsSymmetric) :
 
 /-- The reduced form is nondegenerate: this is exactly the hypothesis that `P` is the radical of
 the restricted form. -/
-theorem reduction_isNondegenerate (hL : L.obj.IsSymmetric) :
+theorem reduction_isNondegenerate [IsDomain R] (hL : L.obj.IsSymmetric) :
     (D.reduction hL).IsNondegenerate := by
   refine ((D.reduction hL).isNondegenerate_iff_adjoint_injective_of_isSymmetric
     (D.reduction_isSymmetric hL)).mpr ?_
