@@ -797,7 +797,7 @@ theorem flagRestrict_mem_flagGradedKernel {F : Fin (r + 1) → Submodule R M}
 noncomputable def flagGradedMap {F : Fin (r + 1) → Submodule R M} (A : flagStabilizer F)
     (k : Fin r) : flagGradedPiece F k →ₗ[R] flagGradedPiece F k :=
   Submodule.mapQ (flagGradedKernel F k) (flagGradedKernel F k) (flagRestrict A k)
-    (fun x hx => flagRestrict_mem_flagGradedKernel A k hx)
+    (fun _ hx => flagRestrict_mem_flagGradedKernel A k hx)
 
 /-- A flag-stabilizing automorphism acts invertibly on each graded piece. -/
 noncomputable def flagGradedEquiv {F : Fin (r + 1) → Submodule R M} (A : flagStabilizer F)
@@ -860,7 +860,7 @@ noncomputable def flagUnipotentCore (F : Fin (r + 1) → Submodule R M) :
     {A | ∀ (k : Fin r) (x : M), x ∈ F k.succ → (A.1 : M →ₗ[R] M) x - x ∈ F k.castSucc}
   one_mem' := by
     intro k x _
-    simpa using (F k.castSucc).zero_mem
+    simp
   mul_mem' := by
     intro A B hA hB k x hx
     have hBx : (B.1 : M →ₗ[R] M) x ∈ F k.succ :=
@@ -884,7 +884,8 @@ noncomputable def flagUnipotentCore (F : Fin (r + 1) → Submodule R M) :
       flagPreserves_of_mem_flagStabilizer (inv_mem A.2) k.succ x hx
     have h2 := hA k (((A⁻¹).1 : M →ₗ[R] M) x) hx'
     have heq : ((A⁻¹ : flagStabilizer F).1 : M →ₗ[R] M) x - x =
-        -((A.1 : M →ₗ[R] M) (((A⁻¹).1 : M →ₗ[R] M) x) - ((A⁻¹).1 : M →ₗ[R] M) x) := by
+        -((A.1 : M →ₗ[R] M) (((A⁻¹).1 : M →ₗ[R] M) x) -
+          ((A⁻¹).1 : M →ₗ[R] M) x) := by
       rw [show (A.1 : M →ₗ[R] M) (((A⁻¹).1 : M →ₗ[R] M) x) = x from
         GeneralLinearGroup.apply_inv_apply A.1 x]
       abel
@@ -969,8 +970,8 @@ theorem toMatrix_column_sub (b : Module.Basis ι R M) {F : Fin (r + 1) → Submo
   rw [h1, h2, ← Finset.sum_sub_distrib]
   exact Finset.sum_congr rfl (fun l _ => by rw [sub_smul])
 
-/-- A block-diagonal matrix, in an adapted basis, moves every stage into the previous one: it acts as
-the identity on each graded piece. -/
+/-- A block-diagonal matrix, in an adapted basis, moves every stage into the previous one: it
+acts as the identity on each graded piece. -/
 theorem blockDiagonalUnitary_mem_flagUnipotentCore (b : Module.Basis ι R M) (block : ι → Fin r)
     {F : Fin (r + 1) → Submodule R M} (hadapt : BlockAdapted b block F)
     {A : flagStabilizer F}
@@ -1007,7 +1008,7 @@ theorem blockDiagonalUnitary_mem_flagUnipotentCore (b : Module.Basis ι R M) (bl
         rcases lt_or_gt_of_ne (Ne.symm hlj) with hlt | hlt
         · exact htri (i := l) (j := j) hlt
         · exact absurd (Fin.castSucc_lt_castSucc_iff.mpr (by
-            show (block l).val < k.val
+            change (block l).val < k.val
             have hj' : (block j).val < k.val + 1 := hj
             have hl' : (block l).val < (block j).val := hlt
             omega)) hl
@@ -1033,7 +1034,7 @@ theorem mem_flagUnipotentCore_blockDiagonalUnitary (b : Module.Basis ι R M) (bl
       rw [hij]
       exact Fin.castSucc_lt_castSucc_iff.mp hl
     have hne : i ≠ l := fun h => absurd (h ▸ hli) (lt_irrefl _)
-    simp [Module.Basis.coord_apply, Finsupp.single_apply, hne]
+    simp [Module.Basis.coord_apply, hne]
   have hzero : (b.coord i) ((A.1 : M →ₗ[R] M) (b j) - b j) = 0 := hker hmem
   rw [map_sub] at hzero
   have hbj : (b.coord i) (b j) = (if i = j then (1 : R) else 0) := by

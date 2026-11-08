@@ -304,5 +304,7 @@ public import LeanCategories.Lattices.Valued.CuspVector
 public import LeanCategories.Lattices.Valued.CuspHomFibre
 public import LeanCategories.Lattices.Valued.CuspWorkedInstance
 public import LeanCategories.Lattices.Valued.D8Gluing
+public import LeanCategories.Modules.Flags
+public import LeanCategories.Lattices.Valued.FlagParabolic
 
 @[expose] public section
