@@ -310,5 +310,6 @@ public import LeanCategories.Lattices.Valued.IsotropicReduction
 public import LeanCategories.Lattices.Valued.PrimitiveReduction
 public import LeanCategories.Lattices.Valued.EvenReduction
 public import LeanCategories.Lattices.Valued.DiscriminantIsotropic
+public import LeanCategories.Lattices.Valued.DiscriminantQuotient
 
 @[expose] public section
