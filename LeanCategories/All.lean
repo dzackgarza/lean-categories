@@ -311,5 +311,6 @@ public import LeanCategories.Lattices.Valued.PrimitiveReduction
 public import LeanCategories.Lattices.Valued.EvenReduction
 public import LeanCategories.Lattices.Valued.DiscriminantIsotropic
 public import LeanCategories.Lattices.Valued.DiscriminantQuotient
+public import LeanCategories.Lattices.Valued.QuadraticSubquotient
 
 @[expose] public section
