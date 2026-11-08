@@ -5,6 +5,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import LeanCategories.Lattices.Valued.DiscriminantIsotropic
+public import LeanCategories.Lattices.Valued.DiscriminantQuotient
 public import LeanCategories.Lattices.Valued.DiscriminantQuadratic
 public import LeanCategories.Lattices.Valued.EvenGluing
 public import Mathlib.LinearAlgebra.QuadraticForm.Radical
@@ -28,8 +29,8 @@ The main results here are
   `D^⊥` lies in the radical of the restricted quadratic map modulo `D`, so it descends to a genuine
   quadratic form on the subquotient `D^⊥/D`;
 * `isotropicSubquotientQuadraticMap` and `isotropicSubquotientQuadModule`: the descended quadratic
-  form and the quadratic module it defines (the discriminant of `Q = P^⊥/P`, in the only way the
-  discriminant of a quotient of an isotropic reduction can be reached from `A_L`);
+  form and quadratic module of this subquotient. Identifying it with the discriminant of
+  `Q = P^⊥/P` is the separate theorem still to be proved, not the construction itself;
 * `isotropicSubquotientQuadraticMap_polar`: the polarization of the descended form is the
   discriminant bilinear form of `L` restricted to `D^⊥/D`, transported along `doubleValueMap`;
 * `isotropicSubquotientQuadraticMap_mk_metricDualToDiscriminant`: the value on the class of a
@@ -63,11 +64,12 @@ theorem discriminantBilinObject_pairing (L : IntegralLatticeCat R)
     (discriminantBilinObject R L hL).pairing x y = discriminantBilinMap R L hL x y :=
   rfl
 
-/-- The orthogonal complement in `A_L` of the intrinsic discriminant subgroup `D`. -/
-noncomputable def isotropicDiscriminantOrthogonal (L : IntegralLatticeCat R)
+/-- The orthogonal complement in `A_L` of the intrinsic discriminant subgroup `D`, through the
+shared owner `isotropicDiscriminantPerp` already in `DiscriminantQuotient`. -/
+noncomputable abbrev isotropicDiscriminantOrthogonal (L : IntegralLatticeCat R)
     (hL : IsFractionFieldPerfect R L) (P : Submodule R L.obj.carrier) :
     Submodule R L.obj.defect :=
-  (discriminantBilinObject R L hL).orthogonalSubmodule (isotropicDiscriminant L hL P)
+  isotropicDiscriminantPerp L hL P
 
 /-- `D` viewed as a submodule of its own orthogonal complement. -/
 noncomputable def isotropicDiscriminantInOrthogonal (L : IntegralLatticeCat R)
@@ -144,8 +146,8 @@ theorem isotropicDiscriminant_le_radical (L : IntegralLatticeCat R)
     rw [hzero, map_zero]
 
 
-/-- The descended quadratic refinement on `D^⊥/D`: the discriminant quadratic form of the
-isotropic reduction, formed inside the discriminant of `L`. -/
+/-- The descended quadratic refinement on `D^⊥/D`: the quadratic form of a subquotient inside
+`A_L`; identifying it with the discriminant of `Q = P^⊥/P` is a separate theorem. -/
 noncomputable def isotropicSubquotientQuadraticMap (L : IntegralLatticeCat R)
     (hL : IsFractionFieldPerfect R L) (hEven : IsEven L)
     (P : Submodule R L.obj.carrier) (hP : L.obj.IsTotallyIsotropic P) :
@@ -218,7 +220,7 @@ theorem isotropicSubquotientQuadraticMap_add (L : IntegralLatticeCat R)
       from QuadraticMap.map_add _ _ _,
     isotropicSubquotientQuadraticMap_polar]
 
-/-- The quadratic module `D^⊥/D`: the discriminant quadratic form of the isotropic reduction. -/
+/-- The quadratic module of the discriminant subquotient `D^⊥/D`. -/
 noncomputable def isotropicSubquotientQuadModule (L : IntegralLatticeCat R)
     (hL : IsFractionFieldPerfect R L) (hEven : IsEven L)
     (P : Submodule R L.obj.carrier) (hP : L.obj.IsTotallyIsotropic P) :
@@ -404,8 +406,8 @@ theorem isotropicSubquotientBilinObject_isSymmetric (L : IntegralLatticeCat R)
   exact isotropicSubquotientBilinMap_isSymmetric L hL P x y
 
 /-- **Form preservation.** The polarization of the descended quadratic refinement on `D^⊥/D` is the
-descended discriminant bilinear form of `L`, transported along `doubleValueMap`: the quadratic and
-bilinear discriminant forms of the isotropic reduction agree on the subquotient. -/
+descended discriminant bilinear form of `L`, transported along `doubleValueMap`: the two descended
+forms agree on this discriminant subquotient. -/
 theorem polar_isotropicSubquotientQuadraticMap (L : IntegralLatticeCat R)
     (hL : IsFractionFieldPerfect R L) (hEven : IsEven L)
     (P : Submodule R L.obj.carrier) (hP : L.obj.IsTotallyIsotropic P)
