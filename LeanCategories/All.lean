@@ -306,5 +306,6 @@ public import LeanCategories.Lattices.Valued.CuspWorkedInstance
 public import LeanCategories.Lattices.Valued.D8Gluing
 public import LeanCategories.Modules.Flags
 public import LeanCategories.Lattices.Valued.FlagParabolic
+public import LeanCategories.Lattices.Valued.IsotropicReduction
 
 @[expose] public section
