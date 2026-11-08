@@ -767,4 +767,311 @@ theorem flagSemidirectProduct_mul (b : Module.Basis ι R M) (block : ι → Fin 
 
 end AdaptedTransport
 
+section GradedPieces
+
+/-- The submodule of the `(k+1)`-st stage cut out by the `k`-th stage: the kernel of the quotient
+map onto the `k`-th graded piece. -/
+def flagGradedKernel (F : Fin (r + 1) → Submodule R M) (k : Fin r) :
+    Submodule R ↥(F k.succ) :=
+  Submodule.comap (F k.succ).subtype (F k.castSucc)
+
+/-- The `k`-th graded piece of a flag, `F_{k+1} / F_k`. -/
+abbrev flagGradedPiece (F : Fin (r + 1) → Submodule R M) (k : Fin r) : Type u :=
+  ↥(F k.succ) ⧸ flagGradedKernel F k
+
+/-- A flag-stabilizing automorphism restricts to the `(k+1)`-st stage. -/
+noncomputable def flagRestrict {F : Fin (r + 1) → Submodule R M} (A : flagStabilizer F)
+    (k : Fin r) : ↥(F k.succ) →ₗ[R] ↥(F k.succ) where
+  toFun x := ⟨(A.1 : M →ₗ[R] M) x,
+    flagPreserves_of_mem_flagStabilizer A.2 k.succ x x.2⟩
+  map_add' := fun _ _ => by ext; simp
+  map_smul' := fun _ _ => by ext; simp
+
+/-- The restriction carries the `k`-th stage into itself. -/
+theorem flagRestrict_mem_flagGradedKernel {F : Fin (r + 1) → Submodule R M}
+    (A : flagStabilizer F) (k : Fin r) {x : ↥(F k.succ)} (hx : x ∈ flagGradedKernel F k) :
+    flagRestrict A k x ∈ flagGradedKernel F k :=
+  flagPreserves_of_mem_flagStabilizer A.2 k.castSucc (x : M) hx
+
+/-- The endomorphism of the `k`-th graded piece induced by a flag-stabilizing automorphism. -/
+noncomputable def flagGradedMap {F : Fin (r + 1) → Submodule R M} (A : flagStabilizer F)
+    (k : Fin r) : flagGradedPiece F k →ₗ[R] flagGradedPiece F k :=
+  Submodule.mapQ (flagGradedKernel F k) (flagGradedKernel F k) (flagRestrict A k)
+    (fun x hx => flagRestrict_mem_flagGradedKernel A k hx)
+
+/-- A flag-stabilizing automorphism acts invertibly on each graded piece. -/
+noncomputable def flagGradedEquiv {F : Fin (r + 1) → Submodule R M} (A : flagStabilizer F)
+    (k : Fin r) : flagGradedPiece F k ≃ₗ[R] flagGradedPiece F k := by
+  have hleft : ∀ y : ↥(F k.succ), flagRestrict A⁻¹ k (flagRestrict A k y) = y := by
+    intro y
+    ext
+    exact GeneralLinearGroup.inv_apply_apply A.1 y
+  have hright : ∀ y : ↥(F k.succ), flagRestrict A k (flagRestrict A⁻¹ k y) = y := by
+    intro y
+    ext
+    exact GeneralLinearGroup.apply_inv_apply A.1 y
+  refine
+    { toLinearMap := flagGradedMap A k
+      invFun := flagGradedMap A⁻¹ k
+      left_inv := ?_
+      right_inv := ?_ }
+  · intro x
+    induction x using Submodule.Quotient.induction_on with
+    | _ y =>
+      change flagGradedMap A⁻¹ k (flagGradedMap A k (Submodule.Quotient.mk y)) =
+        Submodule.Quotient.mk y
+      simp only [flagGradedMap, Submodule.mapQ_apply, hleft]
+  · intro x
+    induction x using Submodule.Quotient.induction_on with
+    | _ y =>
+      change flagGradedMap A k (flagGradedMap A⁻¹ k (Submodule.Quotient.mk y)) =
+        Submodule.Quotient.mk y
+      simp only [flagGradedMap, Submodule.mapQ_apply, hright]
+
+/-- The projection of the flag stabilizer to the product of the general linear groups of the graded
+pieces `F_{k+1} / F_k`. -/
+noncomputable def flagGradedHom (F : Fin (r + 1) → Submodule R M) :
+    flagStabilizer F →* ∀ k, (flagGradedPiece F k ≃ₗ[R] flagGradedPiece F k) where
+  toFun A k := flagGradedEquiv A k
+  map_one' := by
+    funext k
+    ext x
+    induction x using Submodule.Quotient.induction_on with
+    | _ y =>
+      change flagGradedMap (1 : flagStabilizer F) k (Submodule.Quotient.mk y) =
+        Submodule.Quotient.mk y
+      simp only [flagGradedMap, Submodule.mapQ_apply]
+      congr 1
+  map_mul' A B := by
+    funext k
+    ext x
+    induction x using Submodule.Quotient.induction_on with
+    | _ y =>
+      change flagGradedMap (A * B) k (Submodule.Quotient.mk y) =
+        flagGradedMap A k (flagGradedMap B k (Submodule.Quotient.mk y))
+      simp only [flagGradedMap, Submodule.mapQ_apply]
+      congr 1
+
+/-- The intrinsic unipotent core of the flag stabilizer: automorphisms acting as the identity on
+every graded piece `F_{k+1}/F_k`, equivalently moving each stage into the previous one. -/
+noncomputable def flagUnipotentCore (F : Fin (r + 1) → Submodule R M) :
+    Subgroup (flagStabilizer F) where
+  carrier :=
+    {A | ∀ (k : Fin r) (x : M), x ∈ F k.succ → (A.1 : M →ₗ[R] M) x - x ∈ F k.castSucc}
+  one_mem' := by
+    intro k x _
+    simpa using (F k.castSucc).zero_mem
+  mul_mem' := by
+    intro A B hA hB k x hx
+    have hBx : (B.1 : M →ₗ[R] M) x ∈ F k.succ :=
+      flagPreserves_of_mem_flagStabilizer B.2 k.succ x hx
+    have h1 := hA k ((B.1 : M →ₗ[R] M) x) hBx
+    have h2 := hB k x hx
+    have hmul : ((A * B : flagStabilizer F).1 : M →ₗ[R] M) =
+        (A.1 : M →ₗ[R] M) ∘ₗ (B.1 : M →ₗ[R] M) := by
+      rw [show (A * B : flagStabilizer F).1 = A.1 * B.1 from rfl]
+      exact GeneralLinearGroup.coe_mul_eq_comp A.1 B.1
+    rw [hmul, LinearMap.comp_apply]
+    have heq : (A.1 : M →ₗ[R] M) ((B.1 : M →ₗ[R] M) x) - x =
+        ((A.1 : M →ₗ[R] M) ((B.1 : M →ₗ[R] M) x) - (B.1 : M →ₗ[R] M) x) +
+          ((B.1 : M →ₗ[R] M) x - x) := by
+      abel
+    rw [heq]
+    exact Submodule.add_mem _ h1 h2
+  inv_mem' := by
+    intro A hA k x hx
+    have hx' : ((A⁻¹).1 : M →ₗ[R] M) x ∈ F k.succ :=
+      flagPreserves_of_mem_flagStabilizer (inv_mem A.2) k.succ x hx
+    have h2 := hA k (((A⁻¹).1 : M →ₗ[R] M) x) hx'
+    have heq : ((A⁻¹ : flagStabilizer F).1 : M →ₗ[R] M) x - x =
+        -((A.1 : M →ₗ[R] M) (((A⁻¹).1 : M →ₗ[R] M) x) - ((A⁻¹).1 : M →ₗ[R] M) x) := by
+      rw [show (A.1 : M →ₗ[R] M) (((A⁻¹).1 : M →ₗ[R] M) x) = x from
+        GeneralLinearGroup.apply_inv_apply A.1 x]
+      abel
+    rw [heq]
+    exact Submodule.neg_mem _ h2
+
+/-- The graded endomorphism is the identity exactly when the automorphism moves each stage into the
+previous one. -/
+theorem flagGradedMap_eq_id_iff {F : Fin (r + 1) → Submodule R M} (A : flagStabilizer F)
+    (k : Fin r) :
+    flagGradedMap A k = LinearMap.id ↔
+      ∀ x : M, x ∈ F k.succ → (A.1 : M →ₗ[R] M) x - x ∈ F k.castSucc := by
+  constructor
+  · intro h x hx
+    have hq := LinearMap.congr_fun h (Submodule.Quotient.mk (⟨x, hx⟩ : ↥(F k.succ)))
+    have hq' : Submodule.Quotient.mk (p := flagGradedKernel F k) (flagRestrict A k ⟨x, hx⟩) =
+        Submodule.Quotient.mk (p := flagGradedKernel F k) (⟨x, hx⟩ : ↥(F k.succ)) := by
+      simpa [flagGradedMap] using hq
+    have hmem := (Submodule.Quotient.eq (p := flagGradedKernel F k)).mp hq'
+    simpa [flagGradedKernel, flagRestrict] using hmem
+  · intro h
+    refine LinearMap.ext fun x => ?_
+    induction x using Submodule.Quotient.induction_on with
+    | _ y =>
+      have hmem : flagRestrict A k y - y ∈ flagGradedKernel F k := by
+        change ((flagRestrict A k y : ↥(F k.succ)) : M) - (y : M) ∈ F k.castSucc
+        simpa [flagRestrict] using h (y : M) y.2
+      have hq : Submodule.Quotient.mk (p := flagGradedKernel F k) (flagRestrict A k y) =
+          Submodule.Quotient.mk (p := flagGradedKernel F k) y :=
+        (Submodule.Quotient.eq (p := flagGradedKernel F k)).mpr hmem
+      change flagGradedMap A k (Submodule.Quotient.mk y) = Submodule.Quotient.mk y
+      simpa [flagGradedMap] using hq
+
+/-- A flag-stabilizing automorphism acts as the identity on the `k`-th graded piece exactly when it
+moves the `(k+1)`-st stage into the `k`-th. -/
+theorem flagGradedEquiv_eq_one_iff {F : Fin (r + 1) → Submodule R M} (A : flagStabilizer F)
+    (k : Fin r) :
+    flagGradedEquiv A k = 1 ↔
+      ∀ x : M, x ∈ F k.succ → (A.1 : M →ₗ[R] M) x - x ∈ F k.castSucc := by
+  refine ⟨fun h => (flagGradedMap_eq_id_iff A k).mp ?_, fun h => ?_⟩
+  · rw [show flagGradedMap A k = (flagGradedEquiv A k).toLinearMap from rfl, h]
+    rfl
+  · ext x
+    have hmap : flagGradedMap A k = LinearMap.id := (flagGradedMap_eq_id_iff A k).mpr h
+    rw [show (flagGradedEquiv A k) x = flagGradedMap A k x from rfl, hmap]
+    rfl
+
+/-- The kernel of the graded projection is the intrinsic unipotent core. -/
+theorem flagUnipotentCore_eq_ker (F : Fin (r + 1) → Submodule R M) :
+    flagUnipotentCore F = (flagGradedHom F).ker := by
+  ext A
+  constructor
+  · intro hA
+    funext k
+    exact (flagGradedEquiv_eq_one_iff A k).mpr (hA k)
+  · intro hA k x hx
+    have hk : flagGradedEquiv A k = 1 := by
+      simpa [flagGradedHom] using congrFun hA k
+    exact (flagGradedEquiv_eq_one_iff A k).mp hk x hx
+
+end GradedPieces
+
+section AdaptedGraded
+
+variable {ι : Type u} [Fintype ι] [DecidableEq ι]
+
+/-- The representation of an element of a stage: its coordinates in the basis, minus the basis
+vector itself. -/
+theorem toMatrix_column_sub (b : Module.Basis ι R M) {F : Fin (r + 1) → Submodule R M}
+    {A : flagStabilizer F} (c : ι) :
+    (A.1 : M →ₗ[R] M) (b c) - b c =
+      ∑ l, (LinearMap.toMatrix b b (A.1 : M →ₗ[R] M) l c -
+        (if l = c then (1 : R) else 0)) • b l := by
+  have h1 : (A.1 : M →ₗ[R] M) (b c) =
+      ∑ l, LinearMap.toMatrix b b (A.1 : M →ₗ[R] M) l c • b l := by
+    conv_lhs => rw [← Matrix.toLin_toMatrix b b (A.1 : M →ₗ[R] M)]
+    rw [toLin_basis_apply]
+  have h2 : b c = ∑ l, (if l = c then (1 : R) else 0) • b l := by
+    rw [Finset.sum_eq_single c (fun q _ hq => by simp [hq])
+      (fun h => absurd (Finset.mem_univ c) h)]
+    simp
+  rw [h1, h2, ← Finset.sum_sub_distrib]
+  exact Finset.sum_congr rfl (fun l _ => by rw [sub_smul])
+
+/-- A block-diagonal matrix, in an adapted basis, moves every stage into the previous one: it acts as
+the identity on each graded piece. -/
+theorem blockDiagonalUnitary_mem_flagUnipotentCore (b : Module.Basis ι R M) (block : ι → Fin r)
+    {F : Fin (r + 1) → Submodule R M} (hadapt : BlockAdapted b block F)
+    {A : flagStabilizer F}
+    (hU : BlockDiagonalUnitary (LinearMap.toMatrix b b (A.1 : M →ₗ[R] M)) block) :
+    A ∈ flagUnipotentCore F := by
+  have htri : Matrix.BlockTriangular (LinearMap.toMatrix b b (A.1 : M →ₗ[R] M)) block :=
+    (blockTriangular_iff_flagPreserves b block hadapt _).mpr
+      (flagPreserves_of_mem_flagStabilizer A.2)
+  intro k x hx
+  rw [hadapt k.succ] at hx
+  rw [hadapt k.castSucc]
+  refine Submodule.span_induction
+    (p := fun x _ => (A.1 : M →ₗ[R] M) x - x ∈
+      Submodule.span R (b '' {l | (block l).castSucc < k.castSucc}))
+    ?_ (by simp) (fun x y _ _ hx hy => by
+      rw [map_add, add_sub_add_comm]
+      exact Submodule.add_mem _ hx hy) (fun a x _ hx => by
+      rw [map_smul, ← smul_sub]
+      exact Submodule.smul_mem _ a hx) hx
+  rintro _ ⟨j, hj, rfl⟩
+  rw [toMatrix_column_sub b j]
+  refine Submodule.sum_mem _ (fun l _ => ?_)
+  by_cases hl : (block l).castSucc < k.castSucc
+  · exact Submodule.smul_mem _ _ (Submodule.subset_span ⟨l, hl, rfl⟩)
+  · have hzero : LinearMap.toMatrix b b (A.1 : M →ₗ[R] M) l j -
+        (if l = j then (1 : R) else 0) = 0 := by
+      by_cases hlj : block l = block j
+      · have hdiag : LinearMap.toMatrix b b (A.1 : M →ₗ[R] M) l j = (1 : Matrix ι ι R) l j :=
+          hU l j hlj
+        rw [hdiag, Matrix.one_apply]
+        by_cases h : l = j <;> simp [h]
+      · have hne : l ≠ j := fun h => hlj (congrArg block h)
+        rw [if_neg hne, sub_zero]
+        rcases lt_or_gt_of_ne (Ne.symm hlj) with hlt | hlt
+        · exact htri (i := l) (j := j) hlt
+        · exact absurd (Fin.castSucc_lt_castSucc_iff.mpr (by
+            show (block l).val < k.val
+            have hj' : (block j).val < k.val + 1 := hj
+            have hl' : (block l).val < (block j).val := hlt
+            omega)) hl
+    rw [hzero, zero_smul]
+    exact Submodule.zero_mem _
+
+/-- An automorphism acting as the identity on every graded piece has block-diagonal matrix in an
+adapted basis. -/
+theorem mem_flagUnipotentCore_blockDiagonalUnitary (b : Module.Basis ι R M) (block : ι → Fin r)
+    {F : Fin (r + 1) → Submodule R M} (hadapt : BlockAdapted b block F)
+    {A : flagStabilizer F} (hA : A ∈ flagUnipotentCore F) :
+    BlockDiagonalUnitary (LinearMap.toMatrix b b (A.1 : M →ₗ[R] M)) block := by
+  intro i j hij
+  have hjmem : b j ∈ F (block j).succ := by
+    rw [hadapt (block j).succ]
+    exact Submodule.subset_span ⟨j, Fin.castSucc_lt_succ, rfl⟩
+  have hmem := hA (block j) (b j) hjmem
+  have hker : F (block j).castSucc ≤ LinearMap.ker (b.coord i) := by
+    rw [hadapt (block j).castSucc]
+    refine Submodule.span_le.mpr ?_
+    rintro _ ⟨l, hl, rfl⟩
+    have hli : block l < block i := by
+      rw [hij]
+      exact Fin.castSucc_lt_castSucc_iff.mp hl
+    have hne : i ≠ l := fun h => absurd (h ▸ hli) (lt_irrefl _)
+    simp [Module.Basis.coord_apply, Finsupp.single_apply, hne]
+  have hzero : (b.coord i) ((A.1 : M →ₗ[R] M) (b j) - b j) = 0 := hker hmem
+  rw [map_sub] at hzero
+  have hbj : (b.coord i) (b j) = (if i = j then (1 : R) else 0) := by
+    rw [Module.Basis.coord_apply, Module.Basis.repr_self]
+    by_cases h : i = j
+    · subst h
+      simp
+    · rw [if_neg h, Finsupp.single_eq_of_ne h]
+  rw [LinearMap.toMatrix_apply, Matrix.one_apply, ← hbj]
+  exact sub_eq_zero.mp hzero
+
+/-- In an adapted basis, the intrinsic unipotent core is the image of the block-unipotent kernel. -/
+theorem flagUnipotentCore_eq_flagUnipotentSubgroup (b : Module.Basis ι R M) (block : ι → Fin r)
+    {F : Fin (r + 1) → Submodule R M} (hadapt : BlockAdapted b block F) :
+    flagUnipotentCore F = flagUnipotentSubgroup b block hadapt := by
+  rw [flagUnipotentSubgroup_eq_map]
+  ext A
+  constructor
+  · intro hA
+    have hU := mem_flagUnipotentCore_blockDiagonalUnitary b block hadapt hA
+    refine ⟨(flagStabilizerMatrixEquiv b block hadapt).symm A, ?_,
+      MulEquiv.apply_symm_apply (flagStabilizerMatrixEquiv b block hadapt) A⟩
+    have hval : ((((flagStabilizerMatrixEquiv b block hadapt).symm A :
+        blockTriangularSubgroup (R := R) block).1 : Matrix.GeneralLinearGroup ι R) :
+          Matrix ι ι R) = LinearMap.toMatrix b b (A.1 : M →ₗ[R] M) :=
+      basisGeneralLinear_symm_apply_val b A.1
+    refine mem_blockUnipotent_of_diagonal _ ?_
+    rw [hval]
+    exact hU
+  · rintro ⟨B, hB, rfl⟩
+    refine blockDiagonalUnitary_mem_flagUnipotentCore b block hadapt ?_
+    change BlockDiagonalUnitary (LinearMap.toMatrix b b
+      (((flagStabilizerMatrixEquiv b block hadapt) B : flagStabilizer F).1 : M →ₗ[R] M)) block
+    rw [show LinearMap.toMatrix b b (((flagStabilizerMatrixEquiv b block hadapt) B :
+        flagStabilizer F).1 : M →ₗ[R] M) = (B.1 : Matrix ι ι R) from
+      toMatrix_basisGeneralLinear b B.1]
+    exact blockUnipotent_diagonal B hB
+
+end AdaptedGraded
+
 end LeanCategories.Modules
