@@ -323,5 +323,6 @@ public import LeanCategories.Lattices.Valued.IsotropicReductionU2Quotient
 public import LeanCategories.Lattices.Valued.FiniteOrthogonalCount
 public import LeanCategories.Lattices.Valued.IsotropicReductionSchur
 public import LeanCategories.Lattices.Valued.IsotropicReductionBlocks
+public import LeanCategories.Lattices.Valued.CobleReduction
 
 @[expose] public section
