@@ -317,6 +317,7 @@ public import LeanCategories.Lattices.Valued.QuadraticSubquotient
 public import LeanCategories.Lattices.Valued.ReductionDiscriminant
 public import LeanCategories.Lattices.Valued.IsotropicDiscriminantAction
 public import LeanCategories.Lattices.Valued.IsotropicReductionDiscriminant
+public import LeanCategories.Lattices.Valued.IsotropicReductionLevel
 public import LeanCategories.Lattices.Valued.IsotropicReductionTwoPlanes
 public import LeanCategories.Lattices.Valued.IsotropicReductionWorkedModel
 public import LeanCategories.Lattices.Valued.IsotropicReductionU2Quotient

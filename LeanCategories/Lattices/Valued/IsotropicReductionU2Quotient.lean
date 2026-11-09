@@ -7,6 +7,7 @@ module
 public import LeanCategories.Lattices.Valued.IsotropicReductionWorkedModel
 public import LeanCategories.Lattices.Valued.ReductionDiscriminant
 public import LeanCategories.Lattices.Valued.IsotropicReductionDiscriminant
+public import LeanCategories.Lattices.Valued.IsotropicReductionLevel
 
 @[expose] public section
 
@@ -359,16 +360,16 @@ theorem u2u_extendDualSubquotientHom_bijective {C : Submodule ℤ u2u.obj.carrie
   exact Subsingleton.elim _ _
 
 /-- The worked model's canonical linear equivalence between the two actual discriminant
-quotient types. -/
+quotient types. Here `D = D^⊥` is the nonzero subgroup `ker` of the first coordinate, and the
+equivalence is the unconditional discriminant isometry of the isotropic reduction: no order
+hypothesis, and no comparison of group orders, enters. -/
 noncomputable def u2uExtendDualDiscriminantEquiv {C : Submodule ℤ u2u.obj.carrier}
     (hsup : u2uReductionData.perp ⊔ C = ⊤) (hinf : u2uReductionData.perp ⊓ C = ⊥) :
     (u2uReductionData.reductionLattice u2u_isSymmetric).obj.defect ≃ₗ[ℤ]
       (↥(isotropicDiscriminantOrthogonal u2u u2u_isFractionFieldPerfect u2uLine) ⧸
         isotropicDiscriminantInOrthogonal u2u u2u_isFractionFieldPerfect u2uLine) :=
-  LinearEquiv.ofBijective
-    (extendDualSubquotientHom u2uReductionData u2u_isSymmetric
-      u2u_isFractionFieldPerfect hsup hinf)
-    (u2u_extendDualSubquotientHom_bijective hsup hinf)
+  extendDualDiscriminantEquiv u2u u2uReductionData u2u_isSymmetric
+    u2u_isFractionFieldPerfect hsup hinf
 
 /-- The worked equivalence is the canonical extension map on representatives. -/
 theorem u2uExtendDualDiscriminantEquiv_apply {C : Submodule ℤ u2u.obj.carrier}
@@ -376,6 +377,8 @@ theorem u2uExtendDualDiscriminantEquiv_apply {C : Submodule ℤ u2u.obj.carrier}
     (x : (u2uReductionData.reductionLattice u2u_isSymmetric).obj.defect) :
     u2uExtendDualDiscriminantEquiv hsup hinf x =
       extendDualSubquotientHom u2uReductionData u2u_isSymmetric
-        u2u_isFractionFieldPerfect hsup hinf x := rfl
+        u2u_isFractionFieldPerfect hsup hinf x := by
+  unfold u2uExtendDualDiscriminantEquiv extendDualDiscriminantEquiv
+  rfl
 
 end LeanCategories.Lattices.Valued

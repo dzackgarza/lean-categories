@@ -20,16 +20,29 @@ Nondegeneracy of `T_Co` is derived from its invertible Gram matrix
 (`cobleGramMatrix_det_ne_zero`): a vector pairing to zero against everything is orthogonal to every
 standard basis vector, so its coordinates solve `x ᵥ* G = 0`, whence `x = 0`.
 
-The remaining obligation for this instance is the rank: `Module.finrank ℤ Q.carrier = 9`, which
-needs `finrank ↥e^⊥ = 10` (the functional `⟨e, ·⟩` is nonzero, so `e^⊥` is its kernel) and
-`finrank ↥(ℤ e) = 1`, together with quotient additivity. Those two rank inputs are not proved
-here.
+The rank is computed here. The third row of the Gram matrix of `T_Co` is `2` at the third
+coordinate and zero elsewhere (`coble_pairing_planeV`), so `e^⊥` is the kernel of the third
+coordinate functional (`coble_perp_eq_ker`) and has rank `11 - 1 = 10`
+(`coble_perp_finrank`); the isotropic line and the kernel of the reduction have rank one
+(`coble_submodule_finrank`, `coble_kernel_finrank`); additivity of the rank over the quotient
+gives `Module.finrank ℤ Q.carrier = 9` (`cobleReduction_finrank`).
+
+The **signature** `(1, 8)` of `Q` is not proved here. It needs either the identification of `Q`
+with `⟨2⟩ ⊕ E₈(−2)` (the `U(2)` summand reduces to nothing, and the `⟨2⟩` summand survives), or
+the real signature of `T_Co` computed from its block-diagonal Gram matrix together with the
+hyperbolic plane spanned by `e` and a vector pairing to `2` against it; neither is in the tree.
 -/
 
 @[expose] public section
 
 open Matrix
 open LeanCategories.Modules.Bilinear.Valued
+
+-- The reduced carrier is a quotient of a submodule of the carrier of `T_Co`. Instance synthesis
+-- can pick different but equal module structures on that nested carrier; pinning the two quotient
+-- and submodule structures keeps the finrank arithmetic below on one structure.
+attribute [local instance 10000] Submodule.module
+attribute [local instance 10000] Submodule.Quotient.module
 
 namespace LeanCategories.Lattices.Valued
 
@@ -117,5 +130,115 @@ noncomputable def cobleReduction : BilinModuleCat ℤ ℤ :=
 
 theorem cobleReduction_isNondegenerate : cobleReduction.IsNondegenerate :=
   cobleReductionData.reduction_isNondegenerate coble_isSymmetric
+
+/-! ## The rank of the reduction -/
+
+/-- The second row of the Gram matrix of `T_Co` is `2` at the third coordinate and zero elsewhere,
+so the coordinate form of the pairing with the Coble vector is twice the third coordinate. -/
+theorem coble_coord_sum_planeV (x : Fin 11 → ℤ) :
+    ∑ i, ∑ j, cobleVectorCoord i * cobleGramMatrix i j * x j = 2 * x 2 := by
+  have hrow : ∀ j : Fin 11, cobleGramMatrix 1 j = if j = 2 then 2 else 0 := by
+    intro j
+    fin_cases j <;> decide
+  rw [Finset.sum_eq_single (1 : Fin 11)]
+  · rw [Finset.sum_eq_single (2 : Fin 11)]
+    · simp [hrow 2, cobleVectorCoord_apply]
+    · intro j _ hj
+      simp [hrow j, hj]
+    · intro h
+      exact absurd (Finset.mem_univ (2 : Fin 11)) h
+  · intro i _ hi
+    simp [cobleVectorCoord_apply, hi]
+  · intro h
+    exact absurd (Finset.mem_univ (1 : Fin 11)) h
+
+/-- Pairing with the Coble vector is twice the third coordinate functional. -/
+theorem coble_pairing_planeV (x : ↥cobleLattice.obj.carrier) :
+    cobleLattice.obj.pairing coblePlaneV x = 2 * cobleCoordFun 2 x := by
+  rw [cobleCoordFun_apply]
+  exact (coble_pairing_coord cobleVectorCoord (x : Fin 11 → ℤ)).trans
+    (coble_coord_sum_planeV (x : Fin 11 → ℤ))
+
+/-- The orthogonal complement of the Coble vector is the kernel of the third coordinate
+functional. -/
+theorem coble_mem_perp_iff (x : ↥cobleLattice.obj.carrier) :
+    x ∈ cobleReductionData.perp ↔ cobleCoordFun 2 x = 0 := by
+  rw [IsotropicReductionData.perp, BilinModuleCat.mem_orthogonalSubmodule_iff]
+  constructor
+  · intro h
+    have h0 := h coblePlaneV (Submodule.mem_span_singleton_self coblePlaneV)
+    rw [coble_pairing_planeV] at h0
+    rcases mul_eq_zero.mp h0 with h2 | h2
+    · exact absurd h2 (by norm_num)
+    · exact h2
+  · intro hx p hp
+    obtain ⟨a, rfl⟩ := Submodule.mem_span_singleton.mp hp
+    rw [BilinModuleCat.pairing_smul_left, smul_eq_mul, coble_pairing_planeV, hx, mul_zero,
+      mul_zero]
+
+/-- `P^⊥` is the kernel of the third coordinate functional. -/
+theorem coble_perp_eq_ker :
+    cobleReductionData.perp = LinearMap.ker (cobleCoordFun 2) :=
+  Submodule.ext fun x => (coble_mem_perp_iff x).trans Iff.rfl
+
+/-- The third coordinate functional is surjective. -/
+theorem cobleCoordFun_two_surjective : Function.Surjective (cobleCoordFun (2 : Fin 11)) := by
+  intro y
+  refine ⟨y • (Pi.basisFun ℤ (Fin 11) 2 : ↥cobleLattice.obj.carrier), ?_⟩
+  have h1 : cobleCoordFun 2 (Pi.basisFun ℤ (Fin 11) 2 : ↥cobleLattice.obj.carrier) = 1 :=
+    (cobleCoordFun_apply 2 (Pi.basisFun ℤ (Fin 11) 2 : ↥cobleLattice.obj.carrier)).trans (by
+      simp)
+  calc cobleCoordFun 2 (y • (Pi.basisFun ℤ (Fin 11) 2 : ↥cobleLattice.obj.carrier))
+      = y • cobleCoordFun 2 (Pi.basisFun ℤ (Fin 11) 2 : ↥cobleLattice.obj.carrier) :=
+        map_smul _ _ _
+    _ = y • (1 : ℤ) := by rw [h1]
+    _ = y := by simp
+
+/-- `P^⊥` has rank ten. -/
+theorem coble_perp_finrank : Module.finrank ℤ ↥cobleReductionData.perp = 10 := by
+  have hrank : Module.finrank ℤ ↥cobleLattice.obj.carrier = 11 :=
+    (LinearEquiv.finrank_eq cobleCoordEquiv).trans (by
+      rw [Module.finrank_fintype_fun_eq_card]
+      simp)
+  have hquot : Module.finrank ℤ (↥cobleLattice.obj.carrier ⧸
+      LinearMap.ker (cobleCoordFun (2 : Fin 11))) = 1 :=
+    (LinearEquiv.finrank_eq
+      (LinearMap.quotKerEquivOfSurjective _ cobleCoordFun_two_surjective)).trans
+      (Module.finrank_self ℤ)
+  have h := Submodule.finrank_quotient_add_finrank
+    (LinearMap.ker (cobleCoordFun (2 : Fin 11)))
+  have hker : Module.finrank ℤ ↥(LinearMap.ker (cobleCoordFun (2 : Fin 11))) = 10 := by
+    omega
+  exact (LinearEquiv.finrank_eq (LinearEquiv.ofEq _ _ coble_perp_eq_ker)).trans hker
+
+/-- The isotropic line has rank one. -/
+theorem coble_submodule_finrank : Module.finrank ℤ ↥cobleReductionData.submodule = 1 := by
+  have hinj : Function.Injective (LinearMap.toSpanSingleton ℤ ↥cobleLattice.obj.carrier
+      coblePlaneV) := by
+    rw [← LinearMap.ker_eq_bot, Submodule.eq_bot_iff]
+    intro a ha
+    rw [LinearMap.mem_ker, LinearMap.toSpanSingleton_apply] at ha
+    exact (smul_eq_zero.mp ha).resolve_right cobleVector.nonzero
+  have hrange : LinearMap.range (LinearMap.toSpanSingleton ℤ ↥cobleLattice.obj.carrier
+      coblePlaneV) = cobleReductionData.submodule := by
+    rw [LinearMap.range_toSpanSingleton]
+    rfl
+  exact (LinearEquiv.ofEq _ _ hrange).symm.finrank_eq.trans
+    ((LinearEquiv.ofInjective _ hinj).symm.finrank_eq.trans (Module.finrank_self ℤ))
+
+/-- The kernel of the reduction has rank one. -/
+theorem coble_kernel_finrank : Module.finrank ℤ ↥cobleReductionData.kernel = 1 :=
+  (LinearEquiv.finrank_eq
+    (IsotropicReductionData.kernelEquivSubmodule cobleReductionData)).trans
+    coble_submodule_finrank
+
+/-- **The reduction `Q = e^⊥/e` of `T_Co` has rank nine.** -/
+theorem cobleReduction_finrank : Module.finrank ℤ cobleReduction.carrier = 9 := by
+  have h := Submodule.finrank_quotient_add_finrank cobleReductionData.kernel
+  have hk : Module.finrank ℤ ↥cobleReductionData.kernel = 1 := coble_kernel_finrank
+  have hp : Module.finrank ℤ ↥cobleReductionData.perp = 10 := coble_perp_finrank
+  have h9 : Module.finrank ℤ
+      (↥cobleReductionData.perp ⧸ cobleReductionData.kernel) = 9 := by omega
+  exact h9
 
 end LeanCategories.Lattices.Valued

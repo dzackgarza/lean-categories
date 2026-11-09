@@ -7,6 +7,7 @@ module
 public import LeanCategories.Lattices.Valued.EvenReduction
 public import LeanCategories.Lattices.Valued.IsotropicDiscriminantAction
 public import LeanCategories.Lattices.Valued.IsotropicReductionDiscriminant
+public import LeanCategories.Lattices.Valued.IsotropicReductionLevel
 
 @[expose] public section
 
@@ -105,7 +106,9 @@ theorem twoHyperbolicPlanes_reduction_discriminant_subsingleton
     twoHyperbolicPlanes.property.2 twoHyperbolicPlanes_isFractionFieldPerfect hsup hinf
   exact Subsingleton.elim _ _
 
-/-- The `U ⊕ U` worked equivalence, given by the canonical extension map. -/
+/-- The `U ⊕ U` worked equivalence, given by the canonical extension map. On this model the
+isotropic line has an integral dual, so `D = 0` and the comparison needs no count: it is the
+unconditional discriminant isometry of the isotropic reduction. -/
 noncomputable def twoHyperbolicPlanesExtendDualDiscriminantEquiv
     {C : Submodule ℤ twoHyperbolicPlanes.obj.carrier}
     (hsup : twoHyperbolicPlanesReductionData.perp ⊔ C = ⊤)
@@ -116,10 +119,8 @@ noncomputable def twoHyperbolicPlanesExtendDualDiscriminantEquiv
           twoHyperbolicPlanes_isFractionFieldPerfect twoHyperbolicPlanesReductionData.submodule) ⧸
         isotropicDiscriminantInOrthogonal twoHyperbolicPlanes
           twoHyperbolicPlanes_isFractionFieldPerfect twoHyperbolicPlanesReductionData.submodule) :=
-  LinearEquiv.ofBijective
-    (extendDualSubquotientHom twoHyperbolicPlanesReductionData twoHyperbolicPlanes.property.2
-      twoHyperbolicPlanes_isFractionFieldPerfect hsup hinf)
-    (twoHyperbolicPlanes_extendDualSubquotientHom_bijective hsup hinf)
+  extendDualDiscriminantEquiv twoHyperbolicPlanes twoHyperbolicPlanesReductionData
+    twoHyperbolicPlanes.property.2 twoHyperbolicPlanes_isFractionFieldPerfect hsup hinf
 
 end LeanCategories.Lattices.Valued
 

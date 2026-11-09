@@ -94,6 +94,16 @@ def kernel : Submodule R ↥D.perp :=
 theorem mem_kernel_iff (x : ↥D.perp) : x ∈ D.kernel ↔ (x : L.obj.carrier) ∈ D.submodule :=
   Iff.rfl
 
+/-- The kernel `P ⊆ P^⊥` of the reduction is linearly isomorphic to `P` itself. -/
+noncomputable def kernelEquivSubmodule :
+    ↥D.kernel ≃ₗ[R] ↥D.submodule where
+  toFun x := ⟨(x : ↥D.perp).1, x.2⟩
+  invFun y := ⟨⟨y.1, D.submodule_le_perp y.2⟩, y.2⟩
+  left_inv x := by ext; rfl
+  right_inv y := by ext; rfl
+  map_add' x y := by ext; rfl
+  map_smul' a x := by ext; rfl
+
 /-- The form restricted to `P^⊥`. -/
 noncomputable def restricted : BilinModuleCat R R :=
   L.obj.restrict D.perp
@@ -216,6 +226,39 @@ def isotropicStabilizer (D : IsotropicReductionData L) :
     g ∈ D.isotropicStabilizer ↔
       D.submodule.map (g.1 : L.obj.carrier →ₗ[R] L.obj.carrier) = D.submodule :=
   Iff.rfl
+
+/-- The flag `⊥ ≤ P ≤ ⊤` whose exact-image stabilizer is the isotropic stabilizer: the three
+stages of the isotropic flag attached to `P`. -/
+def flagStage (D : IsotropicReductionData L) : Fin 3 → Submodule R L.obj.carrier :=
+  ![⊥, D.submodule, ⊤]
+
+@[simp] theorem flagStage_zero (D : IsotropicReductionData L) :
+    D.flagStage 0 = ⊥ := rfl
+
+@[simp] theorem flagStage_one (D : IsotropicReductionData L) :
+    D.flagStage 1 = D.submodule := rfl
+
+@[simp] theorem flagStage_two (D : IsotropicReductionData L) :
+    D.flagStage 2 = ⊤ := rfl
+
+/-- An isometry stabilizes `P` exactly when it carries every stage of the flag `⊥ ≤ P ≤ ⊤`
+onto itself: the exact-image flag stabilizer of the flag module owner
+(`LeanCategories.Modules.flagStabilizer`, #90). The two extreme stages are carried onto
+themselves by invertibility, and the middle stage is `P`. -/
+theorem mem_isotropicStabilizer_iff_flag (D : IsotropicReductionData L)
+    (g : BilinModuleCat.OrthogonalGroup L.obj) :
+    g ∈ D.isotropicStabilizer ↔
+      ∀ k : Fin 3,
+        (D.flagStage k).map (g.1 : L.obj.carrier →ₗ[R] L.obj.carrier) = D.flagStage k := by
+  rw [mem_isotropicStabilizer_iff]
+  constructor
+  · intro h k
+    fin_cases k
+    · simp
+    · simpa using h
+    · simp
+  · intro h
+    simpa using h 1
 
 /-- A stabilizing isometry carries `P^⊥` into itself. -/
 theorem perp_map_le (D : IsotropicReductionData L)
