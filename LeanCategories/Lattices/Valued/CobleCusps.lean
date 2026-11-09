@@ -299,23 +299,27 @@ noncomputable def coblePlane : PrimitiveIsotropic cobleLattice 2 where
   finrank_eq := coblePlane_finrank
   primitive := coblePlane_primitiveSpan
 
-/-! ## The orbit sets are inhabited -/
+/-! ## Named elements of the orbit sets -/
 
-/-- The `ker ρ`-orbit set of primitive isotropic lines is inhabited. -/
-theorem cobleCuspOrbitsKernelOne_nonempty : Nonempty cobleCuspOrbitsKernelOne :=
-  ⟨CuspOrbits.mk cobleKernelSubgroup cobleLine⟩
+/-- The `ker ρ`-orbit of the Coble vector `v = e₁`: an element of the `ker ρ`-orbit set of
+primitive isotropic lines. -/
+noncomputable def cobleCuspOrbitKernelOne : cobleCuspOrbitsKernelOne :=
+  CuspOrbits.mk cobleKernelSubgroup cobleLine
 
-/-- The `ker ρ`-orbit set of primitive isotropic planes is inhabited. -/
-theorem cobleCuspOrbitsKernelTwo_nonempty : Nonempty cobleCuspOrbitsKernelTwo :=
-  ⟨CuspOrbits.mk cobleKernelSubgroup coblePlane⟩
+/-- The `ker ρ`-orbit of the Coble plane `⟨v, w⟩`: an element of the `ker ρ`-orbit set of
+primitive isotropic planes. -/
+noncomputable def cobleCuspOrbitKernelTwo : cobleCuspOrbitsKernelTwo :=
+  CuspOrbits.mk cobleKernelSubgroup coblePlane
 
-/-- The `Γ_Co`-orbit set of primitive isotropic lines is inhabited. -/
-theorem cobleCuspOrbitsGammaOne_nonempty : Nonempty cobleCuspOrbitsGammaOne :=
-  ⟨CuspOrbits.mk cobleGammaCoSubgroup cobleLine⟩
+/-- The `Γ_Co`-orbit of the Coble vector `v = e₁`: an element of the `Γ_Co`-orbit set of
+primitive isotropic lines. -/
+noncomputable def cobleCuspOrbitGammaOne : cobleCuspOrbitsGammaOne :=
+  CuspOrbits.mk cobleGammaCoSubgroup cobleLine
 
-/-- The `Γ_Co`-orbit set of primitive isotropic planes is inhabited. -/
-theorem cobleCuspOrbitsGammaTwo_nonempty : Nonempty cobleCuspOrbitsGammaTwo :=
-  ⟨CuspOrbits.mk cobleGammaCoSubgroup coblePlane⟩
+/-- The `Γ_Co`-orbit of the Coble plane `⟨v, w⟩`: an element of the `Γ_Co`-orbit set of
+primitive isotropic planes. -/
+noncomputable def cobleCuspOrbitGammaTwo : cobleCuspOrbitsGammaTwo :=
+  CuspOrbits.mk cobleGammaCoSubgroup coblePlane
 
 /-! ## The two descent statements at `T_Co` -/
 

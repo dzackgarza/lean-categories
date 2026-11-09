@@ -244,7 +244,7 @@ noncomputable def u2uReductionBasis : Module.Basis (Fin 2) ℤ
     (u2uReductionData.reductionLattice u2u_isSymmetric).obj.carrier :=
   (Pi.basisFun ℤ (Fin 2)).map u2uReducedCoordEquiv.symm
 
-@[simp] theorem u2uReductionBasis_zero : u2uReductionBasis 0 =
+theorem u2uReductionBasis_zero : u2uReductionBasis 0 =
     (Submodule.Quotient.mk u2uPerpE :
       (u2uReductionData.reductionLattice u2u_isSymmetric).obj.carrier) := by
   change (Pi.basisFun ℤ (Fin 2)).map u2uReducedCoordEquiv.symm 0 = _
@@ -253,7 +253,7 @@ noncomputable def u2uReductionBasis : Module.Basis (Fin 2) ℤ
     funext i; fin_cases i <;> simp]
   rw [u2uReducedCoordEquiv_symm_apply, u2uReducedClass_one_zero]
 
-@[simp] theorem u2uReductionBasis_one : u2uReductionBasis 1 =
+theorem u2uReductionBasis_one : u2uReductionBasis 1 =
     (Submodule.Quotient.mk u2uPerpF :
       (u2uReductionData.reductionLattice u2u_isSymmetric).obj.carrier) := by
   change (Pi.basisFun ℤ (Fin 2)).map u2uReducedCoordEquiv.symm 1 = _
@@ -371,7 +371,7 @@ noncomputable def u2uExtendDualDiscriminantEquiv {C : Submodule ℤ u2u.obj.carr
     (u2u_extendDualSubquotientHom_bijective hsup hinf)
 
 /-- The worked equivalence is the canonical extension map on representatives. -/
-@[simp] theorem u2uExtendDualDiscriminantEquiv_apply {C : Submodule ℤ u2u.obj.carrier}
+theorem u2uExtendDualDiscriminantEquiv_apply {C : Submodule ℤ u2u.obj.carrier}
     (hsup : u2uReductionData.perp ⊔ C = ⊤) (hinf : u2uReductionData.perp ⊓ C = ⊥)
     (x : (u2uReductionData.reductionLattice u2u_isSymmetric).obj.defect) :
     u2uExtendDualDiscriminantEquiv hsup hinf x =

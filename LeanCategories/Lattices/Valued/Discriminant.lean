@@ -207,7 +207,6 @@ theorem metricDualToValueDual_toMetricDual
   rw [← rieszMetricDualEquiv_adjoint R L hL x]
   exact (rieszMetricDualEquiv R L hL).symm_apply_apply _
 
-@[simp]
 theorem discriminant_pairing_metricDualToDiscriminant
     {L : IntegralLatticeCat R} (hL : IsFractionFieldPerfect R L)
     (x y : metricDual R L) :

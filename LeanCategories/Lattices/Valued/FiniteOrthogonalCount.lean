@@ -78,7 +78,7 @@ theorem fractionValueQuotient_mk_zsmul (k : ℤ) (q : FractionRing ℤ) :
   Submodule.Quotient.mk_smul (LinearMap.range (Algebra.linearMap ℤ (FractionRing ℤ))) k q
 
 /-- `ℚ/ℤ` is divisible. -/
-noncomputable instance divisibleBy_fractionValueQuotient_int :
+noncomputable instance divisibleByFractionValueQuotientInt :
     DivisibleBy (FractionValueQuotient ℤ) ℤ :=
   divisibleByOfSMulRightSurj (FractionValueQuotient ℤ) ℤ fun {n} hn => by
     intro x

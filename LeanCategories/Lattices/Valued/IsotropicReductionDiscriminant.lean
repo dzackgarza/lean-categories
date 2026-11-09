@@ -304,7 +304,7 @@ noncomputable def extendDualSubquotientHom (D : IsotropicReductionData L)
     exact heq ▸ hmem
 
 /-- The representative formula for the induced map `A_Q → D^⊥/D`. -/
-@[simp] theorem extendDualSubquotientHom_mk (D : IsotropicReductionData L)
+theorem extendDualSubquotientHom_mk (D : IsotropicReductionData L)
     [IsPrincipalIdealRing R] (hN : L.obj.IsSymmetric) (hL : IsFractionFieldPerfect R L)
     {C : Submodule R L.obj.carrier} (hsup : D.perp ⊔ C = ⊤)
     (hinf : D.perp ⊓ C = ⊥) (f : (D.reductionLattice hN).obj.valueDual) :
@@ -651,7 +651,7 @@ noncomputable def extendDualDiscriminantEquivOfNatCardEq [IsPrincipalIdealRing R
   LinearEquiv.ofBijective (extendDualSubquotientHom D hN hL hsup hinf)
     (extendDualSubquotientHom_bijective_of_natCard_eq D hN hL hsup hinf hcard)
 
-@[simp] theorem extendDualDiscriminantEquivOfNatCardEq_apply [IsPrincipalIdealRing R]
+theorem extendDualDiscriminantEquivOfNatCardEq_apply [IsPrincipalIdealRing R]
     (D : IsotropicReductionData L) (hN : L.obj.IsSymmetric)
     (hL : IsFractionFieldPerfect R L) {C : Submodule R L.obj.carrier}
     (hsup : D.perp ⊔ C = ⊤) (hinf : D.perp ⊓ C = ⊥)
@@ -665,7 +665,7 @@ noncomputable def extendDualDiscriminantEquivOfNatCardEq [IsPrincipalIdealRing R
     extendDualDiscriminantEquivOfNatCardEq D hN hL hsup hinf hcard x =
       extendDualSubquotientHom D hN hL hsup hinf x := rfl
 
-@[simp] theorem extendDualDiscriminantEquivOfNatCardEq_symm_apply
+theorem extendDualDiscriminantEquivOfNatCardEq_symm_apply
     [IsPrincipalIdealRing R]
     (D : IsotropicReductionData L) (hN : L.obj.IsSymmetric)
     (hL : IsFractionFieldPerfect R L) {C : Submodule R L.obj.carrier}
