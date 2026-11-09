@@ -314,5 +314,14 @@ public import LeanCategories.Lattices.Valued.EvenReduction
 public import LeanCategories.Lattices.Valued.DiscriminantIsotropic
 public import LeanCategories.Lattices.Valued.DiscriminantQuotient
 public import LeanCategories.Lattices.Valued.QuadraticSubquotient
+public import LeanCategories.Lattices.Valued.ReductionDiscriminant
+public import LeanCategories.Lattices.Valued.IsotropicDiscriminantAction
+public import LeanCategories.Lattices.Valued.IsotropicReductionDiscriminant
+public import LeanCategories.Lattices.Valued.IsotropicReductionTwoPlanes
+public import LeanCategories.Lattices.Valued.IsotropicReductionWorkedModel
+public import LeanCategories.Lattices.Valued.IsotropicReductionU2Quotient
+public import LeanCategories.Lattices.Valued.FiniteOrthogonalCount
+public import LeanCategories.Lattices.Valued.IsotropicReductionSchur
+public import LeanCategories.Lattices.Valued.IsotropicReductionBlocks
 
 @[expose] public section

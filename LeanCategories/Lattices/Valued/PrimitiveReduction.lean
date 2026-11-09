@@ -248,6 +248,21 @@ theorem mem_primitive_of_isotropic_orthogonal_orthogonal
     exact ⟨a, ha, haxp ▸ hq⟩
   exact (isPrimitiveSubmodule_iff_saturation_eq P |>.mp hP) ▸ hmem
 
+/-- A lattice vector whose rationalization lies in the span of a primitive submodule already
+belongs to that submodule. -/
+theorem mem_of_toRationalSpan_mem_rationalSpan (L : IntegralLatticeCat R)
+    (P : Submodule R L.obj.carrier) (hP : IsPrimitiveSubmodule P) {x : L.obj.carrier}
+    (hx : toRationalSpan R L x ∈
+      Submodule.span (FractionRing R) ((toRationalSpan R L) '' P)) : x ∈ P := by
+  obtain ⟨a, ha, q, hq, hax⟩ := exists_clear_denominator_of_mem_span L P hx
+  have hax' : toRationalSpan R L (a • x) = toRationalSpan R L q := by
+    rw [map_smul, hax]
+  have haxp : a • x = q := toRationalSpan_injective R L hax'
+  have hmem : x ∈ saturation P := by
+    rw [mem_saturation_iff]
+    exact ⟨a, ha, haxp ▸ hq⟩
+  exact (isPrimitiveSubmodule_iff_saturation_eq P |>.mp hP) ▸ hmem
+
 end RationalForm
 
 end LeanCategories.Lattices.Valued
