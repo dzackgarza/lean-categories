@@ -310,14 +310,12 @@ theorem cobleCuspOrbitsKernelTwo_nonempty : Nonempty cobleCuspOrbitsKernelTwo :=
   ⟨CuspOrbits.mk cobleKernelSubgroup coblePlane⟩
 
 /-- The `Γ_Co`-orbit set of primitive isotropic lines is inhabited. -/
-theorem cobleCuspOrbitsGammaOne_nonempty (O : CobleOPlus) :
-    Nonempty (cobleCuspOrbitsGammaOne O) :=
-  ⟨CuspOrbits.mk (cobleGammaCoSubgroup O) cobleLine⟩
+theorem cobleCuspOrbitsGammaOne_nonempty : Nonempty cobleCuspOrbitsGammaOne :=
+  ⟨CuspOrbits.mk cobleGammaCoSubgroup cobleLine⟩
 
 /-- The `Γ_Co`-orbit set of primitive isotropic planes is inhabited. -/
-theorem cobleCuspOrbitsGammaTwo_nonempty (O : CobleOPlus) :
-    Nonempty (cobleCuspOrbitsGammaTwo O) :=
-  ⟨CuspOrbits.mk (cobleGammaCoSubgroup O) coblePlane⟩
+theorem cobleCuspOrbitsGammaTwo_nonempty : Nonempty cobleCuspOrbitsGammaTwo :=
+  ⟨CuspOrbits.mk cobleGammaCoSubgroup coblePlane⟩
 
 /-! ## The two descent statements at `T_Co` -/
 
