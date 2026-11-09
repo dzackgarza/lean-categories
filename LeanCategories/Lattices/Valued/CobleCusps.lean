@@ -347,21 +347,17 @@ noncomputable def cobleQuadraticFibre
 `O(T_Co)`-orbit of `N` are the double cosets of `ρ(ker ρ)` and `ρ(Stab(N))` in the discriminant
 range.
 
-`hKΓ` is named, and it is not a formality: the descent theorem needs `ker ρ_bilin ≤ Γ`, while the
-quadratic form `q` determines the bilinear one, so `ker ρ ≤ ker ρ_bilin` and the two kernels agree
-only where `q` sees the form. The proof stops at the containment
-`OrthogonalGroup.stableOrthogonalGroup coble_isFractionFieldPerfect ≤ cobleKernel`, which this
-development neither proves nor refutes for `T_Co`. -/
+This is unconditional: the descent theorem needs `stableOrthogonalGroup ≤ ker ρ`, and
+`stableOrthogonalGroup_le_cobleKernel` proves it, because both groups are the isometries acting
+trivially on `A_{T_Co}`
+(`stableOrthogonalGroup_eq_stableEven`). -/
 noncomputable def cobleCuspOrbitsEquivDoubleCosetsPlane
-    (hKΓ : OrthogonalGroup.stableOrthogonalGroup coble_isFractionFieldPerfect ≤
-      cobleKernelSubgroup.toSubgroup)
     (N : PrimitiveIsotropic cobleLattice 2) :=
-  cuspOrbitsEquivDoubleCosetsDiscriminant coble_isFractionFieldPerfect cobleKernelSubgroup hKΓ N
+  cuspOrbitsEquivDoubleCosetsDiscriminant coble_isFractionFieldPerfect cobleKernelSubgroup
+    stableOrthogonalGroup_le_cobleKernel N
 
 /-- The same statement at the exhibited Coble plane `coblePlane`. -/
-noncomputable def cobleCuspOrbitsEquivDoubleCosetsCoblePlane
-    (hKΓ : OrthogonalGroup.stableOrthogonalGroup coble_isFractionFieldPerfect ≤
-      cobleKernelSubgroup.toSubgroup) :=
-  cobleCuspOrbitsEquivDoubleCosetsPlane hKΓ coblePlane
+noncomputable def cobleCuspOrbitsEquivDoubleCosetsCoblePlane :=
+  cobleCuspOrbitsEquivDoubleCosetsPlane coblePlane
 
 end LeanCategories.Lattices.Valued

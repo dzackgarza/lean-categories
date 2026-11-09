@@ -247,11 +247,28 @@ theorem cobleSpecialOrthogonal_index_le_two : cobleSpecialOrthogonal.index ≤ 2
     _ = 2 := by rw [Nat.card_eq_fintype_card, Fintype.card_units_int]
 
 /-- The data of the orientation subgroup `O⁺(T_Co)`: a subgroup of `O(T_Co)` of index at most two.
-The intended instantiation is `ker` of the real spinor norm, i.e. the subgroup preserving the
-orientation of the positive-definite 2-planes of `T_Co ⊗ ℝ`. Mathlib has neither a real quadratic
-space for `T_Co` nor a spinor norm, so this development carries the subgroup as data rather than
-constructing it; `cobleSpecialOrthogonal` is the concrete index-two subgroup it does construct, and
-that one is *not* `O⁺`. -/
+The intended instantiation is the subgroup preserving the orientation of the positive-definite
+2-planes of `T_Co ⊗ ℝ`, i.e. the kernel of the real spinor norm.
+
+The prescribed characterization is concrete: with `P = span(p₁, p₂)` the plane of coordinates
+`p₁ = e₀` (norm `2`) and `p₂ = e₁ + e₂` (norm `4`) of `cobleHalfMatrix`, and
+`M(g) = (⟨g pᵢ, pⱼ⟩)ᵢⱼ`, one has `O⁺(T_Co) = {g | 0 < det M(g)}`.
+
+That this set is a subgroup is *not* formalized here, and the proof stops at its only nontrivial
+step: multiplicativity of `sign det M`. Writing `g` in blocks over `T_Co ⊗ ℚ = P ⊥ P^⊥` as
+`[[A, B], [C, D]]` gives `A(gh) = A(g)A(h) + B(g)C(h)`, hence
+`sign det M(gh) = sign det M(g) · sign det M(h) · sign det(1 + A(g)⁻¹B(g)C(h)A(h)⁻¹)`, and the last
+factor is `+1`, but only because `P` is positive definite and `P^⊥` is negative definite. There is
+no exact algebraic identity to prove instead: numerically the ratio
+`det M(gh) / (det M(g) det M(h) / det G_P)` ranges over `0.67 … 2.0`, so only the sign survives.
+
+What the argument needs, and this development does not have, is (i) the negative definiteness of
+`P^⊥` — an explicit definiteness certificate for the `E₈(−1)` block, for example a sum-of-squares
+decomposition of the Cartan matrix — and (ii) a Loewner-order argument over an ordered field
+(`mathlib` has `Matrix.PosSemidef` over `ℝ`, but there is no real form of `T_Co` here).
+
+`cobleSpecialOrthogonal` below is the concrete index-two subgroup this file does construct; it is
+`SO(T_Co)`, the kernel of `det`, and it is *not* `O⁺(T_Co)`. -/
 structure CobleOPlus where
   /-- The intended `O⁺(T_Co)`. -/
   toSubgroup : Subgroup (OrthogonalGroup cobleLattice)
@@ -273,6 +290,50 @@ noncomputable def cobleSpecialOrthogonalData : CobleOPlus where
   toSubgroup := cobleSpecialOrthogonal
   index_le_two := cobleSpecialOrthogonal_index_le_two
   finiteIndex := cobleSpecialOrthogonal_finiteIndex
+
+/-! ## The stable group is the kernel of `ρ` -/
+
+/-- The two discriminant representations carry the same linear equivalence: the underlying action
+on `A_L` is `actOnDefect`, and only the form attached to the module differs. -/
+theorem discriminantRepresentation_apply_eq_even {R : Type} [CommRing R] [IsDomain R]
+    {L : IntegralLatticeCat R} (hL : IsFractionFieldPerfect R L) (hEven : IsEven L)
+    (g : OrthogonalGroup L) :
+    (Subtype.val ((OrthogonalGroup.discriminantRepresentation hL) g) :
+        L.obj.defect ≃ₗ[R] L.obj.defect) =
+      (Subtype.val ((OrthogonalGroup.evenDiscriminantRepresentation hL hEven) g) :
+        L.obj.defect ≃ₗ[R] L.obj.defect) :=
+  rfl
+
+/-- The stable orthogonal group and the kernel of the quadratic discriminant representation are the
+same subgroup. Both are the isometries acting trivially on `A_L`: the bilinear and the quadratic
+discriminant forms are attached to the same module, so an isometry acts trivially on it or it does
+not, whatever form is attached. -/
+theorem stableOrthogonalGroup_eq_stableEven {R : Type} [CommRing R] [IsDomain R]
+    {L : IntegralLatticeCat R}
+    (hL : IsFractionFieldPerfect R L) (hEven : IsEven L) :
+    OrthogonalGroup.stableOrthogonalGroup hL =
+      OrthogonalGroup.stableEvenOrthogonalGroup hL hEven := by
+  ext g
+  constructor
+  · intro hg
+    rw [OrthogonalGroup.stableEvenOrthogonalGroup, MonoidHom.mem_ker]
+    rw [OrthogonalGroup.stableOrthogonalGroup, MonoidHom.mem_ker] at hg
+    apply Subtype.ext
+    rw [← discriminantRepresentation_apply_eq_even hL hEven g]
+    exact congrArg Subtype.val hg
+  · intro hg
+    rw [OrthogonalGroup.stableOrthogonalGroup, MonoidHom.mem_ker]
+    rw [OrthogonalGroup.stableEvenOrthogonalGroup, MonoidHom.mem_ker] at hg
+    apply Subtype.ext
+    rw [discriminantRepresentation_apply_eq_even hL hEven g]
+    exact congrArg Subtype.val hg
+
+/-- The stable orthogonal group is contained in `ker ρ`: at `T_Co`, `ker ρ` is the subgroup of
+isometries acting trivially on `A_{T_Co}`, and so is the stable group. -/
+theorem stableOrthogonalGroup_le_cobleKernel :
+    OrthogonalGroup.stableOrthogonalGroup coble_isFractionFieldPerfect ≤ cobleKernel := by
+  rw [stableOrthogonalGroup_eq_stableEven coble_isFractionFieldPerfect coble_isEven]
+  exact le_rfl
 
 /-! ## `Γ_Co = O⁺(T_Co) ∩ ker ρ` -/
 
