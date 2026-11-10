@@ -10,23 +10,31 @@ public import Mathlib.LinearAlgebra.QuadraticForm.Prod
 public import Mathlib.LinearAlgebra.QuadraticForm.Signature
 
 /-!
-# The signature of `e^⊥/e` is `(p − 1, q − 1)`
+# The signature of `e^⊥/⟨e⟩` is `(p − 1, q − 1)`
 
-Let `K` be an ordered field, `Q` a nondegenerate quadratic form on a finite-dimensional `K`-space
-`V` of signature `(p, q)`, and `e ≠ 0` an isotropic vector. Then the form induced on `e^⊥/⟨e⟩` has
-signature `(p − 1, q − 1)` (`sigPos_isotropicQuotientForm`, `sigNeg_isotropicQuotientForm`).
-
-Not yet here: the identification of `e^⊥/⟨e⟩` with `W` and hence the induced form on the quotient.
-What is proved is the splitting and the signature of `W` itself (`sigPos_restrict_planePerp`,
-`sigNeg_restrict_planePerp`).
+Let `K` be an ordered field in which `2` is invertible, `Q` a nondegenerate quadratic form on a
+finite-dimensional `K`-space `V` of signature `(p, q)`, and `e ≠ 0` an isotropic vector. Then the
+form induced on `e^⊥/⟨e⟩` has signature `(p − 1, q − 1)`:
+`exists_isotropicQuotientForm_signature` produces the hyperbolic partner `f` and states both indices
+as `sigPos Q - 1` and `sigNeg Q - 1`.
 
 The proof splits off the hyperbolic plane. Nondegeneracy makes the functional `b(e, ·)` nonzero, so
-there is `f` with `b(e, f) = 1`, and the plane `⟨e, f⟩` is a hyperbolic plane. Its orthogonal
-complement `W` — Mathlib's `LinearMap.BilinForm.orthogonal` — is a complement, so
-`Q ≅ ⟨e, f⟩ ⊥ Q|W` (`splittingIsometry`) and the signatures add (`QuadraticForm.sigPos` on a
-product). The quotient `e^⊥/⟨e⟩` is linearly isomorphic to `W` (`perpQuotientEquiv`), and under that
-isomorphism the induced form is `Q|W` (`isotropicQuotientForm_mk` records the characterizing property
-that a class evaluates to the value of `Q` on any representative).
+there is `f` with `b(e, f) = 1`; scaling it makes `f` isotropic too (`exists_hyperbolicPartner`),
+and the plane `⟨e, f⟩` is then a hyperbolic plane. Its orthogonal complement `W` — Mathlib's
+`LinearMap.BilinForm.orthogonal` — is a complement, so `Q ≅ ⟨e, f⟩ ⊥ Q|W` (`splittingIsometry`) and
+the signatures add (`QuadraticMap.sigPos` on a product), which is `sigPos_restrict_planePerp` and
+`sigNeg_restrict_planePerp` for `W`.
+
+Inside `e^⊥` — the orthogonal complement `linePerp Q e` of the line `⟨e⟩` — the line `⟨e⟩`
+(`lineInPerp`) and `W ∩ e^⊥` are complements (`isCompl_lineInPerp_planeInPerp`). The second is `W`
+itself, since `W ≤ e^⊥` (`planePerp_le_linePerp`); the intersection is zero because a multiple of
+`e` orthogonal to `f` is zero, and every `x ∈ e^⊥` is its projection to `W` plus its `e`-component.
+Mathlib's `Submodule.quotientEquivOfIsCompl` then gives `e^⊥/⟨e⟩ ≃ₗ W` (`perpQuotientEquiv`), with
+no quotient induction and no hand-built inverse laws, and `isotropicQuotientForm` is `Q|W`
+transported along it (`isotropicQuotientIsometryEquiv` exhibits the isometry).
+
+The symmetric-bilinear API is Mathlib's throughout: `QuadraticMap.associated_eq_self_apply` and
+`QuadraticMap.associated_isSymm` are used at each call site rather than restated locally.
 
 ## References
 
@@ -151,25 +159,6 @@ variable {V : Type u} [AddCommGroup V] [Module K V] [FiniteDimensional K V]
 variable [Invertible (2 : K)]
 variable {Q : QuadraticForm K V}
 
-/-- The self-pairing of the associated form is the form itself (Mathlib states this for
-`associatedHom`). -/
-theorem associated_self_apply' (Q : QuadraticForm K V) (x : V) : (associated Q) x x = Q x := by
-  simpa [QuadraticMap.coe_associatedHom] using
-    QuadraticMap.associated_eq_self_apply (S := K) (Q := Q) x
-
-/-- The associated pairing of a quadratic form over a field is symmetric. -/
-theorem associated_comm' (Q : QuadraticForm K V) (x y : V) :
-    (associated Q) x y = (associated Q) y x :=
-  LinearMap.IsSymm.eq (QuadraticForm.associated_isSymm (S := K) Q) x y
-
-/-- The quadratic expansion of a two-term linear combination through the associated pairing. -/
-theorem quadratic_expand' (Q : QuadraticForm K V) (a b : K) (x y : V) :
-    Q (a • x + b • y) = a ^ 2 * Q x + 2 * a * b * (associated Q) x y + b ^ 2 * Q y := by
-  conv_lhs => rw [← associated_self_apply' Q (a • x + b • y)]
-  simp only [map_add, map_smul, LinearMap.add_apply, LinearMap.smul_apply, smul_eq_mul,
-    associated_self_apply', associated_comm' Q y x]
-  ring
-
 /-- The orthogonal complement of the plane spanned by `e` and `f`, as Mathlib's
 `LinearMap.BilinForm.orthogonal`. -/
 noncomputable def planePerp (Q : QuadraticForm K V) (e f : V) : Submodule K V :=
@@ -209,13 +198,17 @@ theorem planeProj_associated_right (Q : QuadraticForm K V) (e f x : V) :
 theorem planeProj_mem (Q : QuadraticForm K V) {e f : V} (he : Q e = 0) (hf : Q f = 0)
     (hB : (associated Q) e f = 1) (x : V) : planeProj Q e f x ∈ planePerp Q e f := by
   rw [mem_planePerp_iff]
-  have hee : (associated Q) e e = 0 := by rw [associated_self_apply']; exact he
-  have hff : (associated Q) f f = 0 := by rw [associated_self_apply']; exact hf
-  have hfe : (associated Q) f e = 1 := by rw [associated_comm']; exact hB
+  have hfe : (associated Q) f e = 1 := by
+    rw [QuadraticMap.associated_isSymm K (Q := Q) f e]
+    exact hB
+  have hex : (associated Q) e x = (associated Q) x e :=
+    QuadraticMap.associated_isSymm K (Q := Q) e x
+  have hfx : (associated Q) f x = (associated Q) x f :=
+    QuadraticMap.associated_isSymm K (Q := Q) f x
   constructor
-  · rw [planeProj_associated_left, hee, hB, associated_comm' Q e x]
+  · rw [planeProj_associated_left, QuadraticMap.associated_eq_self_apply, he, hB, hex]
     ring
-  · rw [planeProj_associated_right, hff, hfe, associated_comm' Q f x]
+  · rw [planeProj_associated_right, QuadraticMap.associated_eq_self_apply, hf, hfe, hfx]
     ring
 
 omit [FiniteDimensional K V] in
@@ -248,13 +241,18 @@ theorem quadratic_eq_plane_add_proj (Q : QuadraticForm K V) {e f : V} (he : Q e 
   have hx : w + α • e + β • f = x := planeProj_sum Q e f x
   have hwe : (associated Q) e w = 0 := h1
   have hwf : (associated Q) f w = 0 := h2
-  have hee : (associated Q) e e = 0 := by rw [associated_self_apply']; exact he
-  have hff : (associated Q) f f = 0 := by rw [associated_self_apply']; exact hf
-  have hfe : (associated Q) f e = 1 := by rw [associated_comm']; exact hB
-  conv_lhs => rw [← hx, ← associated_self_apply' Q (w + α • e + β • f)]
+  have hwe' : (associated Q) w e = 0 := by
+    rw [QuadraticMap.associated_isSymm K (Q := Q) w e]
+    exact hwe
+  have hwf' : (associated Q) w f = 0 := by
+    rw [QuadraticMap.associated_isSymm K (Q := Q) w f]
+    exact hwf
+  have hfe : (associated Q) f e = 1 := by
+    rw [QuadraticMap.associated_isSymm K (Q := Q) f e]
+    exact hB
+  conv_lhs => rw [← hx, ← QuadraticMap.associated_eq_self_apply K (Q := Q) (w + α • e + β • f)]
   simp only [map_add, map_smul, LinearMap.add_apply, LinearMap.smul_apply, smul_eq_mul,
-    associated_self_apply', associated_comm' Q w e, associated_comm' Q w f, hwe, hwf,
-    hee, hff, hfe, hB]
+    QuadraticMap.associated_eq_self_apply K, he, hf, hwe, hwf, hwe', hwf', hfe, hB]
   ring
 
 omit [Invertible (2 : K)] in
@@ -279,16 +277,22 @@ noncomputable def splittingLinearEquiv (Q : QuadraticForm K V) {e f : V} (he : Q
     obtain ⟨v, w⟩ := p
     have hwe : (associated Q) e (w : V) = 0 := (mem_planePerp_iff.mp w.2).1
     have hwf : (associated Q) f (w : V) = 0 := (mem_planePerp_iff.mp w.2).2
-    have hee : (associated Q) e e = 0 := by rw [associated_self_apply']; exact he
-    have hff : (associated Q) f f = 0 := by rw [associated_self_apply']; exact hf
-    have hfe : (associated Q) f e = 1 := by rw [associated_comm']; exact hB
+    have hwe' : (associated Q) (w : V) e = 0 := by
+      rw [QuadraticMap.associated_isSymm K (Q := Q) (w : V) e]
+      exact hwe
+    have hwf' : (associated Q) w f = 0 := by
+      rw [QuadraticMap.associated_isSymm K (Q := Q) (w : V) f]
+      exact hwf
+    have hfe : (associated Q) f e = 1 := by
+      rw [QuadraticMap.associated_isSymm K (Q := Q) f e]
+      exact hB
     have h1 : (associated Q) (v 0 • e + v 1 • f + (w : V)) f = v 0 := by
       simp only [map_add, map_smul, LinearMap.add_apply, LinearMap.smul_apply, smul_eq_mul,
-        associated_comm' Q w f, hwf, hff, hB]
+        QuadraticMap.associated_eq_self_apply K, hwf', hf, hB]
       ring
     have h2 : (associated Q) (v 0 • e + v 1 • f + (w : V)) e = v 1 := by
       simp only [map_add, map_smul, LinearMap.add_apply, LinearMap.smul_apply, smul_eq_mul,
-        associated_comm' Q w e, hwe, hee, hfe]
+        QuadraticMap.associated_eq_self_apply K, hwe', he, hfe]
       ring
     have hproj : planeProj Q e f (v 0 • e + v 1 • f + (w : V)) = (w : V) := by
       simp only [planeProj, h1, h2]
@@ -366,5 +370,214 @@ theorem sigPos_restrict_planePerp (Q : QuadraticForm K V) {e f : V} (he : Q e = 
   omega
 
 end Splitting
+
+section Quotient
+
+variable {K : Type u} [Field K] [LinearOrder K] [IsStrictOrderedRing K]
+variable {V : Type u} [AddCommGroup V] [Module K V] [FiniteDimensional K V]
+variable [Invertible (2 : K)]
+variable {Q : QuadraticForm K V}
+
+omit [LinearOrder K] [IsStrictOrderedRing K] [FiniteDimensional K V] in
+/-- The orthogonal complement `e^⊥` of the line spanned by `e`. -/
+noncomputable def linePerp (Q : QuadraticForm K V) (e : V) : Submodule K V :=
+  LinearMap.BilinForm.orthogonal (associated Q) (Submodule.span K {e})
+
+omit [LinearOrder K] [IsStrictOrderedRing K] [FiniteDimensional K V] in
+/-- Membership in `e^⊥`: a vector is orthogonal to `e`. -/
+theorem mem_linePerp_iff {Q : QuadraticForm K V} {e x : V} :
+    x ∈ linePerp Q e ↔ (associated Q) e x = 0 := by
+  rw [linePerp, LinearMap.BilinForm.mem_orthogonal_iff]
+  refine ⟨fun h => h e (Submodule.mem_span_singleton_self e), ?_⟩
+  rintro h z hz
+  obtain ⟨a, rfl⟩ := Submodule.mem_span_singleton.mp hz
+  simp [h]
+
+omit [LinearOrder K] [IsStrictOrderedRing K] [FiniteDimensional K V] in
+/-- An isotropic vector lies in its own orthogonal complement. -/
+theorem mem_linePerp_self {Q : QuadraticForm K V} {e : V} (he : Q e = 0) : e ∈ linePerp Q e := by
+  rw [mem_linePerp_iff, QuadraticMap.associated_eq_self_apply]
+  exact he
+
+/-- The complement `W = ⟨e, f⟩^⊥` of the hyperbolic plane lies in `e^⊥`, so inside `e^⊥` the
+submodule `W ∩ e^⊥` is `W` itself. -/
+theorem planePerp_le_linePerp (Q : QuadraticForm K V) (e f : V) :
+    planePerp Q e f ≤ linePerp Q e := by
+  intro x hx
+  rw [mem_linePerp_iff]
+  exact (mem_planePerp_iff.mp hx).1
+
+omit [LinearOrder K] [IsStrictOrderedRing K] [FiniteDimensional K V] in
+/-- The line `⟨e⟩`, as a submodule of `e^⊥`. -/
+noncomputable def lineInPerp (Q : QuadraticForm K V) {e : V} (he : Q e = 0) :
+    Submodule K ↥(linePerp Q e) :=
+  Submodule.span K {⟨e, mem_linePerp_self he⟩}
+
+/-- The submodule `W ∩ e^⊥` of `e^⊥`, which is `W` by `planePerp_le_linePerp`. -/
+noncomputable def planeInPerp (Q : QuadraticForm K V) (e f : V) :
+    Submodule K ↥(linePerp Q e) :=
+  Submodule.comap (linePerp Q e).subtype (planePerp Q e f)
+
+/-- Inside `e^⊥`, the line `⟨e⟩` and `W ∩ e^⊥` are disjoint: a multiple of `e` orthogonal to `f`
+is zero, because `b(e, f) = 1`. -/
+theorem disjoint_lineInPerp_planeInPerp (Q : QuadraticForm K V) {e f : V} (he : Q e = 0)
+    (hB : (associated Q) e f = 1) :
+    Disjoint (lineInPerp Q he) (planeInPerp Q e f) := by
+  rw [Submodule.disjoint_def]
+  rintro ⟨x, hx⟩ hxp hxq
+  rw [planeInPerp, Submodule.mem_comap] at hxq
+  rw [lineInPerp] at hxp
+  obtain ⟨a, ha⟩ := Submodule.mem_span_singleton.mp hxp
+  have hxa : a • e = x := by simpa using congrArg Subtype.val ha
+  have hfe : (associated Q) f e = 1 := by
+    rw [QuadraticMap.associated_isSymm K (Q := Q) f e]
+    exact hB
+  have hfx : (associated Q) f x = 0 := (mem_planePerp_iff.mp hxq).2
+  rw [← hxa, map_smul, smul_eq_mul, hfe, mul_one] at hfx
+  have hx0 : x = 0 := by rw [← hxa, hfx, zero_smul]
+  exact Subtype.ext hx0
+
+/-- Inside `e^⊥`, the line `⟨e⟩` and `W ∩ e^⊥` span everything: `x` is its projection to `W` plus
+its `e`-component. -/
+theorem codisjoint_lineInPerp_planeInPerp (Q : QuadraticForm K V) {e f : V} (he : Q e = 0)
+    (hf : Q f = 0) (hB : (associated Q) e f = 1) :
+    Codisjoint (lineInPerp Q he) (planeInPerp Q e f) := by
+  rw [codisjoint_iff, Submodule.eq_top_iff']
+  rintro ⟨x, hx⟩
+  have hex : (associated Q) e x = 0 := mem_linePerp_iff.mp hx
+  have hxe : (associated Q) x e = 0 := by
+    rw [QuadraticMap.associated_isSymm K (Q := Q) x e]
+    exact hex
+  have hsum : planeProj Q e f x + (associated Q) x f • e = x := by
+    have h := planeProj_sum Q e f x
+    rw [hxe, zero_smul, add_zero] at h
+    exact h
+  have hproj : planeProj Q e f x = x - (associated Q) x f • e := by
+    rw [eq_sub_iff_add_eq]
+    exact hsum
+  have hwp : planeProj Q e f x ∈ linePerp Q e := by
+    rw [hproj]
+    exact (linePerp Q e).sub_mem hx ((linePerp Q e).smul_mem _ (mem_linePerp_self he))
+  refine Submodule.mem_sup.mpr
+    ⟨(associated Q) x f • (⟨e, mem_linePerp_self he⟩ : ↥(linePerp Q e)), ?_,
+      ⟨planeProj Q e f x, hwp⟩, ?_, ?_⟩
+  · change (associated Q) x f • (⟨e, mem_linePerp_self he⟩ : ↥(linePerp Q e))
+      ∈ Submodule.span K {(⟨e, mem_linePerp_self he⟩ : ↥(linePerp Q e))}
+    exact Submodule.smul_mem _ _ (Submodule.mem_span_singleton_self _)
+  · change (linePerp Q e).subtype ⟨planeProj Q e f x, hwp⟩ ∈ planePerp Q e f
+    exact planeProj_mem Q he hf hB x
+  · exact Subtype.ext (by rw [add_comm]; exact hsum)
+
+/-- **The complement statement of the issue**: inside `e^⊥`, the line `⟨e⟩` and the complement
+`W ∩ e^⊥` of the hyperbolic plane are complementary. -/
+theorem isCompl_lineInPerp_planeInPerp (Q : QuadraticForm K V) {e f : V} (he : Q e = 0)
+    (hf : Q f = 0) (hB : (associated Q) e f = 1) :
+    IsCompl (lineInPerp Q he) (planeInPerp Q e f) :=
+  ⟨disjoint_lineInPerp_planeInPerp Q he hB, codisjoint_lineInPerp_planeInPerp Q he hf hB⟩
+
+/-- **The quotient `e^⊥/⟨e⟩` is `W`**: Mathlib's linear equivalence out of a quotient by a
+complement, with no quotient induction and no hand-built inverse laws, followed by the identity
+between `W ∩ e^⊥` and `W`. -/
+noncomputable def perpQuotientEquiv (Q : QuadraticForm K V) {e f : V} (he : Q e = 0)
+    (hf : Q f = 0) (hB : (associated Q) e f = 1) :
+    (↥(linePerp Q e) ⧸ lineInPerp Q he) ≃ₗ[K] ↥(planePerp Q e f) :=
+  (Submodule.quotientEquivOfIsCompl (lineInPerp Q he) (planeInPerp Q e f)
+      (isCompl_lineInPerp_planeInPerp Q he hf hB)).trans
+    (Submodule.comapSubtypeEquivOfLe (planePerp_le_linePerp Q e f))
+
+/-- **The form induced on `e^⊥/⟨e⟩`**: the restriction of `Q` to `W`, transported along the linear
+equivalence `e^⊥/⟨e⟩ ≃ W`. -/
+noncomputable def isotropicQuotientForm (Q : QuadraticForm K V) {e f : V} (he : Q e = 0)
+    (hf : Q f = 0) (hB : (associated Q) e f = 1) :
+    QuadraticForm K (↥(linePerp Q e) ⧸ lineInPerp Q he) :=
+  (QuadraticMap.restrict Q (planePerp Q e f)).comp (perpQuotientEquiv Q he hf hB).toLinearMap
+
+/-- The induced form on `e^⊥/⟨e⟩` is isometric to `Q|W`, by construction of `perpQuotientEquiv`. -/
+noncomputable def isotropicQuotientIsometryEquiv (Q : QuadraticForm K V) {e f : V} (he : Q e = 0)
+    (hf : Q f = 0) (hB : (associated Q) e f = 1) :
+    QuadraticMap.IsometryEquiv (isotropicQuotientForm Q he hf hB)
+      (QuadraticMap.restrict Q (planePerp Q e f)) where
+  toLinearEquiv := perpQuotientEquiv Q he hf hB
+  map_app' := by
+    intro x
+    simp [isotropicQuotientForm]
+
+/-- The induced form on `e^⊥/⟨e⟩` is equivalent to `Q|W`. -/
+theorem equivalent_isotropicQuotientForm (Q : QuadraticForm K V) {e f : V} (he : Q e = 0)
+    (hf : Q f = 0) (hB : (associated Q) e f = 1) :
+    QuadraticMap.Equivalent (isotropicQuotientForm Q he hf hB)
+      (QuadraticMap.restrict Q (planePerp Q e f)) :=
+  ⟨isotropicQuotientIsometryEquiv Q he hf hB⟩
+
+/-- **The positive index of the induced form** is that of `Q` minus one. -/
+theorem sigPos_isotropicQuotientForm (Q : QuadraticForm K V) {e f : V} (he : Q e = 0)
+    (hf : Q f = 0) (hB : (associated Q) e f = 1) :
+    sigPos (isotropicQuotientForm Q he hf hB) + 1 = sigPos Q := by
+  rw [(equivalent_isotropicQuotientForm Q he hf hB).sigPos_eq]
+  exact sigPos_restrict_planePerp Q he hf hB
+
+/-- **The negative index of the induced form** is that of `Q` minus one. -/
+theorem sigNeg_isotropicQuotientForm (Q : QuadraticForm K V) {e f : V} (he : Q e = 0)
+    (hf : Q f = 0) (hB : (associated Q) e f = 1) :
+    sigNeg (isotropicQuotientForm Q he hf hB) + 1 = sigNeg Q := by
+  rw [(equivalent_isotropicQuotientForm Q he hf hB).sigNeg_eq]
+  exact sigNeg_restrict_planePerp Q he hf hB
+
+omit [LinearOrder K] [IsStrictOrderedRing K] [FiniteDimensional K V] in
+/-- The value of `Q` at `g + t • e` for an isotropic `e` with `b(e, g) = 1`: the plane part of the
+hyperbolic splitting. -/
+theorem quadratic_add_smul_eq (Q : QuadraticForm K V) {e g : V} (he : Q e = 0)
+    (hB : (associated Q) e g = 1) (t : K) : Q (g + t • e) = Q g + 2 * t := by
+  have hge : (associated Q) g e = 1 := by
+    rw [QuadraticMap.associated_isSymm K (Q := Q) g e]
+    exact hB
+  rw [← QuadraticMap.associated_eq_self_apply K (Q := Q) (g + t • e)]
+  simp only [map_add, map_smul, LinearMap.add_apply, LinearMap.smul_apply, smul_eq_mul,
+    QuadraticMap.associated_eq_self_apply K, he, hB, hge, mul_one, mul_zero, add_zero]
+  ring
+
+omit [FiniteDimensional K V] in
+/-- **Nondegeneracy produces the hyperbolic partner**: an isotropic vector `e ≠ 0` has a partner
+`f` that is isotropic and paired `1` with `e`. -/
+theorem exists_hyperbolicPartner (Q : QuadraticForm K V) (hnd : (associated Q).Nondegenerate)
+    {e : V} (he : Q e = 0) (hne : e ≠ 0) :
+    ∃ f : V, Q f = 0 ∧ (associated Q) e f = 1 := by
+  have hex : ∃ y : V, (associated Q) e y ≠ 0 := by
+    by_contra h
+    push Not at h
+    exact hne (hnd.1 e h)
+  obtain ⟨y, hy⟩ := hex
+  set g : V := ((associated Q) e y)⁻¹ • y with hg
+  have hB : (associated Q) e g = 1 := by
+    rw [hg, map_smul, smul_eq_mul, inv_mul_cancel₀ hy]
+  refine ⟨g - (2⁻¹ * Q g) • e, ?_, ?_⟩
+  · have hexp := quadratic_add_smul_eq Q he hB (-(2⁻¹ * Q g))
+    rw [show g - (2⁻¹ * Q g) • e = g + (-(2⁻¹ * Q g)) • e from by
+      rw [sub_eq_add_neg, neg_smul], hexp]
+    have h2 : 2 * (-(2⁻¹ * Q g)) = -(Q g) := by
+      rw [mul_neg, ← mul_assoc, mul_inv_cancel₀ two_ne_zero, one_mul]
+    rw [h2]
+    ring
+  · have hee : (associated Q) e e = 0 := by
+      rw [QuadraticMap.associated_eq_self_apply]
+      exact he
+    simp [sub_eq_add_neg, hee, hB]
+
+/-- **The signature of `e^⊥/⟨e⟩`**: for a nondegenerate form `Q` over an ordered field and an
+isotropic `e ≠ 0`, the form induced on `e^⊥/⟨e⟩` has signature
+`(sigPos Q - 1, sigNeg Q - 1)`. The partner `f` is produced by nondegeneracy. -/
+theorem exists_isotropicQuotientForm_signature (Q : QuadraticForm K V)
+    (hnd : (associated Q).Nondegenerate) {e : V} (he : Q e = 0) (hne : e ≠ 0) :
+    ∃ (f : V) (hf : Q f = 0) (hB : (associated Q) e f = 1),
+      sigPos (isotropicQuotientForm Q he hf hB) = sigPos Q - 1 ∧
+        sigNeg (isotropicQuotientForm Q he hf hB) = sigNeg Q - 1 := by
+  obtain ⟨f, hf, hB⟩ := exists_hyperbolicPartner Q hnd he hne
+  refine ⟨f, hf, hB, ?_, ?_⟩
+  · have h := sigPos_isotropicQuotientForm Q he hf hB
+    omega
+  · have h := sigNeg_isotropicQuotientForm Q he hf hB
+    omega
+
+end Quotient
 
 end LeanCategories.Lattices.Valued
