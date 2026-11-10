@@ -329,5 +329,6 @@ public import LeanCategories.Lattices.Valued.IsotropicReductionBlocks
 public import LeanCategories.Lattices.Valued.CobleReduction
 public import LeanCategories.Lattices.Valued.CobleReductionSignature
 public import LeanCategories.Lattices.Valued.PositiveCone
+public import LeanCategories.Lattices.Valued.PositiveConeReflections
 
 @[expose] public section
