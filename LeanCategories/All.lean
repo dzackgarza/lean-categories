@@ -331,5 +331,6 @@ public import LeanCategories.Lattices.Valued.CobleReductionSignature
 public import LeanCategories.Lattices.Valued.PositiveCone
 public import LeanCategories.Lattices.Valued.PositiveConeReflections
 public import LeanCategories.Lattices.Valued.PositiveConeExample
+public import LeanCategories.Lattices.Valued.LatticeCone
 
 @[expose] public section
