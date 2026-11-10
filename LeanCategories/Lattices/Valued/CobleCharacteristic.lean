@@ -19,9 +19,9 @@ class as `[h/2]`, `h = e₀` the generator of the `⟨2⟩` summand:
   of the dual basis (`cobleHalfZ_spec`, `cobleHalfZ_pairing`);
 * `cobleHalfSpan i` is `nᵢ / 2` in the rational span, and `cobleDual_riesz` identifies it with the
   Riesz image of the `i`-th dual basis functional (`cobleBasis.dual i`);
-* `cobleDiscriminant_two_smul` shows that `A_{T_Co}` is `2`-elementary, and
-  `cobleHalfH_isCharacteristic` shows that `[h/2]` realizes `q_{T_Co} mod 1` under the
-  discriminant pairing;
+* `cobleDiscriminant_two_smul` shows that `A_{T_Co}` is `2`-elementary, `cobleCharacteristic_exists`
+  is the general existence theorem applied to it, `cobleHalfH_isCharacteristic` identifies `[h/2]`
+  with the class the theorem produces, and `cobleHalfH_existsUnique` combines the two;
 * `cobleGammaCo` is the stabilizer of `[h/2]` in `O(T_Co)`, and `cobleGammaCo_eq_top` is the
   research statement: `O(T_Co)` fixes `[h/2]`, so `Γ_Co = O(T_Co)`.
 
@@ -352,9 +352,9 @@ theorem adjoint_cobleHalfZ (i : Fin 11) :
   rw [LinearMap.smul_apply, smul_eq_mul, BilinModuleCat.bilinMap_apply, coble_pairing_halfZ,
     Module.Basis.dualBasis_apply, cobleCoordEquiv, Module.Basis.equivFun_apply]
 
-/-- **The discriminant group of `T_Co` is killed by `2`.** `T_Co = ⟨2⟩ ⊕ E(2)` with `E` even
-unimodular, so twice any metric-dual vector is an integral vector. -/
-theorem cobleDiscriminant_two_smul (x : cobleLattice.obj.defect) : (2 : ℤ) • x = 0 := by
+/-- **The discriminant group of `T_Co` is killed by `2`** (`x + x = 0`). `T_Co = ⟨2⟩ ⊕ E(2)` with
+`E` even unimodular, so twice any metric-dual vector is an integral vector. -/
+theorem cobleDiscriminant_two_smul (x : cobleLattice.obj.defect) : x + x = 0 := by
   obtain ⟨f, rfl⟩ := cobleLattice.obj.defectProjection_surjective x
   obtain ⟨w, hw⟩ : ∃ w, cobleLattice.obj.adjoint w = (2 : ℤ) • f := by
     refine ⟨∑ i, (cobleBasis.dualBasis).repr f i • cobleCoordEquiv.symm (cobleHalfZ i), ?_⟩
@@ -364,7 +364,7 @@ theorem cobleDiscriminant_two_smul (x : cobleLattice.obj.defect) : (2 : ℤ) •
     rw [Finset.smul_sum]
     exact Finset.sum_congr rfl fun i _ => by rw [map_smul, adjoint_cobleHalfZ, smul_comm]
   rw [show cobleLattice.obj.defectProjection f = Submodule.Quotient.mk f from rfl,
-    ← Submodule.Quotient.mk_smul, ← hw, Submodule.Quotient.mk_eq_zero]
+    ← two_smul ℤ, ← Submodule.Quotient.mk_smul, ← hw, Submodule.Quotient.mk_eq_zero]
   exact ⟨w, rfl⟩
 
 
@@ -513,16 +513,40 @@ theorem cobleHalfH_isCharacteristic :
     exact AddSubgroup.mem_top x
   exact sub_eq_zero.mp hx
 
-/-- **`T_Co` has exactly one characteristic class, and it is `[h/2]`.** Uniqueness is the general
-statement of `DiscriminantCharacteristic`; existence is the exhibited `[h/2]`. -/
+/-- **`T_Co` has a characteristic class**: existence, from the general theorem
+`exists_isCharacteristicClassOf'` applied to the `2`-elementary discriminant form of `T_Co`. -/
+theorem cobleCharacteristic_exists (h2 : ∀ x : cobleLattice.obj.defect, x + x = 0) :
+    ∃ w : cobleLattice.obj.defect,
+      IsCharacteristicClassOf
+        (evenDiscriminantQuadraticMap cobleLattice coble_isFractionFieldPerfect coble_isEven)
+        (discriminantBilinMap ℤ cobleLattice coble_isFractionFieldPerfect) w :=
+  exists_isCharacteristicClassOf' coble_isFractionFieldPerfect coble_isEven h2
+
+/-- **The characteristic class of `T_Co` is `[h/2]`**: any class satisfying the characteristic
+property is `[h/2]`, by uniqueness (`isCharacteristicClassOf_unique'`) applied to
+`cobleHalfH_isCharacteristic`. -/
+theorem cobleCharacteristic_eq_halfH {w : cobleLattice.obj.defect}
+    (hw : IsCharacteristicClassOf
+      (evenDiscriminantQuadraticMap cobleLattice coble_isFractionFieldPerfect coble_isEven)
+      (discriminantBilinMap ℤ cobleLattice coble_isFractionFieldPerfect) w) :
+    w = cobleHalfHCls :=
+  isCharacteristicClassOf_unique' coble_isFractionFieldPerfect coble_isEven hw
+    cobleHalfH_isCharacteristic
+
+/-- **`T_Co` has exactly one characteristic class, and it is `[h/2]`.**
+
+Existence is the general existence theorem `exists_isCharacteristicClassOf'`, via
+`cobleCharacteristic_exists`; uniqueness is `isCharacteristicClassOf_unique'`; and
+`cobleHalfH_isCharacteristic` identifies the class with `[h/2]`. -/
 theorem cobleHalfH_existsUnique :
     ∃! w : cobleLattice.obj.defect,
       IsCharacteristicClassOf
         (evenDiscriminantQuadraticMap cobleLattice coble_isFractionFieldPerfect coble_isEven)
-        (discriminantBilinMap ℤ cobleLattice coble_isFractionFieldPerfect) w :=
-  ⟨cobleHalfHCls, cobleHalfH_isCharacteristic, fun _ hw =>
-    isCharacteristicClassOf_unique' coble_isFractionFieldPerfect coble_isEven hw
-      cobleHalfH_isCharacteristic⟩
+        (discriminantBilinMap ℤ cobleLattice coble_isFractionFieldPerfect) w := by
+  obtain ⟨w₀, hw₀⟩ := cobleCharacteristic_exists cobleDiscriminant_two_smul
+  rw [cobleCharacteristic_eq_halfH hw₀] at hw₀
+  exact ⟨cobleHalfHCls, hw₀, fun w hw =>
+    isCharacteristicClassOf_unique' coble_isFractionFieldPerfect coble_isEven hw hw₀⟩
 
 /-- **Every isometry of `T_Co` fixes `[h/2]`**: the characteristic-class invariance theorem of
 `DiscriminantCharacteristic` applied to `T_Co`. -/

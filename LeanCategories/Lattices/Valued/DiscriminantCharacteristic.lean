@@ -22,9 +22,13 @@ and every isometry of the pair `(q,b)` fixes it. At `T_Co` (#115) it is the clas
 the invariance statement is that `O(T_Co)` fixes `[h/2]`.
 
 Everything here is proved for an arbitrary input: an arbitrary quadratic map with its polar
-pairing (the abstract statements), and an arbitrary even lattice whose discriminant group is
-`2`-elementary (the existence and invariance statements). The lattice `T_Co` enters only in
-`CobleLattice`, where these general facts are applied.
+pairing (the abstract statements: additivity, existence, uniqueness and invariance), and an
+arbitrary even lattice whose discriminant group is `2`-elementary. The lattice `T_Co` enters only in
+`CobleCharacteristic`, where these general facts are applied.
+
+Existence uses one construction about `ℤ`-modules and no property of `T_Co`: an additive map is
+`ℤ`-linear (`exists_intLinearMap_of_additive`), so `q mod 1` is a `ℤ`-linear functional, and a
+perfect pairing pairs every `ℤ`-linear functional against a class.
 -/
 
 @[expose] public section
@@ -112,15 +116,16 @@ variable {R : Type u} [CommRing R] [IsDomain R]
 variable {M : Type u} [AddCommGroup M] [Module R M]
 
 omit [IsDomain R] in
-/-- **`x ↦ q(x) mod 1` is additive when the group is killed by `2`.** -/
+/-- **`x ↦ q(x) mod 1` is additive when the group is killed by `2`** (`x + x = 0`, the additive
+form of `2 · x = 0`). -/
 theorem quadraticModOne_add
     (q : QuadraticMap R M (DoubleFractionValueQuotient R))
     (b : LinearMap.BilinMap R M (FractionValueQuotient R))
     (hpolar : ∀ x y, QuadraticMap.polar q x y = doubleValueMap R (b x y))
-    (h2 : ∀ x : M, (2 : R) • x = 0) (x y : M) :
+    (h2 : ∀ x : M, x + x = 0) (x y : M) :
     quadraticModOne q (x + y) = quadraticModOne q x + quadraticModOne q y := by
   have hz : (2 : R) • b x y = 0 := by
-    have h1 : b ((2 : R) • x) y = 0 := by rw [h2 x, map_zero]; rfl
+    have h1 : b ((2 : R) • x) y = 0 := by rw [two_smul, h2 x, map_zero]; rfl
     rwa [map_smul, LinearMap.smul_apply] at h1
   have hsum : q (x + y) = q x + q y + doubleValueMap R (b x y) := by
     rw [QuadraticMap.map_add (⇑q) x y, hpolar]
@@ -153,6 +158,72 @@ theorem isometry_fixes_isCharacteristicClassOf
 
 end Abstract
 
+/-! ## Existence of the characteristic class
+
+Additivity of `q mod 1` is the only input: it makes `q mod 1` an additive homomorphism, hence
+`ℤ`-linear, and a perfect pairing pairs every `ℤ`-linear functional against a class. -/
+
+section Existence
+
+variable {M W : Type} [AddCommGroup M] [AddCommGroup W]
+
+/-- A `ℤ`-linear map is unchanged by replacing either `ℤ`-module structure by the other one: all
+`ℤ`-module structures on an additive commutative group are equal
+(`AddCommMonoid.subsingletonIntModule`), so the two `LinearMap` types carry the same data. -/
+noncomputable def linearMapOfModuleEq
+    (I₁ I₂ : Module ℤ M) (J₁ J₂ : Module ℤ W)
+    (φ : @LinearMap ℤ ℤ _ _ (RingHom.id ℤ) M W _ _ I₁ J₁) :
+    @LinearMap ℤ ℤ _ _ (RingHom.id ℤ) M W _ _ I₂ J₂ := by
+  have hI : I₁ = I₂ := Subsingleton.elim _ _
+  have hJ : J₁ = J₂ := Subsingleton.elim _ _
+  subst hI
+  subst hJ
+  exact φ
+
+/-- The transported linear map has the same underlying function. -/
+theorem coe_linearMapOfModuleEq (I₁ I₂ : Module ℤ M) (J₁ J₂ : Module ℤ W)
+    (φ : @LinearMap ℤ ℤ _ _ (RingHom.id ℤ) M W _ _ I₁ J₁) :
+    ⇑(linearMapOfModuleEq I₁ I₂ J₁ J₂ φ) = ⇑φ := by
+  have hI : I₁ = I₂ := Subsingleton.elim _ _
+  have hJ : J₁ = J₂ := Subsingleton.elim _ _
+  subst hI
+  subst hJ
+  rfl
+
+/-- **An additive map between additive commutative groups is `ℤ`-linear**, for the prescribed
+`ℤ`-module structures: `AddMonoidHom.toIntLinearMap` supplies `map_smul'` from `map_zsmul` at the
+canonical structure, and `linearMapOfModuleEq` moves the result to the prescribed one. -/
+theorem exists_intLinearMap_of_additive
+    (I : Module ℤ M) (J : Module ℤ W) (f : M → W) (h0 : f 0 = 0)
+    (hadd : ∀ x y, f (x + y) = f x + f y) :
+    ∃ φ : @LinearMap ℤ ℤ _ _ (RingHom.id ℤ) M W _ _ I J, ⇑φ = f :=
+  ⟨linearMapOfModuleEq (AddCommGroup.toIntModule M) I (AddCommGroup.toIntModule W) J
+      (AddMonoidHom.toIntLinearMap { toFun := f, map_zero' := h0, map_add' := hadd }),
+    coe_linearMapOfModuleEq _ _ _ _ _⟩
+
+/-- **Existence of the characteristic class of a `2`-elementary quadratic form.**
+
+Let `q` be a quadratic form with values in `ℚ/2ℤ` whose polar form is twice a `ℚ/ℤ`-valued
+pairing `b`, on a group killed by `2`, and suppose `b` is bijective (perfect). Then some class `w`
+pairs against every `x` to `q(x) mod 1`. -/
+theorem exists_isCharacteristicClassOf [Module ℤ M]
+    (q : QuadraticMap ℤ M (DoubleFractionValueQuotient ℤ))
+    (b : LinearMap.BilinMap ℤ M (FractionValueQuotient ℤ))
+    (hpolar : ∀ x y, QuadraticMap.polar q x y = doubleValueMap ℤ (b x y))
+    (h2 : ∀ x : M, x + x = 0) (hbij : Function.Bijective b) :
+    ∃ w : M, IsCharacteristicClassOf q b w := by
+  have h0 : quadraticModOne q 0 = 0 := by
+    simp [quadraticModOne]
+  have hadd : ∀ x y : M, quadraticModOne q (x + y) =
+      quadraticModOne q x + quadraticModOne q y :=
+    quadraticModOne_add q b hpolar h2
+  obtain ⟨φ, hφ⟩ := exists_intLinearMap_of_additive (inferInstance : Module ℤ M)
+    (inferInstance : Module ℤ (FractionValueQuotient ℤ)) (quadraticModOne q) h0 hadd
+  obtain ⟨w, hw⟩ := hbij.2 φ
+  exact ⟨w, fun x => by rw [hw]; exact congrFun hφ x⟩
+
+end Existence
+
 /-! ## The characteristic class of an even lattice with `2`-elementary discriminant -/
 
 section Lattice
@@ -168,6 +239,19 @@ theorem discriminantBilinMap_bijective
   (BilinModuleCat.isPerfect_iff_adjoint_bijective_of_isSymmetric _
     (discriminantBilinObject_isSymmetric ℤ L hL)).mp
     (discriminantBilinObject_isPerfect (R := ℤ) L hL)
+
+/-- **Existence of the characteristic class of an even lattice with `2`-elementary
+discriminant.** -/
+theorem exists_isCharacteristicClassOf'
+    [Module.Free ℤ L.obj.carrier] [Module.Finite ℤ L.obj.carrier]
+    (hL : IsFractionFieldPerfect ℤ L) (hEven : IsEven L)
+    (h2 : ∀ x : L.obj.defect, x + x = 0) :
+    ∃ w : L.obj.defect,
+      IsCharacteristicClassOf (evenDiscriminantQuadraticMap L hL hEven)
+        (discriminantBilinMap ℤ L hL) w :=
+  exists_isCharacteristicClassOf _ _
+    (fun a b => evenDiscriminantQuadraticMap_polar L hL hEven a b) h2
+    (discriminantBilinMap_bijective (L := L) hL)
 
 /-- **The characteristic class of a `2`-elementary discriminant form is unique.**
 
