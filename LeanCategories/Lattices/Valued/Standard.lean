@@ -96,6 +96,25 @@ theorem rankOneLattice_gramMatrix (a : ℤ) :
       rankOneGramMatrix a :=
   LinearMap.BilinForm.toMatrix'_toBilin' (rankOneGramMatrix a)
 
+/-- The pairing of two vectors of the rank-one lattice is `a` times the product of the
+coordinates. -/
+theorem rankOneLattice_pairing (a : ℤ) (x y : Fin 1 → ℤ) :
+    (rankOneLattice a).obj.pairing x y = a * (x 0 * y 0) := by
+  change Matrix.toBilin' (rankOneGramMatrix a) x y = a * (x 0 * y 0)
+  simp only [Matrix.toBilin'_apply', Matrix.mulVec, dotProduct, Fin.sum_univ_one,
+    rankOneGramMatrix]
+  norm_num
+  ring
+
+/-- The pairing of two standard basis vectors of the rank-one lattice is the Gram entry. -/
+theorem rankOneLattice_pairing_single (a : ℤ) (i j : Fin 1) :
+    (rankOneLattice a).obj.pairing (Pi.single i 1) (Pi.single j 1) =
+      rankOneGramMatrix a i j := by
+  rw [rankOneLattice_pairing]
+  fin_cases i
+  fin_cases j
+  simp [rankOneGramMatrix]
+
 /-- The determinant of a rank-one lattice is its selected square. -/
 @[simp]
 theorem rankOneLattice_determinant (a : ℤ) :
@@ -1026,6 +1045,12 @@ theorem e8GramMatrix_det : e8GramMatrix.det = 1 := by
   simp_rw [hrow]
   simp (disch := decide) [Fin.sum_univ_succ, h6, h7]
 
+/-- The pairing of two standard basis vectors of the negative `E₈` lattice is the Gram entry. -/
+theorem e8Lattice_pairing_single (i j : Fin 8) :
+    e8Lattice.obj.pairing (Pi.single i 1) (Pi.single j 1) = e8GramMatrix i j := by
+  change Matrix.toBilin' e8GramMatrix (Pi.single i 1) (Pi.single j 1) = e8GramMatrix i j
+  rw [Matrix.toBilin'_single]
+
 /-- The standard basis computes the determinant of the negative `E₈` lattice. -/
 theorem e8Lattice_determinant :
     determinant e8Lattice (Pi.basisFun ℤ (Fin 8)) = 1 := by
@@ -1110,6 +1135,14 @@ theorem hyperbolicPlane_pairing (x y : hyperbolicPlane.obj.carrier) :
     hyperbolicPlane.obj.pairing x y =
       Matrix.toBilin' hyperbolicPlaneGramMatrix x y :=
   rfl
+
+/-- The pairing of two standard basis vectors of the hyperbolic plane is the Gram entry. -/
+theorem hyperbolicPlane_pairing_single (i j : Fin 2) :
+    hyperbolicPlane.obj.pairing (Pi.single i 1) (Pi.single j 1) =
+      hyperbolicPlaneGramMatrix i j := by
+  change Matrix.toBilin' hyperbolicPlaneGramMatrix (Pi.single i 1) (Pi.single j 1) =
+    hyperbolicPlaneGramMatrix i j
+  rw [Matrix.toBilin'_single]
 
 /-- The standard basis has the hyperbolic Gram matrix. -/
 theorem hyperbolicPlane_gramMatrix :
