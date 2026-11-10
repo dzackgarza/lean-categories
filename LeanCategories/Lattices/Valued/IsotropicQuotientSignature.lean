@@ -524,6 +524,54 @@ theorem sigNeg_isotropicQuotientForm (Q : QuadraticForm K V) {e f : V} (he : Q e
   exact sigNeg_restrict_planePerp Q he hf hB
 
 omit [LinearOrder K] [IsStrictOrderedRing K] [FiniteDimensional K V] in
+/-- `Q` is constant along the isotropic line `⟨e⟩` inside `e^⊥`: translating by a multiple of the
+isotropic `e` does not change the value of `Q`. This is the well-definedness of the induced form on
+`e^⊥/⟨e⟩` at the level of representatives. -/
+theorem quadratic_add_smul_eq_of_mem_linePerp (Q : QuadraticForm K V) {e x : V} (he : Q e = 0)
+    (hx : x ∈ linePerp Q e) (c : K) : Q (x + c • e) = Q x := by
+  have hex : (associated Q) e x = 0 := mem_linePerp_iff.mp hx
+  have hxe : (associated Q) x e = 0 := by
+    rw [QuadraticMap.associated_isSymm K (Q := Q) x e]
+    exact hex
+  have hee : (associated Q) e e = 0 := by
+    rw [QuadraticMap.associated_eq_self_apply]
+    exact he
+  rw [← QuadraticMap.associated_eq_self_apply K (Q := Q) (x + c • e),
+    ← QuadraticMap.associated_eq_self_apply K (Q := Q) x]
+  simp only [map_add, map_smul, LinearMap.add_apply, LinearMap.smul_apply, smul_eq_mul,
+    QuadraticMap.associated_eq_self_apply K, hex, hxe, he, mul_zero, add_zero]
+
+/-- **The induction formula for `isotropicQuotientForm`**: the induced form on `e^⊥/⟨e⟩` evaluates
+on the class of a vector of `e^⊥` to the value of `Q` on that vector. -/
+theorem isotropicQuotientForm_mk (Q : QuadraticForm K V) {e f : V} (he : Q e = 0)
+    (hf : Q f = 0) (hB : (associated Q) e f = 1) (x : ↥(linePerp Q e)) :
+    isotropicQuotientForm Q he hf hB (Submodule.Quotient.mk x) = Q (x : V) := by
+  classical
+  set u : ↥(planeInPerp Q e f) :=
+    (Submodule.quotientEquivOfIsCompl (lineInPerp Q he) (planeInPerp Q e f)
+      (isCompl_lineInPerp_planeInPerp Q he hf hB)) (Submodule.Quotient.mk x) with hu
+  have hclass : (Submodule.Quotient.mk (u : ↥(linePerp Q e)) :
+      ↥(linePerp Q e) ⧸ lineInPerp Q he) = Submodule.Quotient.mk x := by
+    rw [hu]
+    exact Submodule.mk_quotientEquivOfIsCompl_apply _ _
+  have hmem : (u : ↥(linePerp Q e)) - x ∈ lineInPerp Q he :=
+    (Submodule.Quotient.eq (lineInPerp Q he)).mp hclass
+  obtain ⟨c, hc⟩ := Submodule.mem_span_singleton.mp hmem
+  have hcV : (u : V) = (x : V) + c • e := by
+    have h : c • e = (u : V) - (x : V) := by
+      have h' := congrArg (fun z : ↥(linePerp Q e) => (z : V)) hc
+      simpa using h'
+    rw [h]
+    abel
+  have hform : isotropicQuotientForm Q he hf hB (Submodule.Quotient.mk x) =
+      Q ((perpQuotientEquiv Q he hf hB (Submodule.Quotient.mk x) : ↥(planePerp Q e f)) : V) := by
+    simp [isotropicQuotientForm]
+  have hy : ((perpQuotientEquiv Q he hf hB (Submodule.Quotient.mk x) : ↥(planePerp Q e f)) : V)
+      = (u : V) := rfl
+  rw [hform, hy, hcV]
+  exact quadratic_add_smul_eq_of_mem_linePerp Q he x.2 c
+
+omit [LinearOrder K] [IsStrictOrderedRing K] [FiniteDimensional K V] in
 /-- The value of `Q` at `g + t • e` for an isotropic `e` with `b(e, g) = 1`: the plane part of the
 hyperbolic splitting. -/
 theorem quadratic_add_smul_eq (Q : QuadraticForm K V) {e g : V} (he : Q e = 0)

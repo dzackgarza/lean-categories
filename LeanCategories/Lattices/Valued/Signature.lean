@@ -375,6 +375,86 @@ theorem matrixSignature_eq_of_equivalent_weighted
     QuadraticForm.sigNeg_of_equiv_weightedSumSquares h,
     QuadraticForm.finrank_radical_of_equiv_weightedSumSquares h]
 
+/-- The signature of a diagonal matrix is the count of the signs of its diagonal entries. -/
+theorem matrixSignature_diagonal [IsStrictOrderedRing K]
+    {I : Type*} [Fintype I] [DecidableEq I] (w : I → K) :
+    matrixSignature K (Matrix.diagonal w) =
+      ({i | 0 < w i}.ncard, {i | w i < 0}.ncard, {i | w i = 0}.ncard) := by
+  have hval : ∀ x : I → K, matrixQuadraticForm K (Matrix.diagonal w) x =
+      QuadraticMap.weightedSumSquares K w x := by
+    intro x
+    simp only [matrixQuadraticForm, LinearMap.BilinMap.toQuadraticMap_apply,
+      Matrix.toBilin'_apply', Matrix.dot_mulVec_eq_sum_sum, Matrix.diagonal_apply,
+      QuadraticMap.weightedSumSquares_apply]
+    refine Finset.sum_congr rfl fun j _ => ?_
+    rw [Finset.sum_eq_single j]
+    · rw [if_pos rfl]
+      ring
+    · intro i _ hij
+      rw [if_neg hij]
+      simp
+    · intro hj
+      exact absurd (Finset.mem_univ j) hj
+  refine matrixSignature_eq_of_equivalent_weighted K (Matrix.diagonal w) w
+    ⟨LinearEquiv.refl K (I → K), fun x => ?_⟩
+  simpa using (hval x).symm
+
+/-- The value of a reindexed matrix's quadratic form at `x` is the value of the original form at
+the composition of `x` with the equivalence. -/
+theorem matrixQuadraticForm_reindex {I J : Type*} [Fintype I] [DecidableEq I]
+    [Fintype J] [DecidableEq J] (e : I ≃ J) (A : Matrix I I K) (x : J → K) :
+    matrixQuadraticForm K (Matrix.reindex e e A) x =
+      matrixQuadraticForm K A (fun i => x (e i)) := by
+  simp only [matrixQuadraticForm, LinearMap.BilinMap.toQuadraticMap_apply,
+    Matrix.toBilin'_apply', Matrix.dot_mulVec_eq_sum_sum, Matrix.reindex_apply,
+    Matrix.submatrix_apply]
+  rw [← Equiv.sum_comp e (fun j : J => ∑ i : J, x i * A (e.symm i) (e.symm j) * x j)]
+  simp only [Equiv.symm_apply_apply]
+  refine Finset.sum_congr rfl fun j _ => ?_
+  rw [← Equiv.sum_comp e (fun i : J => x i * A (e.symm i) j * x (e j))]
+  simp only [Equiv.symm_apply_apply]
+
+/-- The signature of a matrix is unchanged by reindexing its rows and columns along an
+equivalence. -/
+theorem matrixSignature_reindex [IsStrictOrderedRing K] {I J : Type*} [Fintype I]
+    [DecidableEq I] [Fintype J] [DecidableEq J] (e : I ≃ J) (A : Matrix I I K) :
+    matrixSignature K (Matrix.reindex e e A) = matrixSignature K A := by
+  have hiso : QuadraticMap.Equivalent (matrixQuadraticForm K (Matrix.reindex e e A))
+      (matrixQuadraticForm K A) :=
+    ⟨{ toLinearEquiv := LinearEquiv.funCongrLeft K K e
+       map_app' := fun x => (matrixQuadraticForm_reindex K e A x).symm }⟩
+  simp only [matrixSignature]
+  rw [hiso.sigPos_eq, hiso.sigNeg_eq, hiso.rank_radical_eq]
+
+/-- Multiplying a real matrix by a positive constant does not change its signature. -/
+theorem matrixSignature_smul_pos {I : Type*} [Fintype I] [DecidableEq I]
+    (A : Matrix I I ℝ) {c : ℝ} (hc : 0 < c) :
+    matrixSignature ℝ (c • A) = matrixSignature ℝ A := by
+  have hcne : Real.sqrt c ≠ 0 := ne_of_gt (Real.sqrt_pos.mpr hc)
+  have hsq : Real.sqrt c * Real.sqrt c = c := Real.mul_self_sqrt hc.le
+  have hsmul : matrixQuadraticForm ℝ (c • A) = c • matrixQuadraticForm ℝ A := by
+    ext x
+    simp only [matrixQuadraticForm, LinearMap.BilinMap.toQuadraticMap_apply,
+      Matrix.toBilin'_apply', Matrix.dot_mulVec_eq_sum_sum, Matrix.smul_apply,
+      QuadraticMap.smul_apply, smul_eq_mul]
+    rw [Finset.mul_sum]
+    refine Finset.sum_congr rfl fun j _ => ?_
+    rw [Finset.mul_sum]
+    refine Finset.sum_congr rfl fun i _ => ?_
+    ring
+  have hiso : QuadraticMap.Equivalent (matrixQuadraticForm ℝ (c • A))
+      (matrixQuadraticForm ℝ A) :=
+    ⟨{ toLinearEquiv := LinearEquiv.smulOfNeZero ℝ (I → ℝ) (Real.sqrt c) hcne
+       map_app' := by
+         intro x
+         rw [hsmul]
+         change matrixQuadraticForm ℝ A
+           ((LinearEquiv.smulOfNeZero ℝ (I → ℝ) (Real.sqrt c) hcne) x) =
+             c • matrixQuadraticForm ℝ A x
+         rw [LinearEquiv.smulOfNeZero_apply, QuadraticMap.map_smul, hsq] }⟩
+  simp only [matrixSignature]
+  rw [hiso.sigPos_eq, hiso.sigNeg_eq, hiso.rank_radical_eq]
+
 /-- An injective coordinate map gives a negative-definite Gram matrix. -/
 theorem matrixSignature_neg_transpose_mul_self
     {I J : Type*} [Fintype I] [Fintype J] [DecidableEq J]

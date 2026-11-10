@@ -2369,3 +2369,53 @@ The evidence refuses the false identity admission.
 noncentral-action boundaries. This follow-up used public mathematical source
 and its own theorem controls only; it did not inspect kernel or leaf source,
 downstream assertions, computational observations, or downstream diagnostics.
+
+### Base change is not yet known to commute with the isotropic quotient `P^⊥/P` (lean-categories#120)
+
+- **Need:** for an integral lattice `L` with a primitive isotropic submodule `P`, and its reduction
+  `M = P^⊥/P` with the form induced by `L` (`IsotropicReductionData.reduction`,
+  `LeanCategories/Lattices/Valued/IsotropicReduction.lean`), the real form of the reduction must be
+  the reduction of the real form: an isometry of quadratic spaces
+  `(↥D.perp ⧸ D.kernel) ⊗[ℤ] ℝ ≅ (e_ℝ)^⊥ ⧸ ⟨e_ℝ⟩`, where the right-hand side is the quotient of
+  `IsotropicQuotientSignature.lean` and carries the form determined by `q([x]) = Q_ℝ(x)`
+  (`isotropicQuotientForm_mk`). With that isometry the signature of `M` follows from
+  `sigPos_isotropicQuotientForm`/`sigNeg_isotropicQuotientForm` (lean-categories#119) applied to
+  `M ⊗ ℝ`, without ever computing from the coordinates of `e`. This is exactly the step that
+  lean-categories#120's construction paragraph prescribes ("the signature of `M` is the general
+  theorem of #119 applied to `M ⊗ ℝ`").
+- **Evidence:** the two presentations are built independently and neither is transported to the
+  other. `IsotropicReductionData.reduction` is a `ℤ`-quotient `↥D.perp ⧸ D.kernel`
+  (`reduction_pairing_mk` computes its pairing on classes), whereas `isotropicQuotientForm` lives on
+  `↥(linePerp Q e) ⧸ lineInPerp Q e` over an ordered field. `LatticeCone.realForm` is
+  `baseChangeFiniteIntegral ℤ ℝ`, i.e. `M ⊗[ℤ] ℝ`, so the comparison needs base change of the
+  submodule `P^⊥ ↪ L` *and* of the quotient by `P` (equivalently, the two exact sequences must be
+  compared under `⊗[ℤ] ℝ`). No declaration in the tree relates `TensorProduct` to
+  `IsotropicReductionData` or to `Submodule.orthogonalSubmodule`; `LeanCategories.Lattices.Valued.
+  BaseChange` proves flatness-exactness in general (`baseChange_exact`) but applies it only to
+  lattices and their forms.
+- **Gap and impact:** `integralSignature`'s value for the reduction is not derivable, so
+  `CobleQuotientSignature.cobleFiniteLattice_integralSignature` (the signature `(2, 9, 0)` of
+  `T_Co`, which is proved and independent) has no counterpart for `M`; consequently the `O⁺(M)`
+  of lean-categories#36 (`LatticeCone.latticePositiveConeStabilizer`, which needs
+  `(integralSignature M).1 = 1`) cannot be instantiated. The earliest affected owner is the real
+  form of an isotropic reduction; its consumers are lean-categories#120 and, downstream, the
+  cusp/reflection-group staging of lean-categories#36 that uses the hyperbolic lattice at a 0-cusp.
+  No statement or proof in the tree is weakened by this entry: nothing is currently asserted about
+  the signature of a reduction.
+- **Coverage:** Searched with `scripts/formalization_corpus.py` (live Formalization Corpus API,
+  2026-11-10): `isotropic quotient base change tensor product`, `base change quotient submodule
+  quadratic form`, `quotientEquivOfIsCompl`, `isotropic quotient signature`. Found: Mathlib's
+  `TensorProduct.quotientTensorEquiv` (`(M ⧸ m) ⊗ N ≃ (M ⊗ N) ⧸ range (m ⊗ N)`),
+  `Module.Flat.lTensor_exact`, and TauCeti's
+  `LinearAlgebra/QuadraticForm/BaseChange.lean` (base change of quadratic forms, no quotient
+  statement) as the nearest partial sources. Conclusion: no source states the commuting of base
+  change with the isotropic quotient; it is not merely unported. Confidence: high for the Lean
+  corpus indexes and Mathlib's tensor-product API; Gaps: no search of the non-Lean literature was
+  needed, the statement is elementary linear algebra over a flat base change.
+- **Repair link:** lean-categories#120. The repairs would be (i) `P^⊥ ⊗[ℤ] ℝ ≅ (e_ℝ)^⊥` as
+  submodules, from `baseChange_exact` applied to `0 → P^⊥ → L → ℤ` together with `2` invertible in
+  `ℝ`; (ii) `(P^⊥/P) ⊗[ℤ] ℝ ≅ (P^⊥ ⊗ ℝ)/(P ⊗ ℝ)` from `TensorProduct.quotientTensorEquiv`;
+  (iii) the value agreement on `x ⊗ 1` from `reduction_pairing_mk` and
+  `isotropicQuotientForm_mk`; and (iv) `Module.Free`/`Module.Projective` of `P^⊥/P` so that the
+  reduction is a `FiniteProjectiveLatticeCat` object (saturation of the primitive line, via
+  `Submodule.IsPrimitiveSubmodule` and `Module.free_of_finite_type_torsion_free'`).
