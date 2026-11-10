@@ -197,23 +197,23 @@ theorem reflectIn_associated_comm (Q : QuadraticForm ℝ V) {a : V} (ha : Q a �
   ring
 
 omit [FiniteDimensional ℝ V] in
-/-- **Conjugating a reflection by an isometry gives the reflection in the inverse image.** -/
+/-- **Conjugating a reflection by an isometry gives the reflection in the image vector.** -/
 theorem conj_reflectIn (Q : QuadraticForm ℝ V) {g : Q.IsometryEquiv Q} {a : V} (ha : Q a ≠ 0) :
     g * reflectIn Q a ha * g⁻¹ =
-      reflectIn Q (g⁻¹ a) (by rw [QuadraticMap.IsometryEquiv.map_app]; exact ha) := by
-  have hQ : Q ((g⁻¹ : Q.IsometryEquiv Q) a) = Q a := QuadraticMap.IsometryEquiv.map_app g⁻¹ a
+      reflectIn Q (g a) (by rw [QuadraticMap.IsometryEquiv.map_app]; exact ha) := by
+  have hQ : Q (g a) = Q a := QuadraticMap.IsometryEquiv.map_app g a
+  have hinv : ∀ x : V, g ((g⁻¹ : Q.IsometryEquiv Q) x) = x := fun x =>
+    QuadraticMap.IsometryEquiv.apply_symm_apply g x
+  have hmap : ∀ x : V,
+      (associated Q) ((g⁻¹ : Q.IsometryEquiv Q) x) a = (associated Q) x (g a) := by
+    intro x
+    have h := associated_map (Q := Q) g ((g⁻¹ : Q.IsometryEquiv Q) x) a
+    rw [hinv x] at h
+    exact h.symm
   refine DFunLike.ext _ _ (fun x => ?_)
-  have hinv : (g⁻¹ : Q.IsometryEquiv Q) (g x) = x :=
-    QuadraticMap.IsometryEquiv.symm_apply_apply g x
   rw [show ((g * reflectIn Q a ha * g⁻¹ : Q.IsometryEquiv Q)) x
-      = (g⁻¹ : Q.IsometryEquiv Q) (reflectIn Q a ha (g x)) from rfl]
-  rw [reflectIn_apply, map_sub, map_smul, hinv, reflectIn_apply, hQ]
-  have hmap : (associated Q) (g x) a = (associated Q) x ((g⁻¹ : Q.IsometryEquiv Q) a) := by
-    have h := associated_map (Q := Q) g x ((g⁻¹ : Q.IsometryEquiv Q) a)
-    have hgg : g ((g⁻¹ : Q.IsometryEquiv Q) a) = a :=
-      QuadraticMap.IsometryEquiv.apply_symm_apply g a
-    rwa [hgg] at h
-  rw [hmap]
+      = g (reflectIn Q a ha ((g⁻¹ : Q.IsometryEquiv Q) x)) from rfl]
+  rw [reflectIn_apply, map_sub, map_smul, hinv, reflectIn_apply, hQ, hmap]
 
 omit [FiniteDimensional ℝ V] in
 /-- **`W ⊴ O(Q)`**: the reflection group is normal in the orthogonal group, because conjugation
@@ -226,9 +226,7 @@ theorem realReflectionGroup_normal (Q : QuadraticForm ℝ V) :
   | mem x hx =>
       obtain ⟨a, ha, rfl⟩ := hx
       rw [conj_reflectIn Q (ne_of_lt ha)]
-      refine Subgroup.subset_closure ⟨(g⁻¹ : Q.IsometryEquiv Q) a, ?_, rfl⟩
-      rw [QuadraticMap.IsometryEquiv.map_app]
-      exact ha
+      exact Subgroup.subset_closure ⟨g a, by rw [QuadraticMap.IsometryEquiv.map_app]; exact ha, rfl⟩
   | one => simp
   | mul x y hx hy ihx ihy =>
       rw [show g * (x * y) * g⁻¹ = (g * x * g⁻¹) * (g * y * g⁻¹) by group]

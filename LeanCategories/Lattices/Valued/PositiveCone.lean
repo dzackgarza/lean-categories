@@ -81,14 +81,14 @@ module. Supplying the instance here is what lets `O(Q)` be Mathlib's isometry gr
 linear equivalences; nothing below redefines the object. -/
 noncomputable instance instGroupIsometryEquiv (Q : QuadraticForm ℝ V) :
     Group (Q.IsometryEquiv Q) where
-  mul f g := f.trans g
+  mul f g := g.trans f
   one := QuadraticMap.IsometryEquiv.refl Q
   inv f := f.symm
   mul_assoc f g h := rfl
   one_mul f := rfl
   mul_one f := rfl
   inv_mul_cancel f := DFunLike.ext _ _ (fun x =>
-    QuadraticMap.IsometryEquiv.apply_symm_apply f x)
+    QuadraticMap.IsometryEquiv.symm_apply_apply f x)
 
 /-- The self-pairing of the associated form is the form itself. Mathlib states this for
 `associatedHom S`; `associated` is that map (`QuadraticMap.coe_associatedHom`). -/
@@ -670,17 +670,17 @@ theorem image_lower_eq (Q : QuadraticForm ℝ V) (hpos : sigPos Q = 1) {t : V} (
     rw [image_lower_eq_neg_image_upper, hswap, neg_image_lower]
 
 omit [FiniteDimensional ℝ V] in
-/-- The image of a sheet under a product is the iterated image. The group law composes
-left-to-right: `(f * g) x = g (f x)`. -/
+/-- The image of a sheet under a product is the iterated image: the group law is left composition,
+`(f * g) x = f (g x)`. -/
 theorem image_mul (Q : QuadraticForm ℝ V) (f g : Q.IsometryEquiv Q) (s : Set V) :
-    ((f * g : Q.IsometryEquiv Q)) '' s = g '' (f '' s) := by
+    ((f * g : Q.IsometryEquiv Q)) '' s = f '' (g '' s) := by
   ext z
   constructor
   · rintro ⟨y, hy, rfl⟩
-    exact ⟨f y, ⟨y, hy, rfl⟩, rfl⟩
+    exact ⟨g y, ⟨y, hy, rfl⟩, rfl⟩
   · rintro ⟨w, ⟨y, hy, hwy⟩, hz⟩
     refine ⟨y, hy, ?_⟩
-    rw [show (f * g : Q.IsometryEquiv Q) y = g (f y) from rfl, hwy]
+    rw [show (f * g : Q.IsometryEquiv Q) y = f (g y) from rfl, hwy]
     exact hz
 
 /-- **An isometry that exchanges the sheets carries the lower sheet onto the upper one.** -/
@@ -709,26 +709,26 @@ noncomputable def positiveConeSign (Q : QuadraticForm ℝ V) (hpos : sigPos Q = 
     classical
     have hne := upper_ne_lower Q t ht
     have hmul : ((f * g : Q.IsometryEquiv Q)) '' positiveCone.upper Q t =
-        g '' (f '' positiveCone.upper Q t) := image_mul Q f g _
-    have hgl : g '' positiveCone.lower Q t =
-        if g '' positiveCone.upper Q t = positiveCone.upper Q t
-          then positiveCone.lower Q t else positiveCone.upper Q t := image_lower_eq Q hpos ht g
+        f '' (g '' positiveCone.upper Q t) := image_mul Q f g _
+    have hfl : f '' positiveCone.lower Q t =
+        if f '' positiveCone.upper Q t = positiveCone.upper Q t
+          then positiveCone.lower Q t else positiveCone.upper Q t := image_lower_eq Q hpos ht f
     rw [hmul]
-    by_cases hf : f '' positiveCone.upper Q t = positiveCone.upper Q t
-    · rw [hf]
-      by_cases hg : g '' positiveCone.upper Q t = positiveCone.upper Q t
-      · rw [if_pos hg]
+    by_cases hg : g '' positiveCone.upper Q t = positiveCone.upper Q t
+    · rw [hg]
+      by_cases hf : f '' positiveCone.upper Q t = positiveCone.upper Q t
+      · rw [if_pos hf]
         simp
-      · rw [if_neg hg]
+      · rw [if_neg hf]
         simp
-    · have hfs : f '' positiveCone.upper Q t = positiveCone.lower Q t :=
-        (image_upper_eq_upper_or_lower Q hpos ht f).resolve_left hf
-      rw [hfs, hgl]
-      by_cases hg : g '' positiveCone.upper Q t = positiveCone.upper Q t
-      · rw [if_pos hg, if_pos hg, if_neg (Ne.symm hne)]
+    · have hgs : g '' positiveCone.upper Q t = positiveCone.lower Q t :=
+        (image_upper_eq_upper_or_lower Q hpos ht g).resolve_left hg
+      rw [hgs, hfl]
+      by_cases hf : f '' positiveCone.upper Q t = positiveCone.upper Q t
+      · rw [if_pos hf, if_pos hf, if_neg (Ne.symm hne)]
         simp
-      · rw [if_neg hg, if_neg hg]
-        simp [Ne.symm hne]
+      · rw [if_neg hf, if_neg hf, if_neg (Ne.symm hne)]
+        simp
 
 /-- **`O⁺(Q)`**: the isometries preserving each sheet of the positive cone, i.e. the stabilizer of
 one sheet. -/

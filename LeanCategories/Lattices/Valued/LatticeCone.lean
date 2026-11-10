@@ -59,6 +59,84 @@ theorem realFormQuadratic_sigRadical :
 theorem realFormQuadratic_apply (x : (realForm L).obj.carrier) :
     realFormQuadratic L x = (realForm L).obj.pairing x x := rfl
 
+/-- Isometry equivalences with the same underlying linear equivalence are equal. -/
+theorem isometryEquiv_ext {W : Type u} [AddCommGroup W] [Module ℝ W] {Q : QuadraticForm ℝ W}
+    {f g : Q.IsometryEquiv Q} (h : (f : W ≃ₗ[ℝ] W) = (g : W ≃ₗ[ℝ] W)) : f = g := by
+  cases f
+  cases g
+  simp_all
+
+/-- **Scalar extension to `ℝ` as a homomorphism `O(M) → O(M ⊗ ℝ)`.** A pairing-preserving linear
+equivalence of the real form preserves its quadratic form, so the base change of an isometry of `M`
+is an isometry equivalence of `Q`. -/
+noncomputable def realFormOrthogonalHom :
+    OrthogonalGroup L.obj →* (realFormQuadratic L).IsometryEquiv (realFormQuadratic L) where
+  toFun g :=
+    QuadraticMap.IsometryEquiv.mk (orthogonalGroupBaseChangeHom (R := ℤ) (S := ℝ) L.obj g).1
+      (fun x => (orthogonalGroupBaseChangeHom (R := ℤ) (S := ℝ) L.obj g).2 x x)
+  map_one' := by
+    apply isometryEquiv_ext
+    change ((orthogonalGroupBaseChangeHom (R := ℤ) (S := ℝ) L.obj
+      (1 : OrthogonalGroup L.obj)).1 : (realForm L).obj.carrier ≃ₗ[ℝ] _) = (1 : _ ≃ₗ[ℝ] _)
+    rw [congrArg Subtype.val (map_one (orthogonalGroupBaseChangeHom (R := ℤ) (S := ℝ) L.obj))]
+    rfl
+  map_mul' g h := by
+    apply isometryEquiv_ext
+    change ((orthogonalGroupBaseChangeHom (R := ℤ) (S := ℝ) L.obj (g * h)).1 :
+        (realForm L).obj.carrier ≃ₗ[ℝ] _)
+      = ((orthogonalGroupBaseChangeHom (R := ℤ) (S := ℝ) L.obj g).1 : _ ≃ₗ[ℝ] _)
+        * ((orthogonalGroupBaseChangeHom (R := ℤ) (S := ℝ) L.obj h).1 : _ ≃ₗ[ℝ] _)
+    rw [congrArg Subtype.val (map_mul (orthogonalGroupBaseChangeHom (R := ℤ) (S := ℝ) L.obj) g h)]
+    rfl
+
+theorem realFormOrthogonalHom_apply (g : OrthogonalGroup L.obj) (x : (realForm L).obj.carrier) :
+    realFormOrthogonalHom L g x = (orthogonalGroupBaseChangeHom (R := ℤ) (S := ℝ) L.obj g).1 x :=
+  rfl
+
+section Cone
+
+/-- The real form of a finite projective integral lattice is finite-dimensional over `ℝ`. -/
+instance realFormFiniteDimensional : FiniteDimensional ℝ (realForm L).obj.carrier :=
+  haveI : Module.Finite ℝ (realForm L).obj.carrier := (realForm L).property.1
+  inferInstance
+
+/-- **`O⁺(M)`**: the preimage in `O(M)` of the positive-cone stabilizer of `M ⊗ ℝ`, i.e. the
+isometries of `M` whose base change preserves each sheet of the positive cone of the real form. -/
+noncomputable def latticePositiveConeStabilizer (hpos : (integralSignature L).1 = 1)
+    (t : (realForm L).obj.carrier) (ht : 0 < realFormQuadratic L t) :
+    Subgroup (OrthogonalGroup L.obj) :=
+  MonoidHom.ker
+    ((positiveConeSign (realFormQuadratic L) hpos t ht).comp (realFormOrthogonalHom L))
+
+/-- `O⁺(M)` is exactly the preimage of the positive-cone stabilizer of `M ⊗ ℝ`. -/
+theorem mem_latticePositiveConeStabilizer_iff (hpos : (integralSignature L).1 = 1)
+    (t : (realForm L).obj.carrier) (ht : 0 < realFormQuadratic L t) (g : OrthogonalGroup L.obj) :
+    g ∈ latticePositiveConeStabilizer L hpos t ht ↔
+      realFormOrthogonalHom L g ∈ positiveConeStabilizer (realFormQuadratic L) hpos t ht :=
+  Iff.rfl
+
+/-- **`O⁺(M)` has index at most two in `O(M)`.** -/
+theorem latticePositiveConeStabilizer_index_le_two (hpos : (integralSignature L).1 = 1)
+    {t : (realForm L).obj.carrier} (ht : 0 < realFormQuadratic L t) :
+    (latticePositiveConeStabilizer L hpos t ht).index ≤ 2 := by
+  classical
+  rw [latticePositiveConeStabilizer, Subgroup.index_ker]
+  calc Nat.card ↥(MonoidHom.range
+        ((positiveConeSign (realFormQuadratic L) hpos t ht).comp (realFormOrthogonalHom L)))
+      ≤ Nat.card ℤˣ := Nat.card_le_card_of_injective _ Subtype.val_injective
+    _ = 2 := by rw [Nat.card_eq_fintype_card, Fintype.card_units_int]
+
+/-- `O⁺(M)` has finite index in `O(M)`. -/
+theorem latticePositiveConeStabilizer_finiteIndex (hpos : (integralSignature L).1 = 1)
+    {t : (realForm L).obj.carrier} (ht : 0 < realFormQuadratic L t) :
+    (latticePositiveConeStabilizer L hpos t ht).FiniteIndex where
+  index_ne_zero := by
+    classical
+    rw [latticePositiveConeStabilizer, Subgroup.index_ker]
+    exact Nat.card_ne_zero.mpr ⟨⟨1, Subgroup.one_mem _⟩, inferInstance⟩
+
+end Cone
+
 end RealForm
 
 end LeanCategories.Lattices.Valued
