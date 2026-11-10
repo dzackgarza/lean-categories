@@ -571,4 +571,89 @@ theorem extendDualDiscriminantEquiv_equivariant (L : IntegralLatticeCat ℤ)
         (extendDualDiscriminantEquiv L D hN hL hsup hinf x) :=
   extendDualSubquotientHom_equivariant_representation D hN hL hsup hinf g x
 
+section ComplementFree
+
+/-- A complement of `P^⊥` exists: `P^⊥` is the kernel of the map to the free module `L ⧸ P^⊥`, so
+the quotient is torsion-free and finitely generated, hence free, and the quotient map splits. -/
+theorem exists_complement_perp [IsPrincipalIdealRing ℤ] (D : IsotropicReductionData L)
+    [Module.Free ℤ L.obj.carrier] :
+    ∃ C : Submodule ℤ L.obj.carrier, D.perp ⊔ C = ⊤ ∧ D.perp ⊓ C = ⊥ :=
+  exists_data_complement D
+
+/-- **The comparison does not depend on the chosen complement**, so the discriminant isometry is a
+function of the lattice data alone. -/
+theorem extendDualDiscriminantEquiv_apply_eq_of_complement
+    (D : IsotropicReductionData L) (hN : L.obj.IsSymmetric)
+    (hL : IsFractionFieldPerfect ℤ L) {C C' : Submodule ℤ L.obj.carrier}
+    (hsup : D.perp ⊔ C = ⊤) (hinf : D.perp ⊓ C = ⊥)
+    (hsup' : D.perp ⊔ C' = ⊤) (hinf' : D.perp ⊓ C' = ⊥)
+    (x : (D.reductionLattice hN).obj.defect) :
+    extendDualDiscriminantEquiv L D hN hL hsup' hinf' x =
+      extendDualDiscriminantEquiv L D hN hL hsup hinf x := by
+  induction x using Submodule.Quotient.induction_on with
+  | _ f =>
+    rw [extendDualDiscriminantEquiv_apply, extendDualDiscriminantEquiv_apply]
+    exact extendDualSubquotientHom_mk_eq_of_complement D hN hL hsup hinf hsup' hinf' f
+
+/-- **The natural discriminant isometry, with the complement chosen for the user.** No hypothesis
+beyond the lattice data: a complement of `P^⊥` exists, and the isometry does not depend on which one
+is taken (`extendDualDiscriminantEquiv_apply_eq_of_complement`). -/
+noncomputable def extendDualDiscriminantIsometry (L : IntegralLatticeCat ℤ)
+    (D : IsotropicReductionData L) (hN : L.obj.IsSymmetric)
+    (hL : IsFractionFieldPerfect ℤ L) [Module.Free ℤ L.obj.carrier] :
+    (D.reductionLattice hN).obj.defect ≃ₗ[ℤ]
+      (↥(isotropicDiscriminantOrthogonal L hL D.submodule) ⧸
+        isotropicDiscriminantInOrthogonal L hL D.submodule) :=
+  extendDualDiscriminantEquiv L D hN hL
+    (Classical.choose_spec (exists_data_complement D)).1
+    (Classical.choose_spec (exists_data_complement D)).2
+
+/-- The hypothesis-free isometry is the canonical comparison map. -/
+theorem extendDualDiscriminantIsometry_apply (L : IntegralLatticeCat ℤ)
+    (D : IsotropicReductionData L) (hN : L.obj.IsSymmetric)
+    (hL : IsFractionFieldPerfect ℤ L) [Module.Free ℤ L.obj.carrier]
+    (x : (D.reductionLattice hN).obj.defect) :
+    extendDualDiscriminantIsometry L D hN hL x =
+      extendDualDiscriminantEquiv L D hN hL
+        (Classical.choose_spec (exists_data_complement D)).1
+        (Classical.choose_spec (exists_data_complement D)).2 x := rfl
+
+/-- The hypothesis-free isometry preserves the bilinear form. -/
+theorem extendDualDiscriminantIsometry_pairing (L : IntegralLatticeCat ℤ)
+    (D : IsotropicReductionData L) (hN : L.obj.IsSymmetric)
+    (hL : IsFractionFieldPerfect ℤ L) [Module.Free ℤ L.obj.carrier]
+    (x y : (D.reductionLattice hN).obj.defect) :
+    isotropicSubquotientBilinMap L hL D.submodule
+        (extendDualDiscriminantIsometry L D hN hL x)
+        (extendDualDiscriminantIsometry L D hN hL y) =
+      discriminantBilinMap ℤ (D.reductionLattice hN)
+        (D.reductionLattice_isFractionFieldPerfect hN) x y :=
+  extendDualDiscriminantEquiv_pairing L D hN hL _ _ x y
+
+/-- The hypothesis-free isometry preserves the even quadratic refinement. -/
+theorem extendDualDiscriminantIsometry_quadratic (L : IntegralLatticeCat ℤ)
+    (D : IsotropicReductionData L) (hN : L.obj.IsSymmetric)
+    (hL : IsFractionFieldPerfect ℤ L) [Module.Free ℤ L.obj.carrier]
+    [Module.Finite ℤ L.obj.carrier] (hEven : IsEven L)
+    (x : (D.reductionLattice hN).obj.defect) :
+    isotropicSubquotientQuadraticMap L hL hEven D.submodule D.isotropic
+        (extendDualDiscriminantIsometry L D hN hL x) =
+      evenDiscriminantQuadraticMap (D.reductionLattice hN)
+        (D.reductionLattice_isFractionFieldPerfect hN) (D.reduction_isEven hN hEven) x :=
+  extendDualDiscriminantEquiv_quadratic L D hN hL hEven _ _ x
+
+/-- The hypothesis-free isometry is equivariant for the exact-image stabilizer. -/
+theorem extendDualDiscriminantIsometry_equivariant (L : IntegralLatticeCat ℤ)
+    (D : IsotropicReductionData L) (hN : L.obj.IsSymmetric)
+    (hL : IsFractionFieldPerfect ℤ L) [Module.Free ℤ L.obj.carrier]
+    (g : D.isotropicStabilizer) (x : (D.reductionLattice hN).obj.defect) :
+    extendDualDiscriminantIsometry L D hN hL
+        ((reductionDiscriminantRepresentation D hN g).1 x) =
+      (isotropicDiscriminantSubquotientAction L hL D.submodule g.1 g.2).1
+        (extendDualDiscriminantIsometry L D hN hL x) :=
+  extendDualDiscriminantEquiv_equivariant L D hN hL _ _ g x
+
+end ComplementFree
+
+
 end LeanCategories.Lattices.Valued

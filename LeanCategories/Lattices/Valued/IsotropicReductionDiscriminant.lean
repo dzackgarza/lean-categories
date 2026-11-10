@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 -/
 module
 
+public import LeanCategories.Lattices.Valued.IsotropicReduction
 public import LeanCategories.Lattices.Valued.PrimitiveReduction
 public import LeanCategories.Lattices.Valued.IsotropicDiscriminantAction
 public import LeanCategories.Lattices.Valued.ReductionDiscriminant
@@ -534,6 +535,37 @@ theorem defectProjection_sub_mem_isotropicDiscriminant
   exact defectProjection_mem_isotropicDiscriminant_of_apply_perp_eq_zero D hL _
     (fun x => by rw [LinearMap.sub_apply, h x, sub_self])
 
+/-- Two extensions of the same functional, along different complements of `P^⊥`, differ in the
+discriminant by an element of `D`: on `P^⊥` both extend the same functional. -/
+theorem extendDualDefectHom_sub_mem_of_complement
+    (D : IsotropicReductionData L) (hN : L.obj.IsSymmetric)
+    (hL : IsFractionFieldPerfect R L) {C C' : Submodule R L.obj.carrier}
+    (hsup : D.perp ⊔ C = ⊤) (hinf : D.perp ⊓ C = ⊥)
+    (hsup' : D.perp ⊔ C' = ⊤) (hinf' : D.perp ⊓ C' = ⊥)
+    (f : (D.reduction hN).valueDual) :
+    extendDualDefectHom D hN hsup' hinf' f - extendDualDefectHom D hN hsup hinf f ∈
+      isotropicDiscriminant L hL D.submodule := by
+  refine defectProjection_sub_mem_isotropicDiscriminant D hL
+    (F := extendDual D hN hsup' hinf' f) (G := extendDual D hN hsup hinf f) (fun x => ?_)
+  rw [extendDual_apply_perp D hN hsup' hinf' f x, extendDual_apply_perp D hN hsup hinf f x]
+
+/-- **The comparison map does not depend on the complement.** Two complements of `P^⊥` give the
+same class of the reduced discriminant, since the two extensions differ by an element of `D`. -/
+theorem extendDualSubquotientHom_mk_eq_of_complement
+    [IsPrincipalIdealRing R] (D : IsotropicReductionData L) (hN : L.obj.IsSymmetric)
+    (hL : IsFractionFieldPerfect R L) {C C' : Submodule R L.obj.carrier}
+    (hsup : D.perp ⊔ C = ⊤) (hinf : D.perp ⊓ C = ⊥)
+    (hsup' : D.perp ⊔ C' = ⊤) (hinf' : D.perp ⊓ C' = ⊥)
+    (f : (D.reductionLattice hN).obj.valueDual) :
+    extendDualSubquotientHom D hN hL hsup' hinf' (Submodule.Quotient.mk f) =
+      extendDualSubquotientHom D hN hL hsup hinf (Submodule.Quotient.mk f) := by
+  rw [extendDualSubquotientHom_mk, extendDualSubquotientHom_mk]
+  refine (Submodule.Quotient.eq _).mpr ?_
+  change (extendDualDefectHom D hN hsup' hinf' f : L.obj.defect) -
+      (extendDualDefectHom D hN hsup hinf f : L.obj.defect) ∈
+    isotropicDiscriminant L hL D.submodule
+  exact extendDualDefectHom_sub_mem_of_complement D hN hL hsup hinf hsup' hinf' f
+
 /-- The stabilizer action on the discriminant of `Q`, as a group homomorphism. -/
 noncomputable def reductionDiscriminantRepresentation [IsPrincipalIdealRing R]
     (D : IsotropicReductionData L) (hN : L.obj.IsSymmetric) : D.isotropicStabilizer →*
@@ -545,6 +577,31 @@ noncomputable def reductionDiscriminantRepresentation [IsPrincipalIdealRing R]
 noncomputable abbrev reductionDiscriminantActionKernel [IsPrincipalIdealRing R]
     (D : IsotropicReductionData L) (hN : L.obj.IsSymmetric) : Subgroup D.isotropicStabilizer :=
   MonoidHom.ker (reductionDiscriminantRepresentation D hN)
+
+/-- **The stabilizer homomorphism to `GL(P) × O(A_Q)`**: the exact-image action on the isotropic
+submodule and the induced action on the discriminant form of the reduction. This is the
+homomorphism whose kernel the issue asks to define. -/
+noncomputable def parabolicDiscriminantHom [IsPrincipalIdealRing R]
+    (D : IsotropicReductionData L) (hN : L.obj.IsSymmetric) :
+    D.isotropicStabilizer →*
+      (↥D.submodule ≃ₗ[R] ↥D.submodule) ×
+        BilinModuleCat.OrthogonalGroup (D.reductionDiscriminant hN) :=
+  MonoidHom.prod ((MonoidHom.fst _ _).comp (IsotropicReductionData.parabolicHom D hN))
+    (reductionDiscriminantRepresentation D hN)
+
+/-- **The kernel of the induced quotient action.** An isometry of `L` stabilizing `P` lies in the
+kernel exactly when it acts trivially on `P` and trivially on the discriminant form of `Q`.
+
+The kernel is all that is defined here. Nothing claims that an automorphism of the finite quotient
+`O(A_Q)` lifts to an integral isometry: that needs the lift or a proved extension hypothesis, and
+no count of group orders supplies it. -/
+theorem mem_parabolicDiscriminantHom_ker_iff [IsPrincipalIdealRing R]
+    (D : IsotropicReductionData L) (hN : L.obj.IsSymmetric) (g : D.isotropicStabilizer) :
+    g ∈ (parabolicDiscriminantHom D hN).ker ↔
+      ((IsotropicReductionData.parabolicHom D hN) g).1 = 1 ∧
+        reductionDiscriminantRepresentation D hN g = 1 := by
+  rw [parabolicDiscriminantHom, MonoidHom.mem_ker, MonoidHom.prod_apply, Prod.ext_iff]
+  exact Iff.rfl
 
 /-- A stabilizing isometry as an orthogonal-group element of the packaged reduced lattice. -/
 noncomputable def reductionOrthogonalAction [IsPrincipalIdealRing R]
