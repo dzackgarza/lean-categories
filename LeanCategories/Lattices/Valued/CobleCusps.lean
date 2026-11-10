@@ -363,6 +363,14 @@ noncomputable def cobleQuadraticFibre
   @vectorFibreEquivQuadraticSurjective ℤ _ _ cobleLattice cobleLatticeCarrierTorsionFree
     coble_isFractionFieldPerfect coble_isEven cobleVector c hstab hσ
 
+/-- **The `T_Co` instance of the quadratic-discriminant fibre theorem at the class `[h/2]`**: the
+stabilizer hypothesis `hstab` of `cobleQuadraticFibre` is *proved* for this class, by
+`cobleActOnDefect_halfH`, so only the surjectivity of `ρ` remains a named hypothesis. -/
+noncomputable def cobleQuadraticFibreHalfH (hσ : Function.Surjective cobleRho) :=
+  @vectorFibreEquivQuadraticSurjective ℤ _ _ cobleLattice cobleLatticeCarrierTorsionFree
+    coble_isFractionFieldPerfect coble_isEven cobleVector cobleHalfHCls
+    (fun s _ => cobleActOnDefect_halfH s) hσ
+
 /-- **The `T_Co` instance of the double-coset description of the cusps in an `O(T_Co)`-orbit**
 (#113, #115), for a primitive isotropic **plane** `N`: the `ker ρ`-orbits of planes lying over the
 `O(T_Co)`-orbit of `N` are the double cosets of `ρ(ker ρ)` and `ρ(Stab(N))` in the discriminant
