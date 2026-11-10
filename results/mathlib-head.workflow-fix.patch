@@ -1,0 +1,30 @@
+--- a/.github/workflows/mathlib-head.yml
++++ b/.github/workflows/mathlib-head.yml
+@@ -4,11 +4,6 @@
+ # shared Lean project does. The lakefile requires Mathlib at `master`; the *exact* head is
+ # pinned by `lake-manifest.json` (which `lake build` resolves from) together with the
+ # `lean-toolchain` Mathlib pins, and this job moves those two files to each new head.
+-#
+-# NOT LANDED: the connection used for #118 has no `workflows` permission, so this file
+-# could not be pushed to `.github/workflows/`. It is kept here as the source of
+-# `results/mathlib-head.workflow.patch`; land that patch (or copy this file to
+-# `.github/workflows/mathlib-head.yml`) to enable the scheduled move.
+ #
+ # It moves the pins only through the complete repository gate (`just test-ci`), so `main`
+ # always names a head that passed it. Breakage at a new head is reported by this run
+@@ -75,6 +70,15 @@
+           # `lake update` re-resolves the lakefile's `master` to the head it names now and
+           # rewrites `lake-manifest.json`. `BrauerGroup`'s tag tracks the Mathlib release the
+           # image carries, so it is moved with it (`lake update` resolves both).
++          # The toolchain moves *before* `lake update`. Lake reads the resolved package's
++          # lakefile with the toolchain `lean-toolchain` names, and Mathlib master's lakefile
++          # is written for the Lean release master pins, not for the one being replaced, so
++          # `lake update` under the old toolchain can fail on the new package's own lakefile.
++          sha="$(git ls-remote https://github.com/leanprover-community/mathlib4 master | cut -f1)"
++          curl -fsSL \
++            "https://raw.githubusercontent.com/leanprover-community/mathlib4/$sha/lean-toolchain" \
++            > lean-toolchain
++          echo "Resolved Mathlib $sha, toolchain $(tr -d '\n' < lean-toolchain)" >> "$GITHUB_STEP_SUMMARY"
+           lake update
+           # The toolchain follows the one Mathlib pins, read from the resolved package rather
+           # than relying on `lake update` to rewrite the file.
