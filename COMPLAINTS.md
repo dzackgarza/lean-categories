@@ -2419,3 +2419,13 @@ downstream assertions, computational observations, or downstream diagnostics.
   `isotropicQuotientForm_mk`; and (iv) `Module.Free`/`Module.Projective` of `P^⊥/P` so that the
   reduction is a `FiniteProjectiveLatticeCat` object (saturation of the primitive line, via
   `Submodule.IsPrimitiveSubmodule` and `Module.free_of_finite_type_torsion_free'`).
+- **Progress (2026-11-10):** (iv) is done for the rank-one case:
+  `IsotropicReductionBaseChange.moduleFree_isotropicLineQuotient` proves `Module.Free ℤ (e^⊥/ℤe)`
+  for a primitive isotropic `e` of a finite lattice, by embedding the reduction into the
+  torsion-free quotient `L/ℤe`. A separate obstacle, hit while writing it and not recorded before,
+  is that `ℤ`-subquotients carry two candidate `Module ℤ` instances (`Submodule.module`,
+  `Submodule.Quotient.module` against `AddCommGroup.toIntModule`) that are not definitionally
+  equal; pinning the inherited ones with `attribute [local instance 10000]` (as
+  `IsotropicReductionU2Quotient` does) makes `Submodule.comap`, `Submodule.mapQ`,
+  `Module.Finite` and `IsPrimitiveSubmodule`'s unfolding all elaborate. (i)–(iii) remain open: the
+  isometry itself.

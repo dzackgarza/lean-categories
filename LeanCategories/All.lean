@@ -311,6 +311,7 @@ public import LeanCategories.Lattices.Valued.D8Gluing
 public import LeanCategories.Modules.Flags
 public import LeanCategories.Lattices.Valued.FlagParabolic
 public import LeanCategories.Lattices.Valued.IsotropicReduction
+public import LeanCategories.Lattices.Valued.IsotropicReductionBaseChange
 public import LeanCategories.Lattices.Valued.PrimitiveReduction
 public import LeanCategories.Lattices.Valued.EvenReduction
 public import LeanCategories.Lattices.Valued.DiscriminantIsotropic
