@@ -303,7 +303,9 @@ public import LeanCategories.Lattices.Valued.CuspIsotropic
 public import LeanCategories.Lattices.Valued.CuspVector
 public import LeanCategories.Lattices.Valued.CuspHomFibre
 public import LeanCategories.Lattices.Valued.CuspWorkedInstance
+public import LeanCategories.Lattices.Valued.DiscriminantCharacteristic
 public import LeanCategories.Lattices.Valued.CobleLattice
+public import LeanCategories.Lattices.Valued.CobleCharacteristic
 public import LeanCategories.Lattices.Valued.CobleCusps
 public import LeanCategories.Lattices.Valued.D8Gluing
 public import LeanCategories.Modules.Flags

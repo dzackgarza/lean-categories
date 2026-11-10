@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 -/
 module
 
-public import LeanCategories.Lattices.Valued.CobleLattice
+public import LeanCategories.Lattices.Valued.CobleCharacteristic
 
 /-!
 # The cusps of the Coble lattice (#115)
@@ -24,6 +24,15 @@ Both generators are standard basis vectors of the construction, so their pairing
 corresponding entries of `cobleGramMatrix` (`cobleBasis_pairing`); arbitrary vectors of the
 packaged carrier are read through `cobleCoordEquiv`, the linear equivalence between the carrier and
 `Fin 11 → ℤ`.
+
+The orbit sets named here are those of the three groups of #115 — `O(T_Co)` (`Γ_Co`, which by
+`cobleGammaCo_eq_top` is all of `O(T_Co)`), `Õ(T_Co) = ker ρ` and `Õ⁺(T_Co) = O⁺(T_Co) ∩ ker ρ` —
+each with its named orbit element of a primitive isotropic line and of a primitive isotropic plane
+(`cobleCuspOrbitKernelOne/Two`, `cobleCuspOrbitGammaOne/Two`, `cobleCuspOrbitOTildePlusOne/Two`).
+
+No orbit count appears in this development: counting the orbits of these sets is a separate
+computation (research#728, sage-extensions#286), and until a proof or a certified lattice-database
+card supports a count it is not a value of any statement here.
 -/
 
 @[expose] public section
@@ -311,12 +320,22 @@ primitive isotropic planes. -/
 noncomputable def cobleCuspOrbitKernelTwo : cobleCuspOrbitsKernelTwo :=
   CuspOrbits.mk cobleKernelSubgroup coblePlane
 
-/-- The `Γ_Co`-orbit of the Coble vector `v = e₁`: an element of the `Γ_Co`-orbit set of
+/-- The `Õ⁺(T_Co)`-orbit of the Coble vector `v = e₁`: an element of the `Õ⁺(T_Co)`-orbit set of
 primitive isotropic lines. -/
+noncomputable def cobleCuspOrbitOTildePlusOne : cobleCuspOrbitsOTildePlusOne :=
+  CuspOrbits.mk cobleOTildePlusSubgroup cobleLine
+
+/-- The `Õ⁺(T_Co)`-orbit of the Coble plane `⟨v, w⟩`: an element of the `Õ⁺(T_Co)`-orbit set of
+primitive isotropic planes. -/
+noncomputable def cobleCuspOrbitOTildePlusTwo : cobleCuspOrbitsOTildePlusTwo :=
+  CuspOrbits.mk cobleOTildePlusSubgroup coblePlane
+
+/-- The `O(T_Co)`-orbit of the Coble vector `v = e₁`: an element of the `Γ_Co`-orbit set of
+primitive isotropic lines, where `Γ_Co = O(T_Co)` fixes `[h/2]`. -/
 noncomputable def cobleCuspOrbitGammaOne : cobleCuspOrbitsGammaOne :=
   CuspOrbits.mk cobleGammaCoSubgroup cobleLine
 
-/-- The `Γ_Co`-orbit of the Coble plane `⟨v, w⟩`: an element of the `Γ_Co`-orbit set of
+/-- The `O(T_Co)`-orbit of the Coble plane `⟨v, w⟩`: an element of the `Γ_Co`-orbit set of
 primitive isotropic planes. -/
 noncomputable def cobleCuspOrbitGammaTwo : cobleCuspOrbitsGammaTwo :=
   CuspOrbits.mk cobleGammaCoSubgroup coblePlane
@@ -361,5 +380,6 @@ noncomputable def cobleCuspOrbitsEquivDoubleCosetsPlane
 /-- The same statement at the exhibited Coble plane `coblePlane`. -/
 noncomputable def cobleCuspOrbitsEquivDoubleCosetsCoblePlane :=
   cobleCuspOrbitsEquivDoubleCosetsPlane coblePlane
+
 
 end LeanCategories.Lattices.Valued

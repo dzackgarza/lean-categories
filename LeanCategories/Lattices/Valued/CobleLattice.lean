@@ -42,8 +42,13 @@ The file records, in order:
 * the quadratic discriminant form `cobleQuadraticDiscriminant` and the representation
   `cobleRho : O(T_Co) →* O(q)`, with the finiteness of `O(q)`;
 * the kernel of `det` (`cobleSpecialOrthogonal`) and, separately, the orientation subgroup
-  `cobleOPlus = O⁺(T_Co)` and `cobleGammaCo = O⁺(T_Co) ∩ ker ρ`, both of index at most two;
-* the cusp objects `(T_Co, ker ρ)` and `(T_Co, Γ_Co)` with their rank-1 and rank-2 orbit sets.
+  `cobleOPlus = O⁺(T_Co)`, its intersection `cobleOTildePlus = Õ⁺(T_Co) = O⁺(T_Co) ∩ ker ρ`,
+  and the kernel `ker ρ = Õ(T_Co)`, all of finite index;
+* the cusp objects `(T_Co, ker ρ)` and `(T_Co, Õ⁺)` with their rank-1 and rank-2 orbit sets.
+
+`Γ_Co`, the stabilizer in `O(T_Co)` of the class `[h/2]`, is not defined here: it lives in
+`CobleCharacteristic`, where the general characteristic-class theorem identifies it with all of
+`O(T_Co)`.
 
 ## `O⁺(T_Co)`
 
@@ -80,8 +85,8 @@ Two facts carry the construction, neither of them a computation on the finite gr
   (`coblePlaneA_det_triple_pos`), which is multiplicativity of the sign.
 
 `O⁺(T_Co)` is the kernel of that character, so it has index at most two
-(`cobleOPlus_index_le_two`). `Γ_Co = O⁺(T_Co) ∩ ker ρ` is `cobleGammaCo`, a definition and not a
-parameter.
+(`cobleOPlus_index_le_two`). `Õ⁺(T_Co) = O⁺(T_Co) ∩ ker ρ` is `cobleOTildePlus`, a definition and
+not a parameter.
 -/
 
 @[expose] public section
@@ -1948,32 +1953,33 @@ theorem cobleOPlus_finiteIndex : cobleOPlus.FiniteIndex where
     rw [cobleOPlus, Subgroup.index_ker]
     exact Nat.card_ne_zero.mpr ⟨⟨1, Subgroup.one_mem _⟩, inferInstance⟩
 
-/-- `Γ_Co = O⁺(T_Co) ∩ ker ρ`. -/
-noncomputable def cobleGammaCo : Subgroup (OrthogonalGroup cobleLattice) :=
+/-- **`Õ⁺(T_Co) = O⁺(T_Co) ∩ ker ρ`**: the intersection of the orientation subgroup with the
+kernel of the discriminant representation. -/
+noncomputable def cobleOTildePlus : Subgroup (OrthogonalGroup cobleLattice) :=
   cobleOPlus ⊓ cobleKernel
 
-/-- `Γ_Co` has finite index. -/
-theorem cobleGammaCo_finiteIndex : cobleGammaCo.FiniteIndex where
+/-- `Õ⁺(T_Co)` has finite index. -/
+theorem cobleOTildePlus_finiteIndex : cobleOTildePlus.FiniteIndex where
   index_ne_zero := by
-    rw [cobleGammaCo]
+    rw [cobleOTildePlus]
     exact Subgroup.index_inf_ne_zero cobleOPlus_finiteIndex.index_ne_zero
       cobleKernel_finiteIndex.index_ne_zero
 
-/-- `Γ_Co` as a finite-index subgroup of `O(T_Co)`. -/
-noncomputable def cobleGammaCoSubgroup : FiniteIndexSubgroup cobleLattice :=
-  ⟨cobleGammaCo, cobleGammaCo_finiteIndex⟩
+/-- `Õ⁺(T_Co)` as a finite-index subgroup of `O(T_Co)`. -/
+noncomputable def cobleOTildePlusSubgroup : FiniteIndexSubgroup cobleLattice :=
+  ⟨cobleOTildePlus, cobleOTildePlus_finiteIndex⟩
 
 
 
-/-! ## `Γ_Co = O⁺(T_Co) ∩ ker ρ` and the cusp objects -/
+/-! ## The cusp objects `(T_Co, ker ρ)` and `(T_Co, Õ⁺)` -/
 
 /-- The cusp object `(T_Co, ker ρ)` of the cusp category. -/
 noncomputable def cobleCuspKernel : CuspObject (R := ℤ) :=
   ⟨cobleLattice, cobleKernelSubgroup⟩
 
-/-- The cusp object `(T_Co, Γ_Co)` of the cusp category. -/
-noncomputable def cobleCuspGamma : CuspObject (R := ℤ) :=
-  ⟨cobleLattice, cobleGammaCoSubgroup⟩
+/-- The cusp object `(T_Co, Õ⁺(T_Co))` of the cusp category. -/
+noncomputable def cobleCuspOTildePlus : CuspObject (R := ℤ) :=
+  ⟨cobleLattice, cobleOTildePlusSubgroup⟩
 
 /-- The `ker ρ`-orbits of primitive isotropic lines: the 0-cusps counted for `ker ρ`. -/
 noncomputable abbrev cobleCuspOrbitsKernelOne : Type :=
@@ -1983,12 +1989,12 @@ noncomputable abbrev cobleCuspOrbitsKernelOne : Type :=
 noncomputable abbrev cobleCuspOrbitsKernelTwo : Type :=
   CuspOrbits cobleLattice cobleKernelSubgroup 2
 
-/-- The `Γ_Co`-orbits of primitive isotropic lines: the 0-cusps of `F_Co`. -/
-noncomputable abbrev cobleCuspOrbitsGammaOne : Type :=
-  CuspOrbits cobleLattice cobleGammaCoSubgroup 1
+/-- The `Õ⁺(T_Co)`-orbits of primitive isotropic lines. -/
+noncomputable abbrev cobleCuspOrbitsOTildePlusOne : Type :=
+  CuspOrbits cobleLattice cobleOTildePlusSubgroup 1
 
-/-- The `Γ_Co`-orbits of primitive isotropic planes: the 1-cusps of `F_Co`. -/
-noncomputable abbrev cobleCuspOrbitsGammaTwo : Type :=
-  CuspOrbits cobleLattice cobleGammaCoSubgroup 2
+/-- The `Õ⁺(T_Co)`-orbits of primitive isotropic planes. -/
+noncomputable abbrev cobleCuspOrbitsOTildePlusTwo : Type :=
+  CuspOrbits cobleLattice cobleOTildePlusSubgroup 2
 
 end LeanCategories.Lattices.Valued
