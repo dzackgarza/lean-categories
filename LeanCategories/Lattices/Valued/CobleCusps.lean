@@ -9,20 +9,21 @@ public import LeanCategories.Lattices.Valued.CobleLattice
 /-!
 # The cusps of the Coble lattice (#115)
 
-`T_Co = ⟨2⟩ ⊕ U(2) ⊕ E₈(−2)` has signature `(2, 9)`, so primitive isotropic lines and primitive
-isotropic planes both exist and the rank-1 and rank-2 orbit sets are inhabited.
+`T_Co = ⟨2⟩ ⊕ E(2)` with `E = E₈ ⊕ U` (see `CobleLattice`), so primitive isotropic lines and
+primitive isotropic planes both exist and the rank-1 and rank-2 orbit sets are inhabited.
 
 * The primitive isotropic vector is `v = e₁`, the first generator of `U(2)`: `(v, v) = 0` and `v` is
   indivisible.
 * The primitive isotropic plane is spanned by `v` and by `w = 2e₀ + e₃ + e₄`, where `e₀` generates
-  `⟨2⟩` and `e₃, e₄` are two `E₈(−2)` coordinates with `(e₃, e₄) = 0`: then
+  `⟨2⟩` and `e₃, e₄` are two `E₈(−2)` basis vectors with `(e₃, e₄) = 0`: then
   `(w, w) = 4 + (−2) + (−2) = 0` and `(v, w) = 0`. Its primitivity is the coordinate functional
   `e₃^*`, which is `1` on `w` and `0` on `v`, so a multiple of a vector of the plane is a multiple
   of `v` with an integral coefficient.
 
-The generators are explicit integer vectors, so their pairings are decided by reduction on the Gram
-matrix; arbitrary vectors of the packaged carrier are read through `cobleCoordEquiv`, the linear
-equivalence between the carrier and `Fin 11 → ℤ`.
+Both generators are standard basis vectors of the construction, so their pairings are the
+corresponding entries of `cobleGramMatrix` (`cobleBasis_pairing`); arbitrary vectors of the
+packaged carrier are read through `cobleCoordEquiv`, the linear equivalence between the carrier and
+`Fin 11 → ℤ`.
 -/
 
 @[expose] public section
@@ -38,33 +39,18 @@ attribute [local instance 10000] Submodule.Quotient.module
 
 /-! ## Coordinates -/
 
-/-- The coordinate equivalence is the identity on vectors of the carrier. -/
-theorem cobleCoordEquiv_apply (x : ↥cobleLattice.obj.carrier) :
-    cobleCoordEquiv x = (x : Fin 11 → ℤ) := by
-  rw [cobleCoordEquiv, Pi.basisFun_equivFun]
-  rfl
-
-/-- The coordinate equivalence is the identity on coordinate vectors. -/
-theorem cobleCoordEquiv_coe (x : Fin 11 → ℤ) :
-    cobleCoordEquiv (x : ↥cobleLattice.obj.carrier) = x :=
-  cobleCoordEquiv_apply _
-
 /-- The `i`-th coordinate functional of `T_Co`. -/
 noncomputable def cobleCoordFun (i : Fin 11) : ↥cobleLattice.obj.carrier →ₗ[ℤ] ℤ :=
   (LinearMap.proj i).comp cobleCoordEquiv.toLinearMap
 
 theorem cobleCoordFun_apply (i : Fin 11) (x : ↥cobleLattice.obj.carrier) :
-    cobleCoordFun i x = (x : Fin 11 → ℤ) i := by
-  rw [cobleCoordFun, LinearMap.comp_apply, LinearMap.proj_apply]
-  exact congrFun (cobleCoordEquiv_apply x) i
+    cobleCoordFun i x = cobleCoordEquiv x i :=
+  rfl
 
-/-- The coordinate formula for the pairing of two vectors given by coordinates. -/
-theorem coble_pairing_coord (x y : Fin 11 → ℤ) :
-    cobleLattice.obj.pairing (x : ↥cobleLattice.obj.carrier) (y : ↥cobleLattice.obj.carrier)
-      = ∑ i, ∑ j, x i * cobleGramMatrix i j * y j := by
-  have h : cobleLattice.obj.pairing (x : ↥cobleLattice.obj.carrier)
-      (y : ↥cobleLattice.obj.carrier) = Matrix.toBilin' cobleGramMatrix x y := rfl
-  rw [h, Matrix.toBilin'_apply]
+/-- Two vectors of `T_Co` agree when their coordinate functionals do. -/
+theorem coble_ext_coord {x y : ↥cobleLattice.obj.carrier}
+    (h : ∀ i, cobleCoordFun i x = cobleCoordFun i y) : x = y :=
+  cobleCoordEquiv.injective (funext fun i => h i)
 
 /-! ## The primitive isotropic vector -/
 
@@ -76,14 +62,22 @@ theorem cobleVectorCoord_apply (j : Fin 11) :
     cobleVectorCoord j = if j = 1 then 1 else 0 := by
   fin_cases j <;> simp [cobleVectorCoord]
 
-/-- The square of the Coble vector vanishes. -/
-theorem cobleVectorCoord_isotropic :
-    cobleLattice.obj.pairing (cobleVectorCoord : ↥cobleLattice.obj.carrier)
-      (cobleVectorCoord : ↥cobleLattice.obj.carrier) = 0 := by
-  rw [coble_pairing_coord]
-  decide
+/-- The Coble vector `v = e₁`, the first generator of `U(2)`. -/
+noncomputable def coblePlaneV : ↥cobleLattice.obj.carrier := cobleCoordEquiv.symm cobleVectorCoord
 
-/-- The line spanned by the Coble vector is primitive. -/
+/-- The Coble vector is the second standard basis vector. -/
+theorem coblePlaneV_eq : coblePlaneV = cobleBasis 1 := by
+  rw [coblePlaneV,
+    show cobleVectorCoord = Pi.single (1 : Fin 11) 1 from by
+      funext j; fin_cases j <;> rfl,
+    cobleCoordEquiv_symm_single]
+
+/-- The square of the Coble vector vanishes. -/
+theorem cobleVectorCoord_isotropic : cobleLattice.obj.pairing coblePlaneV coblePlaneV = 0 := by
+  rw [coblePlaneV_eq, cobleBasis_pairing]
+  simp [cobleGramMatrix, cobleBlockGramMatrix, hyperbolicPlaneGramMatrix]
+
+/-- The line spanned by `e₁` is primitive, in the standard coordinates. -/
 theorem cobleVectorCoord_primitiveSpan :
     IsPrimitiveSubmodule (Submodule.span ℤ {cobleVectorCoord}) := by
   rw [isPrimitiveSubmodule_iff_saturation_eq]
@@ -105,23 +99,28 @@ theorem cobleVectorCoord_primitiveSpan :
     simp only [Pi.smul_apply, smul_eq_mul, cobleVectorCoord_apply, if_neg hj, mul_zero]
     exact ((mul_eq_zero.mp hzero).resolve_left ha).symm
 
-/-- The Coble vector, as a vector of the packaged carrier. -/
-noncomputable def coblePlaneV : ↥cobleLattice.obj.carrier := cobleVectorCoord
-
-/-- The Coble line is primitive, as a submodule of the packaged carrier. -/
+/-- The Coble line is primitive, as a submodule of the packaged carrier: it is the image of the
+coordinate line under the coordinate equivalence, which preserves primitivity. -/
 theorem coblePlaneV_primitiveSpan :
-    IsPrimitiveSubmodule (Submodule.span ℤ {coblePlaneV}) :=
-  cobleVectorCoord_primitiveSpan
+    IsPrimitiveSubmodule (Submodule.span ℤ {coblePlaneV}) := by
+  have hspan : Submodule.span ℤ {coblePlaneV} =
+      (Submodule.span ℤ {cobleVectorCoord}).map
+        (cobleCoordEquiv.symm : (Fin 11 → ℤ) →ₗ[ℤ] ↥cobleLattice.obj.carrier) := by
+    rw [coblePlaneV, Submodule.map_span, Set.image_singleton]
+    rfl
+  rw [hspan]
+  exact (IsPrimitiveSubmodule.map_equiv_iff cobleCoordEquiv.symm _).mpr
+    cobleVectorCoord_primitiveSpan
 
 /-- The first coordinate of the Coble vector. -/
 theorem cobleCoordFun_planeV_one : cobleCoordFun 1 coblePlaneV = 1 := by
-  rw [cobleCoordFun_apply, coblePlaneV]
-  decide
+  rw [cobleCoordFun_apply, coblePlaneV, LinearEquiv.apply_symm_apply, cobleVectorCoord_apply]
+  simp
 
 /-- The third coordinate of the Coble vector. -/
 theorem cobleCoordFun_planeV_three : cobleCoordFun 3 coblePlaneV = 0 := by
-  rw [cobleCoordFun_apply, coblePlaneV]
-  decide
+  rw [cobleCoordFun_apply, coblePlaneV, LinearEquiv.apply_symm_apply, cobleVectorCoord_apply]
+  simp
 
 /-- The Coble vector as a primitive isotropic vector of `T_Co`. -/
 noncomputable def cobleVector : PrimitiveIsotropicVector cobleLattice where
@@ -131,8 +130,7 @@ noncomputable def cobleVector : PrimitiveIsotropicVector cobleLattice where
     have h1 : cobleCoordFun 1 coblePlaneV = 1 := cobleCoordFun_planeV_one
     rw [hzero, map_zero] at h1
     exact one_ne_zero h1.symm
-  isotropic := by
-    simpa only [coblePlaneV] using cobleVectorCoord_isotropic
+  isotropic := cobleVectorCoord_isotropic
   indivisible := by
     intro c w hw
     have h := congrArg (cobleCoordFun 1) hw
@@ -149,42 +147,44 @@ noncomputable def cobleLine : PrimitiveIsotropic cobleLattice 1 :=
 /-- The vector `2e₀ + e₃ + e₄` of `⟨2⟩ ⊕ E₈(−2)`, as an integer vector. -/
 noncomputable def coblePlaneWCoord : Fin 11 → ℤ := ![2, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0]
 
-/-- `w` as a vector of the packaged carrier. -/
-noncomputable def coblePlaneW : ↥cobleLattice.obj.carrier := coblePlaneWCoord
+/-- `w = 2e₀ + e₃ + e₄` of `T_Co`. -/
+noncomputable def coblePlaneW : ↥cobleLattice.obj.carrier := cobleCoordEquiv.symm coblePlaneWCoord
+
+/-- `w` as a combination of standard basis vectors. -/
+theorem coblePlaneW_eq :
+    coblePlaneW = (2 : ℤ) • cobleBasis 0 + cobleBasis 3 + cobleBasis 4 := by
+  refine cobleCoordEquiv.injective ?_
+  rw [coblePlaneW, LinearEquiv.apply_symm_apply, map_add, map_add, map_smul, cobleCoordEquiv,
+    cobleBasis_equivFun_self, cobleBasis_equivFun_self, cobleBasis_equivFun_self]
+  funext i
+  fin_cases i <;> simp [coblePlaneWCoord]
 
 /-- The first coordinate of `w`. -/
 theorem cobleCoordFun_planeW_one : cobleCoordFun 1 coblePlaneW = 0 := by
-  rw [cobleCoordFun_apply, coblePlaneW]
-  decide
+  rw [cobleCoordFun_apply, coblePlaneW, LinearEquiv.apply_symm_apply, coblePlaneWCoord]
+  simp
 
 /-- The third coordinate of `w`. -/
 theorem cobleCoordFun_planeW_three : cobleCoordFun 3 coblePlaneW = 1 := by
-  rw [cobleCoordFun_apply, coblePlaneW]
-  decide
+  rw [cobleCoordFun_apply, coblePlaneW, LinearEquiv.apply_symm_apply, coblePlaneWCoord]
+  simp
 
-/-- The pairings between the two plane generators all vanish, computed from the Gram matrix. -/
+/-- The pairings between the two plane generators all vanish. -/
 theorem coblePlane_pairings :
     cobleLattice.obj.pairing coblePlaneV coblePlaneV = 0 ∧
     cobleLattice.obj.pairing coblePlaneV coblePlaneW = 0 ∧
     cobleLattice.obj.pairing coblePlaneW coblePlaneV = 0 ∧
     cobleLattice.obj.pairing coblePlaneW coblePlaneW = 0 := by
-  have hv := coble_pairing_coord (x := cobleVectorCoord) (y := cobleVectorCoord)
-  have hvw := coble_pairing_coord (x := cobleVectorCoord) (y := coblePlaneWCoord)
-  have hwv := coble_pairing_coord (x := coblePlaneWCoord) (y := cobleVectorCoord)
-  have hw := coble_pairing_coord (x := coblePlaneWCoord) (y := coblePlaneWCoord)
-  refine ⟨?_, ?_, ?_, ?_⟩
-  · simp only [coblePlaneV]
-    rw [hv]
-    decide
-  · simp only [coblePlaneV, coblePlaneW]
-    rw [hvw]
-    decide
-  · simp only [coblePlaneV, coblePlaneW]
-    rw [hwv]
-    decide
-  · simp only [coblePlaneW]
-    rw [hw]
-    decide
+  refine ⟨cobleVectorCoord_isotropic, ?_, ?_, ?_⟩
+  · rw [coblePlaneV_eq, coblePlaneW_eq]
+    simp [cobleBasis_pairing, cobleGramMatrix, cobleBlockGramMatrix, e8GramMatrix_eq,
+      hyperbolicPlaneGramMatrix, rankOneGramMatrix]
+  · rw [coblePlaneV_eq, coblePlaneW_eq]
+    simp [cobleBasis_pairing, cobleGramMatrix, cobleBlockGramMatrix, e8GramMatrix_eq,
+      hyperbolicPlaneGramMatrix, rankOneGramMatrix]
+  · rw [coblePlaneW_eq]
+    simp [cobleBasis_pairing, cobleGramMatrix, cobleBlockGramMatrix, e8GramMatrix_eq,
+      hyperbolicPlaneGramMatrix, rankOneGramMatrix]
 
 /-- The span of two isotropic mutually orthogonal vectors is totally isotropic. -/
 theorem isIsotropicSubmodule_span_pair (L : IntegralLatticeCat ℤ) (v w : L.obj.carrier)

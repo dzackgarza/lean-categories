@@ -10,12 +10,31 @@ public import LeanCategories.Lattices.Valued.Standard
 public import LeanCategories.Lattices.Valued.SmithNormalForm
 
 /-!
-# The Coble lattice `T_Co`, its discriminant form and its cusps (#115)
+# The Coble lattice `T_Co`, its discriminant form and its cusps (#115, #117)
 
-`T_Co = ⟨2⟩ ⊕ U(2) ⊕ E₈(−2) = ⟨2⟩ ⊕ E₁₀(2)`, of rank 11 and signature `(2, 9)`, is presented here
-on `Fin 11 → ℤ` as twice the odd unimodular lattice `B = ⟨1⟩ ⊕ E₁₀ = ⟨1⟩ ⊕ U ⊕ E₈(−1)`. Since
-`T_Co = B(2)`, `O(T_Co) = O(B)`; the form of `T_Co` is `2 • B`, whose Gram diagonal is even, and
-whose determinant is `2 ^ 11 · det B = -2 ^ 11`, so `T_Co` is even and fraction-field perfect.
+`T_Co` is built here from its published formula, not typed as a matrix:
+
+`T_Co = ⟨2⟩ ⊕ E(2)`, where `E = E₈ ⊕ U` is the Enriques lattice and `E₈` is negative definite.
+
+Source: Dolgachev–Kondō, *The rationality of the moduli spaces of Coble surfaces and of nodal
+Enriques surfaces*, Izv. Math. 77:3 (2013), §3, eq. (3.6) and Prop. 3.2, printed p. 513; the
+conventions for `E₈` and `E` are in §2, printed p. 510 (Zotero DBAXLJ89).
+
+So `cobleLattice` is `orthogonalSum (rankOneLattice 2) (scaleLattice cobleEnriquesLattice 2)` with
+`cobleEnriquesLattice = orthogonalSum e8Lattice hyperbolicPlane`, i.e. the library's own rank-one
+lattice, hyperbolic plane, negative definite `E₈` and orthogonal direct sum, scaled by `2`. Its
+carrier is the product `(Fin 1 → ℤ) × ((Fin 8 → ℤ) × (Fin 2 → ℤ))` of the three summands' carriers,
+in the order `⟨2⟩`, `E₈`, `U`.
+
+Every numerical fact about `T_Co` is *computed* from that construction and never typed:
+
+* `cobleGramMatrix` is the Gram matrix in the block basis `cobleBasis`, and `cobleGramMatrix_apply`
+  proves each of its entries *is* the pairing of the two basis vectors; `coble_pairing_formula`
+  computes the pairing block by block from the summands' own pairings;
+* `coble_isEven` holds because each basis vector has even square, and `coble_isFractionFieldPerfect`
+  because the block-diagonal Gram determinant is `2 · 2⁸ · (−4) ≠ 0`;
+* the complement of the positive definite plane is negative definite by an explicit integer `LDLᵀ`
+  certificate for its computed Gram matrix, and the plane itself is positive definite.
 
 The file records, in order:
 
@@ -42,11 +61,14 @@ issue.
 
 Two facts carry the construction, neither of them a computation on the finite group:
 
-* the complement `P^⊥ = {x₀ = 0, x₂ = −x₁}` is negative definite, with Gram matrix
-  `diag(−4, E₈(−2))`; its negation `coblePosMatrixZ = diag(4, 2E₈)` is certified positive definite
+* the complement `P^⊥ = {x₀ = 0, x₂ = −x₁}` is negative definite: its Gram matrix in the basis
+  `e₁ − e₂, e₃, …, e₁₀` is computed from the pairing formula (`cobleWBasisGramZ`,
+  `cobleWBasisGramZ_eq`), and the negation of that computed matrix is certified positive definite
   by the explicit integer `LDLᵀ` factorization `coblePosL * coblePosD * coblePosLᵀ = 108000 •
   coblePosMatrixZ` with `coblePosD` diagonal and positive, checked by `decide`, and the left
-  inverse `coblePosL * coblePosLinv = 3600 • 1` makes `coblePosL` invertible. The sum of squares
+  inverse `coblePosL * coblePosLinv = 3600 • 1` makes `coblePosL` invertible. The certificate's
+  matrix is *not* typed against `T_Co`: `coblePosMatrixZ_eq` proves it is the negative of the
+  computed Gram matrix. The sum of squares
   `u ⬝ᵥ (D *ᵥ u) = ∑ dᵢ uᵢ²` then gives positive definiteness in `coblePosMatrix_quadratic_pos`;
 * the sign of `det A` is multiplicative. Along the straight line
   `A(g)A(h) + t·(B(g)C(h))` from `A(g)A(h)` to `A(gh)`, no point is singular
@@ -74,132 +96,370 @@ namespace LeanCategories.Lattices.Valued
 -- discriminant object and its orthogonal group see the same `ℤ`-module structure.
 attribute [local instance 10000] Submodule.Quotient.module
 
-/-! ## The odd unimodular half `B = ⟨1⟩ ⊕ U ⊕ E₈(−1)` -/
+/-! ## `T_Co = ⟨2⟩ ⊕ E(2)`, with `E = E₈ ⊕ U` -/
 
-/-- The Gram matrix of `B = ⟨1⟩ ⊕ U ⊕ E₈(−1)`: blocks of sizes `1`, `2`, `8`. -/
-noncomputable def cobleHalfMatrix : Matrix (Fin 11) (Fin 11) ℤ :=
-  ![
-    ![   1,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0],
-    ![   0,    0,    1,    0,    0,    0,    0,    0,    0,    0,    0],
-    ![   0,    1,    0,    0,    0,    0,    0,    0,    0,    0,    0],
-    ![   0,    0,    0,   -2,    0,    1,    0,    0,    0,    0,    0],
-    ![   0,    0,    0,    0,   -2,    0,    1,    0,    0,    0,    0],
-    ![   0,    0,    0,    1,    0,   -2,    1,    0,    0,    0,    0],
-    ![   0,    0,    0,    0,    1,    1,   -2,    1,    0,    0,    0],
-    ![   0,    0,    0,    0,    0,    0,    1,   -2,    1,    0,    0],
-    ![   0,    0,    0,    0,    0,    0,    0,    1,   -2,    1,    0],
-    ![   0,    0,    0,    0,    0,    0,    0,    0,    1,   -2,    1],
-    ![   0,    0,    0,    0,    0,    0,    0,    0,    0,    1,   -2]]
+set_option backward.isDefEq.respectTransparency.types false
 
-/-- The integral inverse of `cobleHalfMatrix`: `B` is odd unimodular. -/
-noncomputable def cobleHalfMatrixInverse : Matrix (Fin 11) (Fin 11) ℤ :=
-  ![
-    ![   1,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0],
-    ![   0,    0,    1,    0,    0,    0,    0,    0,    0,    0,    0],
-    ![   0,    1,    0,    0,    0,    0,    0,    0,    0,    0,    0],
-    ![   0,    0,    0,   -4,   -5,   -7,  -10,   -8,   -6,   -4,   -2],
-    ![   0,    0,    0,   -5,   -8,  -10,  -15,  -12,   -9,   -6,   -3],
-    ![   0,    0,    0,   -7,  -10,  -14,  -20,  -16,  -12,   -8,   -4],
-    ![   0,    0,    0,  -10,  -15,  -20,  -30,  -24,  -18,  -12,   -6],
-    ![   0,    0,    0,   -8,  -12,  -16,  -24,  -20,  -15,  -10,   -5],
-    ![   0,    0,    0,   -6,   -9,  -12,  -18,  -15,  -12,   -8,   -4],
-    ![   0,    0,    0,   -4,   -6,   -8,  -12,  -10,   -8,   -6,   -3],
-    ![   0,    0,    0,   -2,   -3,   -4,   -6,   -5,   -4,   -3,   -2]]
+/-- The Enriques lattice `E = E₈ ⊕ U`: the negative definite `E₈` of the library's standard
+summands, orthogonal sum the hyperbolic plane `U`. Conventions: Dolgachev–Kondō, Izv. Math. 77:3
+(2013), §2, printed p. 510 (Zotero DBAXLJ89). -/
+noncomputable def cobleEnriquesLattice : IntegralLatticeCat ℤ :=
+  orthogonalSum e8Lattice hyperbolicPlane
 
-/-- The displayed inverse is a right inverse. -/
-theorem cobleHalfMatrix_mul_inverse :
-    cobleHalfMatrix * cobleHalfMatrixInverse = 1 := by
-  decide
+/-- The Coble lattice `T_Co = ⟨2⟩ ⊕ E(2)`, built from its published formula: the rank-one lattice
+`⟨2⟩`, the Enriques lattice `E = E₈ ⊕ U`, the orthogonal direct sum, and the scaling by `2`.
+`E₈` is the library's negative definite `E₈`, so the source's requirement that `E₈` be negative
+definite is met by the library's own sign and no rescaling of `E₈` is needed.
 
-/-- The half form is symmetric. -/
-theorem cobleHalfMatrix_isSymm : cobleHalfMatrix.IsSymm := by
-  decide
+Source: Dolgachev–Kondō, *The rationality of the moduli spaces of Coble surfaces and of nodal
+Enriques surfaces*, Izv. Math. 77:3 (2013), §3, eq. (3.6) and Prop. 3.2, printed p. 513; the
+conventions for `E₈` and `E` are in §2, printed p. 510 (Zotero DBAXLJ89). -/
+noncomputable def cobleLattice : IntegralLatticeCat ℤ :=
+  orthogonalSum (rankOneLattice 2) (scaleLattice cobleEnriquesLattice 2)
 
-/-- The half form is unimodular: its determinant is nonzero. -/
-theorem cobleHalfMatrix_det_ne_zero : cobleHalfMatrix.det ≠ 0 := by
-  intro h
-  have hmul : cobleHalfMatrix.det * cobleHalfMatrixInverse.det = 1 := by
-    rw [← Matrix.det_mul, cobleHalfMatrix_mul_inverse, Matrix.det_one]
-  rw [h, zero_mul] at hmul
-  exact zero_ne_one hmul
+/-- The standard basis of the `⟨2⟩` summand. -/
+noncomputable def cobleUnitBasis : Module.Basis (Fin 1) ℤ (Fin 1 → ℤ) := Pi.basisFun ℤ (Fin 1)
 
-/-! ## The Coble lattice `T_Co = B(2)` -/
+/-- The standard basis of the `E₈` summand. -/
+noncomputable def cobleE8Basis : Module.Basis (Fin 8) ℤ (Fin 8 → ℤ) := Pi.basisFun ℤ (Fin 8)
 
-/-- The Gram matrix of `T_Co = ⟨2⟩ ⊕ U(2) ⊕ E₈(−2)`, as an explicit integer matrix so that its
-entries reduce: diagonal `(2, 0, 0, -4, …, -4)`, and the `U(2)` and `E₈(−2)` blocks. -/
+/-- The standard basis of the `U` summand. -/
+noncomputable def cobleUBasis : Module.Basis (Fin 2) ℤ (Fin 2 → ℤ) := Pi.basisFun ℤ (Fin 2)
+
+/-- The standard basis of the Enriques summand `E = E₈ ⊕ U`. -/
+noncomputable def cobleEnriquesBasis :
+    Module.Basis (Fin 8 ⊕ Fin 2) ℤ ((Fin 8 → ℤ) × (Fin 2 → ℤ)) :=
+  cobleE8Basis.prod cobleUBasis
+
+/-- The standard basis of `T_Co` in its block order `⟨2⟩`, `E₈`, `U`. -/
+noncomputable def cobleBlockBasisProd :
+    Module.Basis (Fin 1 ⊕ (Fin 8 ⊕ Fin 2)) ℤ
+      ((Fin 1 → ℤ) × ((Fin 8 → ℤ) × (Fin 2 → ℤ))) :=
+  cobleUnitBasis.prod cobleEnriquesBasis
+
+def cobleBlockEquiv : Fin 11 ≃ (Fin 1 ⊕ (Fin 8 ⊕ Fin 2)) :=
+  (finCongr (by norm_num : 11 = 1 + 10)).trans
+    ((finSumFinEquiv (m := 1) (n := 10)).symm.trans
+      (Equiv.sumCongr (Equiv.refl (Fin 1))
+        ((finCongr (by norm_num : 10 = 2 + 8)).trans
+          ((finSumFinEquiv (m := 2) (n := 8)).symm.trans
+            (Equiv.sumComm (Fin 2) (Fin 8))))))
+
+/-- The standard basis of `T_Co`, indexed by `Fin 11` in the order `⟨2⟩`, `U`, `E₈`: the
+reindexing of the block basis by `cobleBlockEquiv`. -/
+noncomputable def cobleBasis : Module.Basis (Fin 11) ℤ ↥cobleLattice.obj.carrier :=
+  cobleBlockBasisProd.reindex cobleBlockEquiv.symm
+
+@[simp] theorem cobleBlockEquiv_zero : cobleBlockEquiv 0 = Sum.inl 0 := by decide
+@[simp] theorem cobleBlockEquiv_one : cobleBlockEquiv 1 = Sum.inr (Sum.inr 0) := by decide
+@[simp] theorem cobleBlockEquiv_two : cobleBlockEquiv 2 = Sum.inr (Sum.inr 1) := by decide
+@[simp] theorem cobleBlockEquiv_three : cobleBlockEquiv 3 = Sum.inr (Sum.inl 0) := by decide
+@[simp] theorem cobleBlockEquiv_four : cobleBlockEquiv 4 = Sum.inr (Sum.inl 1) := by decide
+@[simp] theorem cobleBlockEquiv_five : cobleBlockEquiv 5 = Sum.inr (Sum.inl 2) := by decide
+@[simp] theorem cobleBlockEquiv_six : cobleBlockEquiv 6 = Sum.inr (Sum.inl 3) := by decide
+@[simp] theorem cobleBlockEquiv_seven : cobleBlockEquiv 7 = Sum.inr (Sum.inl 4) := by decide
+@[simp] theorem cobleBlockEquiv_eight : cobleBlockEquiv 8 = Sum.inr (Sum.inl 5) := by decide
+@[simp] theorem cobleBlockEquiv_nine : cobleBlockEquiv 9 = Sum.inr (Sum.inl 6) := by decide
+@[simp] theorem cobleBlockEquiv_ten : cobleBlockEquiv 10 = Sum.inr (Sum.inl 7) := by decide
+
+theorem cobleBasis_apply (i : Fin 11) :
+    cobleBasis i = cobleBlockBasisProd (cobleBlockEquiv i) := by
+  change (cobleBlockBasisProd.reindex cobleBlockEquiv.symm) i = _
+  rw [Module.Basis.reindex_apply, Equiv.symm_symm]
+
+/-- The `⟨2⟩` block of the standard basis, as a vector of the carrier. -/
+@[simp] theorem cobleBlockBasisProd_inl (a : Fin 1) :
+    cobleBlockBasisProd (Sum.inl a) =
+      ((cobleUnitBasis a : ↥(rankOneLattice (2 : ℤ)).obj.carrier),
+        ((0 : ↥e8Lattice.obj.carrier), (0 : ↥hyperbolicPlane.obj.carrier))) := by
+  show ((cobleUnitBasis.prod cobleEnriquesBasis (Sum.inl a)) :
+      (Fin 1 → ℤ) × ((Fin 8 → ℤ) × (Fin 2 → ℤ))) =
+    (cobleUnitBasis a, (0 : (Fin 8 → ℤ) × (Fin 2 → ℤ)))
+  rw [Module.Basis.prod_apply, Sum.elim_inl, Function.comp_apply, LinearMap.inl_apply]
+
+/-- The `E₈` block of the standard basis, as a vector of the carrier. -/
+@[simp] theorem cobleBlockBasisProd_inr_inl (k : Fin 8) :
+    cobleBlockBasisProd (Sum.inr (Sum.inl k)) =
+      ((0 : ↥(rankOneLattice (2 : ℤ)).obj.carrier),
+        ((cobleE8Basis k : ↥e8Lattice.obj.carrier), (0 : ↥hyperbolicPlane.obj.carrier))) := by
+  show ((cobleUnitBasis.prod cobleEnriquesBasis (Sum.inr (Sum.inl k))) :
+      (Fin 1 → ℤ) × ((Fin 8 → ℤ) × (Fin 2 → ℤ))) = (0, (cobleE8Basis k, 0))
+  rw [Module.Basis.prod_apply, Sum.elim_inr, Function.comp_apply, LinearMap.inr_apply,
+    cobleEnriquesBasis, Module.Basis.prod_apply, Sum.elim_inl, Function.comp_apply,
+    LinearMap.inl_apply]
+
+/-- The `U` block of the standard basis, as a vector of the carrier. -/
+@[simp] theorem cobleBlockBasisProd_inr_inr (k : Fin 2) :
+    cobleBlockBasisProd (Sum.inr (Sum.inr k)) =
+      ((0 : ↥(rankOneLattice (2 : ℤ)).obj.carrier),
+        ((0 : ↥e8Lattice.obj.carrier), (cobleUBasis k : ↥hyperbolicPlane.obj.carrier))) := by
+  show ((cobleUnitBasis.prod cobleEnriquesBasis (Sum.inr (Sum.inr k))) :
+      (Fin 1 → ℤ) × ((Fin 8 → ℤ) × (Fin 2 → ℤ))) = (0, (0, cobleUBasis k))
+  rw [Module.Basis.prod_apply, Sum.elim_inr, Function.comp_apply, LinearMap.inr_apply,
+    cobleEnriquesBasis, Module.Basis.prod_apply, Sum.elim_inr, Function.comp_apply,
+    LinearMap.inr_apply]
+
+/-- The pairing of two `⟨2⟩` basis vectors is the rank-one Gram entry. -/
+theorem rankOneLattice_pairing_cobleUnitBasis (i j : Fin 1) :
+    (rankOneLattice (2 : ℤ)).obj.pairing (cobleUnitBasis i) (cobleUnitBasis j) =
+      rankOneGramMatrix 2 i j := by
+  rw [cobleUnitBasis, Pi.basisFun_apply, Pi.basisFun_apply, rankOneLattice_pairing_single]
+
+/-- The pairing of two `E₈` basis vectors is the `E₈` Gram entry. -/
+theorem e8Lattice_pairing_cobleE8Basis (i j : Fin 8) :
+    e8Lattice.obj.pairing (cobleE8Basis i) (cobleE8Basis j) = e8GramMatrix i j := by
+  rw [cobleE8Basis, Pi.basisFun_apply, Pi.basisFun_apply, e8Lattice_pairing_single]
+
+/-- The pairing of two `U` basis vectors is the hyperbolic Gram entry. -/
+theorem hyperbolicPlane_pairing_cobleUBasis (i j : Fin 2) :
+    hyperbolicPlane.obj.pairing (cobleUBasis i) (cobleUBasis j) =
+      hyperbolicPlaneGramMatrix i j := by
+  rw [cobleUBasis, Pi.basisFun_apply, Pi.basisFun_apply, hyperbolicPlane_pairing_single]
+
+set_option maxHeartbeats 1000000 in
+/-- The pairing of the constructed lattice, block by block: the `⟨2⟩` summand unscaled, the
+Enriques summand `E = E₈ ⊕ U` scaled by `2`. -/
+theorem coble_pairing_formula (x y : ↥cobleLattice.obj.carrier) :
+    cobleLattice.obj.pairing x y = (rankOneLattice 2).obj.pairing x.1 y.1 +
+      2 * (e8Lattice.obj.pairing x.2.1 y.2.1 + hyperbolicPlane.obj.pairing x.2.2 y.2.2) := by
+  unfold cobleLattice cobleEnriquesLattice
+  rw [orthogonalSum_pairing]
+  rw [scaleLattice_pairing]
+  rw [orthogonalSum_pairing]
+  ring
+
+
+noncomputable def cobleBlockGramMatrix :
+    Matrix (Fin 1 ⊕ (Fin 8 ⊕ Fin 2)) (Fin 1 ⊕ (Fin 8 ⊕ Fin 2)) ℤ :=
+  Matrix.fromBlocks (rankOneGramMatrix 2) (0 : Matrix (Fin 1) (Fin 8 ⊕ Fin 2) ℤ)
+    (0 : Matrix (Fin 8 ⊕ Fin 2) (Fin 1) ℤ)
+    (Matrix.fromBlocks (Matrix.of fun a b => 2 * e8GramMatrix a b)
+      (0 : Matrix (Fin 8) (Fin 2) ℤ) (0 : Matrix (Fin 2) (Fin 8) ℤ)
+      (Matrix.of fun a b => 2 * hyperbolicPlaneGramMatrix a b))
+
+/-- The Gram matrix of `T_Co` in the standard basis, as the block sum of the summands' own Gram
+matrices: `rankOneGramMatrix 2`, `2 • e8GramMatrix` and `2 • hyperbolicPlaneGramMatrix`. Its
+entries are the pairings of the basis vectors (`cobleGramMatrix_apply`). -/
 noncomputable def cobleGramMatrix : Matrix (Fin 11) (Fin 11) ℤ :=
-  ![
-    ![   2,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0],
-    ![   0,    0,    2,    0,    0,    0,    0,    0,    0,    0,    0],
-    ![   0,    2,    0,    0,    0,    0,    0,    0,    0,    0,    0],
-    ![   0,    0,    0,   -4,    0,    2,    0,    0,    0,    0,    0],
-    ![   0,    0,    0,    0,   -4,    0,    2,    0,    0,    0,    0],
-    ![   0,    0,    0,    2,    0,   -4,    2,    0,    0,    0,    0],
-    ![   0,    0,    0,    0,    2,    2,   -4,    2,    0,    0,    0],
-    ![   0,    0,    0,    0,    0,    0,    2,   -4,    2,    0,    0],
-    ![   0,    0,    0,    0,    0,    0,    0,    2,   -4,    2,    0],
-    ![   0,    0,    0,    0,    0,    0,    0,    0,    2,   -4,    2],
-    ![   0,    0,    0,    0,    0,    0,    0,    0,    0,    2,   -4]]
+  Matrix.of fun i j => cobleBlockGramMatrix (cobleBlockEquiv i) (cobleBlockEquiv j)
 
-/-- The Gram matrix of `T_Co` is twice the odd unimodular form. -/
-theorem cobleGramMatrix_eq : cobleGramMatrix = (2 : ℤ) • cobleHalfMatrix := by
-  decide
+@[simp]
+theorem cobleBlockGramMatrix_inl_inl (a b : Fin 1) :
+    cobleBlockGramMatrix (Sum.inl a) (Sum.inl b) = rankOneGramMatrix 2 a b := by
+  simp [cobleBlockGramMatrix]
+
+@[simp]
+theorem cobleBlockGramMatrix_inl_inr (a : Fin 1) (b : Fin 8 ⊕ Fin 2) :
+    cobleBlockGramMatrix (Sum.inl a) (Sum.inr b) = 0 := by
+  simp [cobleBlockGramMatrix]
+
+@[simp]
+theorem cobleBlockGramMatrix_inr_inl (a : Fin 8 ⊕ Fin 2) (b : Fin 1) :
+    cobleBlockGramMatrix (Sum.inr a) (Sum.inl b) = 0 := by
+  simp [cobleBlockGramMatrix]
+
+@[simp]
+theorem cobleBlockGramMatrix_inr_inl_inl (a b : Fin 8) :
+    cobleBlockGramMatrix (Sum.inr (Sum.inl a)) (Sum.inr (Sum.inl b)) =
+      2 * e8GramMatrix a b := by
+  simp [cobleBlockGramMatrix]
+
+@[simp]
+theorem cobleBlockGramMatrix_inr_inl_inr (a : Fin 8) (b : Fin 2) :
+    cobleBlockGramMatrix (Sum.inr (Sum.inl a)) (Sum.inr (Sum.inr b)) = 0 := by
+  simp [cobleBlockGramMatrix]
+
+@[simp]
+theorem cobleBlockGramMatrix_inr_inr_inl (a : Fin 2) (b : Fin 8) :
+    cobleBlockGramMatrix (Sum.inr (Sum.inr a)) (Sum.inr (Sum.inl b)) = 0 := by
+  simp [cobleBlockGramMatrix]
+
+@[simp]
+theorem cobleBlockGramMatrix_inr_inr_inr (a b : Fin 2) :
+    cobleBlockGramMatrix (Sum.inr (Sum.inr a)) (Sum.inr (Sum.inr b)) =
+      2 * hyperbolicPlaneGramMatrix a b := by
+  simp [cobleBlockGramMatrix]
+
+set_option maxHeartbeats 1000000 in
+/-- The Gram matrix of the constructed lattice in the block basis is the computed block matrix:
+the pairing of two basis vectors is the corresponding entry. -/
+theorem cobleGramMatrix_apply (i j : Fin 11) :
+    cobleGramMatrix i j = cobleLattice.obj.pairing (cobleBasis i) (cobleBasis j) := by
+  rw [cobleGramMatrix, Matrix.of_apply, cobleBasis_apply, cobleBasis_apply]
+  generalize h₁ : cobleBlockEquiv i = a₁
+  generalize h₂ : cobleBlockEquiv j = a₂
+  rcases a₁ with a₁ | a₁
+  · rcases a₂ with a₂ | a₂
+    · rw [cobleBlockBasisProd_inl, cobleBlockBasisProd_inl, cobleBlockGramMatrix_inl_inl,
+        coble_pairing_formula, rankOneLattice_pairing_cobleUnitBasis]
+      simp
+    · rcases a₂ with a₂ | a₂
+      · rw [cobleBlockBasisProd_inl, cobleBlockBasisProd_inr_inl,
+          cobleBlockGramMatrix_inl_inr, coble_pairing_formula]
+        simp
+      · rw [cobleBlockBasisProd_inl, cobleBlockBasisProd_inr_inr,
+          cobleBlockGramMatrix_inl_inr, coble_pairing_formula]
+        simp
+  · rcases a₁ with a₁ | a₁
+    · rcases a₂ with a₂ | a₂
+      · rw [cobleBlockBasisProd_inr_inl, cobleBlockBasisProd_inl,
+          cobleBlockGramMatrix_inr_inl, coble_pairing_formula]
+        simp
+      · rcases a₂ with a₂ | a₂
+        · rw [cobleBlockBasisProd_inr_inl, cobleBlockBasisProd_inr_inl,
+            cobleBlockGramMatrix_inr_inl_inl, coble_pairing_formula,
+            e8Lattice_pairing_cobleE8Basis]
+          simp
+        · rw [cobleBlockBasisProd_inr_inl, cobleBlockBasisProd_inr_inr,
+            cobleBlockGramMatrix_inr_inl_inr, coble_pairing_formula]
+          simp
+    · rcases a₂ with a₂ | a₂
+      · rw [cobleBlockBasisProd_inr_inr, cobleBlockBasisProd_inl,
+          cobleBlockGramMatrix_inr_inl, coble_pairing_formula]
+        simp
+      · rcases a₂ with a₂ | a₂
+        · rw [cobleBlockBasisProd_inr_inr, cobleBlockBasisProd_inr_inl,
+            cobleBlockGramMatrix_inr_inr_inl, coble_pairing_formula]
+          simp
+        · rw [cobleBlockBasisProd_inr_inr, cobleBlockBasisProd_inr_inr,
+            cobleBlockGramMatrix_inr_inr_inr, coble_pairing_formula,
+            hyperbolicPlane_pairing_cobleUBasis]
+          simp
+
+/-- The carrier of the constructed lattice is a product of function types. -/
+noncomputable instance cobleCarrierFree : Module.Free ℤ ↥cobleLattice.obj.carrier :=
+  inferInstanceAs (Module.Free ℤ ((Fin 1 → ℤ) × ((Fin 8 → ℤ) × (Fin 2 → ℤ))))
+
+/-- The carrier of `T_Co` is a finite `ℤ`-module. -/
+noncomputable instance cobleCarrierFinite : Module.Finite ℤ ↥cobleLattice.obj.carrier :=
+  inferInstanceAs (Module.Finite ℤ ((Fin 1 → ℤ) × ((Fin 8 → ℤ) × (Fin 2 → ℤ))))
+
+/-- The carrier of `T_Co` is a product of free `ℤ`-modules, hence torsion-free. -/
+instance cobleLatticeCarrierTorsionFree :
+    NoZeroSMulDivisors ℤ ↥cobleLattice.obj.carrier :=
+  inferInstanceAs (NoZeroSMulDivisors ℤ ((Fin 1 → ℤ) × ((Fin 8 → ℤ) × (Fin 2 → ℤ))))
+
+theorem cobleBasis_equivFun_self (i : Fin 11) :
+    cobleBasis.equivFun (cobleBasis i) = Pi.single i 1 := by
+  rw [Module.Basis.equivFun_apply, Module.Basis.repr_self]
+  ext j
+  by_cases h : j = i
+  · subst h
+    simp
+  · simp [h]
+
+/-- Coordinates of a vector of `T_Co` in the standard basis. -/
+noncomputable def cobleCoordEquiv : ↥cobleLattice.obj.carrier ≃ₗ[ℤ] (Fin 11 → ℤ) :=
+  cobleBasis.equivFun
+
+/-- The coordinate equivalence sends a standard basis vector to the corresponding lattice vector. -/
+theorem cobleCoordEquiv_symm_single (i : Fin 11) :
+    cobleCoordEquiv.symm (Pi.single i 1) = cobleBasis i := by
+  rw [cobleCoordEquiv, ← cobleBasis_equivFun_self i, LinearEquiv.symm_apply_apply]
+
+/-- The pairing of two lattice basis vectors is the Gram entry. -/
+theorem cobleBasis_pairing (i j : Fin 11) :
+    cobleLattice.obj.pairing (cobleBasis i) (cobleBasis j) = cobleGramMatrix i j :=
+  (cobleGramMatrix_apply i j).symm
+
+
+
+theorem coble_pairing_coord (x y : Fin 11 → ℤ) :
+    cobleLattice.obj.pairing (cobleCoordEquiv.symm x) (cobleCoordEquiv.symm y) =
+      ∑ i, ∑ j, x i * cobleGramMatrix i j * y j := by
+  set e := cobleCoordEquiv.symm.toLinearMap with he
+  set P : LinearMap.BilinForm ℤ (Fin 11 → ℤ) :=
+    LinearMap.BilinForm.comp cobleLattice.obj.bilinMap e e with hPdef
+  have hP : P = Matrix.toBilin' cobleGramMatrix := by
+    refine (LinearMap.BilinForm.ext_iff_basis (B := P)
+      (B' := Matrix.toBilin' cobleGramMatrix) (Pi.basisFun ℤ (Fin 11))).mpr ?_
+    intro i j
+    have h1 : (P (Pi.single i 1)) (Pi.single j 1) =
+        cobleLattice.obj.pairing (cobleBasis i) (cobleBasis j) := by
+      simp only [hPdef, he, LinearMap.BilinForm.comp_apply, LinearEquiv.coe_toLinearMap,
+        BilinModuleCat.bilinMap_apply]
+      rw [show Pi.single i 1 = cobleCoordEquiv (cobleBasis i) from
+          (cobleBasis_equivFun_self i).symm,
+        show Pi.single j 1 = cobleCoordEquiv (cobleBasis j) from
+          (cobleBasis_equivFun_self j).symm]
+      rw [show cobleCoordEquiv.symm (cobleCoordEquiv (cobleBasis i)) = cobleBasis i from
+            LinearEquiv.symm_apply_apply cobleCoordEquiv (cobleBasis i),
+          show cobleCoordEquiv.symm (cobleCoordEquiv (cobleBasis j)) = cobleBasis j from
+            LinearEquiv.symm_apply_apply cobleCoordEquiv (cobleBasis j)]
+    have h2 : cobleLattice.obj.pairing (cobleBasis i) (cobleBasis j) =
+        cobleGramMatrix i j := (cobleGramMatrix_apply i j).symm
+    have h3 : (Matrix.toBilin' cobleGramMatrix (Pi.single i 1)) (Pi.single j 1) =
+        cobleGramMatrix i j := Matrix.toBilin'_single _ _ _
+    rw [Pi.basisFun_apply, Pi.basisFun_apply, h1, h2, h3]
+  have hx : (P x) y = cobleLattice.obj.pairing (cobleCoordEquiv.symm x)
+      (cobleCoordEquiv.symm y) := by
+    simp only [hPdef, he, LinearMap.BilinForm.comp_apply, LinearEquiv.coe_toLinearMap,
+      BilinModuleCat.bilinMap_apply]
+  have h : (Matrix.toBilin' cobleGramMatrix x) y = (P x) y := by rw [hP]
+  rw [← hx, ← h, Matrix.toBilin'_apply']
+  simp only [dotProduct, Matrix.mulVec, Finset.mul_sum]
+  refine Finset.sum_congr rfl fun i _ => Finset.sum_congr rfl fun j _ => ?_
+  ring
 
 /-- The Gram matrix of `T_Co` is symmetric. -/
 theorem cobleGramMatrix_isSymm : cobleGramMatrix.IsSymm := by
-  decide
+  ext i j
+  rw [Matrix.transpose_apply, cobleGramMatrix_apply, cobleGramMatrix_apply]
+  exact cobleLattice.property.2 (cobleBasis j) (cobleBasis i)
 
-/-- The Coble lattice `T_Co = ⟨2⟩ ⊕ U(2) ⊕ E₈(−2)`, of rank 11 and signature `(2, 9)`. -/
-noncomputable def cobleLattice : IntegralLatticeCat ℤ :=
-  latticeOfGramMatrix cobleGramMatrix cobleGramMatrix_isSymm
+/-- The diagonal of the Gram matrix of `T_Co` is even. -/
+theorem cobleGramMatrix_diag_even (i : Fin 11) : ∃ c : ℤ, cobleGramMatrix i i = c * 2 := by
+  fin_cases i
+  · exact ⟨1, by simp [cobleGramMatrix, cobleBlockGramMatrix, rankOneGramMatrix,
+      hyperbolicPlaneGramMatrix]⟩
+  · exact ⟨0, by simp [cobleGramMatrix, cobleBlockGramMatrix, rankOneGramMatrix,
+      hyperbolicPlaneGramMatrix]⟩
+  · exact ⟨0, by simp [cobleGramMatrix, cobleBlockGramMatrix, rankOneGramMatrix,
+      hyperbolicPlaneGramMatrix]⟩
+  all_goals
+    exact ⟨-2, by simp [cobleGramMatrix, cobleBlockGramMatrix, rankOneGramMatrix,
+      hyperbolicPlaneGramMatrix, e8GramMatrix_eq]⟩
 
-/-- The standard basis has the Coble Gram matrix. -/
-theorem coble_gramMatrix :
-    gramMatrix cobleLattice (Pi.basisFun ℤ (Fin 11)) = cobleGramMatrix :=
-  latticeOfGramMatrix_gramMatrix cobleGramMatrix cobleGramMatrix_isSymm
-
-/-- Pairings of standard basis vectors are the entries of the Gram matrix. -/
-theorem coble_pairing_basis (i j : Fin 11) :
-    cobleLattice.obj.pairing ((Pi.basisFun ℤ (Fin 11)) i) ((Pi.basisFun ℤ (Fin 11)) j) =
-      cobleGramMatrix i j := by
-  have h : cobleLattice.obj.pairing ((Pi.basisFun ℤ (Fin 11)) i) ((Pi.basisFun ℤ (Fin 11)) j) =
-      Matrix.toBilin' cobleGramMatrix ((Pi.basisFun ℤ (Fin 11)) i)
-        ((Pi.basisFun ℤ (Fin 11)) j) := rfl
-  rw [h, Pi.basisFun_apply, Pi.basisFun_apply, Matrix.toBilin'_single]
-
-/-- The carrier of `T_Co` is a free `ℤ`-module: instance search does not unfold the packaged
-carrier, so the structural instances are recorded here. -/
-instance cobleCarrierFree : Module.Free ℤ ↥cobleLattice.obj.carrier :=
-  inferInstanceAs (Module.Free ℤ (Fin 11 → ℤ))
-
-/-- The carrier of `T_Co` is a finite `ℤ`-module. -/
-instance cobleCarrierFinite : Module.Finite ℤ ↥cobleLattice.obj.carrier :=
-  inferInstanceAs (Module.Finite ℤ (Fin 11 → ℤ))
-
-/-- The carrier of `T_Co` is `ℤ¹¹`, hence torsion-free. -/
-instance cobleLatticeCarrierTorsionFree :
-    NoZeroSMulDivisors ℤ ↥cobleLattice.obj.carrier :=
-  inferInstanceAs (NoZeroSMulDivisors ℤ (Fin 11 → ℤ))
-
-/-- Coordinates of a vector of `T_Co`: the standard basis identifies the carrier with `ℤ¹¹`. -/
-noncomputable def cobleCoordEquiv : ↥cobleLattice.obj.carrier ≃ₗ[ℤ] (Fin 11 → ℤ) :=
-  (Pi.basisFun ℤ (Fin 11)).equivFun
-
-/-- `T_Co` is even: its Gram diagonal is the doubled diagonal of the odd unimodular form. -/
+/-- `T_Co` is even: every basis vector has even square. -/
 theorem coble_isEven : IsEven cobleLattice := by
-  apply latticeOfGramMatrix_isEven cobleGramMatrix cobleGramMatrix_isSymm
+  apply isEven_of_basis cobleLattice cobleBasis
   intro i
+  obtain ⟨c, hc⟩ := cobleGramMatrix_diag_even i
   rw [Ideal.mem_span_singleton]
-  refine ⟨cobleHalfMatrix i i, ?_⟩
-  rw [cobleGramMatrix_eq]
-  simp only [Matrix.smul_apply, smul_eq_mul]
+  refine ⟨c, ?_⟩
+  rw [show quadraticMap cobleLattice (cobleBasis i) = cobleGramMatrix i i from
+    (cobleGramMatrix_apply i i).symm, hc]
+  ring
 
-/-- `T_Co` is fraction-field perfect: its Gram determinant is `2 ^ 11` times a unit. -/
+/-- The Gram determinant of `T_Co` is `2 · 2⁸ · (−2²)`, hence nonzero. -/
+theorem cobleGramMatrix_det_ne_zero : cobleGramMatrix.det ≠ 0 := by
+  have h : cobleGramMatrix =
+      cobleBlockGramMatrix.submatrix cobleBlockEquiv cobleBlockEquiv := rfl
+  rw [h, Matrix.det_submatrix_equiv_self, cobleBlockGramMatrix,
+    Matrix.det_fromBlocks_zero₂₁, Matrix.det_fromBlocks_zero₂₁]
+  have h1 : (rankOneGramMatrix 2).det = 2 := by simp [rankOneGramMatrix]
+  have h2 : (Matrix.of fun a b => 2 * e8GramMatrix a b : Matrix (Fin 8) (Fin 8) ℤ).det
+      = (2 : ℤ) ^ 8 * e8GramMatrix.det := by
+    rw [show (Matrix.of fun a b => 2 * e8GramMatrix a b : Matrix (Fin 8) (Fin 8) ℤ)
+        = (2 : ℤ) • e8GramMatrix from rfl, Matrix.det_smul, Fintype.card_fin]
+  have h3 : (Matrix.of fun a b => 2 * hyperbolicPlaneGramMatrix a b :
+      Matrix (Fin 2) (Fin 2) ℤ).det = -((2 : ℤ) ^ 2) := by
+    rw [show (Matrix.of fun a b => 2 * hyperbolicPlaneGramMatrix a b :
+        Matrix (Fin 2) (Fin 2) ℤ) = (2 : ℤ) • hyperbolicPlaneGramMatrix from rfl,
+      Matrix.det_smul, Fintype.card_fin]
+    simp [hyperbolicPlaneGramMatrix]
+  rw [h1, h2, h3, e8GramMatrix_det]
+  norm_num
+
+/-- `T_Co` is fraction-field perfect: its Gram determinant is nonzero. -/
 theorem coble_isFractionFieldPerfect : IsFractionFieldPerfect ℤ cobleLattice := by
-  rw [isFractionFieldPerfect_iff_determinant_ne_zero ℤ cobleLattice (Pi.basisFun ℤ (Fin 11))]
-  change (gramMatrix cobleLattice (Pi.basisFun ℤ (Fin 11))).det ≠ 0
-  rw [coble_gramMatrix, cobleGramMatrix_eq, Matrix.det_smul, Fintype.card_fin]
-  exact mul_ne_zero (pow_ne_zero 11 (by norm_num)) cobleHalfMatrix_det_ne_zero
+  refine (isFractionFieldPerfect_iff_determinant_ne_zero ℤ cobleLattice cobleBasis).mpr ?_
+  unfold determinant
+  rw [show gramMatrix cobleLattice cobleBasis = cobleGramMatrix from ?_]
+  · exact cobleGramMatrix_det_ne_zero
+  · ext i j
+    rw [gramMatrix, LinearMap.BilinForm.toMatrix_apply, BilinModuleCat.bilinMap_apply]
+    exact (cobleGramMatrix_apply i j).symm
 
 /-- The value dual of `T_Co` is a free `ℤ`-module. -/
 instance cobleValueDualFree : Module.Free ℤ cobleLattice.obj.valueDual := inferInstance
@@ -406,19 +666,41 @@ noncomputable def cobleP1 : Fin 11 → ℝ := cobleVecCast cobleP1Z
 noncomputable def cobleP2 : Fin 11 → ℝ := cobleVecCast cobleP2Z
 
 theorem cobleRealForm_p1_p1 : cobleRealForm cobleP1 cobleP1 = 2 := by
-  have h := cobleRealForm_cast_of cobleP1Z cobleP1Z 2 (by decide)
+  have h := cobleRealForm_cast_of cobleP1Z cobleP1Z 2 (by
+    rw [← coble_pairing_coord (x := cobleP1Z) (y := cobleP1Z)]
+    show cobleLattice.obj.pairing (cobleCoordEquiv.symm cobleP1Z)
+      (cobleCoordEquiv.symm cobleP1Z) = 2
+    rw [show cobleP1Z = (Pi.single (0 : Fin 11) 1 : Fin 11 → ℤ) from rfl,
+      cobleCoordEquiv_symm_single, ← cobleGramMatrix_apply]
+    simp [cobleGramMatrix, cobleBlockGramMatrix, rankOneGramMatrix, hyperbolicPlaneGramMatrix])
   have h' : cobleRealForm cobleP1 cobleP1 = ((2 : ℤ) : ℝ) := h
   norm_num at h'
   exact h'
 
 theorem cobleRealForm_p2_p2 : cobleRealForm cobleP2 cobleP2 = 4 := by
-  have h := cobleRealForm_cast_of cobleP2Z cobleP2Z 4 (by decide)
+  have h := cobleRealForm_cast_of cobleP2Z cobleP2Z 4 (by
+    rw [show cobleP2Z = (Pi.single (1 : Fin 11) 1 + Pi.single (2 : Fin 11) 1 : Fin 11 → ℤ)
+      from rfl, ← coble_pairing_coord]
+    show cobleLattice.obj.pairing (cobleCoordEquiv.symm (Pi.single (1 : Fin 11) 1 +
+        Pi.single (2 : Fin 11) 1)) (cobleCoordEquiv.symm (Pi.single (1 : Fin 11) 1 +
+        Pi.single (2 : Fin 11) 1)) = 4
+    simp only [map_add, BilinModuleCat.pairing_add_left, BilinModuleCat.pairing_add_right,
+      cobleCoordEquiv_symm_single, cobleBasis_pairing]
+    norm_num [cobleGramMatrix, cobleBlockGramMatrix, hyperbolicPlaneGramMatrix])
   have h' : cobleRealForm cobleP2 cobleP2 = ((4 : ℤ) : ℝ) := h
   norm_num at h'
   exact h'
 
 theorem cobleRealForm_p1_p2 : cobleRealForm cobleP1 cobleP2 = 0 := by
-  have h := cobleRealForm_cast_of cobleP1Z cobleP2Z 0 (by decide)
+  have h := cobleRealForm_cast_of cobleP1Z cobleP2Z 0 (by
+    rw [show cobleP2Z = (Pi.single (1 : Fin 11) 1 + Pi.single (2 : Fin 11) 1 : Fin 11 → ℤ)
+      from rfl, ← coble_pairing_coord]
+    show cobleLattice.obj.pairing (cobleCoordEquiv.symm cobleP1Z)
+      (cobleCoordEquiv.symm (Pi.single (1 : Fin 11) 1 + Pi.single (2 : Fin 11) 1)) = 0
+    rw [show cobleP1Z = (Pi.single (0 : Fin 11) 1 : Fin 11 → ℤ) from rfl]
+    simp only [map_add, BilinModuleCat.pairing_add_right, cobleCoordEquiv_symm_single,
+      cobleBasis_pairing]
+    norm_num [cobleGramMatrix, cobleBlockGramMatrix, e8GramMatrix_eq])
   have h' : cobleRealForm cobleP1 cobleP2 = ((0 : ℤ) : ℝ) := h
   norm_num at h'
   exact h'
@@ -426,12 +708,18 @@ theorem cobleRealForm_p1_p2 : cobleRealForm cobleP1 cobleP2 = 0 := by
 /-- The Gram matrix sends `p₁` to twice `p₁`. -/
 theorem cobleGramMatrix_mulVec_p1 : cobleGramMatrix *ᵥ cobleP1Z = (2 : ℤ) • cobleP1Z := by
   unfold cobleP1Z
-  decide
+  ext i
+  fin_cases i <;>
+    simp [cobleGramMatrix, cobleBlockGramMatrix, rankOneGramMatrix, hyperbolicPlaneGramMatrix,
+      Matrix.mulVec, dotProduct, Fin.sum_univ_succ]
 
 /-- The Gram matrix sends `p₂ = e₁ + e₂` to twice `p₂`. -/
 theorem cobleGramMatrix_mulVec_p2 : cobleGramMatrix *ᵥ cobleP2Z = (2 : ℤ) • cobleP2Z := by
   unfold cobleP2Z
-  decide
+  ext i
+  fin_cases i <;>
+    simp [cobleGramMatrix, cobleBlockGramMatrix, rankOneGramMatrix, hyperbolicPlaneGramMatrix,
+      Matrix.mulVec, dotProduct, Fin.sum_univ_succ]
 
 theorem cobleGramReal_mulVec_p1 : cobleGramReal *ᵥ cobleP1 = 2 • cobleP1 := by
   have h := cobleVecCast_mulVec cobleGramMatrix cobleP1Z
@@ -514,11 +802,174 @@ theorem cobleWIncl_single (j : Fin 9) :
 
 
 
-/-! ### The Gram matrix of the complement basis -/
+/-! ### The complement basis, carried as lattice vectors -/
 
-/-- The Gram matrix of the integral basis `e₁ − e₂, e₃, …, e₁₀` of `P^⊥`. -/
+/-- The `E₈(−2)` indices of the standard basis of `T_Co`: the block index of the `j`-th
+`E₈(−2)` coordinate. -/
+def cobleE8Index (j : Fin 8) : Fin 11 :=
+  cobleBlockEquiv.symm (Sum.inr (Sum.inl j))
+
+@[simp] theorem cobleBlockEquiv_cobleE8Index (j : Fin 8) :
+    cobleBlockEquiv (cobleE8Index j) = Sum.inr (Sum.inl j) := by
+  simp [cobleE8Index]
+
+/-! ### The summands' own basis vectors, carried at the summands' carriers -/
+
+/-- The `a`-th basis vector of the `⟨2⟩` summand. -/
+noncomputable def cobleUnitVec (a : Fin 1) : ↥(rankOneLattice (2 : ℤ)).obj.carrier :=
+  Pi.basisFun ℤ (Fin 1) a
+
+/-- The `k`-th basis vector of the `E₈` summand. -/
+noncomputable def cobleE8Vec (k : Fin 8) : ↥e8Lattice.obj.carrier :=
+  Pi.basisFun ℤ (Fin 8) k
+
+/-- The `k`-th basis vector of the `U` summand. -/
+noncomputable def cobleUVec (k : Fin 2) : ↥hyperbolicPlane.obj.carrier :=
+  Pi.basisFun ℤ (Fin 2) k
+
+/-- The `k`-th `E₈` vector of the Enriques summand `E = E₈ ⊕ U`, scaled by `2`. -/
+noncomputable def cobleEnriquesE8Vec (k : Fin 8) :
+    ↥(scaleLattice cobleEnriquesLattice 2).obj.carrier :=
+  (cobleE8Vec k, 0)
+
+/-- The `k`-th `U` vector of the Enriques summand `E = E₈ ⊕ U`, scaled by `2`. -/
+noncomputable def cobleEnriquesUVec (k : Fin 2) :
+    ↥(scaleLattice cobleEnriquesLattice 2).obj.carrier :=
+  (0, cobleUVec k)
+
+/-- The `U`-vector `e₁ − e₂` of the Enriques summand, scaled by `2`. -/
+noncomputable def cobleEnriquesUVecSub :
+    ↥(scaleLattice cobleEnriquesLattice 2).obj.carrier :=
+  (0, (![1, -1] : Fin 2 → ℤ))
+
+/-- The `U`-vector `e₁ − e₂` in coordinates. -/
+theorem cobleUCoord :
+    (Pi.single (0 : Fin 2) 1 - Pi.single (1 : Fin 2) 1 : Fin 2 → ℤ) = ![1, -1] := by
+  funext i
+  fin_cases i <;> simp
+
+/-- The pairing of two `⟨2⟩` basis vectors is the rank-one Gram entry. -/
+theorem rankOneLattice_pairing_cobleUnitVec (i j : Fin 1) :
+    (rankOneLattice (2 : ℤ)).obj.pairing (cobleUnitVec i) (cobleUnitVec j) =
+      rankOneGramMatrix 2 i j := by
+  have hi : cobleUnitVec i = (Pi.single i 1 : ↥(rankOneLattice (2 : ℤ)).obj.carrier) := by
+    rw [cobleUnitVec, Pi.basisFun_apply]
+  have hj : cobleUnitVec j = (Pi.single j 1 : ↥(rankOneLattice (2 : ℤ)).obj.carrier) := by
+    rw [cobleUnitVec, Pi.basisFun_apply]
+  rw [hi, hj, rankOneLattice_pairing_single]
+
+/-- The pairing of two `E₈` basis vectors is the `E₈` Gram entry. -/
+theorem e8Lattice_pairing_cobleE8Vec (i j : Fin 8) :
+    e8Lattice.obj.pairing (cobleE8Vec i) (cobleE8Vec j) = e8GramMatrix i j := by
+  have hi : cobleE8Vec i = (Pi.single i 1 : ↥e8Lattice.obj.carrier) := by
+    rw [cobleE8Vec, Pi.basisFun_apply]
+  have hj : cobleE8Vec j = (Pi.single j 1 : ↥e8Lattice.obj.carrier) := by
+    rw [cobleE8Vec, Pi.basisFun_apply]
+  rw [hi, hj, e8Lattice_pairing_single]
+
+/-- The pairing of two `U` basis vectors is the hyperbolic Gram entry. -/
+theorem hyperbolicPlane_pairing_cobleUVec (i j : Fin 2) :
+    hyperbolicPlane.obj.pairing (cobleUVec i) (cobleUVec j) = hyperbolicPlaneGramMatrix i j := by
+  have hi : cobleUVec i = (Pi.single i 1 : ↥hyperbolicPlane.obj.carrier) := by
+    rw [cobleUVec, Pi.basisFun_apply]
+  have hj : cobleUVec j = (Pi.single j 1 : ↥hyperbolicPlane.obj.carrier) := by
+    rw [cobleUVec, Pi.basisFun_apply]
+  rw [hi, hj, hyperbolicPlane_pairing_single]
+
+/-- The square of `e₁ − e₂` in the hyperbolic plane is `−2`. -/
+theorem hyperbolicPlane_pairing_cobleUVecSub :
+    hyperbolicPlane.obj.pairing (![1, -1] : ↥hyperbolicPlane.obj.carrier)
+        (![1, -1] : ↥hyperbolicPlane.obj.carrier) = -2 := by
+  rw [hyperbolicPlane_pairing, Matrix.toBilin'_apply, Fin.sum_univ_two]
+  simp [hyperbolicPlaneGramMatrix]
+
+/-- The `j`-th `E₈(−2)` generator of `T_Co`, as a vector of the carrier. -/
+theorem cobleBasis_cobleE8Index (j : Fin 8) :
+    cobleBasis (cobleE8Index j) = (0, cobleEnriquesE8Vec j) := by
+  rw [cobleBasis_apply, cobleBlockEquiv_cobleE8Index, cobleBlockBasisProd_inr_inl]
+  rfl
+
+/-- The first `U(2)` generator of `T_Co`, as a vector of the carrier. -/
+theorem cobleBasis_one : cobleBasis (1 : Fin 11) = (0, cobleEnriquesUVec 0) := by
+  rw [cobleBasis_apply, cobleBlockEquiv_one, cobleBlockBasisProd_inr_inr]
+  rfl
+
+/-- The second `U(2)` generator of `T_Co`, as a vector of the carrier. -/
+theorem cobleBasis_two : cobleBasis (2 : Fin 11) = (0, cobleEnriquesUVec 1) := by
+  rw [cobleBasis_apply, cobleBlockEquiv_two, cobleBlockBasisProd_inr_inr]
+  rfl
+
+/-- The `U(2)`-vector `e₁ − e₂` of `T_Co`, as a vector of the carrier. -/
+theorem cobleBasis_one_sub_two :
+    (cobleBasis (1 : Fin 11) - cobleBasis 2 : ↥cobleLattice.obj.carrier) =
+      (0, cobleEnriquesUVecSub) := by
+  rw [cobleBasis_apply, cobleBasis_apply, cobleBlockEquiv_one, cobleBlockEquiv_two]
+  show ((cobleBlockBasisProd (Sum.inr (Sum.inr 0)) :
+      (Fin 1 → ℤ) × ((Fin 8 → ℤ) × (Fin 2 → ℤ))) -
+      (cobleBlockBasisProd (Sum.inr (Sum.inr 1)) :
+      (Fin 1 → ℤ) × ((Fin 8 → ℤ) × (Fin 2 → ℤ)))) = (0, (0, ![1, -1]))
+  rw [cobleBlockBasisProd, cobleEnriquesBasis, cobleE8Basis, cobleUBasis, cobleUnitBasis]
+  simp [Module.Basis.prod_apply, Pi.basisFun_apply, cobleUCoord]
+
+/-- The `j`-th vector of the integral basis `e₁ − e₂, e₃, …, e₁₀` of `P^⊥`, carried as a vector of
+the constructed lattice: the `U(2)`-vector `e₁ − e₂` first, then the eight `E₈(−2)` generators. -/
+noncomputable def cobleWBasisVec : Fin 9 → ↥cobleLattice.obj.carrier :=
+  Fin.cases (cobleBasis 1 - cobleBasis 2) fun k => cobleBasis (cobleE8Index k)
+
+@[simp] theorem cobleWBasisVec_zero : cobleWBasisVec (0 : Fin 9) = cobleBasis 1 - cobleBasis 2 :=
+  rfl
+
+@[simp] theorem cobleWBasisVec_succ (k : Fin 8) :
+    cobleWBasisVec (Fin.succ k) = cobleBasis (cobleE8Index k) :=
+  rfl
+
+/-- The coordinates of the `j`-th complement vector are the coordinate vector `cobleWBasisZ j`. -/
+theorem cobleWBasisZ_eq_coordEquiv (j : Fin 9) :
+    cobleWBasisZ j = cobleCoordEquiv (cobleWBasisVec j) := by
+  rcases Fin.eq_zero_or_eq_succ j with rfl | ⟨k, rfl⟩
+  · rw [cobleWBasisVec_zero, cobleCoordEquiv, map_sub, cobleBasis_equivFun_self,
+      cobleBasis_equivFun_self]
+    ext i
+    fin_cases i <;> decide
+  · rw [cobleWBasisVec_succ, cobleCoordEquiv, cobleBasis_equivFun_self]
+    fin_cases k <;> (ext i; fin_cases i <;> decide)
+
+/-! ### The Gram matrix of the complement basis, from the pairing formula -/
+
+/-- The Gram matrix of the integral basis `e₁ − e₂, e₃, …, e₁₀` of `P^⊥`, as the matrix of
+pairings of the constructed lattice's own vectors. -/
 noncomputable def cobleWBasisGramZ : Matrix (Fin 9) (Fin 9) ℤ :=
-  fun i j => ∑ k, ∑ l, cobleWBasisZ i k * cobleGramMatrix k l * cobleWBasisZ j l
+  Matrix.of fun i j => cobleLattice.obj.pairing (cobleWBasisVec i) (cobleWBasisVec j)
+
+set_option maxHeartbeats 1000000 in
+theorem cobleWBasisGramZ_zero_zero : cobleWBasisGramZ (0 : Fin 9) (0 : Fin 9) = -4 := by
+  rw [cobleWBasisGramZ, Matrix.of_apply, cobleWBasisVec_zero, cobleBasis_one_sub_two,
+    coble_pairing_formula]
+  simp [cobleEnriquesUVecSub, hyperbolicPlane_pairing, Matrix.toBilin'_apply, Fin.sum_univ_two,
+    hyperbolicPlaneGramMatrix]
+
+set_option maxHeartbeats 1000000 in
+theorem cobleWBasisGramZ_zero_succ (k : Fin 8) :
+    cobleWBasisGramZ (0 : Fin 9) (Fin.succ k) = 0 := by
+  rw [cobleWBasisGramZ, Matrix.of_apply, cobleWBasisVec_zero, cobleWBasisVec_succ,
+    cobleBasis_one_sub_two, cobleBasis_cobleE8Index, coble_pairing_formula]
+  simp [cobleEnriquesUVecSub, cobleEnriquesE8Vec]
+
+set_option maxHeartbeats 1000000 in
+theorem cobleWBasisGramZ_succ_zero (k : Fin 8) :
+    cobleWBasisGramZ (Fin.succ k) (0 : Fin 9) = 0 := by
+  rw [cobleWBasisGramZ, Matrix.of_apply, cobleWBasisVec_zero, cobleWBasisVec_succ,
+    cobleBasis_one_sub_two, cobleBasis_cobleE8Index, coble_pairing_formula]
+  simp [cobleEnriquesUVecSub, cobleEnriquesE8Vec]
+
+set_option maxHeartbeats 1000000 in
+theorem cobleWBasisGramZ_succ_succ (k l : Fin 8) :
+    cobleWBasisGramZ (Fin.succ k) (Fin.succ l) = 2 * e8GramMatrix k l := by
+  rw [cobleWBasisGramZ, Matrix.of_apply, cobleWBasisVec_succ, cobleWBasisVec_succ,
+    cobleBasis_cobleE8Index, cobleBasis_cobleE8Index, coble_pairing_formula]
+  simp only [cobleEnriquesE8Vec]
+  rw [e8Lattice_pairing_cobleE8Vec]
+  simp
 
 /-- The complement carries `diag(−4, E₈(−2))`: the plane `{x₀ = 0, x₂ = −x₁}` is negative
 definite of rank nine. -/
@@ -534,7 +985,17 @@ theorem cobleWBasisGramZ_eq : cobleWBasisGramZ =
       ![  0,  0,  0,  0,  0,  0,  2, -4,  2],
       ![  0,  0,  0,  0,  0,  0,  0,  2, -4]] := by
   ext i j
-  fin_cases i <;> fin_cases j <;> decide
+  rcases Fin.eq_zero_or_eq_succ i with rfl | ⟨i', rfl⟩
+  · rcases Fin.eq_zero_or_eq_succ j with rfl | ⟨j', rfl⟩
+    · rw [cobleWBasisGramZ_zero_zero]
+      decide
+    · rw [cobleWBasisGramZ_zero_succ]
+      fin_cases j' <;> decide
+  · rcases Fin.eq_zero_or_eq_succ j with rfl | ⟨j', rfl⟩
+    · rw [cobleWBasisGramZ_succ_zero]
+      fin_cases i' <;> decide
+    · rw [cobleWBasisGramZ_succ_succ, e8GramMatrix_eq]
+      fin_cases i' <;> fin_cases j' <;> decide
 
 /-- The complement form is the restriction of the real form of `T_Co` along the inclusion. -/
 theorem cobleRealForm_comp_WIncl :
@@ -544,7 +1005,10 @@ theorem cobleRealForm_comp_WIncl :
       cobleWBasisGramZ.map (Int.castRingHom ℝ) := by
     ext i j
     rw [LinearMap.BilinForm.toMatrix'_apply, LinearMap.BilinForm.comp_apply,
-      cobleWIncl_single, cobleWIncl_single, cobleRealForm_cast]
+      cobleWIncl_single, cobleWIncl_single, cobleRealForm_cast,
+      cobleWBasisZ_eq_coordEquiv, cobleWBasisZ_eq_coordEquiv, ← coble_pairing_coord,
+      LinearEquiv.symm_apply_apply, LinearEquiv.symm_apply_apply, Matrix.map_apply,
+      cobleWBasisGramZ, Matrix.of_apply]
     rfl
   rw [← hmat, Matrix.toBilin'_toMatrix']
 
@@ -725,11 +1189,25 @@ theorem dotProduct_mulVec_mulVec {n : Type} [Fintype n]
 
 /-- The integer matrix of an isometry of `T_Co`, in the standard basis. -/
 noncomputable def cobleIntMatrix (g : OrthogonalGroup cobleLattice) : Matrix (Fin 11) (Fin 11) ℤ :=
-  LinearMap.toMatrix' (g.1 : ↥cobleLattice.obj.carrier →ₗ[ℤ] ↥cobleLattice.obj.carrier)
+  LinearMap.toMatrix cobleBasis cobleBasis
+    (g.1 : ↥cobleLattice.obj.carrier →ₗ[ℤ] ↥cobleLattice.obj.carrier)
 
 theorem cobleIntMatrix_mulVec (g : OrthogonalGroup cobleLattice) (x : Fin 11 → ℤ) :
-    cobleIntMatrix g *ᵥ x = (g.1 x : Fin 11 → ℤ) :=
-  LinearMap.toMatrix'_mulVec _ _
+    cobleIntMatrix g *ᵥ x = cobleCoordEquiv (g.1 (cobleCoordEquiv.symm x)) := by
+  have hx : x = cobleBasis.repr (cobleCoordEquiv.symm x) := by
+    rw [cobleCoordEquiv, ← Module.Basis.equivFun_apply (b := cobleBasis)
+      (u := cobleBasis.equivFun.symm x), LinearEquiv.apply_symm_apply]
+  have hf : cobleBasis.repr
+        ((g.1 : ↥cobleLattice.obj.carrier →ₗ[ℤ] ↥cobleLattice.obj.carrier)
+          (cobleCoordEquiv.symm x)) =
+      cobleCoordEquiv ((g.1 : ↥cobleLattice.obj.carrier →ₗ[ℤ] ↥cobleLattice.obj.carrier)
+        (cobleCoordEquiv.symm x)) := by
+    rw [cobleCoordEquiv, Module.Basis.equivFun_apply]
+  show cobleIntMatrix g *ᵥ x = cobleCoordEquiv
+    ((g.1 : ↥cobleLattice.obj.carrier →ₗ[ℤ] ↥cobleLattice.obj.carrier)
+      (cobleCoordEquiv.symm x))
+  conv_lhs => rw [hx]
+  rw [cobleIntMatrix, LinearMap.toMatrix_mulVec_repr, hf]
 
 /-- The real matrix of an isometry of `T_Co`. -/
 noncomputable def cobleRealMatrix (g : OrthogonalGroup cobleLattice) :
@@ -739,15 +1217,22 @@ noncomputable def cobleRealMatrix (g : OrthogonalGroup cobleLattice) :
 /-- The integer matrix of an isometry preserves the Gram matrix. -/
 theorem cobleIntMatrix_isometry (g : OrthogonalGroup cobleLattice) :
     (cobleIntMatrix g)ᵀ * cobleGramMatrix * cobleIntMatrix g = cobleGramMatrix := by
-  have hcomp : (Matrix.toBilin' cobleGramMatrix).comp (Matrix.toLin' (cobleIntMatrix g))
-      (Matrix.toLin' (cobleIntMatrix g)) = Matrix.toBilin' cobleGramMatrix := by
+  have hgram : cobleGramMatrix =
+      LinearMap.BilinForm.toMatrix cobleBasis cobleLattice.obj.bilinMap := by
+    ext i j
+    rw [LinearMap.BilinForm.toMatrix_apply, BilinModuleCat.bilinMap_apply]
+    exact cobleGramMatrix_apply i j
+  have hcomp : LinearMap.BilinForm.comp cobleLattice.obj.bilinMap
+      ((g.1 : ↥cobleLattice.obj.carrier →ₗ[ℤ] ↥cobleLattice.obj.carrier))
+      ((g.1 : ↥cobleLattice.obj.carrier →ₗ[ℤ] ↥cobleLattice.obj.carrier)) =
+      cobleLattice.obj.bilinMap := by
     refine LinearMap.BilinForm.ext fun x y => ?_
-    rw [LinearMap.BilinForm.comp_apply, Matrix.toLin'_apply, Matrix.toLin'_apply,
-      cobleIntMatrix_mulVec, cobleIntMatrix_mulVec]
+    rw [LinearMap.BilinForm.comp_apply]
     exact g.property x y
-  have h := Matrix.toBilin'_comp (M := cobleGramMatrix) (cobleIntMatrix g) (cobleIntMatrix g)
-  rw [hcomp] at h
-  exact (Matrix.toBilin'.injective h).symm
+  rw [hgram, cobleIntMatrix, ← LinearMap.BilinForm.toMatrix_comp (c := cobleBasis)
+    (b := cobleBasis) (l := (g.1 : ↥cobleLattice.obj.carrier →ₗ[ℤ]
+      ↥cobleLattice.obj.carrier)) (r := (g.1 : ↥cobleLattice.obj.carrier →ₗ[ℤ]
+      ↥cobleLattice.obj.carrier)) cobleLattice.obj.bilinMap, hcomp]
 
 /-- The real matrix of an isometry of `T_Co` preserves the real Gram matrix. -/
 theorem cobleRealMatrix_isometry_matrix (g : OrthogonalGroup cobleLattice) :
@@ -1070,11 +1555,15 @@ theorem cobleIntMatrix_mul (g h : OrthogonalGroup cobleLattice) :
       = (g.1 : ↥cobleLattice.obj.carrier →ₗ[ℤ] ↥cobleLattice.obj.carrier)
         * (h.1 : ↥cobleLattice.obj.carrier →ₗ[ℤ] ↥cobleLattice.obj.carrier) := rfl
   rw [cobleIntMatrix, cobleIntMatrix, cobleIntMatrix, key]
-  exact LinearMap.toMatrix'_mul _ _
+  exact LinearMap.toMatrix_mul (v₁ := cobleBasis) _ _
 
 theorem cobleIntMatrix_one : cobleIntMatrix (1 : OrthogonalGroup cobleLattice) = 1 := by
-  rw [cobleIntMatrix, ← LinearMap.toMatrix'_one]
-  rfl
+  change LinearMap.toMatrix cobleBasis cobleBasis
+    ((1 : OrthogonalGroup cobleLattice).1 :
+      ↥cobleLattice.obj.carrier →ₗ[ℤ] ↥cobleLattice.obj.carrier) = 1
+  rw [show ((1 : OrthogonalGroup cobleLattice).1 :
+      ↥cobleLattice.obj.carrier →ₗ[ℤ] ↥cobleLattice.obj.carrier) = 1 from rfl,
+    LinearMap.toMatrix_one]
 
 theorem cobleRealMatrix_mul (g h : OrthogonalGroup cobleLattice) :
     cobleRealMatrix (g * h) = cobleRealMatrix g * cobleRealMatrix h := by

@@ -11,14 +11,14 @@ public import LeanCategories.Lattices.Valued.Signature
 /-!
 # The `E₈(−2)` half of the signature of the reduction `Q = e^⊥/e` of `T_Co` (#114)
 
-`T_Co = ⟨2⟩ ⊕ U(2) ⊕ E₈(−2)`, with `e = e₁` the first isotropic vector of the `U(2)` summand. The
-`⟨2⟩` and `E₈(−2)` summands survive the reduction `Q = e^⊥/ℤe` and the `U(2)` summand does not, so
-the Gram matrix of `Q` in the classes of `e₀, e₃, …, e₁₀` is the block sum `⟨2⟩ ⊕ E₈(−2)` and the
-real signature of `Q` is `(1, 8, 0)`.
+`T_Co = ⟨2⟩ ⊕ E(2)` with `E = E₈ ⊕ U` (see `CobleLattice`), with `e = e₁` the first isotropic
+vector of the `U` summand. The `⟨2⟩` and `E₈(−2)` summands survive the reduction `Q = e^⊥/ℤe` and
+the `U` summand does not, so the Gram matrix of `Q` in the classes of `e₀, e₃, …, e₁₀` is the block
+sum `⟨2⟩ ⊕ E₈(−2)` and the real signature of `Q` is `(1, 8, 0)`.
 
-This file supplies the `E₈(−2)` half of that computation: the eight `E₈(−2)` coordinates of `T_Co`
-form the submatrix `cobleE8Block`, which is twice the negative `E₈` form
-(`cobleE8Block_eq`), hence a negative definite form of rank eight
+This file supplies the `E₈(−2)` half of that computation: the eight `E₈(−2)` basis vectors of
+`T_Co` span the submatrix `cobleE8Block` of the computed Gram matrix, which is twice the negative
+`E₈` form (`cobleE8Block_eq`), hence a negative definite form of rank eight
 (`cobleE8Block_matrixSignature`), via the explicit real change of basis `cobleE8RealChange` obtained
 by scaling the real root-coordinate matrix of `E₈`.
 
@@ -37,22 +37,18 @@ namespace LeanCategories.Lattices.Valued
 
 /-! ## The `E₈(−2)` block of the Gram matrix of `T_Co` -/
 
-/-- The `E₈(−2)` coordinates of `T_Co`: the eight indices `3, …, 10`. -/
-def cobleE8Index (j : Fin 8) : Fin 11 :=
-  ⟨j.val + 3, by omega⟩
-
-@[simp] theorem cobleE8Index_val (j : Fin 8) : (cobleE8Index j).val = j.val + 3 := rfl
-
-/-- The `E₈(−2)` block of the Gram matrix of `T_Co`. -/
+/-- The `E₈(−2)` block of the Gram matrix of `T_Co`: the pairings of the eight `E₈(−2)` basis
+vectors. -/
 noncomputable def cobleE8Block : Matrix (Fin 8) (Fin 8) ℤ :=
   fun i j => cobleGramMatrix (cobleE8Index i) (cobleE8Index j)
 
-/-- The `E₈(−2)` block is twice the negative `E₈` form. -/
+/-- The `E₈(−2)` block is twice the negative `E₈` form: it is the `E₈` block of the computed Gram
+matrix of the constructed lattice. -/
 theorem cobleE8Block_eq : cobleE8Block = (2 : ℤ) • e8GramMatrix := by
   ext i j
-  fin_cases i <;> fin_cases j <;>
-    (simp only [cobleE8Block, cobleE8Index, cobleGramMatrix, e8GramMatrix_eq, Matrix.smul_apply]
-      <;> decide)
+  rw [cobleE8Block, cobleGramMatrix, Matrix.of_apply, cobleBlockEquiv_cobleE8Index,
+    cobleBlockEquiv_cobleE8Index, cobleBlockGramMatrix_inr_inl_inl, Matrix.smul_apply,
+    smul_eq_mul]
 
 /-- The real `E₈(−2)` block, written as a negative Gram matrix `-(Bᵀ * B)` of an invertible real
 change of basis. -/

@@ -11,10 +11,11 @@ public import LeanCategories.Lattices.Valued.EvenReduction
 /-!
 # The rank-one isotropic reduction of `T_Co` at the cusp `v = e₁` (#114)
 
-For a primitive isotropic vector `e` of `T_Co`, the quotient `Q = e^⊥/e` is the hyperbolic lattice
-of signature `(1, 8)` whose reflection group and chambers stage 2 uses (`#36`, `#23`). This file
-instantiates the general isotropic reduction at the Coble vector `v = e₁` (`cobleVectorCoord`): the
-line `ℤ v`, its reduction data, and the reduced formed module `Q = e^⊥/e`.
+`T_Co = ⟨2⟩ ⊕ E(2)` with `E = E₈ ⊕ U` is constructed in `CobleLattice`. For a primitive isotropic
+vector `e` of `T_Co`, the quotient `Q = e^⊥/e` is the hyperbolic lattice of signature `(1, 8)`
+whose reflection group and chambers stage 2 uses (`#36`, `#23`). This file instantiates the general
+isotropic reduction at the Coble vector `v = e₁` (`coblePlaneV`): the line `ℤ v`, its reduction
+data, and the reduced formed module `Q = e^⊥/e`.
 
 Nondegeneracy of `T_Co` is derived from its invertible Gram matrix
 (`cobleGramMatrix_det_ne_zero`): a vector pairing to zero against everything is orthogonal to every
@@ -28,9 +29,10 @@ coordinate functional (`coble_perp_eq_ker`) and has rank `11 - 1 = 10`
 gives `Module.finrank ℤ Q.carrier = 9` (`cobleReduction_finrank`).
 
 The **signature** `(1, 8)` of `Q` is not proved here. It needs either the identification of `Q`
-with `⟨2⟩ ⊕ E₈(−2)` (the `U(2)` summand reduces to nothing, and the `⟨2⟩` summand survives), or
-the real signature of `T_Co` computed from its block-diagonal Gram matrix together with the
-hyperbolic plane spanned by `e` and a vector pairing to `2` against it; neither is in the tree.
+with `⟨2⟩ ⊕ E₈(−2)` (the `U` summand reduces to nothing, and the `⟨2⟩` summand survives), or the
+real signature of `T_Co` computed from the signature of each summand of the construction together
+with the hyperbolic plane spanned by `e` and a vector pairing to `2` against it; neither is in the
+tree.
 -/
 
 @[expose] public section
@@ -49,18 +51,14 @@ namespace LeanCategories.Lattices.Valued
 
 
 
-theorem cobleGramMatrix_det_ne_zero : cobleGramMatrix.det ≠ 0 := by
-  rw [cobleGramMatrix_eq, Matrix.det_smul, Fintype.card_fin]
-  exact mul_ne_zero (pow_ne_zero 11 (by norm_num)) cobleHalfMatrix_det_ne_zero
-
 theorem coble_isSymmetric : cobleLattice.obj.IsSymmetric := by
   intro x y
   have hxy : cobleLattice.obj.pairing x y =
-      ∑ i, ∑ j, (x : Fin 11 → ℤ) i * cobleGramMatrix i j * (y : Fin 11 → ℤ) j :=
-    coble_pairing_coord _ _
+      ∑ i, ∑ j, cobleCoordEquiv x i * cobleGramMatrix i j * cobleCoordEquiv y j :=
+    coble_pairing_coord (cobleCoordEquiv x) (cobleCoordEquiv y)
   have hyx : cobleLattice.obj.pairing y x =
-      ∑ i, ∑ j, (y : Fin 11 → ℤ) i * cobleGramMatrix i j * (x : Fin 11 → ℤ) j :=
-    coble_pairing_coord _ _
+      ∑ i, ∑ j, cobleCoordEquiv y i * cobleGramMatrix i j * cobleCoordEquiv x j :=
+    coble_pairing_coord (cobleCoordEquiv y) (cobleCoordEquiv x)
   have hs : ∀ i j : Fin 11, cobleGramMatrix j i = cobleGramMatrix i j :=
     fun i j => (congrFun (congrFun cobleGramMatrix_isSymm j) i).symm
   rw [hxy, hyx, Finset.sum_comm]
@@ -70,30 +68,32 @@ theorem coble_isSymmetric : cobleLattice.obj.IsSymmetric := by
 
 theorem coble_leftSeparating {x : cobleLattice.obj.carrier}
     (hx : ∀ y, cobleLattice.obj.pairing x y = 0) : x = 0 := by
-  have hrow : ∀ j : Fin 11, ∑ i, (x : Fin 11 → ℤ) i * cobleGramMatrix i j = 0 := by
+  have hrow : ∀ j : Fin 11, ∑ i, cobleCoordEquiv x i * cobleGramMatrix i j = 0 := by
     intro j
-    have h := hx (Pi.basisFun ℤ (Fin 11) j)
-    have h' : ∑ a, ∑ b, (x : Fin 11 → ℤ) a * cobleGramMatrix a b *
-        ((Pi.basisFun ℤ (Fin 11) j : Fin 11 → ℤ)) b = 0 := by
-      rw [← coble_pairing_coord (x := (x : Fin 11 → ℤ))
-        (y := ((Pi.basisFun ℤ (Fin 11) j : Fin 11 → ℤ)))]
+    have h := hx (cobleBasis j)
+    have h' : ∑ a, ∑ b, cobleCoordEquiv x a * cobleGramMatrix a b *
+        cobleCoordEquiv (cobleBasis j) b = 0 := by
+      rw [← coble_pairing_coord (x := cobleCoordEquiv x) (y := cobleCoordEquiv (cobleBasis j))]
       exact h
-    have hinner : ∀ a : Fin 11, ∑ b, (x : Fin 11 → ℤ) a * cobleGramMatrix a b *
-        ((Pi.basisFun ℤ (Fin 11) j : Fin 11 → ℤ)) b
-        = (x : Fin 11 → ℤ) a * cobleGramMatrix a j := by
+    have hinner : ∀ a : Fin 11, ∑ b, cobleCoordEquiv x a * cobleGramMatrix a b *
+        cobleCoordEquiv (cobleBasis j) b = cobleCoordEquiv x a * cobleGramMatrix a j := by
       intro a
       rw [Finset.sum_eq_single j]
-      · simp
+      · rw [cobleCoordEquiv, cobleBasis_equivFun_self]
+        simp
       · intro b _ hb
-        simp [Pi.basisFun_apply, hb]
+        rw [cobleCoordEquiv, cobleBasis_equivFun_self]
+        simp [hb]
       · intro h
         exact absurd (Finset.mem_univ j) h
     rw [Finset.sum_congr rfl fun a _ => hinner a] at h'
     simpa using h'
-  have hvec : (x : Fin 11 → ℤ) ᵥ* cobleGramMatrix = 0 := by
+  have hvec : cobleCoordEquiv x ᵥ* cobleGramMatrix = 0 := by
     funext j
     simpa only [Matrix.vecMul, dotProduct, Pi.zero_apply] using hrow j
-  exact Matrix.eq_zero_of_vecMul_eq_zero cobleGramMatrix_det_ne_zero hvec
+  exact cobleCoordEquiv.injective
+    ((Matrix.eq_zero_of_vecMul_eq_zero cobleGramMatrix_det_ne_zero hvec).trans
+      (map_zero cobleCoordEquiv).symm)
 
 theorem coble_isNondegenerate : cobleLattice.obj.IsNondegenerate := by
   refine ⟨fun x hx => coble_leftSeparating fun y => ?_, fun y hy => ?_⟩
@@ -139,7 +139,8 @@ theorem coble_coord_sum_planeV (x : Fin 11 → ℤ) :
     ∑ i, ∑ j, cobleVectorCoord i * cobleGramMatrix i j * x j = 2 * x 2 := by
   have hrow : ∀ j : Fin 11, cobleGramMatrix 1 j = if j = 2 then 2 else 0 := by
     intro j
-    fin_cases j <;> decide
+    fin_cases j <;>
+      simp [cobleGramMatrix, cobleBlockGramMatrix, hyperbolicPlaneGramMatrix, rankOneGramMatrix]
   rw [Finset.sum_eq_single (1 : Fin 11)]
   · rw [Finset.sum_eq_single (2 : Fin 11)]
     · simp [hrow 2, cobleVectorCoord_apply]
@@ -156,8 +157,9 @@ theorem coble_coord_sum_planeV (x : Fin 11 → ℤ) :
 theorem coble_pairing_planeV (x : ↥cobleLattice.obj.carrier) :
     cobleLattice.obj.pairing coblePlaneV x = 2 * cobleCoordFun 2 x := by
   rw [cobleCoordFun_apply]
-  exact (coble_pairing_coord cobleVectorCoord (x : Fin 11 → ℤ)).trans
-    (coble_coord_sum_planeV (x : Fin 11 → ℤ))
+  have h2 := coble_pairing_coord (x := cobleVectorCoord) (y := cobleCoordEquiv x)
+  rw [LinearEquiv.symm_apply_apply] at h2
+  exact h2.trans (coble_coord_sum_planeV (cobleCoordEquiv x))
 
 /-- The orthogonal complement of the Coble vector is the kernel of the third coordinate
 functional. -/
@@ -184,12 +186,11 @@ theorem coble_perp_eq_ker :
 /-- The third coordinate functional is surjective. -/
 theorem cobleCoordFun_two_surjective : Function.Surjective (cobleCoordFun (2 : Fin 11)) := by
   intro y
-  refine ⟨y • (Pi.basisFun ℤ (Fin 11) 2 : ↥cobleLattice.obj.carrier), ?_⟩
-  have h1 : cobleCoordFun 2 (Pi.basisFun ℤ (Fin 11) 2 : ↥cobleLattice.obj.carrier) = 1 :=
-    (cobleCoordFun_apply 2 (Pi.basisFun ℤ (Fin 11) 2 : ↥cobleLattice.obj.carrier)).trans (by
-      simp)
-  calc cobleCoordFun 2 (y • (Pi.basisFun ℤ (Fin 11) 2 : ↥cobleLattice.obj.carrier))
-      = y • cobleCoordFun 2 (Pi.basisFun ℤ (Fin 11) 2 : ↥cobleLattice.obj.carrier) :=
+  refine ⟨y • cobleBasis 2, ?_⟩
+  have h1 : cobleCoordFun 2 (cobleBasis 2) = 1 := by
+    rw [cobleCoordFun_apply, cobleCoordEquiv, cobleBasis_equivFun_self]
+    simp
+  calc cobleCoordFun 2 (y • cobleBasis 2) = y • cobleCoordFun 2 (cobleBasis 2) :=
         map_smul _ _ _
     _ = y • (1 : ℤ) := by rw [h1]
     _ = y := by simp
