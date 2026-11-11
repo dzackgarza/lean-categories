@@ -65,8 +65,8 @@ noncomputable def defectEquivPiSpan {I : Type*} [Finite I] [DecidableEq I]
     (b : Module.Basis I R L.obj.carrier) :
     L.obj.defect ≃ₗ[R]
       ∀ i, R ⧸ Ideal.span
-        ({Submodule.smithNormalFormCoeffs b.dualBasis
-          (adjointRange_finrank_eq_valueDual L hL) i} : Set R) := by
+        {Submodule.smithNormalFormCoeffs b.dualBasis
+          (adjointRange_finrank_eq_valueDual L hL) i} := by
   letI : Module.Projective R L.obj.carrier := L.property.1
   letI : Module.Free R L.obj.carrier := Module.Free.of_basis b
   letI : Module.Finite R L.obj.valueDual := by infer_instance

@@ -263,11 +263,17 @@ meta def zmodModulus : TacticM Term := do
 
 open Lean Meta Elab Tactic in
 /-- Fails unless the monoid of the main goal `IsUnit x` or `Invertible x` is a polynomial ring
-`R[x]`, read from the goal's carrier as in `zmodModulus`. -/
+`R[x]`, read from the goal's carrier as in `zmodModulus`. The carrier is accepted as elaborated
+(`Polynomial R`-headed) or as its reducible unfold `AddMonoidAlgebra R ℕ`: `Polynomial R` is an
+abbreviation of `AddMonoidAlgebra R ℕ` at this Mathlib revision, so a carrier read through the
+catalogue (whose numeral evaluation whnf-reduces) arrives in the unfolded form. -/
 meta def polynomialMonoid : TacticM Unit := do
   let some carrier := (← getMainTarget).consumeMData.getAppArgs[0]?
     | throwError "not a statement about an element of a monoid"
-  unless (← whnfR carrier).isAppOfArity ``Polynomial 2 do
+  let reduced ← whnfR carrier
+  unless carrier.isAppOfArity ``Polynomial 2
+      || (reduced.isAppOfArity ``AddMonoidAlgebra 3
+            && (reduced.getArg! 1).isConstOf ``Nat) do
     throwError "the monoid is not a polynomial ring"
 
 open Lean Elab Tactic in
