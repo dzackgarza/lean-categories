@@ -55,6 +55,7 @@ public import LeanCategories.Combinatorics.CoxeterPoincare
 public import LeanCategories.Algebra.Concrete.Magmas
 public import LeanCategories.Algebra.Concrete.Rings
 public import LeanCategories.Algebra.Concrete.RingCarrierComparison
+public import LeanCategories.Algebra.CoxeterGraphData
 public import LeanCategories.Algebra.FractionalIdeals
 public import LeanCategories.Algebra.GlobalArtinData
 public import LeanCategories.Algebra.AbsoluteInertiaLimitData
@@ -339,5 +340,6 @@ public import LeanCategories.Lattices.Valued.PositiveConeExample
 public import LeanCategories.Lattices.Valued.LatticeCone
 public import LeanCategories.Lattices.Valued.IsotropicQuotientSignature
 public import LeanCategories.Lattices.Valued.WeylCone
+public import LeanCategories.Lattices.Valued.WeylChambers
 
 @[expose] public section
