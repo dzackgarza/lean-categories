@@ -14,6 +14,7 @@ public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
 public import Mathlib.LinearAlgebra.Quotient.Basic
 public import Mathlib.LinearAlgebra.Quotient.Bilinear
 public import Mathlib.LinearAlgebra.TensorProduct.Map
+public import Mathlib.Data.Real.Basic
 
 @[expose] public section
 
@@ -75,6 +76,20 @@ def carrierObj (L : BilinModuleCat R W) : ModuleCat R :=
   (unop L).1.unop
 
 abbrev carrier (L : BilinModuleCat R W) := L.carrierObj
+
+/-- The carrier of a `ℤ`-valued bilinear module carries one `ℤ`-action across the base change
+`ℝ ⊗[ℤ] L.obj.carrier`: Mathlib's `TensorProduct.CompatibleSMul ℤ ℤ ℝ`, for the bundled
+`ModuleCat.isModule` action (#123). The bundled action and the canonical
+`AddCommGroup.toIntModule` agree on every scalar — Mathlib's `int_smul_eq_zsmul`
+(`Mathlib/Algebra/Module/NatInt.lean:182`) and `AddCommMonoid.subsingletonIntModule`
+(line 195) — and Mathlib's own `TensorProduct.CompatibleSMul.int`
+(`Mathlib/LinearAlgebra/TensorProduct/Basic.lean:425`) is stated for the canonical action,
+whose `CompatibleSMul.isScalarTower` route is `AddConGen.Rel.of` ∘ `TensorProduct.Eqv.of_smul`.
+The bridge applies that same route to the bundled action, so this instance adds a
+compatibility fact for the bundled action and replaces no action. -/
+instance {V : Type} [AddCommGroup V] [Module ℤ V] (L : BilinModuleCat ℤ V) :
+    TensorProduct.CompatibleSMul ℤ ℤ ℝ ↥(L.carrierObj) :=
+  ⟨fun n r x => Quotient.sound' <| AddConGen.Rel.of _ _ <| TensorProduct.Eqv.of_smul n r x⟩
 
 /-- The tensor-hom form of a bilinear module. -/
 def form (L : BilinModuleCat R W) :
