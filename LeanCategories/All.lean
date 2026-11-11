@@ -341,5 +341,6 @@ public import LeanCategories.Lattices.Valued.LatticeCone
 public import LeanCategories.Lattices.Valued.IsotropicQuotientSignature
 public import LeanCategories.Lattices.Valued.WeylCone
 public import LeanCategories.Lattices.Valued.WeylChambers
+public import LeanCategories.Lattices.Valued.CobleCuspLattice
 
 @[expose] public section

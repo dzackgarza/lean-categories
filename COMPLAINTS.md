@@ -2476,3 +2476,18 @@ downstream assertions, computational observations, or downstream diagnostics.
   vectors of the pipeline among them), the signature of `e^⊥/ℤe` is the signature of `L` minus
   `(1, 1)`. The #122 statements, with an integral partner, are the special case
   `F = toReal f` (`realQuadratic_toReal`, `associated_realQuadratic_pair`).
+- **Progress (2026-11-11, lean-categories#120, closing):** the T_Co quotient object is delivered:
+  `LeanCategories/Lattices/Valued/CobleCuspLattice.lean` packages `M = e^⊥/ℤe` of a primitive
+  isotropic `e` of `cobleLattice` as `cobleCuspLattice : FiniteProjectiveLatticeCat ℤ ℤ`
+  (projectivity from #120's `moduleFree_isotropicLineQuotient`, symmetry of the induced form,
+  finiteness of the quotient). Its signature is never computed from coordinates of `e`:
+  `cobleCuspLattice_sigPos_add`/`sigNeg_add` chain #126's partner-free theorem at
+  `cobleLattice` (nondegenerate by `coble_isNondegenerate`) with the Gram-matrix signature of
+  `T_Co` (`cobleFiniteLattice_sigPos`/`sigNeg`), through the definitional bridge
+  `realQuadratic (L := L'.obj) = realFormQuadratic L'` (both presentations are
+  `toQuadraticMap` of the same `baseChange`-and-`rid` pairing; `rfl`), giving the numeric
+  corollaries `1` and `8`. The #36 cone and `O⁺` apply to `M`:
+  `cobleCuspPositiveCone`, `exists_cobleCuspLattice_positive` (a positive vector from
+  Mathlib's `exists_finrank_eq_sigPos_and_posDef`, no coordinates), and
+  `cobleCuspLatticePositiveConeStabilizer` = `latticePositiveConeStabilizer` at `M`, with
+  index at most two.
