@@ -6,6 +6,7 @@ module
 
 public import LeanCategories.Topology.SmashProduct
 public import Mathlib.AlgebraicTopology.SimplicialSet.TopAdj
+public import Mathlib.Analysis.Convex.StdSimplex
 
 /-!
 # The singular-realization source of a space
@@ -94,9 +95,9 @@ theorem singularRealizationPoint_injective (X : TopCat.{u}) :
 /-- The continuous map of a simplex into the realization of a simplicial set. This is the
 simplex-map candidate for the cell structure; no cell decomposition is proved here. -/
 def realizationSimplexMap (S : SSet.{u}) (n : ℕ) (σ : S _⦋n⦌) :
-    C(stdSimplex ℝ (Fin (n + 1)), SSet.toTop.obj S) :=
+    C(Convexity.StdSimplex ℝ (Fin (n + 1)), SSet.toTop.obj S) :=
   (SSet.toTop.map (SSet.yonedaEquiv.symm σ)).hom.comp
-    (ContinuousMap.mk _
+    (ContinuousMap.mk (⇑(SimplexCategory.toTopHomeo ⦋n⦌).symm)
       (SimplexCategory.toTopHomeo ⦋n⦌).symm.continuous)
 
 end LeanCategories.Topology

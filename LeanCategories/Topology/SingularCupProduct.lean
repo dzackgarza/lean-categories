@@ -5,6 +5,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import Mathlib.AlgebraicTopology.SingularSet
+public import Mathlib.Analysis.Convex.StdSimplex
 
 /-!
 # Singular cup-product formula data

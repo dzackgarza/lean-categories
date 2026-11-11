@@ -89,7 +89,7 @@ theorem five_cartesian_carrier :
 
 /-- The chosen scalar action is multiplication by the image under the quotient map. -/
 theorem action_formula (n : ℕ) (r : ℤ) (x : integerResidueModule n) :
-    ((integerResidueModule n).smul r).hom x = (r : ZMod n) * (show ZMod n from x) := rfl
+    ((integerResidueModule n).smul r).asHom x = (r : ZMod n) * (show ZMod n from x) := rfl
 
 /-- The reindexed module keeps the five-element additive carrier. -/
 theorem five_cardinality : Nat.card (integerResidueModule 5) = 5 := by
@@ -98,9 +98,9 @@ theorem five_cardinality : Nat.card (integerResidueModule 5) = 5 := by
 
 /-- Three scalar observations distinguish restriction from a free integer module. -/
 theorem five_actions :
-    ((integerResidueModule 5).smul 2).hom (3 : ZMod 5) = (1 : ZMod 5) ∧
-    ((integerResidueModule 5).smul 5).hom (1 : ZMod 5) = (0 : ZMod 5) ∧
-    ((integerResidueModule 5).smul (-1)).hom (2 : ZMod 5) = (3 : ZMod 5) := by
+    ((integerResidueModule 5).smul 2).asHom (3 : ZMod 5) = (1 : ZMod 5) ∧
+    ((integerResidueModule 5).smul 5).asHom (1 : ZMod 5) = (0 : ZMod 5) ∧
+    ((integerResidueModule 5).smul (-1)).asHom (2 : ZMod 5) = (3 : ZMod 5) := by
   change (2 : ZMod 5) * 3 = 1 ∧ (5 : ZMod 5) * 1 = 0 ∧ (-1 : ZMod 5) * 2 = 3
   decide
 
