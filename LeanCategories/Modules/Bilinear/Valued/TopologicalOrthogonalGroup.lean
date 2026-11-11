@@ -7,6 +7,11 @@ module
 public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
 public import Mathlib.MeasureTheory.Measure.Haar.Basic
 public import Mathlib.Topology.Algebra.Group.Basic
+public import Mathlib.Topology.Algebra.Group.ClosedSubgroup
+public import Mathlib.Topology.Algebra.Group.Compact
+public import Mathlib.Topology.Algebra.Group.Matrix
+public import Mathlib.Topology.Algebra.Group.Subgroup
+public import Mathlib.Topology.Algebra.Group.Units
 public import Mathlib.Topology.Algebra.Ring.Basic
 public import Mathlib.Topology.Compactness.Compact
 public import Mathlib.Topology.Compactness.LocallyCompact
