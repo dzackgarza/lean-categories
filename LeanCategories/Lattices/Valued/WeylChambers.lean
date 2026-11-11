@@ -762,15 +762,25 @@ variable (L : FiniteProjectiveLatticeCat ℤ ℤ)
 variable {I : Type} [Fintype I] [DecidableEq I]
 variable (b : Module.Basis I ℤ L.obj.obj.carrier)
 
-theorem exists_finBasis : ∃ (n : ℕ) (b : Module.Basis (Fin n) ℤ L.obj.obj.carrier),
-      Submodule.span ℤ (Set.range b) = ⊤ := by
-  have hfree : Module.Free ℤ L.obj.obj.carrier := L.carrier_free
-  have hfin : Module.Finite ℤ L.obj.obj.carrier := L.property
-  refine ⟨Fintype.card (Module.Free.ChooseBasisIndex ℤ L.obj.obj.carrier),
-    (Module.Free.chooseBasis ℤ L.obj.obj.carrier).reindex
-      (Fintype.equivFin (Module.Free.ChooseBasisIndex ℤ L.obj.obj.carrier)), ?_⟩
-  exact ((Module.Free.chooseBasis ℤ L.obj.obj.carrier).reindex
-      (Fintype.equivFin (Module.Free.ChooseBasisIndex ℤ L.obj.obj.carrier))).span_eq
+/-- The carrier of a finite projective lattice over `ℤ` is a free `ℤ`-module: the fact that
+makes the basis datum of the matrix presentations below well defined. -/
+noncomputable instance latticeCarrierFree : Module.Free ℤ L.obj.obj.carrier :=
+  L.carrier_free
+
+/-- The carrier of a finite projective lattice over `ℤ` is finite. -/
+instance latticeCarrierFinite : Module.Finite ℤ L.obj.obj.carrier :=
+  L.property
+
+/-- The finite ℤ-basis of the carrier of `L`, as data: the chosen basis of the free
+ℤ-module `L.obj.obj.carrier`, reindexed over `Fin n`, `n` the rank. The existence statement
+this def replaces — a basis `b` with `Submodule.span ℤ (Set.range b) = ⊤` — holds of every
+basis and stated nothing, so the basis itself is the datum (the property is `span_eq` of any
+basis, in `Module.Basis.span_eq`). -/
+noncomputable def carrierFinBasis :
+    Module.Basis (Fin (Fintype.card (Module.Free.ChooseBasisIndex ℤ L.obj.obj.carrier))) ℤ
+      L.obj.obj.carrier :=
+  (Module.Free.chooseBasis ℤ L.obj.obj.carrier).reindex
+    (Fintype.equivFin (Module.Free.ChooseBasisIndex ℤ L.obj.obj.carrier))
 
 theorem baseChange_toMatrix (g : OrthogonalGroup L.obj) :
     LinearMap.toMatrix (b.baseChange ℝ) (b.baseChange ℝ)
@@ -993,4 +1003,81 @@ theorem realFormOrthogonalImage_isolated
 
 
 end Isolation
+
+/-! ### The continuity and compactness infrastructure for the discreteness theory
+
+The pairing of the real form is jointly continuous (the real form is a finite `ℝ`-module
+carrying the module topology, in which bilinear maps are continuous), so the quadratic
+form is continuous, and the pairings of the points of a nonempty compact set with the
+image of a fixed lattice vector are bounded. These are the compactness facts that the
+finiteness argument of condition (D')2 of Bourbaki V §3 no. 1 (p. 77) rests on: for `g`
+with `g x = y` and `x`, `y` in compact subsets of the chosen sheet, the pairing of the
+image of a basis vector with a fixed basis vector is bounded (the spatial part of the
+image relative to `y` has bounded antivalue by the reverse Cauchy-Schwarz inequality of
+a form of signature `(1, n)` with the positive minimum of the quadratic form on the
+second compact, and two spatial parts pair within the Cauchy-Schwarz inequality of the
+negative definite orthogonal complement), so only finitely many bounded pairing
+matrices of integers occur, and the pairing matrix determines the isometry. -/
+
+section Compactness
+
+variable (L : FiniteProjectiveLatticeCat ℤ ℤ)
+
+noncomputable def realFormPairingCurry (L : FiniteProjectiveLatticeCat ℤ ℤ) :
+    (realForm L).obj.carrier →ₗ[ℝ] (realForm L).obj.carrier →ₗ[ℝ] ℝ where
+  toFun z :=
+    { toFun := fun w => (realForm L).obj.pairing z w
+      map_add' := fun u v => by simp [BilinModuleCat.pairing_add_right]
+      map_smul' := fun r u => by simp [BilinModuleCat.pairing_smul_right] }
+  map_add' := fun u v => by
+    ext w
+    simp [BilinModuleCat.pairing_add_left]
+  map_smul' := fun r u => by
+    ext w
+    simp [BilinModuleCat.pairing_smul_left]
+
+theorem continuous_realFormPairing (L : FiniteProjectiveLatticeCat ℤ ℤ) :
+    Continuous (fun p : (realForm L).obj.carrier × (realForm L).obj.carrier =>
+      (realForm L).obj.pairing p.1 p.2) := by
+  have: Module.Finite ℝ (realForm L).obj.carrier := realFormFiniteDimensional L
+  have hbil : Continuous (fun ab : (realForm L).obj.carrier × (realForm L).obj.carrier =>
+      realFormPairingCurry L ab.1 ab.2) :=
+    IsModuleTopology.continuous_bilinear_of_finite_left (realFormPairingCurry L)
+  exact hbil
+
+set_option maxHeartbeats 4000000 in
+theorem continuous_realFormQuadratic (L : FiniteProjectiveLatticeCat ℤ ℤ) :
+    Continuous (realFormQuadratic L) := by
+  have hdiag : Continuous (fun z : (realForm L).obj.carrier => (z, z)) := by
+    exact continuous_prodMk.mpr ⟨continuous_id, continuous_id⟩
+  have hcomp : Continuous
+      ((fun p : (realForm L).obj.carrier × (realForm L).obj.carrier =>
+        (realForm L).obj.pairing p.1 p.2) ∘
+        fun z : (realForm L).obj.carrier => (z, z)) :=
+    Continuous.comp (continuous_realFormPairing L) hdiag
+  exact Continuous.congr hcomp (fun z => rfl)
+
+set_option maxHeartbeats 4000000 in
+theorem bounded_pairing_of_isCompact {L : FiniteProjectiveLatticeCat ℤ ℤ}
+    {J : Set (realForm L).obj.carrier} (hJ : IsCompact J) (hJne : J.Nonempty)
+    (a : L.obj.obj.carrier) :
+    ∃ B : ℝ, ∀ z ∈ J, |(realForm L).obj.pairing (toRealForm L a) z| ≤ B := by
+  have hdiag : Continuous (fun z : (realForm L).obj.carrier => (z, z)) := by
+    exact continuous_prodMk.mpr ⟨continuous_id, continuous_id⟩
+  have hfix : Continuous
+      ((fun p : (realForm L).obj.carrier × (realForm L).obj.carrier =>
+        (realForm L).obj.pairing p.1 p.2) ∘
+        fun w : (realForm L).obj.carrier => (toRealForm L a, w)) :=
+    Continuous.comp (continuous_realFormPairing L)
+      (continuous_prodMk.mpr ⟨continuous_const, continuous_id⟩)
+  have hfun : Continuous (fun z : (realForm L).obj.carrier =>
+      (realForm L).obj.pairing (toRealForm L a) z) :=
+    Continuous.congr hfix (fun z => rfl)
+  have habs : Continuous (fun z : (realForm L).obj.carrier =>
+      |(realForm L).obj.pairing (toRealForm L a) z|) := hfun.abs
+  obtain ⟨z₀, hz₀, hmax⟩ := hJ.exists_isMaxOn hJne habs.continuousOn
+  exact ⟨_, fun z hz => hmax hz⟩
+
+end Compactness
+
 end LeanCategories.Lattices.Valued
