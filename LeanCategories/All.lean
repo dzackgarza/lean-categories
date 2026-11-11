@@ -337,5 +337,6 @@ public import LeanCategories.Lattices.Valued.PositiveConeReflections
 public import LeanCategories.Lattices.Valued.PositiveConeExample
 public import LeanCategories.Lattices.Valued.LatticeCone
 public import LeanCategories.Lattices.Valued.IsotropicQuotientSignature
+public import LeanCategories.Lattices.Valued.WeylCone
 
 @[expose] public section
