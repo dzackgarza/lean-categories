@@ -1662,7 +1662,6 @@ theorem k3Lattice_matrixSignature :
     rcases x with ⟨i, a⟩ | ⟨i, a⟩
     · fin_cases a
       · norm_num [k3RealWeights, hyperbolicRealWeights, negativeU, negativeE8]
-        constructor <;> intro x h <;> cases h
       · norm_num [k3RealWeights, hyperbolicRealWeights, negativeU, negativeE8]
     · simp [k3RealWeights, negativeU, negativeE8]
   have hz : {i | k3RealWeights i = 0} = ∅ := by
