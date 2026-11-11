@@ -2429,3 +2429,16 @@ downstream assertions, computational observations, or downstream diagnostics.
   `IsotropicReductionU2Quotient` does) makes `Submodule.comap`, `Submodule.mapQ`,
   `Module.Finite` and `IsPrimitiveSubmodule`'s unfolding all elaborate. (i)–(iii) remain open: the
   isometry itself.
+- **Progress (2026-11-11):** (i) is done for the rank-one case, together with the line transport
+  that (ii) needs: `LeanCategories/Lattices/Valued/IsotropicReductionRealPerp.lean` proves
+  `perpTensorEquiv : ℝ ⊗[ℤ] e^⊥ ≃ (e_ℝ)^⊥` (from `isotropicLinePerp_eq_ker`, Mathlib's
+  `LinearMap.tensorKerEquiv`, and the identification of the tensored functional with the real
+  functional `b(e_ℝ,·)`), and `map_range_isotropicLineKernel` (lean-categories#124) proves that it
+  carries the range of `lTensor ℝ` of the inclusion `ℤe → e^⊥` onto the real line `ℝ · e_ℝ`
+  inside `(e_ℝ)^⊥`, as an equality of submodules. A papercut hit while writing it extends the
+  instance note above one level down: on a submodule carrier, the `ℤ`-scalar of
+  `Submodule.mem_span_singleton` elaborates through the additive-group `ZSMul` while the tensor
+  lemmas (`TensorProduct.tmul_smul`) elaborate through the inherited `Submodule.module` action,
+  and the two are not definitionally equal; `ModuleCat.zsmul_eq_smul` (at the carrier) and
+  `int_smul_eq_zsmul` (at the submodule carrier) bridge them, each stated once where used.
+  (ii) and (iii) remain open: the quotient isometry itself (lean-categories#122).
