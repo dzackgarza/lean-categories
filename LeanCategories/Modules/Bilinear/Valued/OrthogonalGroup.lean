@@ -22,7 +22,7 @@ namespace BilinModuleCat
 /-- Form-preserving linear automorphisms of a formed module. -/
 def orthogonalSubgroup (M : BilinModuleCat R W) :
     Subgroup (M.carrier ≃ₗ[R] M.carrier) where
-  carrier f := ∀ x y, M.pairing (f x) (f y) = M.pairing x y
+  carrier := {f | ∀ x y, M.pairing (f x) (f y) = M.pairing x y}
   one_mem' := fun _ _ ↦ rfl
   mul_mem' := by
     intro f g hf hg x y

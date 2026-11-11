@@ -270,7 +270,8 @@ noncomputable def rieszDualForm (L : IntegralLatticeCat R)
 noncomputable def rieszDualBilinObject (L : IntegralLatticeCat R)
     (hL : IsFractionFieldPerfect R L) :
     BilinModuleCat R (FractionRing R) :=
-  op ⟨op (ModuleCat.of R L.obj.valueDual), rieszDualForm R L hL⟩
+  op (Functor.elementsMk _ (op (ModuleCat.of R L.obj.valueDual))
+    (rieszDualForm R L hL))
 
 omit [IsDomain R] in
 theorem rationalizedForm_isSymmetric (L : IntegralLatticeCat R) :
@@ -344,7 +345,7 @@ noncomputable def rieszDualLattice (L : IntegralLatticeCat R)
 noncomputable def toRieszDualBilin (L : IntegralLatticeCat R)
     (hL : IsFractionFieldPerfect R L) :
     (fractionValuedLattice R L).obj ⟶ rieszDualBilinObject R L hL := by
-  refine Quiver.Hom.op (CategoryOfElements.homMk _ _
+  refine Quiver.Hom.op (Functor.Elements.homMk
     (op (ModuleCat.ofHom L.obj.adjoint)) ?_)
   dsimp [bilinearForms]
   apply LinearMap.ext
@@ -414,8 +415,8 @@ theorem metricDualToValueDual_apply (v : metricDual R L) (x : L.obj.carrier) :
     algebraMap R (FractionRing R) (metricDualToValueDual R L v x) =
       rationalizedForm R L (v : RationalSpan R L) (toRationalSpan R L x) := by
   change algebraMap R (FractionRing R)
-      ((rationalizedForm R L).dualSubmoduleParing v (toIntegralImage R L x)) = _
-  rw [LinearMap.BilinForm.dualSubmoduleParing_spec]
+      ((rationalizedForm R L).dualSubmodulePairing v (toIntegralImage R L x)) = _
+  rw [LinearMap.BilinForm.dualSubmodulePairing_spec]
   rfl
 
 theorem metricDualToValueDual_rieszToMetricDual (L : IntegralLatticeCat R)
@@ -424,10 +425,10 @@ theorem metricDualToValueDual_rieszToMetricDual (L : IntegralLatticeCat R)
   ext x
   apply FaithfulSMul.algebraMap_injective R (FractionRing R)
   change algebraMap R (FractionRing R)
-      ((rationalizedForm R L).dualSubmoduleParing
+      ((rationalizedForm R L).dualSubmodulePairing
         (rieszToMetricDual R L hL f) (toIntegralImage R L x)) =
     algebraMap R (FractionRing R) (f x)
-  rw [LinearMap.BilinForm.dualSubmoduleParing_spec]
+  rw [LinearMap.BilinForm.dualSubmodulePairing_spec]
   exact rationalizedForm_rieszEmbedding R L hL f x
 
 theorem rieszToMetricDual_metricDualToValueDual (L : IntegralLatticeCat R)
@@ -446,9 +447,9 @@ theorem rieszToMetricDual_metricDualToValueDual (L : IntegralLatticeCat R)
   rw [Module.Dual.baseChange_apply_tmul]
   simp only [Algebra.smul_def, mul_one]
   change algebraMap R (FractionRing R)
-      ((rationalizedForm R L).dualSubmoduleParing v (toIntegralImage R L x)) =
+      ((rationalizedForm R L).dualSubmodulePairing v (toIntegralImage R L x)) =
     rationalizedForm R L v (1 ⊗ₜ[R] x)
-  exact (rationalizedForm R L).dualSubmoduleParing_spec v (toIntegralImage R L x)
+  exact (rationalizedForm R L).dualSubmodulePairing_spec v (toIntegralImage R L x)
 
 /-- The Riesz model and the metric-dual submodule are isomorphic as `R`-modules. -/
 noncomputable def rieszMetricDualEquiv (L : IntegralLatticeCat R)
@@ -515,7 +516,8 @@ noncomputable def metricDualForm (L : IntegralLatticeCat R) :
 /-- The metric dual as a bilinear object, using the restriction of `b_K`. -/
 noncomputable def metricDualBilinObject (L : IntegralLatticeCat R) :
     BilinModuleCat R (FractionRing R) :=
-  op ⟨op (ModuleCat.of R (metricDual R L)), metricDualForm R L⟩
+  op (Functor.elementsMk _ (op (ModuleCat.of R (metricDual R L)))
+    (metricDualForm R L))
 
 theorem metricDualBilinObject_isSymmetric (L : IntegralLatticeCat R) :
     (metricDualBilinObject R L).IsSymmetric := by
@@ -548,7 +550,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 /-- The inclusion `L → L♯` preserves the `Frac(R)`-valued forms. -/
 noncomputable def toMetricDualBilin (L : IntegralLatticeCat R) :
     (fractionValuedLattice R L).obj ⟶ metricDualBilinObject R L := by
-  refine Quiver.Hom.op (CategoryOfElements.homMk _ _
+  refine Quiver.Hom.op (Functor.Elements.homMk
     (op (ModuleCat.ofHom (toMetricDual R L))) ?_)
   dsimp [bilinearForms]
   apply LinearMap.ext

@@ -99,13 +99,13 @@ Formalization Corpus searches. -/
 def scalarAction (R : RingCat.{u}) (M : ModuleCat.{u} R) :
     (R × M : LeanCategories.Foundation.Mathlib.Sets.{u}) ⟶
       (M : LeanCategories.Foundation.Mathlib.Sets.{u}) :=
-  TypeCat.ofHom fun p => (M.smul p.1).hom p.2
+  TypeCat.ofHom fun p => (M.smul p.1).asHom p.2
 
 /-- Evaluation of the exposed operation is the selected module's scalar action. -/
 @[simp] theorem scalarAction_apply (R : RingCat.{u}) (M : ModuleCat.{u} R)
     (r : R) (m : M) :
     ConcreteCategory.hom (C := Type u) (scalarAction R M) (r, m) =
-      (M.smul r).hom m := rfl
+      (M.smul r).asHom m := rfl
 
 /-- Linear maps preserve the selected action, as in `ModuleCat.smul_naturality`. -/
 theorem scalarAction_natural (R : RingCat.{u}) (M N : ModuleCat.{u} R)
@@ -120,7 +120,8 @@ theorem scalarAction_reindex {R S : RingCat.{u}} (φ : R ⟶ S)
     ConcreteCategory.hom (C := Type u)
         (scalarAction R ((LeanCategories.Modules.ModulesOverRings.reindex φ).obj N)) (r, n) =
       ConcreteCategory.hom (C := Type u) (scalarAction S N) (φ.hom r, n) :=
-  ConcreteCategory.congr_hom (ModuleCat.smul_restrictScalars φ.hom r N) n
+  ConcreteCategory.congr_hom
+    (congrArg End.asHom (ModuleCat.smul_restrictScalars φ.hom r N)) n
 
 def Ideals : CategoryExpr := .atom CategoryId.ideals
 def AnnihilatorExpr : FunctorExpr CoreModules Ideals := .atomic FunctorId.modulesAnnihilator

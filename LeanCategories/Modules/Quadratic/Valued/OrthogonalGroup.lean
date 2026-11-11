@@ -20,7 +20,7 @@ namespace QuadModuleCat
 /-- Form-preserving linear automorphisms of a quadratic module. -/
 def orthogonalSubgroup (Q : QuadModuleCat R W) :
     Subgroup (Q.carrier ≃ₗ[R] Q.carrier) where
-  carrier f := ∀ x, Q.form (f x) = Q.form x
+  carrier := {f | ∀ x, Q.form (f x) = Q.form x}
   one_mem' := fun _ ↦ rfl
   mul_mem' := by
     intro f g hf hg x
