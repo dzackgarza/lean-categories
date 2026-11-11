@@ -240,7 +240,7 @@ theorem negativeCone_two_components (n : ℕ) :
       negativeCone n = negativeCone.upper n ∪ negativeCone.lower n ∧
       Disjoint (negativeCone.upper n) (negativeCone.lower n) ∧
       IsOpen (negativeCone.upper n) ∧ IsOpen (negativeCone.lower n) :=
-  ⟨(convex_upper n).isPreconnected, (convex_lower n).isPreconnected,
+  ⟨Convex.isPreconnected (convex_upper n), Convex.isPreconnected (convex_lower n),
     negativeCone_eq_union n, negativeCone.upper_disjoint_lower n,
     negativeCone.isOpen_upper n, negativeCone.isOpen_lower n⟩
 
