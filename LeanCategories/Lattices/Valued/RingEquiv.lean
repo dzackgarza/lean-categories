@@ -85,8 +85,7 @@ noncomputable def tensorProductSemilinearEquiv
       map_add' := t.map_add
       map_smul' := by
         intro b x
-        induction x using TensorProduct.induction_on with
-        | zero => simp
+        induction x using TensorProduct.inductionOn with
         | tmul a m =>
             change t ((f.symm b * a) ⊗ₜ[R] m) = b • t (a ⊗ₜ[R] m)
             rw [show t ((f.symm b * a) ⊗ₜ[R] m) =
