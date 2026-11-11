@@ -2442,3 +2442,23 @@ downstream assertions, computational observations, or downstream diagnostics.
   and the two are not definitionally equal; `ModuleCat.zsmul_eq_smul` (at the carrier) and
   `int_smul_eq_zsmul` (at the submodule carrier) bridge them, each stated once where used.
   (ii) and (iii) remain open: the quotient isometry itself (lean-categories#122).
+  (ii) and (iii) remain open: the quotient isometry itself (lean-categories#122).
+- **Progress (2026-11-11, lean-categories#122):** (ii) and (iii) are done for the rank-one case:
+  `LeanCategories/Lattices/Valued/IsotropicReductionRealQuotient.lean` proves
+  `perpQuotientTensorEquiv : (e^⊥/ℤe) ⊗[ℤ] ℝ ≃ₗ[ℝ] (e_ℝ)^⊥/⟨e_ℝ⟩` and the isometry of induced
+  forms `lineReductionRealIsometryEquiv` with the #119 quotient form. Right exactness of `⊗`
+  is Mathlib's `TensorProduct.AlgebraTensorModule.tensorQuotientEquiv`, the `lTensor` cokernel
+  form `M ⊗[R] (N ⧸ n) ≃ₗ[A] (M ⊗[R] N) ⧸ range (lTensor A M n.subtype)` — already `A`-linear,
+  so the anticipated ℤ/ℝ quotient mismatch never arises — composed with
+  `Submodule.Quotient.equiv` along `perpTensorEquiv` using `map_range_isotropicLineKernel`. The
+  value agreement is not an element induction (a quadratic form is not additive in its
+  argument, so the add case of a value induction has no cross term); it goes through the
+  associated bilinear forms: the quotient form's associated bilinear form on classes is the
+  restricted real pairing (`associated_isotropicQuotientForm_mk`, polar formula plus
+  `isotropicQuotientForm_mk`), the bilinear transport along the equivalence is proved on pure
+  tensors and extended additively
+  (`associated_isotropicQuotientForm_perpQuotientTensorEquiv`), and the values agree as the
+  diagonals of their associated forms (`QuadraticMap.associated_eq_self_apply`). The signature
+  of `e^⊥/ℤe` is stated as the #119 signature of the real quotient
+  (`sigPos_lineReductionRealQuadratic`, `sigNeg_lineReductionRealQuadratic`). `just test`
+  exits 0 (0 errors in 12976 declarations).

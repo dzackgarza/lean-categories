@@ -324,6 +324,7 @@ public import LeanCategories.Lattices.Valued.IsotropicReductionDiscriminant
 public import LeanCategories.Lattices.Valued.IsotropicReductionLevel
 public import LeanCategories.Lattices.Valued.IsotropicReductionTwoPlanes
 public import LeanCategories.Lattices.Valued.IsotropicReductionRealPerp
+public import LeanCategories.Lattices.Valued.IsotropicReductionRealQuotient
 public import LeanCategories.Lattices.Valued.IsotropicReductionWorkedModel
 public import LeanCategories.Lattices.Valued.IsotropicReductionU2Quotient
 public import LeanCategories.Lattices.Valued.FiniteOrthogonalCount
