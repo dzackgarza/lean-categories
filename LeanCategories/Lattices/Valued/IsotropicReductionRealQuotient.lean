@@ -44,10 +44,24 @@ additively in each argument
 (`associated_isotropicQuotientForm_perpQuotientTensorEquiv`; on `r ⊗ₜ [x]` and `s ⊗ₜ [y]`
 both sides are `(r * s) * (b(x, y) : ℝ)`, by `perpTensorEquiv_tmul` and `realPairing_tmul`
 against `lineReductionReal_tmul_mk`). The values then agree because each is the diagonal of
-its associated bilinear form (`QuadraticMap.associated_eq_self_apply`). The hyperbolic
-partner `f` of the #119 setting is a lattice vector with `pairing f f = 0` and
-`pairing e f = 1`; its image `toReal f` partners `toReal e` in the real form
-(`realQuadratic_toReal`, `associated_realQuadratic_pair`).
+its associated bilinear form (`QuadraticMap.associated_eq_self_apply`).
+
+**The hyperbolic partner is a vector of the real form (#126).** An integral partner — `f` in
+`L` with `pairing f f = 0` and `pairing e f = 1` — exists only when the divisibility of `e` is
+`1`; every vector of an even lattice such as `T_Co` pairs evenly with it, so no integral
+partner exists there (#126). The general statements therefore take the partner `F` in the
+real form, with `realQuadratic F = 0` and `associated realQuadratic (toReal e) F = 1`. Such a
+partner always exists without an integral one: nondegeneracy pairs a nonzero `e` with some
+`x` in `L` (`exists_pairing_left_ne_zero`), and `exists_realHyperbolicPartner` builds the
+real partner from `x` and `e` over `ℝ` — the construction of #119's
+`exists_hyperbolicPartner`, at the lattice's real form, from the single nonzero pairing
+instead of full real nondegeneracy. The #122 statements, with an integral partner, are the
+special case `F = toReal f` (`realQuadratic_toReal`, `associated_realQuadratic_pair`), and
+the acceptance statements of #126 take no partner at all
+(`exists_equivalent_lineReductionRealQuadratic`,
+`sigPos`/`sigNeg_lineReductionRealQuadratic_of_nondegenerate`): for every nondegenerate
+symmetric `L` and every nonzero isotropic `e` — the primitive isotropic vectors of the
+pipeline among them — the signature of `e^⊥/ℤe` is the signature of `L` minus `(1, 1)`.
 
 ## References
 
@@ -227,7 +241,10 @@ section Isometry
 
 variable [Module.Finite ℤ L.obj.carrier]
 
-/-- The image of the hyperbolic partner of `e` in the real form partners the image of `e`. -/
+/-- The image of an integral hyperbolic partner of `e` partners the image of `e` in the real
+form. An integral partner exists only when the divisibility of `e` is `1` (#126); the general
+statements below take a partner of the real form, and this lemma is the bridge for the #122
+special case. -/
 theorem associated_realQuadratic_pair (hb : L.obj.IsSymmetric) (e f : L.obj.carrier)
     (hB : L.obj.pairing e f = 1) :
     QuadraticMap.associated (realQuadratic (L := L)) (toReal (L := L) e) (toReal (L := L) f)
@@ -264,14 +281,15 @@ theorem associated_lineReductionRealQuadratic (hb : L.obj.IsSymmetric) (e : L.ob
   QuadraticMap.associated_left_inverse (S := ℝ) (lineReductionReal_symm hb e)
 
 /-- The associated bilinear form of the quotient form computes on classes: it is the restriction
-of the real pairing. The polar formula reduces this to the induction formula
-`isotropicQuotientForm_mk` for the values. -/
-theorem associated_isotropicQuotientForm_mk (hb : L.obj.IsSymmetric) (e f : L.obj.carrier)
-    (he : L.obj.pairing e e = 0) (hf : L.obj.pairing f f = 0) (hB : L.obj.pairing e f = 1)
+of the real pairing. The partner is a vector of the real form; the polar formula reduces this
+to the induction formula `isotropicQuotientForm_mk` for the values. -/
+theorem associated_isotropicQuotientForm_mk (hb : L.obj.IsSymmetric) (e : L.obj.carrier)
+    (he : L.obj.pairing e e = 0) (F : TensorProduct ℤ ℝ L.obj.carrier)
+    (hF : realQuadratic (L := L) F = 0)
+    (hB : QuadraticMap.associated (realQuadratic (L := L)) (toReal (L := L) e) F = 1)
     (u v : ↥(linePerp (realQuadratic (L := L)) (toReal (L := L) e))) :
     QuadraticMap.associated
-        (isotropicQuotientForm (realQuadratic (L := L)) (realQuadratic_toReal e he)
-          (realQuadratic_toReal f hf) (associated_realQuadratic_pair hb e f hB))
+        (isotropicQuotientForm (realQuadratic (L := L)) (realQuadratic_toReal e he) hF hB)
         (Submodule.Quotient.mk u) (Submodule.Quotient.mk v) =
       realPairing (L := L) (u : TensorProduct ℤ ℝ L.obj.carrier)
         (v : TensorProduct ℤ ℝ L.obj.carrier) := by
@@ -280,17 +298,18 @@ theorem associated_isotropicQuotientForm_mk (hb : L.obj.IsSymmetric) (e f : L.ob
     QuadraticMap.associated_apply]
   rfl
 
-/-- **The bilinear transport of the isometry (#122)**: the associated bilinear form of the real
-quotient form, pulled back along the quotient equivalence, is the real form of the induced form.
-Being bilinear, this is proved on pure tensors and extended additively in each argument. -/
+/-- **The bilinear transport of the isometry (#122, #126)**: the associated bilinear form of the
+real quotient form, pulled back along the quotient equivalence, is the real form of the
+induced form. Being bilinear, this is proved on pure tensors and extended additively in each
+argument. -/
 theorem associated_isotropicQuotientForm_perpQuotientTensorEquiv
-    (hb : L.obj.IsSymmetric) (e f : L.obj.carrier) (he : L.obj.pairing e e = 0)
-    (hf : L.obj.pairing f f = 0) (hB : L.obj.pairing e f = 1)
+    (hb : L.obj.IsSymmetric) (e : L.obj.carrier) (he : L.obj.pairing e e = 0)
+    (F : TensorProduct ℤ ℝ L.obj.carrier) (hF : realQuadratic (L := L) F = 0)
+    (hB : QuadraticMap.associated (realQuadratic (L := L)) (toReal (L := L) e) F = 1)
     (y z : TensorProduct ℤ ℝ (↥(isotropicLinePerp (L := L) e) ⧸
       isotropicLineKernel (L := L) e)) :
     QuadraticMap.associated
-        (isotropicQuotientForm (realQuadratic (L := L)) (realQuadratic_toReal e he)
-          (realQuadratic_toReal f hf) (associated_realQuadratic_pair hb e f hB))
+        (isotropicQuotientForm (realQuadratic (L := L)) (realQuadratic_toReal e he) hF hB)
         (perpQuotientTensorEquiv hb e he y) (perpQuotientTensorEquiv hb e he z) =
       lineReductionReal (L := L) hb e y z := by
   induction y using TensorProduct.induction_on with
@@ -304,49 +323,52 @@ theorem associated_isotropicQuotientForm_perpQuotientTensorEquiv
         induction b using Submodule.Quotient.induction_on with
         | _ b =>
           rw [perpQuotientTensorEquiv_tmul_mk, perpQuotientTensorEquiv_tmul_mk,
-            associated_isotropicQuotientForm_mk hb e f he hf hB, perpTensorEquiv_tmul,
+            associated_isotropicQuotientForm_mk hb e he F hF hB, perpTensorEquiv_tmul,
             perpTensorEquiv_tmul, realPairing_tmul, lineReductionReal_tmul_mk]
     | add z₁ z₂ hz₁ hz₂ => simp [map_add, hz₁, hz₂]
   | add y₁ y₂ hy₁ hy₂ => simp [map_add, LinearMap.add_apply, hy₁, hy₂]
 
-/-- **The isometry on elements (#122)**: the form the real quotient form induces, at the image of
-an element under the quotient equivalence, is the value of the real quadratic form of the
-reduction. Both sides are the diagonal of their associated bilinear forms
+/-- **The isometry on elements (#122, #126)**: the form the real quotient form induces, at the
+image of an element under the quotient equivalence, is the value of the real quadratic form
+of the reduction. Both sides are the diagonal of their associated bilinear forms
 (`QuadraticMap.associated_eq_self_apply`), so the bilinear transport gives the equality. -/
 theorem isotropicQuotientForm_perpQuotientTensorEquiv (hb : L.obj.IsSymmetric)
-    (e f : L.obj.carrier) (he : L.obj.pairing e e = 0) (hf : L.obj.pairing f f = 0)
-    (hB : L.obj.pairing e f = 1)
+    (e : L.obj.carrier) (he : L.obj.pairing e e = 0) (F : TensorProduct ℤ ℝ L.obj.carrier)
+    (hF : realQuadratic (L := L) F = 0)
+    (hB : QuadraticMap.associated (realQuadratic (L := L)) (toReal (L := L) e) F = 1)
     (z : TensorProduct ℤ ℝ (↥(isotropicLinePerp (L := L) e) ⧸
       isotropicLineKernel (L := L) e)) :
-    isotropicQuotientForm (realQuadratic (L := L)) (realQuadratic_toReal e he)
-        (realQuadratic_toReal f hf) (associated_realQuadratic_pair hb e f hB)
+    isotropicQuotientForm (realQuadratic (L := L)) (realQuadratic_toReal e he) hF hB
         (perpQuotientTensorEquiv hb e he z) =
       lineReductionRealQuadratic (L := L) hb e z := by
   rw [← QuadraticMap.associated_eq_self_apply ℝ (lineReductionRealQuadratic (L := L) hb e) z,
     associated_lineReductionRealQuadratic hb e, ← QuadraticMap.associated_eq_self_apply ℝ
-      (isotropicQuotientForm (realQuadratic (L := L)) (realQuadratic_toReal e he)
-        (realQuadratic_toReal f hf) (associated_realQuadratic_pair hb e f hB))
+      (isotropicQuotientForm (realQuadratic (L := L)) (realQuadratic_toReal e he) hF hB)
       (perpQuotientTensorEquiv hb e he z)]
-  exact associated_isotropicQuotientForm_perpQuotientTensorEquiv hb e f he hf hB z z
+  exact associated_isotropicQuotientForm_perpQuotientTensorEquiv hb e he F hF hB z z
 
-/-- **The quotient isometry (#122)**: the base change of the reduction is an isometry of the
-induced forms. The linear equivalence transports the real form of the reduction to the form
-`Q` induces on the real quotient; on pure tensors both sides are `r * r * (b(x, x) : ℝ)`. -/
-noncomputable def lineReductionRealIsometryEquiv (hb : L.obj.IsSymmetric) (e f : L.obj.carrier)
-    (he : L.obj.pairing e e = 0) (hf : L.obj.pairing f f = 0) (hB : L.obj.pairing e f = 1) :
+/-- **The quotient isometry (#122, #126)**: the base change of the reduction is an isometry of
+the induced forms. The linear equivalence transports the real form of the reduction to the
+form `Q` induces on the real quotient; on pure tensors both sides are `r * r * (b(x, x) : ℝ)`.
+The partner `F` is a vector of the real form; with an integral partner `f` (#122), take
+`F = toReal f` (`realQuadratic_toReal`, `associated_realQuadratic_pair`). -/
+noncomputable def lineReductionRealIsometryEquiv (hb : L.obj.IsSymmetric)
+    (e : L.obj.carrier) (he : L.obj.pairing e e = 0) (F : TensorProduct ℤ ℝ L.obj.carrier)
+    (hF : realQuadratic (L := L) F = 0)
+    (hB : QuadraticMap.associated (realQuadratic (L := L)) (toReal (L := L) e) F = 1) :
     QuadraticMap.IsometryEquiv (lineReductionRealQuadratic (L := L) hb e)
-      (isotropicQuotientForm (realQuadratic (L := L)) (realQuadratic_toReal e he)
-        (realQuadratic_toReal f hf) (associated_realQuadratic_pair hb e f hB)) where
+      (isotropicQuotientForm (realQuadratic (L := L)) (realQuadratic_toReal e he) hF hB) where
   toLinearEquiv := perpQuotientTensorEquiv hb e he
-  map_app' := isotropicQuotientForm_perpQuotientTensorEquiv hb e f he hf hB
+  map_app' := isotropicQuotientForm_perpQuotientTensorEquiv hb e he F hF hB
 
 /-- The real form of the reduction is equivalent to the form `Q` induces on the real quotient. -/
-theorem equivalent_lineReductionRealQuadratic (hb : L.obj.IsSymmetric) (e f : L.obj.carrier)
-    (he : L.obj.pairing e e = 0) (hf : L.obj.pairing f f = 0) (hB : L.obj.pairing e f = 1) :
+theorem equivalent_lineReductionRealQuadratic (hb : L.obj.IsSymmetric)
+    (e : L.obj.carrier) (he : L.obj.pairing e e = 0) (F : TensorProduct ℤ ℝ L.obj.carrier)
+    (hF : realQuadratic (L := L) F = 0)
+    (hB : QuadraticMap.associated (realQuadratic (L := L)) (toReal (L := L) e) F = 1) :
     QuadraticMap.Equivalent (lineReductionRealQuadratic (L := L) hb e)
-      (isotropicQuotientForm (realQuadratic (L := L)) (realQuadratic_toReal e he)
-        (realQuadratic_toReal f hf) (associated_realQuadratic_pair hb e f hB)) :=
-  ⟨lineReductionRealIsometryEquiv hb e f he hf hB⟩
+      (isotropicQuotientForm (realQuadratic (L := L)) (realQuadratic_toReal e he) hF hB) :=
+  ⟨lineReductionRealIsometryEquiv hb e he F hF hB⟩
 
 end Isometry
 
@@ -356,28 +378,121 @@ section Signature
 
 variable [Module.Finite ℤ L.obj.carrier]
 
-/-- **The signature of `e^⊥/ℤe` is the #119 signature of the real quotient**: the positive index
+/-- **The signature of `e^⊥/ℤe` with a real partner**: the positive index
 of the real form of the reduction, plus one, is the positive index of the real form of `L`. -/
-theorem sigPos_lineReductionRealQuadratic (hb : L.obj.IsSymmetric) (e f : L.obj.carrier)
-    (he : L.obj.pairing e e = 0) (hf : L.obj.pairing f f = 0) (hB : L.obj.pairing e f = 1) :
+theorem sigPos_lineReductionRealQuadratic (hb : L.obj.IsSymmetric) (e : L.obj.carrier)
+    (he : L.obj.pairing e e = 0) (F : TensorProduct ℤ ℝ L.obj.carrier)
+    (hF : realQuadratic (L := L) F = 0)
+    (hB : QuadraticMap.associated (realQuadratic (L := L)) (toReal (L := L) e) F = 1) :
     sigPos (lineReductionRealQuadratic (L := L) hb e) + 1 =
       sigPos (realQuadratic (L := L)) := by
-  rw [(equivalent_lineReductionRealQuadratic hb e f he hf hB).sigPos_eq]
+  rw [(equivalent_lineReductionRealQuadratic hb e he F hF hB).sigPos_eq]
   exact sigPos_isotropicQuotientForm (realQuadratic (L := L))
-    (realQuadratic_toReal e he) (realQuadratic_toReal f hf)
-    (associated_realQuadratic_pair hb e f hB)
+    (realQuadratic_toReal e he) hF hB
 
-/-- **The signature of `e^⊥/ℤe` is the #119 signature of the real quotient**: the negative index
+/-- **The signature of `e^⊥/ℤe` with a real partner**: the negative index
 of the real form of the reduction, plus one, is the negative index of the real form of `L`. -/
-theorem sigNeg_lineReductionRealQuadratic (hb : L.obj.IsSymmetric) (e f : L.obj.carrier)
-    (he : L.obj.pairing e e = 0) (hf : L.obj.pairing f f = 0) (hB : L.obj.pairing e f = 1) :
+theorem sigNeg_lineReductionRealQuadratic (hb : L.obj.IsSymmetric) (e : L.obj.carrier)
+    (he : L.obj.pairing e e = 0) (F : TensorProduct ℤ ℝ L.obj.carrier)
+    (hF : realQuadratic (L := L) F = 0)
+    (hB : QuadraticMap.associated (realQuadratic (L := L)) (toReal (L := L) e) F = 1) :
     sigNeg (lineReductionRealQuadratic (L := L) hb e) + 1 =
       sigNeg (realQuadratic (L := L)) := by
-  rw [(equivalent_lineReductionRealQuadratic hb e f he hf hB).sigNeg_eq]
+  rw [(equivalent_lineReductionRealQuadratic hb e he F hF hB).sigNeg_eq]
   exact sigNeg_isotropicQuotientForm (realQuadratic (L := L))
-    (realQuadratic_toReal e he) (realQuadratic_toReal f hf)
-    (associated_realQuadratic_pair hb e f hB)
+    (realQuadratic_toReal e he) hF hB
 
 end Signature
+
+/-! ## The signature of `e^⊥/ℤe` without an integral partner (#126) -/
+
+section Partner
+
+variable [Module.Finite ℤ L.obj.carrier]
+
+omit [Module.Finite ℤ ↑L.obj.carrier] in
+/-- Nondegeneracy pairs a nonzero vector with some vector nontrivially. -/
+theorem exists_pairing_left_ne_zero (hnd : L.obj.IsNondegenerate) {e : L.obj.carrier}
+    (hne : e ≠ 0) : ∃ x : L.obj.carrier, L.obj.pairing e x ≠ 0 := by
+  by_contra h
+  push Not at h
+  exact hne (hnd.1 e h)
+
+/-- **A real hyperbolic partner exists without an integral one (#126)**: for an isotropic `e`
+pairing nontrivially with some lattice vector — nondegeneracy gives such an `x` for every
+`e ≠ 0` — the real form has an isotropic partner of `e_ℝ`, built from `x` and `e` over `ℝ`
+(the construction of #119's `exists_hyperbolicPartner`, at the lattice's real form, from the
+single nonzero pairing instead of full real nondegeneracy). -/
+theorem exists_realHyperbolicPartner (hb : L.obj.IsSymmetric) {e : L.obj.carrier}
+    (he : L.obj.pairing e e = 0) (hx : ∃ x : L.obj.carrier, L.obj.pairing e x ≠ 0) :
+    ∃ F : TensorProduct ℤ ℝ L.obj.carrier, realQuadratic (L := L) F = 0 ∧
+      QuadraticMap.associated (realQuadratic (L := L)) (toReal (L := L) e) F = 1 := by
+  obtain ⟨x, hx⟩ := hx
+  have hbEx : QuadraticMap.associated (realQuadratic (L := L)) (toReal (L := L) e)
+      (toReal (L := L) x) = (L.obj.pairing e x : ℝ) := by
+    rw [associated_realQuadratic hb, realPairing_tmul]
+    ring
+  have hx0 : (L.obj.pairing e x : ℝ) ≠ 0 := by exact_mod_cast hx
+  set g : TensorProduct ℤ ℝ L.obj.carrier := ((L.obj.pairing e x : ℝ)⁻¹) •
+    toReal (L := L) x with hg
+  have hbB : QuadraticMap.associated (realQuadratic (L := L)) (toReal (L := L) e) g = 1 := by
+    rw [hg, map_smul, hbEx, smul_eq_mul, inv_mul_cancel₀ hx0]
+  have hee : QuadraticMap.associated (realQuadratic (L := L)) (toReal (L := L) e)
+      (toReal (L := L) e) = 0 := by
+    rw [QuadraticMap.associated_eq_self_apply, realQuadratic_toReal]
+    exact he
+  refine ⟨g + (-(2⁻¹ * realQuadratic g)) • toReal (L := L) e, ?_, ?_⟩
+  · have hexp := quadratic_add_smul_eq (realQuadratic (L := L)) (realQuadratic_toReal e he)
+      hbB (-(2⁻¹ * realQuadratic g))
+    rw [hexp]
+    field_simp
+    ring
+  · have hsmul : QuadraticMap.associated (realQuadratic (L := L)) (toReal (L := L) e)
+        ((-(2⁻¹ * realQuadratic g)) • toReal (L := L) e) = 0 := by
+      rw [map_smul, hee, smul_zero]
+    rw [map_add, hsmul, add_zero]
+    exact hbB
+
+/-- **The isometry for every nonzero isotropic `e`, without an integral partner (#126)**: for a
+nondegenerate symmetric lattice and a nonzero isotropic `e`, the real quotient form — at a real
+partner of `e_ℝ`, which exists — is equivalent to the real form of the reduction. Primitivity
+of `e` is the pipeline's case and needs no hypothesis beyond `e ≠ 0`. -/
+theorem exists_equivalent_lineReductionRealQuadratic (hb : L.obj.IsSymmetric)
+    (hnd : L.obj.IsNondegenerate) {e : L.obj.carrier} (he : L.obj.pairing e e = 0)
+    (hne : e ≠ 0) :
+    ∃ (F : TensorProduct ℤ ℝ L.obj.carrier) (hF : realQuadratic (L := L) F = 0)
+      (hB : QuadraticMap.associated (realQuadratic (L := L)) (toReal (L := L) e) F = 1),
+      QuadraticMap.Equivalent (lineReductionRealQuadratic (L := L) hb e)
+        (isotropicQuotientForm (realQuadratic (L := L)) (realQuadratic_toReal e he) hF hB) := by
+  obtain ⟨F, hF, hB⟩ := exists_realHyperbolicPartner hb he
+    (exists_pairing_left_ne_zero hnd hne)
+  exact ⟨F, hF, hB, equivalent_lineReductionRealQuadratic hb e he F hF hB⟩
+
+/-- **The signature of `e^⊥/ℤe` for every primitive isotropic `e`, without an integral partner
+(#126)**: for a nondegenerate symmetric lattice and a nonzero isotropic `e`, the positive index
+of the real form of the reduction, plus one, is the positive index of the real form of `L` —
+the signature of `e^⊥/ℤe` is the signature of `L` minus one. -/
+theorem sigPos_lineReductionRealQuadratic_of_nondegenerate (hb : L.obj.IsSymmetric)
+    (hnd : L.obj.IsNondegenerate) {e : L.obj.carrier} (he : L.obj.pairing e e = 0)
+    (hne : e ≠ 0) :
+    sigPos (lineReductionRealQuadratic (L := L) hb e) + 1 =
+      sigPos (realQuadratic (L := L)) := by
+  obtain ⟨F, hF, hB⟩ := exists_realHyperbolicPartner hb he
+    (exists_pairing_left_ne_zero hnd hne)
+  exact sigPos_lineReductionRealQuadratic hb e he F hF hB
+
+/-- **The signature of `e^⊥/ℤe` for every primitive isotropic `e`, without an integral partner
+(#126)**: for a nondegenerate symmetric lattice and a nonzero isotropic `e`, the negative index
+of the real form of the reduction, plus one, is the negative index of the real form of `L`. -/
+theorem sigNeg_lineReductionRealQuadratic_of_nondegenerate (hb : L.obj.IsSymmetric)
+    (hnd : L.obj.IsNondegenerate) {e : L.obj.carrier} (he : L.obj.pairing e e = 0)
+    (hne : e ≠ 0) :
+    sigNeg (lineReductionRealQuadratic (L := L) hb e) + 1 =
+      sigNeg (realQuadratic (L := L)) := by
+  obtain ⟨F, hF, hB⟩ := exists_realHyperbolicPartner hb he
+    (exists_pairing_left_ne_zero hnd hne)
+  exact sigNeg_lineReductionRealQuadratic hb e he F hF hB
+
+end Partner
 
 end LeanCategories.Lattices.Valued

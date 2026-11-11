@@ -2462,3 +2462,17 @@ downstream assertions, computational observations, or downstream diagnostics.
   of `e^⊥/ℤe` is stated as the #119 signature of the real quotient
   (`sigPos_lineReductionRealQuadratic`, `sigNeg_lineReductionRealQuadratic`). `just test`
   exits 0 (0 errors in 12976 declarations).
+- **Progress (2026-11-11, lean-categories#126):** the partner is now taken in the real form,
+  not the lattice: the isometry and signature statements of #122 are reparameterized from an
+  integral `f` (which exists only when the divisibility of `e` is `1`; every vector of an even
+  lattice such as `T_Co` pairs evenly, so no integral partner exists there) to a real vector
+  `F` of the real form. `exists_realHyperbolicPartner` builds the real partner from any `x`
+  with `b(e, x) ≠ 0` — `exists_pairing_left_ne_zero` produces such an `x` from nondegeneracy
+  and `e ≠ 0` — as the construction of #119's `exists_hyperbolicPartner` at the lattice's real
+  form, from the single nonzero pairing instead of full real nondegeneracy. The partner-free
+  acceptance statements (`exists_equivalent_lineReductionRealQuadratic`,
+  `sigPos`/`sigNeg_lineReductionRealQuadratic_of_nondegenerate`) take no partner at all: for
+  every nondegenerate symmetric `L` and every nonzero isotropic `e` (the primitive isotropic
+  vectors of the pipeline among them), the signature of `e^⊥/ℤe` is the signature of `L` minus
+  `(1, 1)`. The #122 statements, with an integral partner, are the special case
+  `F = toReal f` (`realQuadratic_toReal`, `associated_realQuadratic_pair`).
