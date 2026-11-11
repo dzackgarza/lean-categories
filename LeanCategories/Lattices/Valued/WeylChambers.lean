@@ -5,6 +5,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import LeanCategories.Lattices.Valued.WeylCone
+public import LeanCategories.Lattices.Valued.TopologicalOrthogonalGroup
+public import LeanCategories.Lattices.Valued.GenusInvariants
 public import LeanCategories.Algebra.CoxeterGraphData
 public import Mathlib.Analysis.Convex.PathConnected
 public import Mathlib.Topology.Algebra.Module.ModuleTopology
@@ -743,4 +745,252 @@ theorem weylSubgroup_chamberOf_image (hL : L.obj.obj.IsNondegenerate)
 
 end Isometry
 
+
+/-! ## The discreteness of `O(L)` in `O(L ⊗ ℝ)` (Bourbaki V §3, (D2), p. 77)
+
+The matrix of the scalar extension of a lattice isometry in the base-change basis is the
+ℤ-matrix of the isometry, cast into `ℝ`: the integrality of the arithmetic orthogonal group.
+The real form of `L` is presented as a real integral lattice, so that the matrix topology of
+`TopologicalOrthogonalGroup.lean` applies to its orthogonal group, and the image of `O(L)`
+under scalar extension is a subgroup of it. Its discreteness is condition (D2) of Bourbaki V
+§3 no. 1 (p. 77), the hypothesis of Lemma 1 (local finiteness of the mirror arrangement,
+p. 77) and Lemma 2 (p. 77); see the module docstring for the chain. -/
+
+section Discreteness
+
+variable (L : FiniteProjectiveLatticeCat ℤ ℤ)
+variable {I : Type} [Fintype I] [DecidableEq I]
+variable (b : Module.Basis I ℤ L.obj.obj.carrier)
+
+theorem exists_finBasis : ∃ (n : ℕ) (b : Module.Basis (Fin n) ℤ L.obj.obj.carrier),
+      Submodule.span ℤ (Set.range b) = ⊤ := by
+  have hfree : Module.Free ℤ L.obj.obj.carrier := L.carrier_free
+  have hfin : Module.Finite ℤ L.obj.obj.carrier := L.property
+  refine ⟨Fintype.card (Module.Free.ChooseBasisIndex ℤ L.obj.obj.carrier),
+    (Module.Free.chooseBasis ℤ L.obj.obj.carrier).reindex
+      (Fintype.equivFin (Module.Free.ChooseBasisIndex ℤ L.obj.obj.carrier)), ?_⟩
+  exact ((Module.Free.chooseBasis ℤ L.obj.obj.carrier).reindex
+      (Fintype.equivFin (Module.Free.ChooseBasisIndex ℤ L.obj.obj.carrier))).span_eq
+
+theorem baseChange_toMatrix (g : OrthogonalGroup L.obj) :
+    LinearMap.toMatrix (b.baseChange ℝ) (b.baseChange ℝ)
+        (((g.1 : L.obj.obj.carrier ≃ₗ[ℤ] L.obj.obj.carrier).baseChange ℤ ℝ L.obj.obj.carrier
+          L.obj.obj.carrier).toLinearMap) =
+      (LinearMap.toMatrix b b
+        ((g.1 : L.obj.obj.carrier ≃ₗ[ℤ] L.obj.obj.carrier).toLinearMap)).map (algebraMap ℤ ℝ) := by
+  ext i j
+  simp only [LinearMap.toMatrix_apply, Module.Basis.baseChange_apply,
+    LinearEquiv.coe_coe, LinearEquiv.baseChange_tmul, Module.Basis.baseChange_repr_tmul,
+    Matrix.map_apply, Int.smul_one_eq_cast]
+  rfl
+
+theorem realFormOrthogonalHom_toMatrix (g : OrthogonalGroup L.obj) :
+    LinearMap.toMatrix (baseChangeBasis ℝ L.obj b) (baseChangeBasis ℝ L.obj b)
+        ((realFormOrthogonalHom L g).toLinearEquiv.toLinearMap) =
+      (LinearMap.toMatrix b b
+        ((g.1 : L.obj.obj.carrier ≃ₗ[ℤ] L.obj.obj.carrier).toLinearMap)).map (algebraMap ℤ ℝ) :=
+  baseChange_toMatrix L b g
+
+/-- The real form of `L` as a real integral lattice: the carrier and pairing of the scalar
+extension, presented so that the matrix topology of `TopologicalOrthogonalGroup.lean` applies
+to it. -/
+noncomputable def realFormIntegralLattice : IntegralLatticeCat ℝ :=
+  ⟨((baseChangeIntegral ℤ ℝ).obj L.obj).obj, ⟨inferInstance,
+    ((baseChangeIntegral ℤ ℝ).obj L.obj).property.2⟩⟩
+
+/-- The image of the orthogonal group of `L` in the orthogonal group of its real form:
+the range of the scalar-extension homomorphism. -/
+noncomputable def realFormOrthogonalImage :
+    Subgroup (BilinModuleCat.OrthogonalGroup (realFormIntegralLattice L).obj) :=
+  MonoidHom.range (orthogonalGroupBaseChangeHom (R := ℤ) (S := ℝ) L.obj)
+
+/-- The matrix of the scalar extension of an isometry in the matrix presentation of the real
+form: the ℤ-matrix of the isometry, cast into `ℝ`. -/
+theorem realFormOrthogonalImage_matrix (g : OrthogonalGroup L.obj) :
+    LinearMap.toMatrix (baseChangeBasis ℝ L.obj b) (baseChangeBasis ℝ L.obj b)
+        ((orthogonalGroupBaseChangeHom (R := ℤ) (S := ℝ) L.obj g).1.toLinearMap) =
+      (LinearMap.toMatrix b b
+        ((g.1 : L.obj.obj.carrier ≃ₗ[ℤ] L.obj.obj.carrier).toLinearMap)).map (algebraMap ℤ ℝ) :=
+  realFormOrthogonalHom_toMatrix L b g
+
+/-- The matrix presentation of an element of the image: the matrix of the image of `g` in the
+matrix orthogonal group of the real form, cast to a matrix, is the ℤ-matrix of `g` cast
+into `ℝ`. -/
+theorem realFormOrthogonalImage_matrix_coe (g : OrthogonalGroup L.obj) :
+    ((orthogonalGroupMatrixEquiv (realFormIntegralLattice L) (baseChangeBasis ℝ L.obj b)
+        ((orthogonalGroupBaseChangeHom (R := ℤ) (S := ℝ) L.obj g) :
+          BilinModuleCat.OrthogonalGroup (realFormIntegralLattice L).obj) :
+      Matrix.GeneralLinearGroup I ℝ) : Matrix I I ℝ) =
+      (LinearMap.toMatrix b b
+        ((g.1 : L.obj.obj.carrier ≃ₗ[ℤ] L.obj.obj.carrier).toLinearMap)).map (algebraMap ℤ ℝ) :=
+  realFormOrthogonalImage_matrix L b g
+
+end Discreteness
+
+
+/-! ### The isolation of the identity in the image (Bourbaki V §3, (D2), p. 77) -/
+
+section Isolation
+variable (L : FiniteProjectiveLatticeCat ℤ ℤ) {I : Type} [Fintype I] [DecidableEq I]
+variable (b : Module.Basis I ℤ L.obj.obj.carrier)
+
+/-- **The identity is isolated in the image of the orthogonal group** (Bourbaki V §3 no. 1,
+p. 77, condition (D2)): there is an open neighborhood of the identity in the matrix topology
+of the real form that meets the image only in the identity, because the matrix of every
+element of the image is the ℤ-matrix of a lattice isometry cast into `ℝ`. -/
+theorem realFormOrthogonalImage_isolated
+    (T : TopologicalSpace (BilinModuleCat.OrthogonalGroup (realFormIntegralLattice L).obj))
+    (hT : T = orthogonalGroupTopology (realFormIntegralLattice L) (baseChangeBasis ℝ L.obj b)) :
+    ∃ U : Set (BilinModuleCat.OrthogonalGroup (realFormIntegralLattice L).obj),
+      IsOpen U ∧ (1 : _) ∈ U ∧ ∀ h ∈ realFormOrthogonalImage L, h ∈ U → h = 1 := by
+  subst hT
+  letI : TopologicalSpace (BilinModuleCat.OrthogonalGroup (realFormIntegralLattice L).obj) :=
+    orthogonalGroupTopology (realFormIntegralLattice L) (baseChangeBasis ℝ L.obj b)
+  refine ⟨(fun h => LinearMap.toMatrix (baseChangeBasis ℝ L.obj b)
+        (baseChangeBasis ℝ L.obj b) h.1.toLinearMap) ⁻¹'
+      {M : Matrix I I ℝ | ∀ i j, |M i j - (1 : Matrix I I ℝ) i j| < 1}, ?_, ?_, ?_⟩
+  · -- openness: the matrix map is continuous and the entrywise condition is open
+    have hcomp : Continuous (fun h : BilinModuleCat.OrthogonalGroup
+        (realFormIntegralLattice L).obj =>
+        ((orthogonalGroupMatrixEquiv (realFormIntegralLattice L) (baseChangeBasis ℝ L.obj b) h :
+          Matrix.GeneralLinearGroup I ℝ) : Matrix I I ℝ)) := by
+      have h1 : Continuous (fun h : BilinModuleCat.OrthogonalGroup
+          (realFormIntegralLattice L).obj =>
+          orthogonalGroupMatrixEquiv (realFormIntegralLattice L) (baseChangeBasis ℝ L.obj b) h) :=
+        continuous_induced_dom
+      exact Units.continuous_val.comp (continuous_subtype_val.comp h1)
+    have hcont : Continuous (fun h : BilinModuleCat.OrthogonalGroup
+        (realFormIntegralLattice L).obj =>
+        LinearMap.toMatrix (baseChangeBasis ℝ L.obj b) (baseChangeBasis ℝ L.obj b)
+          h.1.toLinearMap) :=
+      hcomp.congr (fun h => rfl)
+    have hOopen : IsOpen {M : Matrix I I ℝ | ∀ i j, |M i j - (1 : Matrix I I ℝ) i j| < 1} := by
+      have hEq : {M : Matrix I I ℝ | ∀ i j, |M i j - (1 : Matrix I I ℝ) i j| < 1} =
+          ⋂ p : I × I, (fun M : Matrix I I ℝ => M p.1 p.2) ⁻¹'
+            {t : ℝ | |t - (1 : Matrix I I ℝ) p.1 p.2| < 1} := by
+        ext M
+        simp only [Set.mem_iInter, Set.mem_preimage, Set.mem_setOf_eq]
+        constructor
+        · intro hM p; exact hM p.1 p.2
+        · intro hM i j; exact hM (i, j)
+      rw [hEq]
+      apply isOpen_iInter_of_finite
+      intro p
+      have hcontp : Continuous (fun M : Matrix I I ℝ => M p.1 p.2) :=
+        (continuous_apply p.2).comp (continuous_apply p.1)
+      have hopenp : IsOpen {t : ℝ | |t - (1 : Matrix I I ℝ) p.1 p.2| < 1} := by
+        have hrw : {t : ℝ | |t - (1 : Matrix I I ℝ) p.1 p.2| < 1} =
+            Set.Ioo ((1 : Matrix I I ℝ) p.1 p.2 - 1) ((1 : Matrix I I ℝ) p.1 p.2 + 1) := by
+          ext t
+          simp only [Set.mem_setOf_eq, Set.mem_Ioo]
+          constructor
+          · intro h
+            obtain ⟨h1, h2⟩ := abs_lt.mp h
+            constructor <;> linarith
+          · intro h
+            obtain ⟨h1, h2⟩ := h
+            exact abs_lt.mpr ⟨by linarith, by linarith⟩
+        rw [hrw]
+        exact isOpen_Ioo
+      exact hopenp.preimage hcontp
+    exact hOopen.preimage hcont
+  · -- the identity lies in the neighborhood
+    show LinearMap.toMatrix (baseChangeBasis ℝ L.obj b) (baseChangeBasis ℝ L.obj b)
+        (1 : BilinModuleCat.OrthogonalGroup (realFormIntegralLattice L).obj).1.toLinearMap
+      ∈ {M : Matrix I I ℝ | ∀ i j, |M i j - (1 : Matrix I I ℝ) i j| < 1}
+    have hone : LinearMap.toMatrix (baseChangeBasis ℝ L.obj b) (baseChangeBasis ℝ L.obj b)
+        (1 : BilinModuleCat.OrthogonalGroup (realFormIntegralLattice L).obj).1.toLinearMap = 1 :=
+      LinearMap.toMatrix_one (baseChangeBasis ℝ L.obj b)
+    simp only [Set.mem_setOf_eq]
+    intro i j
+    rw [hone]
+    simp
+  · -- isolation: an integral matrix within one of the identity is the identity
+    rintro h ⟨g, rfl⟩ hU
+    simp only [Set.mem_preimage, Set.mem_setOf_eq] at hU
+    -- every entry of the ℤ-matrix of g is the corresponding entry of the identity
+    have hentry : ∀ i j, (LinearMap.toMatrix b b
+        ((g.1 : L.obj.obj.carrier ≃ₗ[ℤ] L.obj.obj.carrier).toLinearMap)) i j
+        = (1 : Matrix I I ℤ) i j := by
+      intro i j
+      have hbound : |((LinearMap.toMatrix (baseChangeBasis ℝ L.obj b)
+            (baseChangeBasis ℝ L.obj b)
+            (orthogonalGroupBaseChangeHom (R := ℤ) (S := ℝ) L.obj g).1.toLinearMap)) i j
+          - (1 : Matrix I I ℝ) i j| < 1 := hU i j
+      have hcast : ∀ i j, ((LinearMap.toMatrix (baseChangeBasis ℝ L.obj b)
+            (baseChangeBasis ℝ L.obj b)
+            (orthogonalGroupBaseChangeHom (R := ℤ) (S := ℝ) L.obj g).1.toLinearMap)) i j
+          = ((LinearMap.toMatrix b b
+            ((g.1 : L.obj.obj.carrier ≃ₗ[ℤ] L.obj.obj.carrier).toLinearMap)) i j : ℝ) := by
+        intro i' j'
+        rw [realFormOrthogonalImage_matrix L b g, Matrix.map_apply]
+        rfl
+      rcases eq_or_ne i j with hij | hij
+      · subst hij
+        rw [hcast i i] at hbound
+        obtain ⟨h1, h2⟩ := abs_lt.mp hbound
+        simp only [Matrix.one_apply, if_pos rfl, if_true] at h1 h2
+        have e1 : 0 < (LinearMap.toMatrix b b
+            ((g.1 : L.obj.obj.carrier ≃ₗ[ℤ] L.obj.obj.carrier).toLinearMap)) i i := by
+          have h : (0:ℝ) < ((LinearMap.toMatrix b b
+            ((g.1 : L.obj.obj.carrier ≃ₗ[ℤ] L.obj.obj.carrier).toLinearMap)) i i : ℝ) := by
+            linarith
+          exact_mod_cast h
+        have e2 : (LinearMap.toMatrix b b
+            ((g.1 : L.obj.obj.carrier ≃ₗ[ℤ] L.obj.obj.carrier).toLinearMap)) i i < 2 := by
+          have h : ((LinearMap.toMatrix b b
+            ((g.1 : L.obj.obj.carrier ≃ₗ[ℤ] L.obj.obj.carrier).toLinearMap)) i i : ℝ) < 2 := by
+            linarith
+          exact_mod_cast h
+        simp only [Matrix.one_apply, if_pos rfl, if_true]
+        omega
+      · rw [hcast i j] at hbound
+        obtain ⟨h1, h2⟩ := abs_lt.mp hbound
+        simp only [Matrix.one_apply, if_neg hij] at h1 h2
+        have e1 : -1 < (LinearMap.toMatrix b b
+            ((g.1 : L.obj.obj.carrier ≃ₗ[ℤ] L.obj.obj.carrier).toLinearMap)) i j := by
+          have h : (-1:ℝ) < ((LinearMap.toMatrix b b
+            ((g.1 : L.obj.obj.carrier ≃ₗ[ℤ] L.obj.obj.carrier).toLinearMap)) i j : ℝ) := by
+            linarith
+          exact_mod_cast h
+        have e2 : (LinearMap.toMatrix b b
+            ((g.1 : L.obj.obj.carrier ≃ₗ[ℤ] L.obj.obj.carrier).toLinearMap)) i j < 1 := by
+          have h : ((LinearMap.toMatrix b b
+            ((g.1 : L.obj.obj.carrier ≃ₗ[ℤ] L.obj.obj.carrier).toLinearMap)) i j : ℝ) < 1 := by
+            linarith
+          exact_mod_cast h
+        simp only [Matrix.one_apply, if_neg hij]
+        omega
+    -- the matrix of the image element is the identity, so its map is the identity
+    have hmat : LinearMap.toMatrix (baseChangeBasis ℝ L.obj b) (baseChangeBasis ℝ L.obj b)
+        (orthogonalGroupBaseChangeHom (R := ℤ) (S := ℝ) L.obj g).1.toLinearMap = 1 := by
+      rw [realFormOrthogonalImage_matrix L b g]
+      ext i j
+      simp only [Matrix.map_apply, Matrix.one_apply]
+      have h := hentry i j
+      simp only [Matrix.one_apply] at h
+      rw [h]
+      rcases eq_or_ne i j with hij | hij
+      · subst hij; simp
+      · simp [hij]
+    have hid : (orthogonalGroupBaseChangeHom (R := ℤ) (S := ℝ) L.obj g).1.toLinearMap
+        = (1 : ((baseChangeIntegral ℤ ℝ).obj L.obj).obj.carrier →ₗ[ℝ]
+            ((baseChangeIntegral ℤ ℝ).obj L.obj).obj.carrier) := by
+      have hinj : LinearMap.toMatrix (baseChangeBasis ℝ L.obj b) (baseChangeBasis ℝ L.obj b)
+          ((orthogonalGroupBaseChangeHom (R := ℤ) (S := ℝ) L.obj g).1.toLinearMap)
+          = LinearMap.toMatrix (baseChangeBasis ℝ L.obj b) (baseChangeBasis ℝ L.obj b)
+            (1 : ((baseChangeIntegral ℤ ℝ).obj L.obj).obj.carrier →ₗ[ℝ]
+              ((baseChangeIntegral ℤ ℝ).obj L.obj).obj.carrier) := by
+        rw [hmat, LinearMap.toMatrix_one (baseChangeBasis ℝ L.obj b)]
+      exact (LinearMap.toMatrixAlgEquiv (baseChangeBasis ℝ L.obj b)).injective hinj
+    refine Subtype.ext (LinearEquiv.ext fun x => ?_)
+    have hx : ((orthogonalGroupBaseChangeHom (R := ℤ) (S := ℝ) L.obj g).1) x = x := by
+      rw [show ((orthogonalGroupBaseChangeHom (R := ℤ) (S := ℝ) L.obj g).1) x
+          = ((orthogonalGroupBaseChangeHom (R := ℤ) (S := ℝ) L.obj g).1.toLinearMap) x from rfl,
+        hid]
+      rfl
+    exact hx.trans rfl
+
+
+end Isolation
 end LeanCategories.Lattices.Valued
