@@ -11,20 +11,19 @@ public import LeanCategories.Lattices.Valued.IsotropicQuotientSignature
 /-!
 # One `ℤ`-action on a lattice carrier, so base change to `ℝ` uses Mathlib's tensor lemmas (#123)
 
-The carrier of an integral lattice over `ℤ` is the coercion of a `ModuleCat ℤ` object, so its
-`ℤ`-scalars would otherwise elaborate through the object's own field `ModuleCat.isModule` and
-through the additive-group action `ZSMul.toSMul`, which are equal
-(`AddCommGroup.subsingletonIntModule`) but not reducibly so. The canonical action
-`AddCommGroup.toIntModule` — the one the mathlib3 `gsmul` refactor (#7255) made reducible for
-every `AddCommGroup` — is pinned at the carrier's definition (`Fixed.lean`), which gives the
-carrier one reducible `ℤ`-action across the base change.
+The carrier of an integral lattice over `ℤ` is the coercion of a `ModuleCat ℤ` object; its
+bundled action `ModuleCat.isModule` is the one `ℤ`-action of the carrier, and its `ℤ`-scalars
+elaborate through it and through the additive-group action `ZSMul.toSMul`, which are equal
+(`AddCommGroup.subsingletonIntModule`) but not reducibly so. The added
+`TensorProduct.CompatibleSMul ℤ ℤ ℝ` instance at the carrier's definition (`Fixed.lean`)
+carries the tensor relation `TensorProduct.Eqv.of_smul` for the bundled action, which gives
+the carrier one `ℤ`-action across the base change.
 
-These are the acceptance controls of #123: the `TensorProduct.CompatibleSMul ℤ ℤ ℝ` instance on
-the carrier synthesizes with no local instance, and the base-change identity
-`r ⊗ₜ[ℤ] (n • x) = (r * n) ⊗ₜ[ℤ] x` is closed by Mathlib's tensor lemmas
-(`ModuleCat.zsmul_eq_smul`, `TensorProduct.smul_tmul`, `zsmul_eq_mul`, `mul_comm`), again with
-no local instance. The real form is `ℝ ⊗[ℤ] L.obj.carrier`, Mathlib's base change, and every
-statement of #122 keeps its shape.
+These are the acceptance controls of #123: the instance on the carrier synthesizes with no
+local instance, and the base-change identity `r ⊗ₜ[ℤ] (n • x) = (r * n) ⊗ₜ[ℤ] x` is closed by
+Mathlib's tensor lemmas (`ModuleCat.zsmul_eq_smul`, `TensorProduct.smul_tmul`, `zsmul_eq_mul`,
+`mul_comm`), again with no local instance. The real form is `ℝ ⊗[ℤ] L.obj.carrier`, Mathlib's
+base change, and every statement of #122 keeps its shape.
 -/
 
 namespace LeanCategories.Lattices.Valued.CarrierIntActionTests
@@ -35,8 +34,9 @@ open scoped TensorProduct
 variable {L : IntegralLatticeCat ℤ}
 
 /-- The `TensorProduct.CompatibleSMul ℤ ℤ ℝ` instance on a lattice carrier, with no local
-instance (#123): the carrier's `ℤ`-action is the canonical `AddCommGroup.toIntModule`, pinned
-at the carrier's definition, so the class synthesizes. -/
+instance (#123): the carrier keeps its bundled `ModuleCat.isModule` action, and the added
+`CompatibleSMul` instance at the carrier's definition (`Fixed.lean`) carries the tensor
+relation for it, so the class synthesizes. -/
 example : TensorProduct.CompatibleSMul ℤ ℤ ℝ ↑L.obj.carrier := inferInstance
 
 /-- The base-change identity of #123: a `ℤ`-scalar on the carrier side of a pure tensor is
