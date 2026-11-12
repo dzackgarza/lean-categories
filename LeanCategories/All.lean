@@ -93,7 +93,7 @@ public import LeanCategories.Algebra.CanonicalForms
 public import LeanCategories.Algebra.GroupTheory
 public import LeanCategories.Algebra.SubgroupFiniteness
 public import LeanCategories.Analysis.NormExtension
-public import LeanCategories.Analysis.Tamuras15_10
+public import LeanCategories.Analysis.SecondNormEquivalence
 public import LeanCategories.Algebra.FieldHomework1
 public import LeanCategories.Algebra.FamilyQuotient
 public import LeanCategories.Algebra.LensDegree

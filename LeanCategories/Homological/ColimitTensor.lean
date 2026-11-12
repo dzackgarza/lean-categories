@@ -37,7 +37,7 @@ colimit fact.
 
 LC-09 search record (queries run against the formalization corpus and local
 Mathlib): `tensorLeft_preserves_colimits` (0 corpus hits),
-`tensorLeft_colim_iso` (0 corpus hits); local Mathlib has the underlying
+`tensorLeftColimIso` (0 corpus hits); local Mathlib has the underlying
 instance through `ModuleCat`'s closed monoidal structure.  Route: glue over
 Mathlib's instance; the comparison iso is written here.
 -/
@@ -61,7 +61,7 @@ The witness of colimit preservation is `Nonempty (IsColimit _)`
 (`PreservesColimit.preserves`), so it is extracted with `Classical.choice`; the
 comparison is the canonical map between two colimit cocones,
 `IsColimit.coconePointUniqueUpToIso`.  Both are Mathlib's. -/
-noncomputable def tensorLeft_colim_iso (F : J ⥤ ModuleCat ℤ) (B : ModuleCat ℤ) :
+noncomputable def tensorLeftColimIso (F : J ⥤ ModuleCat ℤ) (B : ModuleCat ℤ) :
     (tensorLeft B).obj (colimit F) ≅ colimit (F ⋙ tensorLeft B) :=
   IsColimit.coconePointUniqueUpToIso
     (Classical.choice (PreservesColimit.preserves (colimit.isColimit F)))

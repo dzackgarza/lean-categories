@@ -16,7 +16,7 @@ public import Mathlib.Analysis.Convex.Cone.Extension
 Card `P-TAMURAS15-10` of the qualifying-exam corpus.  Source: TAMU real-analysis
 qualifying exam, Spring 2015, problem 10, as transcribed in the new-qual-site
 collection `SRC-TAMU-RA-SPRING-2015`.  Certificate: new-qual-site
-`proofs/cards/Tamuras15_10.lean` at main `16c09abaa4`.
+`proofs/cards/Tamuras15_10.lean` at commit `16c09abaa4`.
 
 Setting: a real normed space `E`, a closed subspace `Y`, a second norm `n1` on `Y`
 with `n1 y ≤ K * ‖y‖` and `‖y‖ ≤ K * n1 y` for a constant `K > 1`, and
@@ -27,14 +27,14 @@ Proved here: every element of `Y` is attained by a member of `S` (`exists_mem_S`
 the `x ∈ Y` case of the definiteness argument and claim (ii)); every `x ≠ 0` is
 separated by a member of `S` (`exists_mem_S_ne_zero`, using the closed complement
 case from `NormExtension.lean`, repeated here to keep the file self-contained), so
-`‖x‖₂ = sup {|φ x| : φ ∈ S}` is definite (`norm₂_pos`); and the two-sided
-comparison `norm₂_bound`, with `norm₂` also nonnegative, homogeneous and
+`‖x‖₂ = sup {|φ x| : φ ∈ S}` is definite (`normTwo_pos`); and the two-sided
+comparison `normTwo_bound`, with `normTwo` also nonnegative, homogeneous and
 subadditive.
 -/
 
 set_option linter.style.haveILetI false
 
-namespace LeanCategories.Analysis.Tamuras15_10
+namespace LeanCategories.Analysis.SecondNormEquivalence
 
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
@@ -174,23 +174,23 @@ theorem zero_mem_vals (hK : 1 < K) (x : E) : (0 : ℝ) ∈ vals N x :=
   ⟨0, zero_mem_S (N := N) (le_trans zero_le_one (le_of_lt hK)), by simp⟩
 
 /-- The candidate second norm of the problem: `sup {|φ x| : φ ∈ S}`. -/
-noncomputable def norm₂ (N : SecondNorm (E := E) K Y) (x : E) : ℝ := sSup (vals N x)
+noncomputable def normTwo (N : SecondNorm (E := E) K Y) (x : E) : ℝ := sSup (vals N x)
 
-theorem norm₂_nonneg (hK : 1 < K) (x : E) : 0 ≤ norm₂ N x :=
+theorem normTwo_nonneg (hK : 1 < K) (x : E) : 0 ≤ normTwo N x :=
   le_csSup (bddAbove_vals (N := N) hK x) (zero_mem_vals (N := N) hK x)
 
-theorem norm₂_le (hK : 1 < K) (x : E) : norm₂ N x ≤ K * ‖x‖ :=
+theorem normTwo_le (hK : 1 < K) (x : E) : normTwo N x ≤ K * ‖x‖ :=
   csSup_le ⟨0, zero_mem_vals (N := N) hK x⟩ (by
     rintro r ⟨φ, hφ, rfl⟩
     calc |φ x| ≤ ‖φ‖ * ‖x‖ := φ.le_opNorm x
       _ ≤ K * ‖x‖ := mul_le_mul_of_nonneg_right hφ.2 (norm_nonneg x))
 
-theorem abs_le_norm₂ {hK : 1 < K} {x : E} {φ : StrongDual ℝ E} (hφ : φ ∈ S N) :
-    |φ x| ≤ norm₂ N x :=
+theorem abs_le_normTwo {hK : 1 < K} {x : E} {φ : StrongDual ℝ E} (hφ : φ ∈ S N) :
+    |φ x| ≤ normTwo N x :=
   le_csSup (bddAbove_vals (N := N) hK x) ⟨φ, hφ, rfl⟩
 
-theorem norm₂_add_le (hK : 1 < K) (x y : E) :
-    norm₂ N (x + y) ≤ norm₂ N x + norm₂ N y := by
+theorem normTwo_add_le (hK : 1 < K) (x y : E) :
+    normTwo N (x + y) ≤ normTwo N x + normTwo N y := by
   refine csSup_le ⟨0, zero_mem_vals (N := N) hK (x + y)⟩ (by
     rintro r ⟨φ, hφ, rfl⟩
     calc |φ (x + y)| = |φ x + φ y| := by rw [map_add]
@@ -200,25 +200,25 @@ theorem norm₂_add_le (hK : 1 < K) (x y : E) :
             have h3 : -(φ y) ≤ |φ y| := neg_le_abs (φ y)
             have h4 : φ y ≤ |φ y| := le_abs_self (φ y)
             exact abs_le.mpr ⟨by linarith, by linarith⟩
-      _ ≤ norm₂ N x + norm₂ N y := add_le_add (abs_le_norm₂ (N := N) (hK := hK) hφ) (abs_le_norm₂ (N := N) (hK := hK) hφ))
+      _ ≤ normTwo N x + normTwo N y := add_le_add (abs_le_normTwo (N := N) (hK := hK) hφ) (abs_le_normTwo (N := N) (hK := hK) hφ))
 
-theorem norm₂_smul_le (hK : 1 < K) (c : ℝ) (x : E) :
-    norm₂ N (c • x) ≤ |c| * norm₂ N x := by
+theorem normTwo_smul_le (hK : 1 < K) (c : ℝ) (x : E) :
+    normTwo N (c • x) ≤ |c| * normTwo N x := by
   refine csSup_le ⟨0, zero_mem_vals (N := N) hK (c • x)⟩ (by
     rintro r ⟨φ, hφ, rfl⟩
     rw [ContinuousLinearMap.map_smul, smul_eq_mul, abs_mul]
-    exact mul_le_mul_of_nonneg_left (abs_le_norm₂ (N := N) (hK := hK) hφ) (abs_nonneg c))
+    exact mul_le_mul_of_nonneg_left (abs_le_normTwo (N := N) (hK := hK) hφ) (abs_nonneg c))
 
 theorem zero_mem_S' (hK : 1 < K) : (0 : StrongDual ℝ E) ∈ S N :=
   zero_mem_S (N := N) (le_trans zero_le_one (le_of_lt hK))
 
-theorem norm₂_zero (hK : 1 < K) : norm₂ N (0 : E) = 0 := by
+theorem normTwo_zero (hK : 1 < K) : normTwo N (0 : E) = 0 := by
   have hb := bddAbove_vals (N := N) hK (0 : E)
-  have hle : norm₂ N (0 : E) ≤ 0 := by
+  have hle : normTwo N (0 : E) ≤ 0 := by
     refine csSup_le ⟨0, zero_mem_vals (N := N) hK 0⟩ (by
       rintro r ⟨φ, hφ, rfl⟩
       simp)
-  exact le_antisymm hle (norm₂_nonneg (N := N) hK 0)
+  exact le_antisymm hle (normTwo_nonneg (N := N) hK 0)
 
 theorem exists_mem_S_ne_zero (hYc : IsClosed (Y : Set E)) (hK : 1 < K) {x : E} (hx : x ≠ 0) :
     ∃ φ ∈ S N, φ x ≠ 0 := by
@@ -232,24 +232,24 @@ theorem exists_mem_S_ne_zero (hYc : IsClosed (Y : Set E)) (hK : 1 < K) {x : E} (
     rw [hfY (y : E) y.2, abs_zero]
     exact N.nonneg y
 
-theorem norm₂_pos (hYc : IsClosed (Y : Set E)) (hK : 1 < K) {x : E} (hx : x ≠ 0) :
-    0 < norm₂ N x := by
+theorem normTwo_pos (hYc : IsClosed (Y : Set E)) (hK : 1 < K) {x : E} (hx : x ≠ 0) :
+    0 < normTwo N x := by
   obtain ⟨φ, hφS, hφx⟩ := exists_mem_S_ne_zero (N := N) hYc hK hx
   have hpos : 0 < |φ x| := abs_pos.mpr hφx
-  exact lt_of_lt_of_le hpos (abs_le_norm₂ (N := N) (hK := hK) hφS)
+  exact lt_of_lt_of_le hpos (abs_le_normTwo (N := N) (hK := hK) hφS)
 
-theorem norm₂_eq_zero_iff (hYc : IsClosed (Y : Set E)) (hK : 1 < K) {x : E} :
-    norm₂ N x = 0 ↔ x = 0 := by
+theorem normTwo_eq_zero_iff (hYc : IsClosed (Y : Set E)) (hK : 1 < K) {x : E} :
+    normTwo N x = 0 ↔ x = 0 := by
   constructor
   · intro h
     by_contra hx
-    exact (norm₂_pos (N := N) hYc hK hx).ne' h
+    exact (normTwo_pos (N := N) hYc hK hx).ne' h
   · intro h
     subst h
-    exact norm₂_zero (N := N) hK
+    exact normTwo_zero (N := N) hK
 
 /-- Claim (ii): on `Y` the candidate norm agrees with `n`. -/
-theorem norm₂_of_mem (hK : 1 < K) (y : Y) : norm₂ N (y : E) = N.n y := by
+theorem normTwo_of_mem (hK : 1 < K) (y : Y) : normTwo N (y : E) = N.n y := by
   refine le_antisymm ?_ ?_
   · refine csSup_le ⟨0, zero_mem_vals (N := N) hK (y : E)⟩ (by
       rintro r ⟨φ, hφ, rfl⟩
@@ -260,10 +260,10 @@ theorem norm₂_of_mem (hK : 1 < K) (y : Y) : norm₂ N (y : E) = N.n y := by
     exact le_csSup (bddAbove_vals (N := N) hK (y : E)) hmem
 
 /-- Claim (iii), lower bound: the candidate norm dominates `‖·‖ / K`. -/
-theorem le_norm₂ (hK : 1 < K) (x : E) : ‖x‖ ≤ K * norm₂ N x := by
+theorem le_normTwo (hK : 1 < K) (x : E) : ‖x‖ ≤ K * normTwo N x := by
   rcases eq_or_ne x 0 with hx | hx
   · subst hx
-    simp [norm₂_zero (N := N) hK]
+    simp [normTwo_zero (N := N) hK]
   · obtain ⟨g, hg1, hgx⟩ := exists_dual_vector ℝ x (by simpa using hx)
     have hKpos : 0 < K := by linarith
     have hinv : K⁻¹ ≤ K := by
@@ -294,56 +294,56 @@ theorem le_norm₂ (hK : 1 < K) (x : E) : ‖x‖ ≤ K * norm₂ N x := by
       have h2 : K⁻¹ * (K * N.n y) = N.n y := by
         rw [← mul_assoc, inv_mul_cancel₀ (ne_of_gt hKpos), one_mul]
       linarith
-    have hstep : K⁻¹ * (‖x‖ : ℝ) ≤ norm₂ N x := by
+    have hstep : K⁻¹ * (‖x‖ : ℝ) ≤ normTwo N x := by
       calc K⁻¹ * (‖x‖ : ℝ) = φ x := by simp [hφapply x, hgx]
         _ ≤ |φ x| := le_abs_self _
-        _ ≤ norm₂ N x := abs_le_norm₂ (N := N) (hK := hK) (x := x) hφS
+        _ ≤ normTwo N x := abs_le_normTwo (N := N) (hK := hK) (x := x) hφS
     calc (‖x‖ : ℝ) = K * (K⁻¹ * (‖x‖ : ℝ)) := by
           rw [← mul_assoc, mul_inv_cancel₀ (ne_of_gt hKpos), one_mul]
-      _ ≤ K * norm₂ N x := mul_le_mul_of_nonneg_left hstep (le_of_lt hKpos)
+      _ ≤ K * normTwo N x := mul_le_mul_of_nonneg_left hstep (le_of_lt hKpos)
 
-theorem norm₂_smul (hK : 1 < K) (c : ℝ) (x : E) :
-    norm₂ N (c • x) = |c| * norm₂ N x := by
+theorem normTwo_smul (hK : 1 < K) (c : ℝ) (x : E) :
+    normTwo N (c • x) = |c| * normTwo N x := by
   rcases eq_or_ne c 0 with hc | hc
   · subst hc
-    simp [norm₂_zero (N := N) hK]
-  · refine le_antisymm (norm₂_smul_le (N := N) hK c x) ?_
+    simp [normTwo_zero (N := N) hK]
+  · refine le_antisymm (normTwo_smul_le (N := N) hK c x) ?_
     have hcne : c ≠ 0 := hc
     have habs : (0 : ℝ) < |c| := abs_pos.mpr hcne
-    have h1 : norm₂ N (c⁻¹ • (c • x)) ≤ |c⁻¹| * norm₂ N (c • x) :=
-      norm₂_smul_le (N := N) hK c⁻¹ (c • x)
+    have h1 : normTwo N (c⁻¹ • (c • x)) ≤ |c⁻¹| * normTwo N (c • x) :=
+      normTwo_smul_le (N := N) hK c⁻¹ (c • x)
     rw [smul_smul, inv_mul_cancel₀ hcne, one_smul] at h1
     have h2 : |c⁻¹| = |c|⁻¹ := abs_inv c
     rw [h2] at h1
-    have h3 : |c| * norm₂ N x ≤ |c| * (|c|⁻¹ * norm₂ N (c • x)) :=
+    have h3 : |c| * normTwo N x ≤ |c| * (|c|⁻¹ * normTwo N (c • x)) :=
       mul_le_mul_of_nonneg_left h1 (le_of_lt habs)
-    have h4 : |c| * (|c|⁻¹ * norm₂ N (c • x)) = norm₂ N (c • x) := by
+    have h4 : |c| * (|c|⁻¹ * normTwo N (c • x)) = normTwo N (c • x) := by
       rw [← mul_assoc, mul_inv_cancel₀ (ne_of_gt habs), one_mul]
     linarith
 
-theorem inv_norm_le_norm₂ (hK : 1 < K) (x : E) :
-    K⁻¹ * (‖x‖ : ℝ) ≤ norm₂ N x := by
+theorem inv_norm_le_normTwo (hK : 1 < K) (x : E) :
+    K⁻¹ * (‖x‖ : ℝ) ≤ normTwo N x := by
   have hKpos : 0 < K := by linarith
-  have h := le_norm₂ (N := N) hK x
-  calc K⁻¹ * (‖x‖ : ℝ) ≤ K⁻¹ * (K * norm₂ N x) :=
+  have h := le_normTwo (N := N) hK x
+  calc K⁻¹ * (‖x‖ : ℝ) ≤ K⁻¹ * (K * normTwo N x) :=
         mul_le_mul_of_nonneg_left h (le_of_lt (inv_pos.mpr hKpos))
-    _ = norm₂ N x := by
+    _ = normTwo N x := by
         rw [← mul_assoc, inv_mul_cancel₀ (ne_of_gt hKpos), one_mul]
 
-/-- The corrected card statement: `norm₂` is a norm on `E`, agrees with `n` on `Y`, and
+/-- The corrected card statement: `normTwo` is a norm on `E`, agrees with `n` on `Y`, and
 is equivalent to `‖·‖` with the two constants of the problem. -/
 theorem corrected_statement (hYc : IsClosed (Y : Set E)) (hK : 1 < K) :
-    (∀ x, 0 ≤ norm₂ N x) ∧
-    (∀ x, norm₂ N x = 0 ↔ x = 0) ∧
-    (∀ (c : ℝ) (x : E), norm₂ N (c • x) = |c| * norm₂ N x) ∧
-    (∀ x y, norm₂ N (x + y) ≤ norm₂ N x + norm₂ N y) ∧
-    (∀ y : Y, norm₂ N (y : E) = N.n y) ∧
-    (∀ x, K⁻¹ * (‖x‖ : ℝ) ≤ norm₂ N x ∧ norm₂ N x ≤ K * ‖x‖) :=
-  ⟨fun x => norm₂_nonneg (N := N) hK x,
-   fun _x => norm₂_eq_zero_iff (N := N) hYc hK,
-   fun c x => norm₂_smul (N := N) hK c x,
-   fun x y => norm₂_add_le (N := N) hK x y,
-   fun y => norm₂_of_mem (N := N) hK y,
-   fun x => ⟨inv_norm_le_norm₂ (N := N) hK x, norm₂_le (N := N) hK x⟩⟩
+    (∀ x, 0 ≤ normTwo N x) ∧
+    (∀ x, normTwo N x = 0 ↔ x = 0) ∧
+    (∀ (c : ℝ) (x : E), normTwo N (c • x) = |c| * normTwo N x) ∧
+    (∀ x y, normTwo N (x + y) ≤ normTwo N x + normTwo N y) ∧
+    (∀ y : Y, normTwo N (y : E) = N.n y) ∧
+    (∀ x, K⁻¹ * (‖x‖ : ℝ) ≤ normTwo N x ∧ normTwo N x ≤ K * ‖x‖) :=
+  ⟨fun x => normTwo_nonneg (N := N) hK x,
+   fun _x => normTwo_eq_zero_iff (N := N) hYc hK,
+   fun c x => normTwo_smul (N := N) hK c x,
+   fun x y => normTwo_add_le (N := N) hK x y,
+   fun y => normTwo_of_mem (N := N) hK y,
+   fun x => ⟨inv_norm_le_normTwo (N := N) hK x, normTwo_le (N := N) hK x⟩⟩
 
-end LeanCategories.Analysis.Tamuras15_10
+end LeanCategories.Analysis.SecondNormEquivalence
