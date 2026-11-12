@@ -96,6 +96,7 @@ public import LeanCategories.Analysis.NormExtension
 public import LeanCategories.Analysis.Tamuras15_10
 public import LeanCategories.Algebra.FieldHomework1
 public import LeanCategories.Algebra.FamilyQuotient
+public import LeanCategories.Algebra.LensDegree
 public import LeanCategories.Algebra.GroupGeneration
 public import LeanCategories.Algebra.SubgroupIncidence
 public import LeanCategories.Algebra.FiniteAbelian
