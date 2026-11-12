@@ -40,6 +40,28 @@ elimination exhibits every finitely generated cone as dually finitely generated.
   theorem for cones, by Fourier–Motzkin elimination.
 * David Cox, John Little, Hal Schenck, *Toric Varieties*, Graduate Studies in Mathematics 124,
   American Mathematical Society, 2011, Definition 1.2.3 and Proposition 1.2.4, p. 24.
+
+## Prior art searched (LC-09 record)
+
+Before authoring, the pinned Mathlib (`0df444a360ea`) and the formalization corpus
+(`formalization-corpus.dzackgarza.com`) were searched under: "Minkowski Weyl", "Fourier
+Motzkin", "FourierMotzkin", "dual cone", "polyhedral cone", "conic hull", "Farkas",
+"finitely generated cone". Mathlib has no Minkowski–Weyl theorem under any name:
+`Mathlib/Tactic/Linarith/Oracle/FourierMotzkin.lean` is a linarith oracle, and
+`Geometry/Convex/Cone/DualFinite.lean` names the theorem in a docstring while proving only
+the definitional directions. The corpus hits are the Farkas *alternative* circle, which
+characterizes feasibility by infeasibility certificates, not by generation:
+`Vilin97/lean-pool LeanPool/Duality/FarkasBasic.lean` (`equalityFarkas`,
+`inequalityFarkas`, matrix form over a field), `hawkrobe/linglib
+Linglib/Core/LinearAlgebra/Matrix/Farkas.lean` (`Matrix.farkas`, over a linearly ordered
+field), and `Vilin97/lean-pool LeanPool/Erdos81PaperIContrib/FgConeClosed.lean`
+(`fg_cone_isClosed`, `PointedCone.FG.isClosed`, topological closedness of finitely
+generated cones over real normed spaces — whose own docstring records that Mathlib lacks
+it). None of these states the generation form proved here — over `ℚ` without topology,
+that a vector nonnegative on all coordinates and under `c` is a nonnegative combination
+of the Fourier–Motzkin generators — so the λ-lemma below is authored here with the
+citations above; the corpus results are the reference implementations of the
+surrounding Farkas theory.
 -/
 
 @[expose] public section
