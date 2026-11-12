@@ -43,17 +43,17 @@ namespace EquivariantLatticeCat
 /-- The carrier representation of an equivariant lattice. -/
 def carrierRepresentation (L : EquivariantLatticeCat R G) :
     Representation R G L.V.obj.obj.carrier where
-  toFun g := BilinModuleCat.underlyingMap (L.ρ g).hom.hom
+  toFun g := BilinModuleCat.underlyingMap (L.ρ g).asHom.hom
   map_one' := by
     ext x
-    change BilinModuleCat.underlyingMap (L.ρ 1).hom.hom x = x
+    change BilinModuleCat.underlyingMap (L.ρ 1).asHom.hom x = x
     rw [L.ρ.map_one]
     rfl
   map_mul' g h := by
     ext x
     change BilinModuleCat.underlyingMap (L.ρ (g * h)).hom.hom x =
-      BilinModuleCat.underlyingMap (L.ρ g).hom.hom
-        (BilinModuleCat.underlyingMap (L.ρ h).hom.hom x)
+      BilinModuleCat.underlyingMap (L.ρ g).asHom.hom
+        (BilinModuleCat.underlyingMap (L.ρ h).asHom.hom x)
     rw [L.ρ.map_mul]
     rfl
 
@@ -150,14 +150,14 @@ def orthogonalRepresentation (L : EquivariantLatticeCat R G) :
       BilinModuleCat.linearEquivOfIso_pairing (formedIso R G L g)⟩
   map_one' := by
     ext x
-    change BilinModuleCat.underlyingMap (L.ρ 1).hom.hom x = x
+    change BilinModuleCat.underlyingMap (L.ρ 1).asHom.hom x = x
     rw [L.ρ.map_one]
     rfl
   map_mul' g h := by
     ext x
     change BilinModuleCat.underlyingMap (L.ρ (g * h)).hom.hom x =
-      BilinModuleCat.underlyingMap (L.ρ g).hom.hom
-        (BilinModuleCat.underlyingMap (L.ρ h).hom.hom x)
+      BilinModuleCat.underlyingMap (L.ρ g).asHom.hom
+        (BilinModuleCat.underlyingMap (L.ρ h).asHom.hom x)
     rw [L.ρ.map_mul]
     rfl
 

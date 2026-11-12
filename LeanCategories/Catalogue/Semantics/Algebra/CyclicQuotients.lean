@@ -92,7 +92,7 @@ theorem residueComparison_quotient (n : ℕ) (k : ℤ) :
 /-- Categorical group automorphisms and multiplicative equivalences agree,
 including their composition multiplication. -/
 def categoricalAutEquiv (G : GrpCat.{0}) : Aut G ≃* MulAut G where
-  toFun := Iso.groupIsoToMulEquiv
+  toFun := fun a => Iso.groupIsoToMulEquiv a.asIso
   invFun := MulEquiv.toGrpIso
   left_inv f := by apply Iso.ext; rfl
   right_inv f := rfl
@@ -138,7 +138,7 @@ theorem byUnit_inv (n : ℕ) (u : (ZMod n)ˣ) :
 
 /-- In the specified residue coordinates the action is `a ↦ u*a`. -/
 theorem byUnit_coordinate (n : ℕ) (u : (ZMod n)ˣ) (a : cyclicQuotient n) :
-    @Multiplicative.toAdd (ZMod n) ((residueComparison n).hom ((byUnit n u).hom a)) =
+    @Multiplicative.toAdd (ZMod n) ((residueComparison n).hom ((byUnit n u).asIso.hom a)) =
       (u : ZMod n) * @Multiplicative.toAdd (ZMod n) ((residueComparison n).hom a) := by
   change @Multiplicative.toAdd (ZMod n) ((residueComparison n).hom
     ((residueComparison n).inv

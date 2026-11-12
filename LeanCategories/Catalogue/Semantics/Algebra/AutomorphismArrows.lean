@@ -44,17 +44,17 @@ universe u v
 /-- The actual forward morphism of `a : Aut X`, in the selected category `C`.
 Here `Aut X` is the carrier of `automorphismsConstruction C` at `Core.mk X`.
 The result is an endomorphism of `X`, with all of `X`'s chosen structure. -/
-def forward (C : Cat.{v, u}) (X : C) (a : Aut X) : X ⟶ X := a.hom
+def forward (C : Cat.{v, u}) (X : C) (a : Aut X) : X ⟶ X := a.asIso.hom
 
 /-- The actual inverse morphism of the same automorphism element, with source
 and target the original selected object `X` of `C`. -/
-def backward (C : Cat.{v, u}) (X : C) (a : Aut X) : X ⟶ X := a.inv
+def backward (C : Cat.{v, u}) (X : C) (a : Aut X) : X ⟶ X := a.asIso.inv
 
 theorem forward_backward (C : Cat.{v, u}) (X : C) (a : Aut X) :
-    forward C X a ≫ backward C X a = 𝟙 X := a.hom_inv_id
+    forward C X a ≫ backward C X a = 𝟙 X := a.asIso.hom_inv_id
 
 theorem backward_forward (C : Cat.{v, u}) (X : C) (a : Aut X) :
-    backward C X a ≫ forward C X a = 𝟙 X := a.inv_hom_id
+    backward C X a ≫ forward C X a = 𝟙 X := a.asIso.inv_hom_id
 
 /-- Projection agrees with the existing inverse in the automorphism group. -/
 theorem forward_inv (C : Cat.{v, u}) (X : C) (a : Aut X) :
@@ -113,7 +113,7 @@ theorem evaluation_mul (C : Cat.{v, u}) (U : C ⥤ Type v) (X : C)
     (a b : Aut X) (x : U.obj X) :
     evaluation C U X (a * b, x) =
       evaluation C U X (a, evaluation C U X (b, x)) := by
-  change U.map (b.hom ≫ a.hom) x = U.map a.hom (U.map b.hom x)
+  change U.map (b.asIso.hom ≫ a.asIso.hom) x = U.map a.asIso.hom (U.map b.asIso.hom x)
   rw [U.map_comp]
   rfl
 
