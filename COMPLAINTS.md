@@ -2559,3 +2559,13 @@ downstream assertions, computational observations, or downstream diagnostics.
   decomposition directly; when it exists, `IsRationalPolyhedral.of_isFaceOf` is stated
   and proved at `RationalPolyhedralCone.lean` with the filter-extraction proof sketched
   in the item 3 docstring.
+
+- **Resolution (2026-11-12, this batch):** the #37 item 3 theorem is now stated and proved
+  as a port of the reference implementation: `TauCeti/Geometry/Convex/Cone/Face/Finite.lean`'s
+  `PointedCone.IsFaceOf.eq_hull_inter_of_eq_hull` (proved by `Submodule.span_induction`,
+  the route this entry had flagged as the alternative) feeds
+  `TauCeti/Geometry/Toric/Algebraic/Cone/Basic.lean`'s `IsLatticeRational.of_isFaceOf`,
+  both ported to the rational carrier in `RationalPolyhedralCone.lean` with full
+  provenance. The hand-authored `IsRationalPolyhedral` formulation that could not close
+  the gap is deleted and replaced by the ported `IsLatticeRational`; the Finsupp-to-
+  Fintype sum bridge this entry had sought is not needed by the reference proof.
