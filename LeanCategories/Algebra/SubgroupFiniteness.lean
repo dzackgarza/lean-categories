@@ -8,6 +8,8 @@ public import Mathlib.GroupTheory.Index
 public import Mathlib.GroupTheory.Generators
 public import Mathlib.Data.Fintype.EquivFin
 
+@[expose] public section
+
 /-!
 # Finitely many subgroups of a given finite index
 

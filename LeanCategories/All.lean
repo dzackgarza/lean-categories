@@ -40,6 +40,7 @@ public import LeanCategories.CategoryTheory.PointSetDerived
 public import LeanCategories.CategoryTheory.GrothendieckTopos
 public import LeanCategories.CategoryTheory.FreeModuleMonadAlgebra
 public import LeanCategories.Topology.BipointedTop
+public import LeanCategories.Topology.MooreSpaceExactness
 public import LeanCategories.Topology.IntervalWedge
 public import LeanCategories.Topology.SingularRealization
 public import LeanCategories.Topology.SmashProduct

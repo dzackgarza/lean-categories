@@ -8,6 +8,8 @@ public import Mathlib.Analysis.Normed.Module.HahnBanach
 public import Mathlib.Analysis.Normed.Group.Quotient
 public import Mathlib.Analysis.Convex.Cone.Extension
 
+@[expose] public section
+
 /-!
 # The corrected statement of `P-TAMURAS15-10`
 

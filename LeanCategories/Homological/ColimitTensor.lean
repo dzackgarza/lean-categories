@@ -10,6 +10,8 @@ public import Mathlib.CategoryTheory.Monoidal.Category
 public import Mathlib.CategoryTheory.Monoidal.Closed.Basic
 public import Mathlib.CategoryTheory.Limits.Preserves.Basic
 
+@[expose] public section
+
 /-!
 # Tensor products and filtered colimits
 

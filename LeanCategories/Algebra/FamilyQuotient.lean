@@ -5,6 +5,8 @@ public import Mathlib.Algebra.Module.LinearMap.Basic
 public import Mathlib.LinearAlgebra.Quotient.Defs
 public import Mathlib.LinearAlgebra.Quotient.Basic
 
+@[expose] public section
+
 /-!
 # When the direct sum fills the product
 

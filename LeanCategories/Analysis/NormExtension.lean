@@ -7,6 +7,8 @@ module
 public import Mathlib.Analysis.Normed.Module.HahnBanach
 public import Mathlib.Analysis.Normed.Group.Quotient
 
+@[expose] public section
+
 /-!
 # A norm-one functional vanishing on a closed subspace
 

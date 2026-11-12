@@ -10,6 +10,8 @@ public import Mathlib.RingTheory.Algebraic.Integral
 public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
 public import Mathlib.LinearAlgebra.Dimension.Finite
 
+@[expose] public section
+
 /-!
 # The correction to Field Homework 1, problem 1(a)
 
