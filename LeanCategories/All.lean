@@ -241,6 +241,7 @@ public import LeanCategories.Homological.CyclicCategoryData
 public import LeanCategories.Homological.DGCyclicHomology
 public import LeanCategories.Homological.AlgebraicDeRham
 public import LeanCategories.Homological.ColimitTensor
+public import LeanCategories.Homological.TorTorsion
 public import LeanCategories.Homological.DeltaFunctor
 public import LeanCategories.Homological.DeltaFunctorMorphisms
 public import LeanCategories.Homological.SatelliteFunctors
