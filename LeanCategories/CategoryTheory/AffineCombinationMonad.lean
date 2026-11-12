@@ -59,7 +59,7 @@ theorem map_id (a : AffineCombination k X) : map id a = a := by
 theorem map_comp (a : AffineCombination k X) (f : X → Y) (g : Y → Z) :
     map g (map f a) = map (g ∘ f) a := by
   apply ext
-  simp [map, Finsupp.mapDomain_comp]
+  simp [map, ← Finsupp.mapDomain_comp]
 
 @[simp]
 theorem map_pure (f : X → Y) (x : X) : map f (pure (k := k) x) = pure (f x) := by
