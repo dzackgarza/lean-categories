@@ -7,6 +7,7 @@ module
 public import LeanCategories.Lattices.Valued.WeylCone
 public import LeanCategories.Lattices.Valued.TopologicalOrthogonalGroup
 public import LeanCategories.Lattices.Valued.GenusInvariants
+public import LeanCategories.Lattices.Valued.Reduction
 public import LeanCategories.Algebra.CoxeterGraphData
 public import Mathlib.Analysis.Convex.PathConnected
 public import Mathlib.Topology.Algebra.Module.ModuleTopology
@@ -1401,8 +1402,11 @@ theorem pairingMatrix_injective (hL : L.obj.obj.IsNondegenerate)
 (Bourbaki, *Groupes et algèbres de Lie*, Ch. V §3 no. 1, p. 77, condition (D2)): for compact
 sets `K` and `K'` of the chosen sheet of the positive cone of the real form of `L`, only
 finitely many `g ∈ O(L)` carry some point of `K` into `K'`. The pairing matrix of `g` in a
-basis has bounded entries on this set, the bounded integer matrices form a finite set, and the
-pairing matrix determines the isometry through nondegeneracy. -/
+basis has bounded entries on this set (`exists_pairingMatrix_bound`), the bounded integer
+matrices form a finite set — the repository's own `finite_boundedGramMatrices`
+(`Reduction.lean`; `Matrix I I ℤ` is `I → I → ℤ` by definition, so the lemma applies verbatim)
+— and the pairing matrix determines the isometry through nondegeneracy
+(`pairingMatrix_injective`, via `pairing_eq_zero_of_basis`). -/
 theorem realFormOrthogonal_finite_of_compact (hL : L.obj.obj.IsNondegenerate)
     (hpos : sigPos (realFormQuadratic L) = 1)
     (t : (realForm L).obj.carrier) (_ht : 0 < realFormQuadratic L t)
@@ -1418,18 +1422,11 @@ theorem realFormOrthogonal_finite_of_compact (hL : L.obj.obj.IsNondegenerate)
   -- the integer bound
   set N : ℤ := Int.ceil C with hN
   have hNC : C ≤ (N : ℝ) := Int.le_ceil C
-  -- the finite target set: bounded integer matrices
-  have hT : {M : I → I → ℤ | ∀ i j, |M i j| ≤ N}.Finite := by
-    have hpi : {M : I → I → ℤ | ∀ i j, |M i j| ≤ N} =
-        Set.univ.pi fun _ : I ↦ Set.univ.pi fun _ : I ↦ Set.Icc (-N) N := by
-      ext M
-      constructor
-      · intro hM i _ j _
-        exact abs_le.mp (hM i j)
-      · intro hM i j
-        exact abs_le.mpr (hM i (Set.mem_univ i) j (Set.mem_univ j))
-    rw [hpi]
-    exact Set.Finite.pi fun _ ↦ Set.Finite.pi fun _ ↦ Set.finite_Icc _ _
+  -- the finite target set: bounded integer matrices, the repository's own
+  -- `finite_boundedGramMatrices` (Reduction.lean), `Matrix I I ℤ` being `I → I → ℤ` by
+  -- definition
+  have hT : {M : I → I → ℤ | ∀ i j, |M i j| ≤ N}.Finite :=
+    finite_boundedGramMatrices I N
   -- the map lands in the target
   have hmaps : Set.MapsTo (fun g : OrthogonalGroup L.obj => fun i j =>
       L.obj.obj.pairing (g.1 (b i)) (b j))
