@@ -520,8 +520,10 @@ definition, not construction data. -/
 noncomputable def hodgeNumberData
     [HasSheafify
       (Opens.grothendieckTopology (TopCat.of X)) (ModuleCat.{u} ℂ)]
-    [Abelian (TopCat.Sheaf (ModuleCat.{u} ℂ) (TopCat.of X))]
-    [Linear ℂ (TopCat.Sheaf (ModuleCat.{u} ℂ) (TopCat.of X))]
+    [ab : Abelian (TopCat.Sheaf (ModuleCat.{u} ℂ) (TopCat.of X))]
+    [@CategoryTheory.Linear ℂ (@Ring.toSemiring ℂ Complex.instRing)
+      (TopCat.Sheaf (ModuleCat.{u} ℂ) (TopCat.of X))
+      _ (@CategoryTheory.Abelian.toPreadditive _ _ ab)]
     (p q : ℕ) : ℕ :=
   -- The carrier and the `ℂ`-module structure use the same canonical instances
   -- (`Ext/Linear.lean`, `Ext/Basic.lean`), instantiated with the same `HasExt.standard`

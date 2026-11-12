@@ -127,10 +127,7 @@ theorem stabilizerCosetsToFibre_injective (hσ : Function.Surjective σ) :
   induction B using Quotient.inductionOn with
   | _ b =>
   obtain ⟨γ, hγ, s, hs, hrel⟩ :=
-    (DoubleCoset.eq (MonoidHom.ker σ)
-      (MulAction.stabilizer (OrthogonalGroup L) v)
-      (sectionOfSurjective σ hσ a.1) (sectionOfSurjective σ hσ b.1)).mp
-      (congrArg Subtype.val hxy)
+    DoubleCoset.eq.mp (congrArg Subtype.val hxy)
   have hk : σ γ = 1 := hγ
   have hb : b.1 = a.1 * σ s := by
     have h1 : σ (sectionOfSurjective σ hσ b.1) = b.1 := section_spec σ hσ b.1

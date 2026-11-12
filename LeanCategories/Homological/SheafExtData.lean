@@ -69,8 +69,8 @@ structure InternalHomPresentationData (F G H : X.Modules) where
   smulHom_app (U : X.Opens) (r : Γ(X, U))
       (φ : F.restrict U.ι ⟶ G.restrict U.ι) (W : (U : Scheme).Opens) :
     (smulHom U r φ).app W =
-      φ.app W ≫ (G.restrict U.ι).smul
-        ((U : Scheme).presheaf.map (.op (homOfLE le_top)) (U.topIso.inv r))
+      φ.app W ≫ ((G.restrict U.ι).smul
+        ((U : Scheme).presheaf.map (.op (homOfLE le_top)) (U.topIso.inv r))).asHom
 
 /-- A functorial internal-Hom candidate for a fixed source module sheaf `F`,
 together with the local-section specification above. -/
