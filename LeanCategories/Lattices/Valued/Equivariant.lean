@@ -43,17 +43,17 @@ namespace EquivariantLatticeCat
 /-- The carrier representation of an equivariant lattice. -/
 def carrierRepresentation (L : EquivariantLatticeCat R G) :
     Representation R G L.V.obj.obj.carrier where
-  toFun g := BilinModuleCat.underlyingMap (L.ρ g).asHom.hom
+  toFun g := BilinModuleCat.underlyingMap (L.ρ g).asHom.hom.hom
   map_one' := by
     ext x
-    change BilinModuleCat.underlyingMap (L.ρ 1).asHom.hom x = x
+    change BilinModuleCat.underlyingMap (L.ρ 1).asHom.hom.hom x = x
     rw [L.ρ.map_one]
     rfl
   map_mul' g h := by
     ext x
-    change BilinModuleCat.underlyingMap (L.ρ (g * h)).hom.hom x =
-      BilinModuleCat.underlyingMap (L.ρ g).asHom.hom
-        (BilinModuleCat.underlyingMap (L.ρ h).asHom.hom x)
+    change BilinModuleCat.underlyingMap (L.ρ (g * h)).asHom.hom.hom x =
+      BilinModuleCat.underlyingMap (L.ρ g).asHom.hom.hom
+        (BilinModuleCat.underlyingMap (L.ρ h).asHom.hom.hom x)
     rw [L.ρ.map_mul]
     rfl
 
@@ -140,7 +140,7 @@ theorem isotypicSubmodule_map_le (L : EquivariantLatticeCat R G) (S : Type u)
 def formedIso (L : EquivariantLatticeCat R G) (g : G) :
     L.V.obj.obj ≅ L.V.obj.obj :=
   (ObjectProperty.ι (isLattice R R)).mapIso <|
-    (ObjectProperty.ι (isFiniteProjectiveLattice R R)).mapIso (L.ρAut g)
+    (ObjectProperty.ι (isFiniteProjectiveLattice R R)).mapIso (L.ρAut g).asIso
 
 /-- The group action as a homomorphism into the lattice orthogonal group. -/
 def orthogonalRepresentation (L : EquivariantLatticeCat R G) :
@@ -150,14 +150,14 @@ def orthogonalRepresentation (L : EquivariantLatticeCat R G) :
       BilinModuleCat.linearEquivOfIso_pairing (formedIso R G L g)⟩
   map_one' := by
     ext x
-    change BilinModuleCat.underlyingMap (L.ρ 1).asHom.hom x = x
+    change BilinModuleCat.underlyingMap (L.ρ 1).asHom.hom.hom x = x
     rw [L.ρ.map_one]
     rfl
   map_mul' g h := by
     ext x
-    change BilinModuleCat.underlyingMap (L.ρ (g * h)).hom.hom x =
-      BilinModuleCat.underlyingMap (L.ρ g).asHom.hom
-        (BilinModuleCat.underlyingMap (L.ρ h).asHom.hom x)
+    change BilinModuleCat.underlyingMap (L.ρ (g * h)).asHom.hom.hom x =
+      BilinModuleCat.underlyingMap (L.ρ g).asHom.hom.hom
+        (BilinModuleCat.underlyingMap (L.ρ h).asHom.hom.hom x)
     rw [L.ρ.map_mul]
     rfl
 
