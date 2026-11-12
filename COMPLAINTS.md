@@ -2491,3 +2491,33 @@ downstream assertions, computational observations, or downstream diagnostics.
   Mathlib's `exists_finrank_eq_sigPos_and_posDef`, no coordinates), and
   `cobleCuspLatticePositiveConeStabilizer` = `latticePositiveConeStabilizer` at `M`, with
   index at most two.
+
+### No order on `FractionRing ℤ` blocks `PointedCone` over the repository rational span (2026-11-12, #37)
+
+- **Need:** #37 item 1 places the rational polyhedral cone in `N_ℚ = ℚ ⊗_ℤ L` as Mathlib's
+  `PointedCone` over the fraction field of `ℤ`, i.e. over `RationalSpan ℤ L`
+  (`Rationalization.lean`). `PointedCone R E` demands `[PartialOrder R] [IsOrderedRing R]`
+  on its scalar ring.
+- **Evidence:** probed against pinned Mathlib `5d0d3c0c77dbf2374216ade5470667f31eaa8786`
+  (toolchain `v4.36.0-rc2`): `Semiring (FractionRing ℤ)` and
+  `Module (FractionRing ℤ) (RationalSpan ℤ L)` synthesize, but
+  `PartialOrder (FractionRing ℤ)` fails with `failed to synthesize instance of type class`.
+  `Algebra/Order/` has no `Localization` directory and no order instance on `FractionRing R`
+  for an ordered domain, so there is no ordered-localization theory to instantiate.
+- **Gap and impact:** the cone, dual, face and fan objects of #37 cannot be stated over
+  `RationalSpan ℤ L` while the scalar ring carries no order; the earliest affected owner is
+  `IsRationalPolyhedral` (`RationalPolyhedralCone.lean`). Worked around, not repaired: the
+  cone is taken over `ℚ` in `TensorProduct ℤ ℚ L.obj.carrier`, canonically isomorphic to
+  `RationalSpan ℤ L` along `FractionRing.algEquiv` on the left factor, with
+  `Rat.isFractionRing : IsFractionRing ℤ ℚ` the canonical fraction-field realization carrying
+  the full ordered-field hierarchy.
+- **Coverage:** searched `Algebra/Order/` (directory listing: no `Localization` subdirectory),
+  read `RingTheory/Localization/FractionRing.lean` in full (no order instance on
+  `FractionRing R`; `Rat.isFractionRing` present), and probed instance synthesis on
+  `FractionRing ℤ` directly. Confidence high; what remains uninspected is whether a later
+  Mathlib master head gains ordered-localization theory.
+- **Repair link:** the optimal repair is an order structure on `FractionRing R` for ordered
+  domains at its Mathlib home (`RingTheory/Localization/FractionRing.lean` or a new
+  `Algebra/Order/Localization`); when it exists, `IsRationalPolyhedral` restates over
+  `RationalSpan ℤ L` unchanged and the twin carrier `TensorProduct ℤ ℚ L.obj.carrier` is
+  deleted in favor of the repository's own rational span.
