@@ -151,7 +151,7 @@ theorem mem_rootMirrorArrangement_iff {x : (realForm L).obj.carrier} :
 variable (t : (realForm L).obj.carrier)
 
 /-- The regular locus in the positive cone: the chosen sheet minus the mirror arrangement. -/
-def weylRegularLocus : Set (realForm L).obj.carrier :=
+noncomputable def weylRegularLocus : Set (realForm L).obj.carrier :=
   positiveCone.upper (realFormQuadratic L) t \ rootMirrorArrangement L
 
 theorem mem_weylRegularLocus_iff {x : (realForm L).obj.carrier} :
@@ -177,9 +177,8 @@ theorem weylRegularLocus_subset :
 /-- The **chamber** of a regular point: the connected component of the regular locus
 containing it (Bourbaki V §1 no. 3, Def. 2 and the discussion after it, p. 64: the chambers
 are exactly the connected components of the complement of the hyperplanes). -/
-def chamberOf (x : (realForm L).obj.carrier) : Set (realForm L).obj.carrier :=
+noncomputable def chamberOf (x : (realForm L).obj.carrier) : Set (realForm L).obj.carrier :=
   connectedComponentIn (weylRegularLocus L t) x
-
 theorem mem_chamberOf {x : (realForm L).obj.carrier} (hx : x ∈ weylRegularLocus L t) :
     x ∈ chamberOf L t x :=
   mem_connectedComponentIn hx
