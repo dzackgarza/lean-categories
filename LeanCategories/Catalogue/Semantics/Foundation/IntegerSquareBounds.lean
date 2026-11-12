@@ -122,7 +122,6 @@ theorem extent_three_card : Nat.card (extent 3) = 7 := by
   change Nat.card (squareBound 3) = 7
   rw [squareBound_eq_Icc]
   norm_num [Nat.card_eq_fintype_card, Int.card_Icc]
-  decide
 
 end CasCatalogue.Foundation.IntegerSquareBounds
 
