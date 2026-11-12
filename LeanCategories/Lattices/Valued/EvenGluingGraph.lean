@@ -130,6 +130,45 @@ noncomputable def evenDiscriminantAntiIsometryGraph
     (LinearMap.prod (LinearMap.id : L.obj.defect →ₗ[R] L.obj.defect)
       γ.toLinearEquiv.toLinearMap)
 
+/-! ## The defect splitting of the orthogonal sum
+
+Ported from `TauCeti/LinearAlgebra/IntegralLattice/Overlattice/Graph.lean`
+(`TauCeti.IntegralLattice.discriminantGraph`): the transport of the graph along the
+orthogonal-sum splitting of the discriminant groups. The splitting is built here from
+the two coordinate restrictions and the adjoint laws above, which play the role of
+TauCeti's `discriminantGroupOrthogonalSumEquiv`. -/
+
+/-- The map on the two defect quotients induced by the coordinate restrictions: a
+functional on the orthogonal-sum carrier is sent to the pair of its two coordinate
+classes. -/
+def evenDiscriminantRestrictionMap :
+    (orthogonalSum L M).obj.valueDual →ₗ[R] L.obj.defect × M.obj.defect :=
+  LinearMap.prod
+    (L.obj.defectProjection.comp (evenDiscriminantFstRestriction L M))
+    (M.obj.defectProjection.comp (evenDiscriminantSndRestriction L M))
+
+omit [IsDomain R] in
+/-- The adjoint range of the orthogonal sum lies in the kernel of the restriction map:
+each coordinate class of an adjoint functional is zero, by the two adjoint laws and the
+quotient projections killing their own submodules. -/
+theorem evenDiscriminantRestrictionMap_adjointRange_le_ker :
+    LinearMap.range (orthogonalSum L M).obj.adjoint ≤
+      LinearMap.ker (evenDiscriminantRestrictionMap L M) := by
+  rintro f ⟨⟨a, b⟩, rfl⟩
+  rw [LinearMap.mem_ker]
+  have h1 : L.obj.defectProjection (L.obj.adjoint a) = 0 := by
+    change Submodule.Quotient.mk (L.obj.adjoint a) = 0
+    rw [Submodule.Quotient.mk_eq_zero]
+    exact LinearMap.mem_range_self _ _
+  have h2 : M.obj.defectProjection (M.obj.adjoint b) = 0 := by
+    change Submodule.Quotient.mk (M.obj.adjoint b) = 0
+    rw [Submodule.Quotient.mk_eq_zero]
+    exact LinearMap.mem_range_self _ _
+  show (evenDiscriminantRestrictionMap L M) ((orthogonalSum L M).obj.adjoint (a, b)) = (0, 0)
+  rw [evenDiscriminantFstRestriction_adjoint L M, evenDiscriminantSndRestriction_adjoint L M]
+  simp [evenDiscriminantRestrictionMap, LinearMap.prod_apply,
+    LinearMap.comp_apply, h1, h2]
+
 end LeanCategories.Lattices.Valued
 
 #print axioms LeanCategories.Lattices.Valued.evenDiscriminantFstRestriction
