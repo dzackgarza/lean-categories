@@ -77,19 +77,36 @@ def carrierObj (L : BilinModuleCat R W) : ModuleCat R :=
 
 abbrev carrier (L : BilinModuleCat R W) := L.carrierObj
 
+/-- The general `ℤ`-action instance: for every commutative ring `R`, every `R`-module `M`
+(first tensor factor) and every additive group `V` with any `Module ℤ V` instance (second
+tensor factor), the `ℤ`-scalars move across the tensor product `M ⊗[R] V`.
+
+Mathlib's `TensorProduct.CompatibleSMul.int` is stated for the canonical
+`AddCommGroup.toIntModule` action, and `Module ℤ V` is a subsingleton
+(`AddCommMonoid.subsingletonIntModule`), so any `Module ℤ V` instance is equal to the
+canonical one by `Subsingleton.elim`; the instance follows by transport along that
+equality. This is the general form of the `ℝ` instance of #123 below: a consumer of this
+library gets the class for every `Module ℤ V` instance, not only for the bundled
+`ModuleCat.isModule` action on a `BilinModuleCat ℤ V` carrier. -/
+instance intAction {R : Type u} [CommRing R] {M V : Type u}
+    [AddCommGroup M] [Module R M] [AddCommGroup V] [Module R V] [inst : Module ℤ V] :
+    TensorProduct.CompatibleSMul R ℤ M V := by
+  have h : inst = AddCommGroup.toIntModule V := Subsingleton.elim _ _
+  rw [h]
+  exact TensorProduct.CompatibleSMul.int
+
 /-- The carrier of a `ℤ`-valued bilinear module carries one `ℤ`-action across the base change
 `ℝ ⊗[ℤ] L.obj.carrier`: Mathlib's `TensorProduct.CompatibleSMul ℤ ℤ ℝ`, for the bundled
 `ModuleCat.isModule` action (#123). The bundled action and the canonical
 `AddCommGroup.toIntModule` agree on every scalar — Mathlib's `int_smul_eq_zsmul`
 (`Mathlib/Algebra/Module/NatInt.lean:182`) and `AddCommMonoid.subsingletonIntModule`
-(line 195) — and Mathlib's own `TensorProduct.CompatibleSMul.int`
-(`Mathlib/LinearAlgebra/TensorProduct/Basic.lean:425`) is stated for the canonical action,
-whose `CompatibleSMul.isScalarTower` route is `AddConGen.Rel.of` ∘ `TensorProduct.Eqv.of_smul`.
-The bridge applies that same route to the bundled action, so this instance adds a
-compatibility fact for the bundled action and replaces no action. -/
+(line 195 — and the same fact again, in the form the transport below uses) — and the
+`TensorProduct.CompatibleSMul R ℤ V N` instance above is stated for every `Module ℤ V`
+instance, so the `ℝ` instance of #123 is its `ℤ`-`ℝ`-carrier specialization: the first factor
+is `ℝ`, the second the carrier with its bundled action. -/
 instance {V : Type} [AddCommGroup V] [Module ℤ V] (L : BilinModuleCat ℤ V) :
     TensorProduct.CompatibleSMul ℤ ℤ ℝ ↥(L.carrierObj) :=
-  ⟨fun n r x => Quotient.sound' <| AddConGen.Rel.of _ _ <| TensorProduct.Eqv.of_smul n r x⟩
+  intAction (R := ℤ) (M := ℝ) (V := ↥(L.carrierObj)) (inst := ModuleCat.isModule L.carrierObj)
 
 /-- The tensor-hom form of a bilinear module. -/
 def form (L : BilinModuleCat R W) :
