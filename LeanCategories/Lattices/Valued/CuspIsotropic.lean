@@ -523,11 +523,7 @@ theorem cosetsToDosetFibre_injective (hL : IsFractionFieldPerfect R L)
   | _ b =>
   have hxy' : stabilizerLiftDoset hL hΓ N a = stabilizerLiftDoset hL hΓ N b := hxy
   obtain ⟨γ, hγ, s, hs, hrel⟩ :=
-    (DoubleCoset.eq
-        ((⟨OrthogonalGroup.stableOrthogonalGroup hL, hΓ⟩ :
-          FiniteIndexSubgroup L).toSubgroup)
-        (MulAction.stabilizer (OrthogonalGroup L) N)
-        (rangeLift hL a.1) (rangeLift hL b.1)).mp (congrArg Subtype.val hxy')
+    DoubleCoset.eq.mp (congrArg Subtype.val hxy')
   have hker : γ ∈ (OrthogonalGroup.discriminantRepresentation hL).ker := hγ
   have hγ1 : (OrthogonalGroup.discriminantRepresentation hL).rangeRestrict γ = 1 := by
     rw [← MonoidHom.mem_ker, MonoidHom.ker_rangeRestrict]

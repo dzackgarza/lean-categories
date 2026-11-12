@@ -9,7 +9,7 @@ public import Mathlib.AlgebraicGeometry.AlgebraicCycle.Basic
 public import Mathlib.AlgebraicGeometry.IdealSheaf.Subscheme
 public import Mathlib.AlgebraicGeometry.Morphisms.Separated
 public import Mathlib.AlgebraicGeometry.Noetherian
-public import Mathlib.AlgebraicGeometry.OrderOfVanishing
+public import Mathlib.AlgebraicGeometry.OrderOfVanishing.Basic
 public import Mathlib.AlgebraicGeometry.Properties
 public import Mathlib.Data.Finsupp.Basic
 public import Mathlib.RingTheory.DiscreteValuationRing.TFAE
