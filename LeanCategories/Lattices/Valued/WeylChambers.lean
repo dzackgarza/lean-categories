@@ -1077,6 +1077,188 @@ theorem bounded_pairing_of_isCompact {L : FiniteProjectiveLatticeCat ℤ ℤ}
   obtain ⟨z₀, hz₀, hmax⟩ := hJ.exists_isMaxOn hJne habs.continuousOn
   exact ⟨_, fun z hz => hmax hz⟩
 
+set_option maxHeartbeats 4000000 in
+theorem abs_pairing_le_of_displacement {L : FiniteProjectiveLatticeCat ℤ ℤ}
+    (hpos : sigPos (realFormQuadratic L) = 1)
+    {x y : (realForm L).obj.carrier} (hy : 0 < realFormQuadratic L y)
+    (g : OrthogonalGroup L.obj) (hgy : realFormOrthogonalHom L g x = y)
+    {I : Type} [Fintype I] [DecidableEq I] (b : Module.Basis I ℤ L.obj.obj.carrier)
+    (i j : I)
+    {Bi : ℝ} (hBi : |(realForm L).obj.pairing (toRealForm L (b i)) x| ≤ Bi)
+    {B'j : ℝ} (hB'j : |(realForm L).obj.pairing (toRealForm L (b j)) y| ≤ B'j)
+    {m : ℝ} (hm : 0 < m) (hmy : m ≤ realFormQuadratic L y) :
+    |(realForm L).obj.pairing (realFormOrthogonalHom L g (toRealForm L (b i)))
+      (toRealForm L (b j))| ≤
+      B'j / m * Bi +
+      Real.sqrt ((-(realFormQuadratic L (toRealForm L (b i))) + Bi * Bi / m) *
+        (-(realFormQuadratic L (toRealForm L (b j))) + B'j * B'j / m)) := by
+  -- the transfer identity
+  have htrans : (realForm L).obj.pairing (realFormOrthogonalHom L g (toRealForm L (b i))) y =
+      (realForm L).obj.pairing (toRealForm L (b i)) x := by
+    rw [← hgy]
+    exact realFormIsometry_pairing L g (toRealForm L (b i)) x
+  -- the isometry preserves the quadratic value of the basis vector
+  have hiso : realFormQuadratic L (realFormOrthogonalHom L g (toRealForm L (b i))) =
+      realFormQuadratic L (toRealForm L (b i)) := by
+    rw [realFormOrthogonalHom_toRealForm L g (b i),
+      realFormQuadratic_toRealForm L (g.1 (b i)),
+      realFormQuadratic_toRealForm L (b i)]
+    exact_mod_cast isometry_pairing L g (b i) (b i)
+  -- the two square bounds
+  have hb2 : (realForm L).obj.pairing (toRealForm L (b i)) x ^ 2 ≤ Bi * Bi := by
+    obtain ⟨h1, h2⟩ := abs_le.mp hBi
+    nlinarith
+  have hb2' : (realForm L).obj.pairing (toRealForm L (b j)) y ^ 2 ≤ B'j * B'j := by
+    obtain ⟨h1, h2⟩ := abs_le.mp hB'j
+    nlinarith
+  -- the cross bounds
+  have hcross : (realForm L).obj.pairing (toRealForm L (b i)) x ^ 2 * m ≤
+      Bi * Bi * realFormQuadratic L y := by
+    have hnn : 0 ≤ Bi * Bi := by nlinarith [sq_nonneg Bi]
+    have hny : 0 ≤ realFormQuadratic L y := le_of_lt hy
+    nlinarith [hb2, hmy, hm, hnn, hny]
+  have hcross' : (realForm L).obj.pairing (toRealForm L (b j)) y ^ 2 * m ≤
+      B'j * B'j * realFormQuadratic L y := by
+    have hnn : 0 ≤ B'j * B'j := by nlinarith [sq_nonneg B'j]
+    have hny : 0 ≤ realFormQuadratic L y := le_of_lt hy
+    nlinarith [hb2', hmy, hm, hnn, hny]
+  -- the transfer of the associated pairing onto the pairing
+  have hkey : (QuadraticMap.associated (realFormQuadratic L))
+      (realFormOrthogonalHom L g (toRealForm L (b i))) y =
+      (realForm L).obj.pairing (toRealForm L (b i)) x := by
+    rw [← realFormPairing_eq_associated]
+    exact htrans
+  -- the two antivalue bounds
+  have hanti : -(realFormQuadratic L (spatialPart (realFormQuadratic L) y
+      (realFormOrthogonalHom L g (toRealForm L (b i))))) ≤
+      -(realFormQuadratic L (toRealForm L (b i))) + Bi * Bi / m := by
+    have hquad := quadratic_spatialPart (realFormQuadratic L) hy.ne'
+      (realFormOrthogonalHom L g (toRealForm L (b i)))
+    rw [hquad, hiso, hkey]
+    have hdiv : (realForm L).obj.pairing (toRealForm L (b i)) x ^ 2 /
+        realFormQuadratic L y ≤ Bi * Bi / m := by
+      rw [div_le_div_iff₀ hy hm]
+      nlinarith [hcross, sq_nonneg Bi]
+    linarith
+  have hantiw : -(realFormQuadratic L (spatialPart (realFormQuadratic L) y
+      (toRealForm L (b j)))) ≤
+      -(realFormQuadratic L (toRealForm L (b j))) + B'j * B'j / m := by
+    have hquad := quadratic_spatialPart (realFormQuadratic L) hy.ne' (toRealForm L (b j))
+    rw [hquad, realFormQuadratic_toRealForm L (b j)]
+    have hdiv' : (realForm L).obj.pairing (toRealForm L (b j)) y ^ 2 /
+        realFormQuadratic L y ≤ B'j * B'j / m := by
+      rw [div_le_div_iff₀ hy hm]
+      nlinarith [hcross', sq_nonneg B'j]
+    rw [realFormPairing_eq_associated] at hdiv'
+    linarith
+  -- the cauchy-schwarz on the spatial parts and nonnegativity
+  have hcs := associated_spatialPart_sq_le (realFormQuadratic L) hpos hy
+    (realFormOrthogonalHom L g (toRealForm L (b i))) (toRealForm L (b j))
+  rw [← realFormPairing_eq_associated] at hcs
+  have hnonU : 0 ≤ -(realFormQuadratic L (spatialPart (realFormQuadratic L) y
+      (realFormOrthogonalHom L g (toRealForm L (b i))))) :=
+    neg_nonneg.mpr (quadratic_spatialPart_nonpos (realFormQuadratic L) hpos hy
+      (realFormOrthogonalHom L g (toRealForm L (b i))))
+  have hnonW : 0 ≤ -(realFormQuadratic L (spatialPart (realFormQuadratic L) y
+      (toRealForm L (b j)))) :=
+    neg_nonneg.mpr (quadratic_spatialPart_nonpos (realFormQuadratic L) hpos hy
+      (toRealForm L (b j)))
+  have htarg : 0 ≤ -(realFormQuadratic L (toRealForm L (b i))) + Bi * Bi / m :=
+    le_trans hnonU hanti
+  have htarg' : 0 ≤ -(realFormQuadratic L (toRealForm L (b j))) + B'j * B'j / m :=
+    le_trans hnonW hantiw
+  -- the product bound
+  have hprod : (-(realFormQuadratic L (spatialPart (realFormQuadratic L) y
+      (realFormOrthogonalHom L g (toRealForm L (b i)))))) *
+      (-(realFormQuadratic L (spatialPart (realFormQuadratic L) y
+      (toRealForm L (b j))))) ≤
+      (-(realFormQuadratic L (toRealForm L (b i))) + Bi * Bi / m) *
+        (-(realFormQuadratic L (toRealForm L (b j))) + B'j * B'j / m) :=
+    mul_le_mul hanti hantiw hnonW htarg
+  -- the abs-sqrt conversion
+  have habs : |(realForm L).obj.pairing
+      (spatialPart (realFormQuadratic L) y
+        (realFormOrthogonalHom L g (toRealForm L (b i))))
+      (spatialPart (realFormQuadratic L) y (toRealForm L (b j)))| ≤
+      Real.sqrt ((-(realFormQuadratic L (spatialPart (realFormQuadratic L) y
+        (realFormOrthogonalHom L g (toRealForm L (b i)))))) *
+        (-(realFormQuadratic L (spatialPart (realFormQuadratic L) y
+      (toRealForm L (b j)))))) :=
+    Real.le_sqrt_of_sq_le (by rw [sq_abs]; exact hcs)
+  -- the monotone sqrt
+  have hmono : Real.sqrt ((-(realFormQuadratic L (spatialPart (realFormQuadratic L) y
+      (realFormOrthogonalHom L g (toRealForm L (b i)))))) *
+      (-(realFormQuadratic L (spatialPart (realFormQuadratic L) y
+      (toRealForm L (b j)))))) ≤
+      Real.sqrt ((-(realFormQuadratic L (toRealForm L (b i))) + Bi * Bi / m) *
+        (-(realFormQuadratic L (toRealForm L (b j))) + B'j * B'j / m)) :=
+    Real.sqrt_le_sqrt hprod
+  -- the expansion pieces
+  have h1 : (realForm L).obj.pairing
+      (realFormOrthogonalHom L g (toRealForm L (b i))) (toRealForm L (b j)) =
+      (((QuadraticMap.associated (realFormQuadratic L)) (toRealForm L (b j)) y /
+        realFormQuadratic L y) *
+        (realForm L).obj.pairing
+          (realFormOrthogonalHom L g (toRealForm L (b i))) y) +
+      (realForm L).obj.pairing
+        (realFormOrthogonalHom L g (toRealForm L (b i)))
+        (spatialPart (realFormQuadratic L) y (toRealForm L (b j))) := by
+    conv_lhs =>
+      rw [show (toRealForm L (b j)) = (((QuadraticMap.associated
+          (realFormQuadratic L)) (toRealForm L (b j)) y /
+        realFormQuadratic L y) • y +
+        spatialPart (realFormQuadratic L) y (toRealForm L (b j))) from by
+          rw [spatialPart]; abel]
+    rw [BilinModuleCat.pairing_add_right, BilinModuleCat.pairing_smul_right]
+    ring_nf
+  have h2 : (realForm L).obj.pairing
+      (realFormOrthogonalHom L g (toRealForm L (b i)))
+      (spatialPart (realFormQuadratic L) y (toRealForm L (b j))) =
+      (realForm L).obj.pairing (spatialPart (realFormQuadratic L) y
+        (realFormOrthogonalHom L g (toRealForm L (b i))))
+      (spatialPart (realFormQuadratic L) y (toRealForm L (b j))) := by
+    have hwyy : (realForm L).obj.pairing y
+        (spatialPart (realFormQuadratic L) y (toRealForm L (b j))) = 0 := by
+      rw [realFormPairing_eq_associated, associated_comm (realFormQuadratic L),
+        associated_spatialPart_right (realFormQuadratic L) hy.ne' (toRealForm L (b j))]
+    conv_lhs =>
+      rw [show (realFormOrthogonalHom L g (toRealForm L (b i))) =
+        (((QuadraticMap.associated (realFormQuadratic L))
+          (realFormOrthogonalHom L g (toRealForm L (b i))) y /
+          realFormQuadratic L y) • y +
+        spatialPart (realFormQuadratic L) y
+          (realFormOrthogonalHom L g (toRealForm L (b i)))) from by
+            rw [spatialPart]; abel]
+    rw [BilinModuleCat.pairing_add_left, BilinModuleCat.pairing_smul_left,
+      hwyy, smul_zero, zero_add]
+  -- the coefficient bound, cross-multiplied
+  have hcoeffX : |(QuadraticMap.associated (realFormQuadratic L))
+      (toRealForm L (b j)) y| * m ≤ B'j * realFormQuadratic L y := by
+    have hb : |(QuadraticMap.associated (realFormQuadratic L))
+        (toRealForm L (b j)) y| ≤ B'j := by
+      rw [← realFormPairing_eq_associated]
+      exact hB'j
+    have hny : 0 ≤ realFormQuadratic L y := hy.le
+    nlinarith [hb, hmy, hny, hm.le,
+      abs_nonneg ((QuadraticMap.associated (realFormQuadratic L)) (toRealForm L (b j)) y)]
+  -- the final bound: the triangle inequality and the two entry bounds
+  rw [h1, h2, htrans]
+  refine le_trans (abs_add_le _ _) ?_
+  rw [abs_mul, abs_div, abs_of_pos hy]
+  have hc2 : |(realForm L).obj.pairing (toRealForm L (b i)) x| ≤ Bi := hBi
+  have hc3 : |(realForm L).obj.pairing
+      (spatialPart (realFormQuadratic L) y
+        (realFormOrthogonalHom L g (toRealForm L (b i))))
+      (spatialPart (realFormQuadratic L) y (toRealForm L (b j)))| ≤
+      Real.sqrt ((-(realFormQuadratic L (toRealForm L (b i))) + Bi * Bi / m) *
+        (-(realFormQuadratic L (toRealForm L (b j))) + B'j * B'j / m)) :=
+    le_trans habs hmono
+  have hcoeff : |(QuadraticMap.associated (realFormQuadratic L)) (toRealForm L (b j)) y| /
+      realFormQuadratic L y ≤ B'j / m :=
+    (div_le_div_iff₀ hy hm).mpr hcoeffX
+  exact add_le_add (mul_le_mul hcoeff hc2 (abs_nonneg _)
+    (div_nonneg (le_trans (abs_nonneg _) hB'j) hm.le)) hc3
+
 end Compactness
 
 end LeanCategories.Lattices.Valued
