@@ -1259,6 +1259,207 @@ theorem abs_pairing_le_of_displacement {L : FiniteProjectiveLatticeCat ℤ ℤ}
   exact add_le_add (mul_le_mul hcoeff hc2 (abs_nonneg _)
     (div_nonneg (le_trans (abs_nonneg _) hB'j) hm.le)) hc3
 
+/-- **The pairing matrix of a displacement between compact sets has bounded entries** (Bourbaki,
+*Groupes et algèbres de Lie*, Ch. V §3 no. 1, p. 77, condition (D2)): the pairing matrix of `g`
+in the basis `b` has the entry `(g bᵢ, bⱼ)`; when some point of a compact source set is carried
+into a compact target set of the positive cone, every entry is bounded by one constant, from the
+boundedness of the pairings and the positivity of the quadratic form on the target. -/
+theorem exists_pairingMatrix_bound (hpos : sigPos (realFormQuadratic L) = 1)
+    (t : (realForm L).obj.carrier) (_ht : 0 < realFormQuadratic L t)
+    {K K' : Set (realForm L).obj.carrier}
+    (hK : IsCompact K) (hKne : K.Nonempty)
+    (hK' : IsCompact K') (hK'ne : K'.Nonempty)
+    (hK'upper : K' ⊆ positiveCone.upper (realFormQuadratic L) t)
+    {I : Type} [Fintype I] [DecidableEq I] [Nonempty I]
+    (b : Module.Basis I ℤ L.obj.obj.carrier) :
+    ∃ C : ℝ, ∀ g : OrthogonalGroup L.obj, (∃ x ∈ K, realFormOrthogonalHom L g x ∈ K') →
+      ∀ i j : I, |(realForm L).obj.pairing (realFormOrthogonalHom L g (toRealForm L (b i)))
+        (toRealForm L (b j))| ≤ C := by
+  -- the source and target entry bounds, per basis vector
+  have hBi : ∀ i : I, ∃ Bi : ℝ, ∀ x ∈ K,
+      |(realForm L).obj.pairing (toRealForm L (b i)) x| ≤ Bi :=
+    fun i => bounded_pairing_of_isCompact hK hKne (b i)
+  have hB'j : ∀ j : I, ∃ B'j : ℝ, ∀ y ∈ K',
+      |(realForm L).obj.pairing (toRealForm L (b j)) y| ≤ B'j :=
+    fun j => bounded_pairing_of_isCompact hK' hK'ne (b j)
+  -- the positive lower bound of the quadratic form on the target
+  obtain ⟨y₀, hy₀, hmin⟩ := hK'.exists_isMinOn hK'ne
+    (continuous_realFormQuadratic L).continuousOn
+  have hy₀pos : 0 < realFormQuadratic L y₀ := (hK'upper hy₀).1
+  have hmy : ∀ y ∈ K', realFormQuadratic L y₀ ≤ realFormQuadratic L y := hmin
+  -- the choice of the constants
+  choose Bi hBi' using hBi
+  choose B'j hB'j' using hB'j
+  -- the per-entry bound of the displacement lemma
+  have hbound : ∀ (i j : I) (g : OrthogonalGroup L.obj) (x : (realForm L).obj.carrier)
+      (hx : x ∈ K) (hxy : realFormOrthogonalHom L g x ∈ K'),
+      |(realForm L).obj.pairing (realFormOrthogonalHom L g (toRealForm L (b i)))
+        (toRealForm L (b j))| ≤
+        B'j j / realFormQuadratic L y₀ * Bi i +
+        Real.sqrt ((-(realFormQuadratic L (toRealForm L (b i))) +
+          Bi i * Bi i / realFormQuadratic L y₀) *
+          (-(realFormQuadratic L (toRealForm L (b j))) +
+            B'j j * B'j j / realFormQuadratic L y₀)) := by
+    intro i j g x hx hxy
+    exact abs_pairing_le_of_displacement hpos ((hK'upper hxy).1) g rfl b i j
+      (hBi' i x hx) (hB'j' j _ hxy) hy₀pos (hmy _ hxy)
+  -- the maximum of the per-entry bound over the finite basis
+  obtain ⟨p₀, -, hC⟩ := Finset.exists_max_image (Finset.univ : Finset (I × I))
+    (fun p : I × I => B'j p.2 / realFormQuadratic L y₀ * Bi p.1 +
+      Real.sqrt ((-(realFormQuadratic L (toRealForm L (b p.1))) +
+        Bi p.1 * Bi p.1 / realFormQuadratic L y₀) *
+        (-(realFormQuadratic L (toRealForm L (b p.2))) +
+          B'j p.2 * B'j p.2 / realFormQuadratic L y₀)))
+    Finset.univ_nonempty
+  refine ⟨B'j p₀.2 / realFormQuadratic L y₀ * Bi p₀.1 +
+      Real.sqrt ((-(realFormQuadratic L (toRealForm L (b p₀.1))) +
+        Bi p₀.1 * Bi p₀.1 / realFormQuadratic L y₀) *
+        (-(realFormQuadratic L (toRealForm L (b p₀.2))) +
+          B'j p₀.2 * B'j p₀.2 / realFormQuadratic L y₀)),
+    fun g hg i j => ?_⟩
+  obtain ⟨x, hxK, hxy⟩ := hg
+  exact (hbound i j g x hxK hxy).trans (hC (i, j) (Finset.mem_univ _))
+
+/-- **Vanishing on a basis extends.** The vanishing set of the pairing with a fixed vector is a
+submodule containing the basis, and the basis spans the carrier, so vanishing on the basis
+forces vanishing everywhere. -/
+theorem pairing_eq_zero_of_basis {I : Type} [Fintype I] [DecidableEq I]
+    (b : Module.Basis I ℤ L.obj.obj.carrier) {u : L.obj.obj.carrier}
+    (h : ∀ j, L.obj.obj.pairing u (b j) = 0) :
+    ∀ y, L.obj.obj.pairing u y = 0 := by
+  -- the vanishing set, as a submodule: the pairing with u is bilinear
+  have hspan : Submodule.span ℤ (Set.range b) ≤
+      ({ carrier := {y | L.obj.obj.pairing u y = 0}
+         add_mem' := by
+           intro x y hx hy
+           simp only [Set.mem_setOf_eq] at hx hy ⊢
+           rw [BilinModuleCat.pairing_add_right, hx, hy]
+           simp
+         zero_mem' := by
+           simp only [Set.mem_setOf_eq]
+           exact BilinModuleCat.pairing_zero_right _ _
+         smul_mem' := by
+           intro c x hx
+           simp only [Set.mem_setOf_eq] at hx ⊢
+           rw [BilinModuleCat.pairing_smul_right, hx]
+           simp } : Submodule ℤ L.obj.obj.carrier) := by
+    refine Submodule.span_le.mpr ?_
+    rintro y hy'
+    obtain ⟨j, rfl⟩ := hy'
+    exact h j
+  intro y
+  have hy : y ∈ Submodule.span ℤ (Set.range b) := by
+    rw [b.span_eq]
+    exact Submodule.mem_top
+  exact hspan hy
+
+/-- **The pairing matrix of an isometry determines the isometry.** Two isometries with equal
+pairing matrices agree on the basis: the difference vector pairs to zero with every basis
+vector, hence with every vector by `pairing_eq_zero_of_basis`, hence is zero by nondegeneracy. -/
+theorem pairingMatrix_injective (hL : L.obj.obj.IsNondegenerate)
+    {I : Type} [Fintype I] [DecidableEq I]
+    (b : Module.Basis I ℤ L.obj.obj.carrier) :
+    Function.Injective
+      (fun g : OrthogonalGroup L.obj => fun i j => L.obj.obj.pairing (g.1 (b i)) (b j)) := by
+  intro g h heq
+  -- the matrix equality, pointwise
+  have hkey : ∀ i j, L.obj.obj.pairing (g.1 (b i)) (b j)
+      = L.obj.obj.pairing (h.1 (b i)) (b j) := fun i j => congrFun (congrFun heq i) j
+  -- the difference vector pairs to zero with the basis
+  have hdiff : ∀ i j, L.obj.obj.pairing (g.1 (b i) - h.1 (b i)) (b j) = 0 := by
+    intro i j
+    have h1 : L.obj.obj.pairing (g.1 (b i) - h.1 (b i) + h.1 (b i)) (b j)
+        = L.obj.obj.pairing (g.1 (b i)) (b j) := by
+      rw [show g.1 (b i) - h.1 (b i) + h.1 (b i) = g.1 (b i)
+        from sub_add_cancel (g.1 (b i)) (h.1 (b i))]
+    rw [BilinModuleCat.pairing_add_left] at h1
+    rw [hkey i j] at h1
+    linarith
+  -- the difference vector is zero by nondegeneracy
+  have hzero : ∀ i, g.1 (b i) = h.1 (b i) := by
+    intro i
+    have hext : ∀ y, L.obj.obj.pairing (g.1 (b i) - h.1 (b i)) y = 0 :=
+      pairing_eq_zero_of_basis L b (hdiff i)
+    have hbilin : ∀ y, L.obj.obj.bilinMap (g.1 (b i) - h.1 (b i)) y = 0 := by
+      intro y
+      rw [BilinModuleCat.bilinMap_apply]
+      exact hext y
+    exact sub_eq_zero.mp (hL.1 _ hbilin)
+  -- agreement on the basis extends to the whole carrier
+  have hfun : ∀ x, g.1 x = h.1 x := by
+    intro x
+    have hco : (g.1 : L.obj.obj.carrier →ₗ[ℤ] L.obj.obj.carrier) =
+        (h.1 : L.obj.obj.carrier →ₗ[ℤ] L.obj.obj.carrier) := by
+      refine LinearMap.ext_on (R := ℤ) b.span_eq ?_
+      rintro x hx
+      obtain ⟨i, rfl⟩ := hx
+      exact hzero i
+    exact LinearMap.congr_fun hco x
+  exact Subtype.ext (LinearEquiv.ext hfun)
+
+/-- **Only finitely many isometries carry a compact set of the positive cone to meet another**
+(Bourbaki, *Groupes et algèbres de Lie*, Ch. V §3 no. 1, p. 77, condition (D2)): for compact
+sets `K` and `K'` of the chosen sheet of the positive cone of the real form of `L`, only
+finitely many `g ∈ O(L)` carry some point of `K` into `K'`. The pairing matrix of `g` in a
+basis has bounded entries on this set, the bounded integer matrices form a finite set, and the
+pairing matrix determines the isometry through nondegeneracy. -/
+theorem realFormOrthogonal_finite_of_compact (hL : L.obj.obj.IsNondegenerate)
+    (hpos : sigPos (realFormQuadratic L) = 1)
+    (t : (realForm L).obj.carrier) (_ht : 0 < realFormQuadratic L t)
+    {K K' : Set (realForm L).obj.carrier}
+    (hK : IsCompact K) (hKne : K.Nonempty)
+    (hK' : IsCompact K') (hK'ne : K'.Nonempty)
+    (hK'upper : K' ⊆ positiveCone.upper (realFormQuadratic L) t)
+    {I : Type} [Fintype I] [DecidableEq I] [Nonempty I]
+    (b : Module.Basis I ℤ L.obj.obj.carrier) :
+    {g : OrthogonalGroup L.obj | ∃ x ∈ K, realFormOrthogonalHom L g x ∈ K'}.Finite := by
+  -- the entry bound
+  obtain ⟨C, hC⟩ := exists_pairingMatrix_bound L hpos t _ht hK hKne hK' hK'ne hK'upper b
+  -- the integer bound
+  set N : ℤ := Int.ceil C with hN
+  have hNC : C ≤ (N : ℝ) := Int.le_ceil C
+  -- the finite target set: bounded integer matrices
+  have hT : {M : I → I → ℤ | ∀ i j, |M i j| ≤ N}.Finite := by
+    have hpi : {M : I → I → ℤ | ∀ i j, |M i j| ≤ N} =
+        Set.univ.pi fun _ : I ↦ Set.univ.pi fun _ : I ↦ Set.Icc (-N) N := by
+      ext M
+      constructor
+      · intro hM i _ j _
+        exact abs_le.mp (hM i j)
+      · intro hM i j
+        exact abs_le.mpr (hM i (Set.mem_univ i) j (Set.mem_univ j))
+    rw [hpi]
+    exact Set.Finite.pi fun _ ↦ Set.Finite.pi fun _ ↦ Set.finite_Icc _ _
+  -- the map lands in the target
+  have hmaps : Set.MapsTo (fun g : OrthogonalGroup L.obj => fun i j =>
+      L.obj.obj.pairing (g.1 (b i)) (b j))
+      {g : OrthogonalGroup L.obj | ∃ x ∈ K, realFormOrthogonalHom L g x ∈ K'}
+      {M : I → I → ℤ | ∀ i j, |M i j| ≤ N} := by
+    intro g hg
+    show ∀ i j, |L.obj.obj.pairing (g.1 (b i)) (b j)| ≤ N
+    intro i j
+    obtain ⟨x, hxK, hxy⟩ := hg
+    have hentry := hC g ⟨x, hxK, hxy⟩ i j
+    rw [realFormOrthogonalHom_toRealForm L g (b i)] at hentry
+    rw [realFormPairing_toRealForm L (g.1 (b i)) (b j)] at hentry
+    obtain ⟨hlo, hhi⟩ := abs_le.mp hentry
+    refine abs_le.mpr ⟨?_, ?_⟩
+    · -- the lower integer bound
+      have hreal : ((-N : ℤ) : ℝ) ≤ (L.obj.obj.pairing (g.1 (b i)) (b j) : ℝ) := by
+        have hcast : ((-N : ℤ) : ℝ) = -((N : ℤ) : ℝ) := Int.cast_neg N
+        linarith [hcast, hNC, hlo]
+      exact Int.cast_le.mp hreal
+    · -- the upper integer bound
+      have hreal : (L.obj.obj.pairing (g.1 (b i)) (b j) : ℝ) ≤ ((N : ℤ) : ℝ) :=
+        le_trans hhi hNC
+      exact Int.cast_le.mp hreal
+  -- injectivity on the source
+  have hinj : Set.InjOn (fun g : OrthogonalGroup L.obj => fun i j =>
+      L.obj.obj.pairing (g.1 (b i)) (b j))
+      {g : OrthogonalGroup L.obj | ∃ x ∈ K, realFormOrthogonalHom L g x ∈ K'} :=
+    fun g _ h _ heq => pairingMatrix_injective L hL b heq
+  exact Set.Finite.of_injOn hmaps hinj hT
+
 end Compactness
 
 end LeanCategories.Lattices.Valued
