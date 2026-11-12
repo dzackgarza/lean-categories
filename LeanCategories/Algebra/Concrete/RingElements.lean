@@ -57,7 +57,7 @@ theorem isPrincipalIdealDomain_of_euclidean {R : CommRingCat.{u}} (h : IsEuclide
     IsPrincipalIdealDomain R := by
   obtain ⟨E, hE⟩ := h
   have hDomain : @IsDomain R (@CommRing.toRing R E.toCommRing).toSemiring := inferInstance
-  have hPID := @EuclideanDomain.to_principal_ideal_domain R E
+  have hPID := @EuclideanDomain.instIsPrincipalIdealRing R E
   rw [hE] at hDomain hPID
   exact ⟨hDomain, hPID⟩
 

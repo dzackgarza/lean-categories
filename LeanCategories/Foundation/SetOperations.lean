@@ -147,7 +147,7 @@ abbrev FiniteLists := nodupLists.{u}.Elements
 
 /-- A duplicate-free list enumerates its elements. -/
 def listSequence : FiniteLists.{u} ⥤ Enumerations.{u} where
-  obj p := ⟨p.1, fun n => p.2.1[n]?⟩
+  obj p := Functor.elementsMk _ p.1 (fun n => p.2.1[n]?)
   map {p q} g := ⟨g.1, by
     funext n
     have hg : (⟨p.2.1.map g.1.iso.hom, p.2.2.map g.1.iso.toEquiv.injective⟩ :
@@ -170,7 +170,7 @@ def RingFiniteLists.list (p : RingFiniteLists.{u}) : List p.1.of := p.2.1
 
 /-- A finite subset of a ring is a finite subset of its underlying set. -/
 def ringFiniteListsForget : RingFiniteLists.{u} ⥤ FiniteLists.{u} where
-  obj p := ⟨ringUnderlying.core.obj p.1, p.2⟩
+  obj p := Functor.elementsMk _ (ringUnderlying.core.obj p.1) p.2
   map g := ⟨ringUnderlying.core.map g.1, g.2⟩
 
 /-- The ring elements, transported along isomorphisms. -/
@@ -181,7 +181,7 @@ theorem ringNodupLists_map {R S : Core CommRingCat.{u}} (f : R ⟶ S) (l : ringN
 
 /-- `sum`: the sum of the elements, iso-naturally. -/
 def finiteSum : RingFiniteLists.{u} ⥤ ringValues.{u}.Elements where
-  obj p := ⟨p.1, (RingFiniteLists.list p).sum⟩
+  obj p := Functor.elementsMk _ p.1 ((RingFiniteLists.list p).sum)
   map {p q} g := ⟨g.1, by
     change g.1.iso.hom.hom (RingFiniteLists.list p).sum = (RingFiniteLists.list q).sum
     have hq : RingFiniteLists.list q = (RingFiniteLists.list p).map g.1.iso.hom.hom :=
@@ -190,7 +190,7 @@ def finiteSum : RingFiniteLists.{u} ⥤ ringValues.{u}.Elements where
 
 /-- `prod`: the product of the elements, iso-naturally. -/
 def finiteProd : RingFiniteLists.{u} ⥤ ringValues.{u}.Elements where
-  obj p := ⟨p.1, (RingFiniteLists.list p).prod⟩
+  obj p := Functor.elementsMk _ p.1 ((RingFiniteLists.list p).prod)
   map {p q} g := ⟨g.1, by
     change g.1.iso.hom.hom (RingFiniteLists.list p).prod = (RingFiniteLists.list q).prod
     have hq : RingFiniteLists.list q = (RingFiniteLists.list p).map g.1.iso.hom.hom :=
