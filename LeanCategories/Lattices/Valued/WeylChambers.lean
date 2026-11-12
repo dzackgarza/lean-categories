@@ -1271,7 +1271,7 @@ theorem exists_pairingMatrix_bound (hpos : sigPos (realFormQuadratic L) = 1)
     (hK : IsCompact K) (hKne : K.Nonempty)
     (hK' : IsCompact K') (hK'ne : K'.Nonempty)
     (hK'upper : K' ⊆ positiveCone.upper (realFormQuadratic L) t)
-    {I : Type} [Fintype I] [DecidableEq I] [Nonempty I]
+    {I : Type} [Fintype I] [DecidableEq I] (i₀ : I)
     (b : Module.Basis I ℤ L.obj.obj.carrier) :
     ∃ C : ℝ, ∀ g : OrthogonalGroup L.obj, (∃ x ∈ K, realFormOrthogonalHom L g x ∈ K') →
       ∀ i j : I, |(realForm L).obj.pairing (realFormOrthogonalHom L g (toRealForm L (b i)))
@@ -1304,14 +1304,15 @@ theorem exists_pairingMatrix_bound (hpos : sigPos (realFormQuadratic L) = 1)
     intro i j g x hx hxy
     exact abs_pairing_le_of_displacement hpos ((hK'upper hxy).1) g rfl b i j
       (hBi' i x hx) (hB'j' j _ hxy) hy₀pos (hmy _ hxy)
-  -- the maximum of the per-entry bound over the finite basis
+  -- the maximum of the per-entry bound over the finite basis; the named element
+  -- `i₀ : I` supplies the nonemptiness of the index product that the maximum needs
   obtain ⟨p₀, -, hC⟩ := Finset.exists_max_image (Finset.univ : Finset (I × I))
     (fun p : I × I => B'j p.2 / realFormQuadratic L y₀ * Bi p.1 +
       Real.sqrt ((-(realFormQuadratic L (toRealForm L (b p.1))) +
         Bi p.1 * Bi p.1 / realFormQuadratic L y₀) *
         (-(realFormQuadratic L (toRealForm L (b p.2))) +
           B'j p.2 * B'j p.2 / realFormQuadratic L y₀)))
-    Finset.univ_nonempty
+    ⟨(i₀, i₀), Finset.mem_univ _⟩
   refine ⟨B'j p₀.2 / realFormQuadratic L y₀ * Bi p₀.1 +
       Real.sqrt ((-(realFormQuadratic L (toRealForm L (b p₀.1))) +
         Bi p₀.1 * Bi p₀.1 / realFormQuadratic L y₀) *
@@ -1414,11 +1415,11 @@ theorem realFormOrthogonal_finite_of_compact (hL : L.obj.obj.IsNondegenerate)
     (hK : IsCompact K) (hKne : K.Nonempty)
     (hK' : IsCompact K') (hK'ne : K'.Nonempty)
     (hK'upper : K' ⊆ positiveCone.upper (realFormQuadratic L) t)
-    {I : Type} [Fintype I] [DecidableEq I] [Nonempty I]
+    {I : Type} [Fintype I] [DecidableEq I] (i₀ : I)
     (b : Module.Basis I ℤ L.obj.obj.carrier) :
     {g : OrthogonalGroup L.obj | ∃ x ∈ K, realFormOrthogonalHom L g x ∈ K'}.Finite := by
   -- the entry bound
-  obtain ⟨C, hC⟩ := exists_pairingMatrix_bound L hpos t _ht hK hKne hK' hK'ne hK'upper b
+  obtain ⟨C, hC⟩ := exists_pairingMatrix_bound L hpos t _ht hK hKne hK' hK'ne hK'upper i₀ b
   -- the integer bound
   set N : ℤ := Int.ceil C with hN
   have hNC : C ≤ (N : ℝ) := Int.le_ceil C
