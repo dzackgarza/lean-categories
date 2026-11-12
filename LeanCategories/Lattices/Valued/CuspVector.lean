@@ -490,8 +490,7 @@ theorem vectorOrbitOfDoset_injective (Γ : FiniteIndexSubgroup L)
         g⁻¹ • ((γ : OrthogonalGroup L) • (g' • v)) := by
       simp [mul_smul]
     rw [hstep, hγ', inv_smul_smul]
-  refine (DoubleCoset.eq (Γ.toSubgroup)
-    (MulAction.stabilizer (OrthogonalGroup L) v) g g').mpr
+  refine DoubleCoset.eq.mpr
     ⟨(γ : OrthogonalGroup L)⁻¹, Γ.toSubgroup.inv_mem γ.2,
       g⁻¹ * (γ : OrthogonalGroup L) * g', hstab, by group⟩
 
@@ -677,9 +676,7 @@ theorem vectorStabilizerCosetsToFibre_injective (v : PrimitiveIsotropicVector L)
   | _ b =>
   have hxy' : vectorStabilizerLiftDoset hL hΓ v D a = vectorStabilizerLiftDoset hL hΓ v D b := hxy
   obtain ⟨γ, hγ, s, hs, hrel⟩ :=
-    (DoubleCoset.eq ((stableFiniteIndexSubgroup hL hΓ).toSubgroup)
-        (MulAction.stabilizer (OrthogonalGroup L) v)
-        (rangeLift hL a.1) (rangeLift hL b.1)).mp (congrArg Subtype.val hxy')
+    DoubleCoset.eq.mp (congrArg Subtype.val hxy')
   have hker : γ ∈ (OrthogonalGroup.discriminantRepresentation hL).ker := hγ
   have hγ1 : (OrthogonalGroup.discriminantRepresentation hL).rangeRestrict γ = 1 := by
     rw [← MonoidHom.mem_ker, MonoidHom.ker_rangeRestrict]
