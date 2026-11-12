@@ -90,6 +90,11 @@ public import LeanCategories.Algebra.BlockDecomposition
 public import LeanCategories.Algebra.BrauerGroupData
 public import LeanCategories.Algebra.CanonicalForms
 public import LeanCategories.Algebra.GroupTheory
+public import LeanCategories.Algebra.SubgroupFiniteness
+public import LeanCategories.Analysis.NormExtension
+public import LeanCategories.Analysis.Tamuras15_10
+public import LeanCategories.Algebra.FieldHomework1
+public import LeanCategories.Algebra.FamilyQuotient
 public import LeanCategories.Algebra.GroupGeneration
 public import LeanCategories.Algebra.SubgroupIncidence
 public import LeanCategories.Algebra.FiniteAbelian
@@ -233,6 +238,7 @@ public import LeanCategories.Homological.TateLowDegreeClassData
 public import LeanCategories.Homological.CyclicCategoryData
 public import LeanCategories.Homological.DGCyclicHomology
 public import LeanCategories.Homological.AlgebraicDeRham
+public import LeanCategories.Homological.ColimitTensor
 public import LeanCategories.Homological.DeltaFunctor
 public import LeanCategories.Homological.DeltaFunctorMorphisms
 public import LeanCategories.Homological.SatelliteFunctors
