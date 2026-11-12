@@ -13,25 +13,27 @@ weak.linter.mathlibStandardSet = true
 weak.linter.style.header = false
 maxSynthPendingDepth = 3
 
-# Mathlib tracks `master` (lean-categories#118): the research image carries one shared
-# Lean project, always on the latest Mathlib, and this repository follows it. The exact
-# head is pinned by `lake-manifest.json` (which `lake build` resolves from), and
-# `.github/workflows/mathlib-head.yml` moves that pin and `lean-toolchain` to each new
-# master head and reports breakage there as a failing run.
-[[require]]
-name = "mathlib"
-scope = "leanprover-community"
-rev = "master"
-
 # `BrauerGroup` publishes one tag per Mathlib release and is imported by
 # `LeanCategories.Algebra.{CrossedProduct,BrauerGroup}Data`, so its pin has to name the
-# release the Mathlib pin above belongs to. The tags are the Lean release Mathlib pins:
+# release the Mathlib pin below belongs to. The tags are the Lean release Mathlib pins:
 # `v4.36.0-rc2` is the tag for Lean `v4.36.0-rc2`, the toolchain of the Mathlib master head.
 # A new Mathlib release breaks this package first, which is what the scheduled run reports.
 [[require]]
 name = "BrauerGroup"
 git = "https://github.com/Whysoserioushah/BrauerGroup.git"
 rev = "v4.36.0-rc2"
+
+# Mathlib tracks `master` (lean-categories#118): the research image carries one shared
+# Lean project, always on the latest Mathlib, and this repository follows it. The exact
+# head is pinned by `lake-manifest.json` (which `lake build` resolves from), and
+# `.github/workflows/mathlib-head.yml` moves that pin and `lean-toolchain` to each new
+# master head and reports breakage there as a failing run. Requiring `mathlib` last
+# makes Mathlib's own dependency pins take precedence over the other packages' pins, so
+# `lake exe cache get` computes the hashes the shared store's build files are keyed to.
+[[require]]
+name = "mathlib"
+scope = "leanprover-community"
+rev = "master"
 
 [[lean_lib]]
 name = "LeanCategories"
