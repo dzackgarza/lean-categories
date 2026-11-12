@@ -309,12 +309,14 @@ public import LeanCategories.Lattices.Valued.CobleLattice
 public import LeanCategories.Lattices.Valued.CobleCharacteristic
 public import LeanCategories.Lattices.Valued.CobleCusps
 public import LeanCategories.Lattices.Valued.D8Gluing
+public import LeanCategories.Lattices.Valued.EvenGluingGraph
 public import LeanCategories.Modules.Flags
 public import LeanCategories.Lattices.Valued.FlagParabolic
 public import LeanCategories.Lattices.Valued.IsotropicReduction
 public import LeanCategories.Lattices.Valued.IsotropicReductionBaseChange
 public import LeanCategories.Lattices.Valued.CarrierIntActionTests
 public import LeanCategories.Lattices.Valued.PrimitiveReduction
+public import LeanCategories.Lattices.Valued.RationalPolyhedralCone
 public import LeanCategories.Lattices.Valued.EvenReduction
 public import LeanCategories.Lattices.Valued.DiscriminantIsotropic
 public import LeanCategories.Lattices.Valued.DiscriminantQuotient
