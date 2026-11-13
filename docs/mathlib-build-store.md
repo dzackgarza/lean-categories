@@ -53,9 +53,9 @@ sources at that revision; that is what keeps a second worktree from inheriting s
 (`Cache/IO.lean:472-490`, `ModuleHashMap.filterNeedsDecompression`), and that is not Lake's
 judgement. On the tree built for this change the two disagreed about 403 modules: the cache tool
 re-decompressed them although Lake considered the tree up to date. Because a linked tree's files
-are shared inodes, those rewrites changed what **every** worktree saw — the oleans no longer matched
-the traces of the modules importing them — and three of four worktrees then rebuilt 417 Mathlib
-modules from source, which is the disk blow-up from the other direction.
+are shared inodes, those rewrites changed what **every** worktree saw — the oleans no longer
+matched the traces of the modules importing them — and three of four worktrees then rebuilt 417
+Mathlib modules from source, which is the disk blow-up from the other direction.
 
 So `lake exe cache get` runs in exactly one case: a worktree whose tree has to be filled, on that
 worktree's own unshared tree, before the store entry exists. A worktree whose tree is the store's
@@ -100,6 +100,53 @@ already decide correctly, which is why the completeness check above is Lake's ow
 
 ## Acceptance
 
-Recorded with the change in this commit's follow-up: four worktrees run `lake update`,
-`scripts/cache-get.sh` and `lake build` at the same time, each ending `Build completed
-successfully`, with the free space before, during and after.
+Measured 2026-11-13 on the team VM (4 cores, 15G RAM, one 248G disk with 16G free
+before any of this work). What the store does, measured end to end:
+
+| Step | Measured |
+| --- | --- |
+| First worktree at a revision, cold | 44.7 s wall (incl. building the cache tool), 6.8G on disk |
+| Every later worktree at that revision | link, 0.8 s wall, 0 additional bytes |
+| `df` during a link | unchanged; the tree is one inode set |
+| `lake build` in the main checkout, linked | `Build completed successfully (8338 jobs)`, none of Mathlib rebuilt |
+
+The four-way concurrent pipeline is **not** closed, and the reason is not the
+duplication this issue names. Three runs, all with the four worktrees at the same
+commit and the same Mathlib head (`3d487513`, merged 08:50 UTC that day):
+
+1. Store empty, 22G free, four fresh worktrees. The first worktree filled and
+   seeded the tree; the other three linked it. Each of those then ran
+   `lake exe cache get` on the now-shared tree, which re-decompressed 403
+   modules in place — shared, so all four saw the changed oleans — and three
+   worktrees went on to rebuild 417 Mathlib modules from source. Free space fell
+   from 22G to 9.9G in six minutes; stopped. That is what the previous commit
+   fixed: a linked tree is never fetched into.
+2. Same, with the cache tool kept off the shared tree. The first worktree's own
+   `lake build` recompiled 0 Mathlib modules. The three linking worktrees each
+   recompiled 446-472 Mathlib modules and 67-69 Batteries modules. Free space
+   fell from 22G to 10G in nine minutes; stopped.
+3. Store holding a certified tree, 15G free, four fresh worktrees, each link
+   0.8 s, then four concurrent `lake build`s. All four recompiled Mathlib, their
+   target graphs growing 1666 → 2038 jobs; free space fell from 15G to 10G in
+   eighteen minutes; stopped; none reached `Build completed successfully`.
+
+The asymmetry in run 2 is the clue: a worktree whose dependency packages
+(batteries, aesop, Qq, importGraph, plausible, LeanSearchClient, proofwidgets,
+BrauerGroup, checkdecls, Cli) are already built recompiles nothing, and the main
+checkout — whose packages were built long ago — recompiled 0 Mathlib modules
+through the linked tree (`Build completed successfully (8338 jobs)` above). A
+worktree that has to build those packages in the same `lake build` invocation
+recompiles a few hundred Mathlib modules, because Lake schedules Mathlib's module
+traces from the dependency oleans that are not there yet, so it judges them
+stale before it builds what they depend on. Four of those at once is what the
+disk cannot carry, at 16G free.
+
+So closing #148 needs the store (done, measured above) *and* the dependency
+packages handled the same way, or built before the Mathlib tree is used. Sizing
+that: the packages are about 390M per worktree, and building them from scratch
+in a fresh worktree did not finish inside a 20-minute budget, so the next step
+is to extend this store to every git package keyed the same way (rev +
+toolchain, certified by Lake's own check) rather than to build them in the cache
+step. Until then the four-way acceptance stays open, and this document does not
+claim it.
+
