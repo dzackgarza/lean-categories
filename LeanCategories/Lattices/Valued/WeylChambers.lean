@@ -1481,6 +1481,79 @@ private theorem reflectIn_fix_iff {V : Type u} [AddCommGroup V] [Module ℝ V]
   · intro hx
     exact associated_reflectIn_self Q ha hx
 
+/-- The mirror of a root is the fixed set of its lattice reflection: the square theorem
+transports the reflection to the real form, and the fix-iff identifies the fixed set with
+the orthogonal complement of the root vector. -/
+theorem mem_rootMirror_iff_fixed (hL : L.obj.obj.IsNondegenerate)
+    (h2 : IsRegular (2 : ℤ))
+    {r : L.obj.obj.carrier} (hr : IsReflectiveRoot L.obj r)
+    (hr' : realFormQuadratic L (toRealForm L r) ≠ 0)
+    (x : (realForm L).obj.carrier) :
+    x ∈ rootMirror L r ↔
+      realFormOrthogonalHom L (latticeReflection L hL h2 hr) x = x := by
+  rw [realFormOrthogonalHom_latticeReflection L hL h2 hr hr']
+  constructor
+  · intro hx
+    apply (reflectIn_fix_iff (realFormQuadratic L) hr' x).mpr
+    rw [← realFormPairing_eq_associated L x (toRealForm L r)]
+    exact hx
+  · intro hx
+    have h0 := (reflectIn_fix_iff (realFormQuadratic L) hr' x).mp hx
+    rw [← realFormPairing_eq_associated L x (toRealForm L r)] at h0
+    exact h0
+
+/-- **Only finitely many root hyperplanes meet a compact subset of the positive cone**
+(Bourbaki V §3 no. 1, Lemma 1, p. 77): for compact nonempty `K` in the chosen sheet
+of the positive cone, the set of mirrors that meet `K` is finite. The reflections in
+the roots whose mirrors meet `K` fix a point of `K`, so the (D′2) theorem bounds them. -/
+theorem rootMirror_meet_finite (hL : L.obj.obj.IsNondegenerate)
+    (h2 : IsRegular (2 : ℤ)) (hpos : sigPos (realFormQuadratic L) = 1)
+    (t : (realForm L).obj.carrier) (ht : 0 < realFormQuadratic L t)
+    {K : Set (realForm L).obj.carrier}
+    (hK : IsCompact K) (hKne : K.Nonempty)
+    (hKupper : K ⊆ positiveCone.upper (realFormQuadratic L) t)
+    {I : Type} [Fintype I] [DecidableEq I] (i₀ : I)
+    (b : Module.Basis I ℤ L.obj.obj.carrier) :
+    {H : Set (realForm L).obj.carrier | ∃ r ∈ negativeReflectiveRoots L,
+      rootMirror L r = H ∧ (H ∩ K).Nonempty}.Finite := by
+  -- the D′2 set (with K' := K) is finite by the #128 theorem
+  have hD2 : {g : OrthogonalGroup L.obj | ∃ x ∈ K,
+      realFormOrthogonalHom L g x ∈ K}.Finite :=
+    realFormOrthogonal_finite_of_compact L hL hpos t ht hK hKne hK hKne hKupper i₀ b
+  -- the image of the D′2 set under the fixed-set map is finite
+  have hImg : ((fun g : OrthogonalGroup L.obj =>
+      {x | realFormOrthogonalHom L g x = x}) ''
+      {g : OrthogonalGroup L.obj | ∃ x ∈ K,
+        realFormOrthogonalHom L g x ∈ K}).Finite :=
+    Set.Finite.image (fun g : OrthogonalGroup L.obj =>
+      {x | realFormOrthogonalHom L g x = x}) hD2
+  -- every mirror meeting K is the fixed set of a reflection in the D′2 set
+  have hSub : {H : Set (realForm L).obj.carrier | ∃ r ∈ negativeReflectiveRoots L,
+      rootMirror L r = H ∧ (H ∩ K).Nonempty} ⊆
+      (fun g : OrthogonalGroup L.obj => {x | realFormOrthogonalHom L g x = x}) ''
+      {g : OrthogonalGroup L.obj | ∃ x ∈ K, realFormOrthogonalHom L g x ∈ K} := by
+    intro H hH
+    obtain ⟨r, hrn, hHr, hHne⟩ := hH
+    obtain ⟨hrIsRef, hrneg⟩ := mem_negativeReflectiveRoots_iff.mp hrn
+    have hrneg' : realFormQuadratic L (toRealForm L r) < 0 := by
+      rw [realFormQuadratic_toRealForm L r]
+      exact_mod_cast hrneg
+    have hr' := ne_of_lt hrneg'
+    obtain ⟨x, hxH, hxK⟩ := hHne
+    rw [← hHr] at hxH
+    refine ⟨latticeReflection L hL h2 hrIsRef, ?_, ?_⟩
+    · exact ⟨x, hxK, by
+        have hfix : realFormOrthogonalHom L (latticeReflection L hL h2 hrIsRef) x = x :=
+          (mem_rootMirror_iff_fixed L hL h2 hrIsRef hr' x).mp hxH
+        rw [hfix]
+        exact hxK⟩
+    · rw [← hHr]
+      show {x | realFormOrthogonalHom L (latticeReflection L hL h2 hrIsRef) x = x}
+        = rootMirror L r
+      ext y
+      exact (mem_rootMirror_iff_fixed L hL h2 hrIsRef hr' y).symm
+  exact hImg.subset hSub
+
 end LemmaOne
 
 end LeanCategories.Lattices.Valued
