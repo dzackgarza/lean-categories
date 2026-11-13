@@ -11,11 +11,11 @@
 # tree holds stale traces, `lake exe cache get` leaves the gap in place and
 # Lake rebuilds the missing modules from source inside the shared tree.
 #
-# What this does: remove the stale traces of exactly the modules whose .olean
-# is missing, then `lake exe cache get` decompresses those modules' build
-# files from the shared download cache (~/.cache/mathlib). After it runs, the
-# tree is complete and `lake build` links against it without deleting
-# anything.
+# What this does: remove every module's trace, then `lake exe cache get`
+# decompresses all of them from the shared download cache (~/.cache/mathlib),
+# refreshing the stale ones as well as the missing ones. After it runs, the
+# tree is complete at the head and `lake build` links against it without
+# deleting anything.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
@@ -31,11 +31,15 @@ for f in $(git -C "$M" ls-tree -r --name-only HEAD -- Mathlib | grep '\.lean$');
 done
 echo "store gap: $(wc -l < "$GAP") modules"
 
-# Remove the stale traces so the cache tool no longer skips them.
-while read -r f; do
+# Remove every module's trace so the cache tool decompresses all of them
+# (refreshing the stale ones too), not just the missing ones: a head move
+# changes modules whose .olean is present but stale, and the trace-based
+# skip leaves them unfilled, so Lake rebuilds them from source inside the
+# shared tree.
+for f in $(git -C "$M" ls-tree -r --name-only HEAD -- Mathlib | grep '\.lean$'); do
   m="${f%.lean}"
   rm -f "$M/.lake/build/lib/lean/$m.trace" "$M/.lake/build/lib/lean/$m.trace.hash"
-done < "$GAP"
+done
 
 # Decompress the missing build files from the shared download cache.
 lake exe cache get
