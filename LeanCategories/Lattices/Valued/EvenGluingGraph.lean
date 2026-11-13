@@ -170,6 +170,30 @@ theorem evenDiscriminantRestrictionMap_adjointRange_le_ker :
   rw [hmap, evenDiscriminantFstRestriction_adjoint L M, evenDiscriminantSndRestriction_adjoint L M]
   exact Prod.ext h1 h2
 
+/-! ## The transported adjoint
+
+The pair of the two coordinate restrictions of the orthogonal-sum adjoint is the pair of
+the two adjoints — the statement that the adjoint of the orthogonal sum, transported
+along the product-dual splitting `Module.dualProdDualEquivDual` of Mathlib, is the
+product of the two adjoints. This is the input the defect-quotient equivalence needs:
+it says the adjoint range of the orthogonal sum is the product of the two adjoint
+ranges, so the quotient the defect of the orthogonal sum splits into is the product of
+the two defects. -/
+
+omit [IsDomain R] in
+/-- The pair of the two coordinate restrictions of the orthogonal-sum adjoint is the pair
+of the two adjoints. This combines the two adjoint laws above into the single statement
+that the transported adjoint is the product of the two adjoints. -/
+theorem evenDiscriminantRestrictions_adjoint
+    (a : L.obj.carrier) (b : M.obj.carrier) :
+    (evenDiscriminantFstRestriction L M
+        ((orthogonalSum L M).obj.adjoint (a, b)),
+      evenDiscriminantSndRestriction L M
+        ((orthogonalSum L M).obj.adjoint (a, b))) =
+      (L.obj.adjoint a, M.obj.adjoint b) :=
+  Prod.ext (evenDiscriminantFstRestriction_adjoint L M a b)
+    (evenDiscriminantSndRestriction_adjoint L M a b)
+
 end LeanCategories.Lattices.Valued
 
 #print axioms LeanCategories.Lattices.Valued.evenDiscriminantFstRestriction
