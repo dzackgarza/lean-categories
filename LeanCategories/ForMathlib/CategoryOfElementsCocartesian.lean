@@ -27,25 +27,27 @@ This extends Mathlib's `CategoryOfElements.homMk` and `CategoryOfElements.π` wi
 instance homMk_map_isStronglyCocartesian (F : C ⥤ Type w) {R S : C}
     (x : F.obj R) (f : R ⟶ S) :
     Functor.IsStronglyCocartesian (π F) f
-      (homMk ⟨R, x⟩ ⟨S, F.map f x⟩ f rfl) := by
+      (homMk f rfl : Functor.Elements.mk x ⟶ Functor.Elements.mk (F.map f x)) := by
   refine { toIsHomLift := ?_, universal_property' := ?_ }
-  · apply IsHomLift.of_fac' (π F) f _ (by simp) (by simp)
-    simp [π]
-  · rintro ⟨T, z⟩ g φ hφ
+  · exact IsHomLift.of_fac' (π F) f (homMk f rfl :
+      Functor.Elements.mk x ⟶ Functor.Elements.mk (F.map f x)) rfl rfl (by simp [π])
+  · intro b' g φ hφ
     letI : (π F).IsHomLift (f ≫ g) φ := hφ
     have hφfac := IsHomLift.fac' (π F) (f ≫ g) φ
-    have hφval : φ.val = f ≫ g := by
+    have hφval : φ.hom = f ≫ g := by
       simpa [π] using hφfac
-    change S ⟶ T at g
-    have hφval' : φ.val = f ≫ g := hφval
-    refine ⟨homMk _ _ g ?_, ?_, ?_⟩
+    change S ⟶ b'.obj at g
+    have hφval' : φ.hom = f ≫ g := hφval
+    refine ⟨homMk g ?_, ?_, ?_⟩
     · rw [← F.map_comp_apply, ← hφval']
-      exact φ.property
+      exact φ.map_val
     · constructor
-      · apply IsHomLift.of_fac' (π F) g _ (by simp) (by simp)
-        simp [π]
+      · refine IsHomLift.of_fac' (π F) g _ ?_ ?_ ?_
+        · rfl
+        · rfl
+        · simp [π]
       · apply ext
-        change f ≫ g = φ.val
+        change f ≫ g = φ.hom
         exact hφval'.symm
     · intro χ hχ
       apply ext

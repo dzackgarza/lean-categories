@@ -44,17 +44,17 @@ universe u v
 /-- The actual forward morphism of `a : Aut X`, in the selected category `C`.
 Here `Aut X` is the carrier of `automorphismsConstruction C` at `Core.mk X`.
 The result is an endomorphism of `X`, with all of `X`'s chosen structure. -/
-def forward (C : Cat.{v, u}) (X : C) (a : Aut X) : X ⟶ X := a.hom
+def forward (C : Cat.{v, u}) (X : C) (a : Aut X) : X ⟶ X := a.asIso.hom
 
 /-- The actual inverse morphism of the same automorphism element, with source
 and target the original selected object `X` of `C`. -/
-def backward (C : Cat.{v, u}) (X : C) (a : Aut X) : X ⟶ X := a.inv
+def backward (C : Cat.{v, u}) (X : C) (a : Aut X) : X ⟶ X := a.asIso.inv
 
 theorem forward_backward (C : Cat.{v, u}) (X : C) (a : Aut X) :
-    forward C X a ≫ backward C X a = 𝟙 X := a.hom_inv_id
+    forward C X a ≫ backward C X a = 𝟙 X := a.asIso.hom_inv_id
 
 theorem backward_forward (C : Cat.{v, u}) (X : C) (a : Aut X) :
-    backward C X a ≫ forward C X a = 𝟙 X := a.inv_hom_id
+    backward C X a ≫ forward C X a = 𝟙 X := a.asIso.inv_hom_id
 
 /-- Projection agrees with the existing inverse in the automorphism group. -/
 theorem forward_inv (C : Cat.{v, u}) (X : C) (a : Aut X) :
@@ -69,14 +69,18 @@ theorem forward_conjugate (C : Cat.{v, u}) (X Y : C) (e : X ≅ Y) (a : Aut X) :
     forward C Y
         ((Automorphisms.automorphismsConstruction C).map
           (show Core.mk X ⟶ Core.mk Y from CoreHom.mk e) a) =
-      e.inv ≫ forward C X a ≫ e.hom := rfl
+      e.inv ≫ forward C X a ≫ e.hom := by
+  change (e.symm ≪≫ a.asIso ≪≫ e).hom = e.inv ≫ a.asIso.hom ≫ e.hom
+  rfl
 
 /-- The inverse arrow of that same conjugated automorphism. -/
 theorem backward_conjugate (C : Cat.{v, u}) (X Y : C) (e : X ≅ Y) (a : Aut X) :
     backward C Y
         ((Automorphisms.automorphismsConstruction C).map
           (show Core.mk X ⟶ Core.mk Y from CoreHom.mk e) a) =
-      e.inv ≫ backward C X a ≫ e.hom := rfl
+      e.inv ≫ backward C X a ≫ e.hom := by
+  change (e.symm ≪≫ a.asIso ≪≫ e).inv = e.inv ≫ a.asIso.inv ≫ e.hom
+  simp
 
 /-- For an arbitrary selected category `C`, functor `U : C ⥤ Type v`, and
 object `X : C`, the map `Aut(X) × U(X) → U(X)` with action
@@ -86,14 +90,14 @@ No faithfulness, finiteness, choice of coordinates, or concrete-category
 hypothesis is required. The hom-set and set universes here are both `v`. -/
 def evaluation (C : Cat.{v, u}) (U : C ⥤ Type v) (X : C) :
     (Aut X × U.obj X : Type v) ⟶ U.obj X :=
-  TypeCat.ofHom fun p => (U.mapIso p.1).hom p.2
+  TypeCat.ofHom fun p => (U.mapIso p.1.asIso).hom p.2
 
 /-- Inverse evaluation for the same selected `C`, `U`, and `X`:
 `(a, x) ↦ U.map a.inv x`. This projects the inverse direction of `a`,
 without computing or selecting a replacement isomorphism. -/
 def inverseEvaluation (C : Cat.{v, u}) (U : C ⥤ Type v) (X : C) :
     (Aut X × U.obj X : Type v) ⟶ U.obj X :=
-  TypeCat.ofHom fun p => (U.mapIso p.1).inv p.2
+  TypeCat.ofHom fun p => (U.mapIso p.1.asIso).inv p.2
 
 theorem evaluation_apply (C : Cat.{v, u}) (U : C ⥤ Type v) (X : C)
     (a : Aut X) (x : U.obj X) :
@@ -113,19 +117,19 @@ theorem evaluation_mul (C : Cat.{v, u}) (U : C ⥤ Type v) (X : C)
     (a b : Aut X) (x : U.obj X) :
     evaluation C U X (a * b, x) =
       evaluation C U X (a, evaluation C U X (b, x)) := by
-  change U.map (b.hom ≫ a.hom) x = U.map a.hom (U.map b.hom x)
+  change U.map (b.asIso.hom ≫ a.asIso.hom) x = U.map a.asIso.hom (U.map b.asIso.hom x)
   rw [U.map_comp]
   rfl
 
 theorem evaluation_inverseEvaluation (C : Cat.{v, u}) (U : C ⥤ Type v)
     (X : C) (a : Aut X) (x : U.obj X) :
     evaluation C U X (a, inverseEvaluation C U X (a, x)) = x :=
-  Iso.inv_hom_id_apply (U.mapIso a) x
+  Iso.inv_hom_id_apply (U.mapIso a.asIso) x
 
 theorem inverseEvaluation_evaluation (C : Cat.{v, u}) (U : C ⥤ Type v)
     (X : C) (a : Aut X) (x : U.obj X) :
     inverseEvaluation C U X (a, evaluation C U X (a, x)) = x :=
-  Iso.hom_inv_id_apply (U.mapIso a) x
+  Iso.hom_inv_id_apply (U.mapIso a.asIso) x
 
 /-- The forward set map carried by an element of the selected symmetric group. -/
 def setsForward (X : Type u) (a : (Automorphisms.automorphisms (Type u)).obj ⟨X⟩) :

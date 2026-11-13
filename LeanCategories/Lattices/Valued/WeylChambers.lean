@@ -7,6 +7,7 @@ module
 public import LeanCategories.Lattices.Valued.WeylCone
 public import LeanCategories.Lattices.Valued.TopologicalOrthogonalGroup
 public import LeanCategories.Lattices.Valued.GenusInvariants
+public import LeanCategories.Lattices.Valued.Reduction
 public import LeanCategories.Algebra.CoxeterGraphData
 public import Mathlib.Analysis.Convex.PathConnected
 public import Mathlib.Topology.Algebra.Module.ModuleTopology
@@ -151,7 +152,7 @@ theorem mem_rootMirrorArrangement_iff {x : (realForm L).obj.carrier} :
 variable (t : (realForm L).obj.carrier)
 
 /-- The regular locus in the positive cone: the chosen sheet minus the mirror arrangement. -/
-def weylRegularLocus : Set (realForm L).obj.carrier :=
+noncomputable def weylRegularLocus : Set (realForm L).obj.carrier :=
   positiveCone.upper (realFormQuadratic L) t \ rootMirrorArrangement L
 
 theorem mem_weylRegularLocus_iff {x : (realForm L).obj.carrier} :
@@ -177,9 +178,8 @@ theorem weylRegularLocus_subset :
 /-- The **chamber** of a regular point: the connected component of the regular locus
 containing it (Bourbaki V §1 no. 3, Def. 2 and the discussion after it, p. 64: the chambers
 are exactly the connected components of the complement of the hyperplanes). -/
-def chamberOf (x : (realForm L).obj.carrier) : Set (realForm L).obj.carrier :=
+noncomputable def chamberOf (x : (realForm L).obj.carrier) : Set (realForm L).obj.carrier :=
   connectedComponentIn (weylRegularLocus L t) x
-
 theorem mem_chamberOf {x : (realForm L).obj.carrier} (hx : x ∈ weylRegularLocus L t) :
     x ∈ chamberOf L t x :=
   mem_connectedComponentIn hx
@@ -762,15 +762,25 @@ variable (L : FiniteProjectiveLatticeCat ℤ ℤ)
 variable {I : Type} [Fintype I] [DecidableEq I]
 variable (b : Module.Basis I ℤ L.obj.obj.carrier)
 
-theorem exists_finBasis : ∃ (n : ℕ) (b : Module.Basis (Fin n) ℤ L.obj.obj.carrier),
-      Submodule.span ℤ (Set.range b) = ⊤ := by
-  have hfree : Module.Free ℤ L.obj.obj.carrier := L.carrier_free
-  have hfin : Module.Finite ℤ L.obj.obj.carrier := L.property
-  refine ⟨Fintype.card (Module.Free.ChooseBasisIndex ℤ L.obj.obj.carrier),
-    (Module.Free.chooseBasis ℤ L.obj.obj.carrier).reindex
-      (Fintype.equivFin (Module.Free.ChooseBasisIndex ℤ L.obj.obj.carrier)), ?_⟩
-  exact ((Module.Free.chooseBasis ℤ L.obj.obj.carrier).reindex
-      (Fintype.equivFin (Module.Free.ChooseBasisIndex ℤ L.obj.obj.carrier))).span_eq
+/-- The carrier of a finite projective lattice over `ℤ` is a free `ℤ`-module: the fact that
+makes the basis datum of the matrix presentations below well defined. -/
+noncomputable instance latticeCarrierFree : Module.Free ℤ L.obj.obj.carrier :=
+  L.carrier_free
+
+/-- The carrier of a finite projective lattice over `ℤ` is finite. -/
+instance latticeCarrierFinite : Module.Finite ℤ L.obj.obj.carrier :=
+  L.property
+
+/-- The finite ℤ-basis of the carrier of `L`, as data: the chosen basis of the free
+ℤ-module `L.obj.obj.carrier`, reindexed over `Fin n`, `n` the rank. The existence statement
+this def replaces — a basis `b` with `Submodule.span ℤ (Set.range b) = ⊤` — holds of every
+basis and stated nothing, so the basis itself is the datum (the property is `span_eq` of any
+basis, in `Module.Basis.span_eq`). -/
+noncomputable def carrierFinBasis :
+    Module.Basis (Fin (Fintype.card (Module.Free.ChooseBasisIndex ℤ L.obj.obj.carrier))) ℤ
+      L.obj.obj.carrier :=
+  (Module.Free.chooseBasis ℤ L.obj.obj.carrier).reindex
+    (Fintype.equivFin (Module.Free.ChooseBasisIndex ℤ L.obj.obj.carrier))
 
 theorem baseChange_toMatrix (g : OrthogonalGroup L.obj) :
     LinearMap.toMatrix (b.baseChange ℝ) (b.baseChange ℝ)
@@ -993,4 +1003,461 @@ theorem realFormOrthogonalImage_isolated
 
 
 end Isolation
+
+/-! ### The continuity and compactness infrastructure for the discreteness theory
+
+The pairing of the real form is jointly continuous (the real form is a finite `ℝ`-module
+carrying the module topology, in which bilinear maps are continuous), so the quadratic
+form is continuous, and the pairings of the points of a nonempty compact set with the
+image of a fixed lattice vector are bounded. These are the compactness facts that the
+finiteness argument of condition (D')2 of Bourbaki V §3 no. 1 (p. 77) rests on: for `g`
+with `g x = y` and `x`, `y` in compact subsets of the chosen sheet, the pairing of the
+image of a basis vector with a fixed basis vector is bounded (the spatial part of the
+image relative to `y` has bounded antivalue by the reverse Cauchy-Schwarz inequality of
+a form of signature `(1, n)` with the positive minimum of the quadratic form on the
+second compact, and two spatial parts pair within the Cauchy-Schwarz inequality of the
+negative definite orthogonal complement), so only finitely many bounded pairing
+matrices of integers occur, and the pairing matrix determines the isometry. -/
+
+section Compactness
+
+variable (L : FiniteProjectiveLatticeCat ℤ ℤ)
+
+noncomputable def realFormPairingCurry (L : FiniteProjectiveLatticeCat ℤ ℤ) :
+    (realForm L).obj.carrier →ₗ[ℝ] (realForm L).obj.carrier →ₗ[ℝ] ℝ where
+  toFun z :=
+    { toFun := fun w => (realForm L).obj.pairing z w
+      map_add' := fun u v => by simp [BilinModuleCat.pairing_add_right]
+      map_smul' := fun r u => by simp [BilinModuleCat.pairing_smul_right] }
+  map_add' := fun u v => by
+    ext w
+    simp [BilinModuleCat.pairing_add_left]
+  map_smul' := fun r u => by
+    ext w
+    simp [BilinModuleCat.pairing_smul_left]
+
+theorem continuous_realFormPairing (L : FiniteProjectiveLatticeCat ℤ ℤ) :
+    Continuous (fun p : (realForm L).obj.carrier × (realForm L).obj.carrier =>
+      (realForm L).obj.pairing p.1 p.2) := by
+  have: Module.Finite ℝ (realForm L).obj.carrier := realFormFiniteDimensional L
+  have hbil : Continuous (fun ab : (realForm L).obj.carrier × (realForm L).obj.carrier =>
+      realFormPairingCurry L ab.1 ab.2) :=
+    IsModuleTopology.continuous_bilinear_of_finite_left (realFormPairingCurry L)
+  exact hbil
+
+set_option maxHeartbeats 4000000 in
+theorem continuous_realFormQuadratic (L : FiniteProjectiveLatticeCat ℤ ℤ) :
+    Continuous (realFormQuadratic L) := by
+  have hdiag : Continuous (fun z : (realForm L).obj.carrier => (z, z)) := by
+    exact continuous_prodMk.mpr ⟨continuous_id, continuous_id⟩
+  have hcomp : Continuous
+      ((fun p : (realForm L).obj.carrier × (realForm L).obj.carrier =>
+        (realForm L).obj.pairing p.1 p.2) ∘
+        fun z : (realForm L).obj.carrier => (z, z)) :=
+    Continuous.comp (continuous_realFormPairing L) hdiag
+  exact Continuous.congr hcomp (fun z => rfl)
+
+set_option maxHeartbeats 4000000 in
+theorem bounded_pairing_of_isCompact {L : FiniteProjectiveLatticeCat ℤ ℤ}
+    {J : Set (realForm L).obj.carrier} (hJ : IsCompact J) (hJne : J.Nonempty)
+    (a : L.obj.obj.carrier) :
+    ∃ B : ℝ, ∀ z ∈ J, |(realForm L).obj.pairing (toRealForm L a) z| ≤ B := by
+  have hdiag : Continuous (fun z : (realForm L).obj.carrier => (z, z)) := by
+    exact continuous_prodMk.mpr ⟨continuous_id, continuous_id⟩
+  have hfix : Continuous
+      ((fun p : (realForm L).obj.carrier × (realForm L).obj.carrier =>
+        (realForm L).obj.pairing p.1 p.2) ∘
+        fun w : (realForm L).obj.carrier => (toRealForm L a, w)) :=
+    Continuous.comp (continuous_realFormPairing L)
+      (continuous_prodMk.mpr ⟨continuous_const, continuous_id⟩)
+  have hfun : Continuous (fun z : (realForm L).obj.carrier =>
+      (realForm L).obj.pairing (toRealForm L a) z) :=
+    Continuous.congr hfix (fun z => rfl)
+  have habs : Continuous (fun z : (realForm L).obj.carrier =>
+      |(realForm L).obj.pairing (toRealForm L a) z|) := hfun.abs
+  obtain ⟨z₀, hz₀, hmax⟩ := hJ.exists_isMaxOn hJne habs.continuousOn
+  exact ⟨_, fun z hz => hmax hz⟩
+
+set_option maxHeartbeats 4000000 in
+theorem abs_pairing_le_of_displacement {L : FiniteProjectiveLatticeCat ℤ ℤ}
+    (hpos : sigPos (realFormQuadratic L) = 1)
+    {x y : (realForm L).obj.carrier} (hy : 0 < realFormQuadratic L y)
+    (g : OrthogonalGroup L.obj) (hgy : realFormOrthogonalHom L g x = y)
+    {I : Type} [Fintype I] [DecidableEq I] (b : Module.Basis I ℤ L.obj.obj.carrier)
+    (i j : I)
+    {Bi : ℝ} (hBi : |(realForm L).obj.pairing (toRealForm L (b i)) x| ≤ Bi)
+    {B'j : ℝ} (hB'j : |(realForm L).obj.pairing (toRealForm L (b j)) y| ≤ B'j)
+    {m : ℝ} (hm : 0 < m) (hmy : m ≤ realFormQuadratic L y) :
+    |(realForm L).obj.pairing (realFormOrthogonalHom L g (toRealForm L (b i)))
+      (toRealForm L (b j))| ≤
+      B'j / m * Bi +
+      Real.sqrt ((-(realFormQuadratic L (toRealForm L (b i))) + Bi * Bi / m) *
+        (-(realFormQuadratic L (toRealForm L (b j))) + B'j * B'j / m)) := by
+  -- the transfer identity
+  have htrans : (realForm L).obj.pairing (realFormOrthogonalHom L g (toRealForm L (b i))) y =
+      (realForm L).obj.pairing (toRealForm L (b i)) x := by
+    rw [← hgy]
+    exact realFormIsometry_pairing L g (toRealForm L (b i)) x
+  -- the isometry preserves the quadratic value of the basis vector
+  have hiso : realFormQuadratic L (realFormOrthogonalHom L g (toRealForm L (b i))) =
+      realFormQuadratic L (toRealForm L (b i)) := by
+    rw [realFormOrthogonalHom_toRealForm L g (b i),
+      realFormQuadratic_toRealForm L (g.1 (b i)),
+      realFormQuadratic_toRealForm L (b i)]
+    exact_mod_cast isometry_pairing L g (b i) (b i)
+  -- the two square bounds
+  have hb2 : (realForm L).obj.pairing (toRealForm L (b i)) x ^ 2 ≤ Bi * Bi := by
+    obtain ⟨h1, h2⟩ := abs_le.mp hBi
+    nlinarith
+  have hb2' : (realForm L).obj.pairing (toRealForm L (b j)) y ^ 2 ≤ B'j * B'j := by
+    obtain ⟨h1, h2⟩ := abs_le.mp hB'j
+    nlinarith
+  -- the cross bounds
+  have hcross : (realForm L).obj.pairing (toRealForm L (b i)) x ^ 2 * m ≤
+      Bi * Bi * realFormQuadratic L y := by
+    have hnn : 0 ≤ Bi * Bi := by nlinarith [sq_nonneg Bi]
+    have hny : 0 ≤ realFormQuadratic L y := le_of_lt hy
+    nlinarith [hb2, hmy, hm, hnn, hny]
+  have hcross' : (realForm L).obj.pairing (toRealForm L (b j)) y ^ 2 * m ≤
+      B'j * B'j * realFormQuadratic L y := by
+    have hnn : 0 ≤ B'j * B'j := by nlinarith [sq_nonneg B'j]
+    have hny : 0 ≤ realFormQuadratic L y := le_of_lt hy
+    nlinarith [hb2', hmy, hm, hnn, hny]
+  -- the transfer of the associated pairing onto the pairing
+  have hkey : (QuadraticMap.associated (realFormQuadratic L))
+      (realFormOrthogonalHom L g (toRealForm L (b i))) y =
+      (realForm L).obj.pairing (toRealForm L (b i)) x := by
+    rw [← realFormPairing_eq_associated]
+    exact htrans
+  -- the two antivalue bounds
+  have hanti : -(realFormQuadratic L (spatialPart (realFormQuadratic L) y
+      (realFormOrthogonalHom L g (toRealForm L (b i))))) ≤
+      -(realFormQuadratic L (toRealForm L (b i))) + Bi * Bi / m := by
+    have hquad := quadratic_spatialPart (realFormQuadratic L) hy.ne'
+      (realFormOrthogonalHom L g (toRealForm L (b i)))
+    rw [hquad, hiso, hkey]
+    have hdiv : (realForm L).obj.pairing (toRealForm L (b i)) x ^ 2 /
+        realFormQuadratic L y ≤ Bi * Bi / m := by
+      rw [div_le_div_iff₀ hy hm]
+      nlinarith [hcross, sq_nonneg Bi]
+    linarith
+  have hantiw : -(realFormQuadratic L (spatialPart (realFormQuadratic L) y
+      (toRealForm L (b j)))) ≤
+      -(realFormQuadratic L (toRealForm L (b j))) + B'j * B'j / m := by
+    have hquad := quadratic_spatialPart (realFormQuadratic L) hy.ne' (toRealForm L (b j))
+    rw [hquad, realFormQuadratic_toRealForm L (b j)]
+    have hdiv' : (realForm L).obj.pairing (toRealForm L (b j)) y ^ 2 /
+        realFormQuadratic L y ≤ B'j * B'j / m := by
+      rw [div_le_div_iff₀ hy hm]
+      nlinarith [hcross', sq_nonneg B'j]
+    rw [realFormPairing_eq_associated] at hdiv'
+    linarith
+  -- the cauchy-schwarz on the spatial parts and nonnegativity
+  have hcs := associated_spatialPart_sq_le (realFormQuadratic L) hpos hy
+    (realFormOrthogonalHom L g (toRealForm L (b i))) (toRealForm L (b j))
+  rw [← realFormPairing_eq_associated] at hcs
+  have hnonU : 0 ≤ -(realFormQuadratic L (spatialPart (realFormQuadratic L) y
+      (realFormOrthogonalHom L g (toRealForm L (b i))))) :=
+    neg_nonneg.mpr (quadratic_spatialPart_nonpos (realFormQuadratic L) hpos hy
+      (realFormOrthogonalHom L g (toRealForm L (b i))))
+  have hnonW : 0 ≤ -(realFormQuadratic L (spatialPart (realFormQuadratic L) y
+      (toRealForm L (b j)))) :=
+    neg_nonneg.mpr (quadratic_spatialPart_nonpos (realFormQuadratic L) hpos hy
+      (toRealForm L (b j)))
+  have htarg : 0 ≤ -(realFormQuadratic L (toRealForm L (b i))) + Bi * Bi / m :=
+    le_trans hnonU hanti
+  have htarg' : 0 ≤ -(realFormQuadratic L (toRealForm L (b j))) + B'j * B'j / m :=
+    le_trans hnonW hantiw
+  -- the product bound
+  have hprod : (-(realFormQuadratic L (spatialPart (realFormQuadratic L) y
+      (realFormOrthogonalHom L g (toRealForm L (b i)))))) *
+      (-(realFormQuadratic L (spatialPart (realFormQuadratic L) y
+      (toRealForm L (b j))))) ≤
+      (-(realFormQuadratic L (toRealForm L (b i))) + Bi * Bi / m) *
+        (-(realFormQuadratic L (toRealForm L (b j))) + B'j * B'j / m) :=
+    mul_le_mul hanti hantiw hnonW htarg
+  -- the abs-sqrt conversion
+  have habs : |(realForm L).obj.pairing
+      (spatialPart (realFormQuadratic L) y
+        (realFormOrthogonalHom L g (toRealForm L (b i))))
+      (spatialPart (realFormQuadratic L) y (toRealForm L (b j)))| ≤
+      Real.sqrt ((-(realFormQuadratic L (spatialPart (realFormQuadratic L) y
+        (realFormOrthogonalHom L g (toRealForm L (b i)))))) *
+        (-(realFormQuadratic L (spatialPart (realFormQuadratic L) y
+      (toRealForm L (b j)))))) :=
+    Real.le_sqrt_of_sq_le (by rw [sq_abs]; exact hcs)
+  -- the monotone sqrt
+  have hmono : Real.sqrt ((-(realFormQuadratic L (spatialPart (realFormQuadratic L) y
+      (realFormOrthogonalHom L g (toRealForm L (b i)))))) *
+      (-(realFormQuadratic L (spatialPart (realFormQuadratic L) y
+      (toRealForm L (b j)))))) ≤
+      Real.sqrt ((-(realFormQuadratic L (toRealForm L (b i))) + Bi * Bi / m) *
+        (-(realFormQuadratic L (toRealForm L (b j))) + B'j * B'j / m)) :=
+    Real.sqrt_le_sqrt hprod
+  -- the expansion pieces
+  have h1 : (realForm L).obj.pairing
+      (realFormOrthogonalHom L g (toRealForm L (b i))) (toRealForm L (b j)) =
+      (((QuadraticMap.associated (realFormQuadratic L)) (toRealForm L (b j)) y /
+        realFormQuadratic L y) *
+        (realForm L).obj.pairing
+          (realFormOrthogonalHom L g (toRealForm L (b i))) y) +
+      (realForm L).obj.pairing
+        (realFormOrthogonalHom L g (toRealForm L (b i)))
+        (spatialPart (realFormQuadratic L) y (toRealForm L (b j))) := by
+    conv_lhs =>
+      rw [show (toRealForm L (b j)) = (((QuadraticMap.associated
+          (realFormQuadratic L)) (toRealForm L (b j)) y /
+        realFormQuadratic L y) • y +
+        spatialPart (realFormQuadratic L) y (toRealForm L (b j))) from by
+          rw [spatialPart]; abel]
+    rw [BilinModuleCat.pairing_add_right, BilinModuleCat.pairing_smul_right]
+    ring_nf
+  have h2 : (realForm L).obj.pairing
+      (realFormOrthogonalHom L g (toRealForm L (b i)))
+      (spatialPart (realFormQuadratic L) y (toRealForm L (b j))) =
+      (realForm L).obj.pairing (spatialPart (realFormQuadratic L) y
+        (realFormOrthogonalHom L g (toRealForm L (b i))))
+      (spatialPart (realFormQuadratic L) y (toRealForm L (b j))) := by
+    have hwyy : (realForm L).obj.pairing y
+        (spatialPart (realFormQuadratic L) y (toRealForm L (b j))) = 0 := by
+      rw [realFormPairing_eq_associated, associated_comm (realFormQuadratic L),
+        associated_spatialPart_right (realFormQuadratic L) hy.ne' (toRealForm L (b j))]
+    conv_lhs =>
+      rw [show (realFormOrthogonalHom L g (toRealForm L (b i))) =
+        (((QuadraticMap.associated (realFormQuadratic L))
+          (realFormOrthogonalHom L g (toRealForm L (b i))) y /
+          realFormQuadratic L y) • y +
+        spatialPart (realFormQuadratic L) y
+          (realFormOrthogonalHom L g (toRealForm L (b i)))) from by
+            rw [spatialPart]; abel]
+    rw [BilinModuleCat.pairing_add_left, BilinModuleCat.pairing_smul_left,
+      hwyy, smul_zero, zero_add]
+  -- the coefficient bound, cross-multiplied
+  have hcoeffX : |(QuadraticMap.associated (realFormQuadratic L))
+      (toRealForm L (b j)) y| * m ≤ B'j * realFormQuadratic L y := by
+    have hb : |(QuadraticMap.associated (realFormQuadratic L))
+        (toRealForm L (b j)) y| ≤ B'j := by
+      rw [← realFormPairing_eq_associated]
+      exact hB'j
+    have hny : 0 ≤ realFormQuadratic L y := hy.le
+    nlinarith [hb, hmy, hny, hm.le,
+      abs_nonneg ((QuadraticMap.associated (realFormQuadratic L)) (toRealForm L (b j)) y)]
+  -- the final bound: the triangle inequality and the two entry bounds
+  rw [h1, h2, htrans]
+  refine le_trans (abs_add_le _ _) ?_
+  rw [abs_mul, abs_div, abs_of_pos hy]
+  have hc2 : |(realForm L).obj.pairing (toRealForm L (b i)) x| ≤ Bi := hBi
+  have hc3 : |(realForm L).obj.pairing
+      (spatialPart (realFormQuadratic L) y
+        (realFormOrthogonalHom L g (toRealForm L (b i))))
+      (spatialPart (realFormQuadratic L) y (toRealForm L (b j)))| ≤
+      Real.sqrt ((-(realFormQuadratic L (toRealForm L (b i))) + Bi * Bi / m) *
+        (-(realFormQuadratic L (toRealForm L (b j))) + B'j * B'j / m)) :=
+    le_trans habs hmono
+  have hcoeff : |(QuadraticMap.associated (realFormQuadratic L)) (toRealForm L (b j)) y| /
+      realFormQuadratic L y ≤ B'j / m :=
+    (div_le_div_iff₀ hy hm).mpr hcoeffX
+  exact add_le_add (mul_le_mul hcoeff hc2 (abs_nonneg _)
+    (div_nonneg (le_trans (abs_nonneg _) hB'j) hm.le)) hc3
+
+/-- **The pairing matrix of a displacement between compact sets has bounded entries** (Bourbaki,
+*Groupes et algèbres de Lie*, Ch. V §3 no. 1, p. 77, condition (D2)): the pairing matrix of `g`
+in the basis `b` has the entry `(g bᵢ, bⱼ)`; when some point of a compact source set is carried
+into a compact target set of the positive cone, every entry is bounded by one constant, from the
+boundedness of the pairings and the positivity of the quadratic form on the target. -/
+theorem exists_pairingMatrix_bound (hpos : sigPos (realFormQuadratic L) = 1)
+    (t : (realForm L).obj.carrier) (_ht : 0 < realFormQuadratic L t)
+    {K K' : Set (realForm L).obj.carrier}
+    (hK : IsCompact K) (hKne : K.Nonempty)
+    (hK' : IsCompact K') (hK'ne : K'.Nonempty)
+    (hK'upper : K' ⊆ positiveCone.upper (realFormQuadratic L) t)
+    {I : Type} [Fintype I] [DecidableEq I] (i₀ : I)
+    (b : Module.Basis I ℤ L.obj.obj.carrier) :
+    ∃ C : ℝ, ∀ g : OrthogonalGroup L.obj, (∃ x ∈ K, realFormOrthogonalHom L g x ∈ K') →
+      ∀ i j : I, |(realForm L).obj.pairing (realFormOrthogonalHom L g (toRealForm L (b i)))
+        (toRealForm L (b j))| ≤ C := by
+  -- the source and target entry bounds, per basis vector
+  have hBi : ∀ i : I, ∃ Bi : ℝ, ∀ x ∈ K,
+      |(realForm L).obj.pairing (toRealForm L (b i)) x| ≤ Bi :=
+    fun i => bounded_pairing_of_isCompact hK hKne (b i)
+  have hB'j : ∀ j : I, ∃ B'j : ℝ, ∀ y ∈ K',
+      |(realForm L).obj.pairing (toRealForm L (b j)) y| ≤ B'j :=
+    fun j => bounded_pairing_of_isCompact hK' hK'ne (b j)
+  -- the positive lower bound of the quadratic form on the target
+  obtain ⟨y₀, hy₀, hmin⟩ := hK'.exists_isMinOn hK'ne
+    (continuous_realFormQuadratic L).continuousOn
+  have hy₀pos : 0 < realFormQuadratic L y₀ := (hK'upper hy₀).1
+  have hmy : ∀ y ∈ K', realFormQuadratic L y₀ ≤ realFormQuadratic L y := hmin
+  -- the choice of the constants
+  choose Bi hBi' using hBi
+  choose B'j hB'j' using hB'j
+  -- the per-entry bound of the displacement lemma
+  have hbound : ∀ (i j : I) (g : OrthogonalGroup L.obj) (x : (realForm L).obj.carrier)
+      (hx : x ∈ K) (hxy : realFormOrthogonalHom L g x ∈ K'),
+      |(realForm L).obj.pairing (realFormOrthogonalHom L g (toRealForm L (b i)))
+        (toRealForm L (b j))| ≤
+        B'j j / realFormQuadratic L y₀ * Bi i +
+        Real.sqrt ((-(realFormQuadratic L (toRealForm L (b i))) +
+          Bi i * Bi i / realFormQuadratic L y₀) *
+          (-(realFormQuadratic L (toRealForm L (b j))) +
+            B'j j * B'j j / realFormQuadratic L y₀)) := by
+    intro i j g x hx hxy
+    exact abs_pairing_le_of_displacement hpos ((hK'upper hxy).1) g rfl b i j
+      (hBi' i x hx) (hB'j' j _ hxy) hy₀pos (hmy _ hxy)
+  -- the maximum of the per-entry bound over the finite basis; the named element
+  -- `i₀ : I` supplies the nonemptiness of the index product that the maximum needs
+  obtain ⟨p₀, -, hC⟩ := Finset.exists_max_image (Finset.univ : Finset (I × I))
+    (fun p : I × I => B'j p.2 / realFormQuadratic L y₀ * Bi p.1 +
+      Real.sqrt ((-(realFormQuadratic L (toRealForm L (b p.1))) +
+        Bi p.1 * Bi p.1 / realFormQuadratic L y₀) *
+        (-(realFormQuadratic L (toRealForm L (b p.2))) +
+          B'j p.2 * B'j p.2 / realFormQuadratic L y₀)))
+    ⟨(i₀, i₀), Finset.mem_univ _⟩
+  refine ⟨B'j p₀.2 / realFormQuadratic L y₀ * Bi p₀.1 +
+      Real.sqrt ((-(realFormQuadratic L (toRealForm L (b p₀.1))) +
+        Bi p₀.1 * Bi p₀.1 / realFormQuadratic L y₀) *
+        (-(realFormQuadratic L (toRealForm L (b p₀.2))) +
+          B'j p₀.2 * B'j p₀.2 / realFormQuadratic L y₀)),
+    fun g hg i j => ?_⟩
+  obtain ⟨x, hxK, hxy⟩ := hg
+  exact (hbound i j g x hxK hxy).trans (hC (i, j) (Finset.mem_univ _))
+
+/-- **Vanishing on a basis extends.** The vanishing set of the pairing with a fixed vector is a
+submodule containing the basis, and the basis spans the carrier, so vanishing on the basis
+forces vanishing everywhere. -/
+theorem pairing_eq_zero_of_basis {I : Type} [Fintype I] [DecidableEq I]
+    (b : Module.Basis I ℤ L.obj.obj.carrier) {u : L.obj.obj.carrier}
+    (h : ∀ j, L.obj.obj.pairing u (b j) = 0) :
+    ∀ y, L.obj.obj.pairing u y = 0 := by
+  -- the vanishing set, as a submodule: the pairing with u is bilinear
+  have hspan : Submodule.span ℤ (Set.range b) ≤
+      ({ carrier := {y | L.obj.obj.pairing u y = 0}
+         add_mem' := by
+           intro x y hx hy
+           simp only [Set.mem_setOf_eq] at hx hy ⊢
+           rw [BilinModuleCat.pairing_add_right, hx, hy]
+           simp
+         zero_mem' := by
+           simp only [Set.mem_setOf_eq]
+           exact BilinModuleCat.pairing_zero_right _ _
+         smul_mem' := by
+           intro c x hx
+           simp only [Set.mem_setOf_eq] at hx ⊢
+           rw [BilinModuleCat.pairing_smul_right, hx]
+           simp } : Submodule ℤ L.obj.obj.carrier) := by
+    refine Submodule.span_le.mpr ?_
+    rintro y hy'
+    obtain ⟨j, rfl⟩ := hy'
+    exact h j
+  intro y
+  have hy : y ∈ Submodule.span ℤ (Set.range b) := by
+    rw [b.span_eq]
+    exact Submodule.mem_top
+  exact hspan hy
+
+/-- **The pairing matrix of an isometry determines the isometry.** Two isometries with equal
+pairing matrices agree on the basis: the difference vector pairs to zero with every basis
+vector, hence with every vector by `pairing_eq_zero_of_basis`, hence is zero by nondegeneracy. -/
+theorem pairingMatrix_injective (hL : L.obj.obj.IsNondegenerate)
+    {I : Type} [Fintype I] [DecidableEq I]
+    (b : Module.Basis I ℤ L.obj.obj.carrier) :
+    Function.Injective
+      (fun g : OrthogonalGroup L.obj => fun i j => L.obj.obj.pairing (g.1 (b i)) (b j)) := by
+  intro g h heq
+  -- the matrix equality, pointwise
+  have hkey : ∀ i j, L.obj.obj.pairing (g.1 (b i)) (b j)
+      = L.obj.obj.pairing (h.1 (b i)) (b j) := fun i j => congrFun (congrFun heq i) j
+  -- the difference vector pairs to zero with the basis
+  have hdiff : ∀ i j, L.obj.obj.pairing (g.1 (b i) - h.1 (b i)) (b j) = 0 := by
+    intro i j
+    have h1 : L.obj.obj.pairing (g.1 (b i) - h.1 (b i) + h.1 (b i)) (b j)
+        = L.obj.obj.pairing (g.1 (b i)) (b j) := by
+      rw [show g.1 (b i) - h.1 (b i) + h.1 (b i) = g.1 (b i)
+        from sub_add_cancel (g.1 (b i)) (h.1 (b i))]
+    rw [BilinModuleCat.pairing_add_left] at h1
+    rw [hkey i j] at h1
+    linarith
+  -- the difference vector is zero by nondegeneracy
+  have hzero : ∀ i, g.1 (b i) = h.1 (b i) := by
+    intro i
+    have hext : ∀ y, L.obj.obj.pairing (g.1 (b i) - h.1 (b i)) y = 0 :=
+      pairing_eq_zero_of_basis L b (hdiff i)
+    have hbilin : ∀ y, L.obj.obj.bilinMap (g.1 (b i) - h.1 (b i)) y = 0 := by
+      intro y
+      rw [BilinModuleCat.bilinMap_apply]
+      exact hext y
+    exact sub_eq_zero.mp (hL.1 _ hbilin)
+  -- agreement on the basis extends to the whole carrier
+  have hfun : ∀ x, g.1 x = h.1 x := by
+    intro x
+    have hco : (g.1 : L.obj.obj.carrier →ₗ[ℤ] L.obj.obj.carrier) =
+        (h.1 : L.obj.obj.carrier →ₗ[ℤ] L.obj.obj.carrier) := by
+      refine LinearMap.ext_on (R := ℤ) b.span_eq ?_
+      rintro x hx
+      obtain ⟨i, rfl⟩ := hx
+      exact hzero i
+    exact LinearMap.congr_fun hco x
+  exact Subtype.ext (LinearEquiv.ext hfun)
+
+/-- **Only finitely many isometries carry a compact set of the positive cone to meet another**
+(Bourbaki, *Groupes et algèbres de Lie*, Ch. V §3 no. 1, p. 77, condition (D2)): for compact
+sets `K` and `K'` of the chosen sheet of the positive cone of the real form of `L`, only
+finitely many `g ∈ O(L)` carry some point of `K` into `K'`. The pairing matrix of `g` in a
+basis has bounded entries on this set (`exists_pairingMatrix_bound`), the bounded integer
+matrices form a finite set — the repository's own `finite_boundedGramMatrices`
+(`Reduction.lean`; `Matrix I I ℤ` is `I → I → ℤ` by definition, so the lemma applies verbatim)
+— and the pairing matrix determines the isometry through nondegeneracy
+(`pairingMatrix_injective`, via `pairing_eq_zero_of_basis`). -/
+theorem realFormOrthogonal_finite_of_compact (hL : L.obj.obj.IsNondegenerate)
+    (hpos : sigPos (realFormQuadratic L) = 1)
+    (t : (realForm L).obj.carrier) (_ht : 0 < realFormQuadratic L t)
+    {K K' : Set (realForm L).obj.carrier}
+    (hK : IsCompact K) (hKne : K.Nonempty)
+    (hK' : IsCompact K') (hK'ne : K'.Nonempty)
+    (hK'upper : K' ⊆ positiveCone.upper (realFormQuadratic L) t)
+    {I : Type} [Fintype I] [DecidableEq I] (i₀ : I)
+    (b : Module.Basis I ℤ L.obj.obj.carrier) :
+    {g : OrthogonalGroup L.obj | ∃ x ∈ K, realFormOrthogonalHom L g x ∈ K'}.Finite := by
+  -- the entry bound
+  obtain ⟨C, hC⟩ := exists_pairingMatrix_bound L hpos t _ht hK hKne hK' hK'ne hK'upper i₀ b
+  -- the integer bound
+  set N : ℤ := Int.ceil C with hN
+  have hNC : C ≤ (N : ℝ) := Int.le_ceil C
+  -- the finite target set: bounded integer matrices, the repository's own
+  -- `finite_boundedGramMatrices` (Reduction.lean), `Matrix I I ℤ` being `I → I → ℤ` by
+  -- definition
+  have hT : {M : I → I → ℤ | ∀ i j, |M i j| ≤ N}.Finite :=
+    finite_boundedGramMatrices I N
+  -- the map lands in the target
+  have hmaps : Set.MapsTo (fun g : OrthogonalGroup L.obj => fun i j =>
+      L.obj.obj.pairing (g.1 (b i)) (b j))
+      {g : OrthogonalGroup L.obj | ∃ x ∈ K, realFormOrthogonalHom L g x ∈ K'}
+      {M : I → I → ℤ | ∀ i j, |M i j| ≤ N} := by
+    intro g hg
+    show ∀ i j, |L.obj.obj.pairing (g.1 (b i)) (b j)| ≤ N
+    intro i j
+    obtain ⟨x, hxK, hxy⟩ := hg
+    have hentry := hC g ⟨x, hxK, hxy⟩ i j
+    rw [realFormOrthogonalHom_toRealForm L g (b i)] at hentry
+    rw [realFormPairing_toRealForm L (g.1 (b i)) (b j)] at hentry
+    obtain ⟨hlo, hhi⟩ := abs_le.mp hentry
+    refine abs_le.mpr ⟨?_, ?_⟩
+    · -- the lower integer bound
+      have hreal : ((-N : ℤ) : ℝ) ≤ (L.obj.obj.pairing (g.1 (b i)) (b j) : ℝ) := by
+        have hcast : ((-N : ℤ) : ℝ) = -((N : ℤ) : ℝ) := Int.cast_neg N
+        linarith [hcast, hNC, hlo]
+      exact Int.cast_le.mp hreal
+    · -- the upper integer bound
+      have hreal : (L.obj.obj.pairing (g.1 (b i)) (b j) : ℝ) ≤ ((N : ℤ) : ℝ) :=
+        le_trans hhi hNC
+      exact Int.cast_le.mp hreal
+  -- injectivity on the source
+  have hinj : Set.InjOn (fun g : OrthogonalGroup L.obj => fun i j =>
+      L.obj.obj.pairing (g.1 (b i)) (b j))
+      {g : OrthogonalGroup L.obj | ∃ x ∈ K, realFormOrthogonalHom L g x ∈ K'} :=
+    fun g _ h _ heq => pairingMatrix_injective L hL b heq
+  exact Set.Finite.of_injOn hmaps hinj hT
+
+end Compactness
+
 end LeanCategories.Lattices.Valued

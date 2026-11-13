@@ -104,7 +104,7 @@ abbrev carrierMap {X Y : BilWFormCat R} (f : X ⟶ Y) : X.carrier ⟶ Y.carrier 
 def of (M W : ModuleCat.{u} R)
     (b : TensorProduct R (M : Type u) (M : Type u) →ₗ[R] W) : BilWFormCat R where
   base := W
-  fiber := op ⟨op M, b⟩
+  fiber := op (Functor.elementsMk _ (op M) b)
 
 /-- Build a morphism in the total category from compatible carrier and value maps. -/
 def homMk {X Y : BilWFormCat R}
@@ -112,7 +112,7 @@ def homMk {X Y : BilWFormCat R}
     (h : ∀ x y, α (X.pairing x y) = Y.pairing (f x) (f y)) : X ⟶ Y where
   base := ModuleCat.ofHom α
   fiber := by
-    refine Quiver.Hom.op (CategoryOfElements.homMk _ _
+    refine Quiver.Hom.op (Functor.Elements.homMk
       (op (ModuleCat.ofHom f)) ?_)
     dsimp [bilinearForms]
     apply LinearMap.ext
@@ -134,7 +134,7 @@ theorem hom_ext {X Y : BilWFormCat R} (f g : X ⟶ Y)
       subst gBase
       congr
       apply Quiver.Hom.unop_inj
-      apply CategoryOfElements.ext
+      apply Functor.Elements.hom_ext
       apply Quiver.Hom.unop_inj
       apply ModuleCat.hom_ext
       exact congrArg ModuleCat.Hom.hom hCarrier

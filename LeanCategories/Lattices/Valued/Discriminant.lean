@@ -73,7 +73,7 @@ theorem discriminantValueRelations_eq (L : IntegralLatticeCat R) :
         change algebraMap R (FractionRing R) (metricDualToValueDual R L y x) =
           rationalizedForm R L (toRationalSpan R L x) y
         rw [rationalizedForm_isSymmetric]
-        exact (rationalizedForm R L).dualSubmoduleParing_spec
+        exact (rationalizedForm R L).dualSubmodulePairing_spec
           y (toIntegralImage R L x)
     · rw [BilWFormCat.rightMixedRelations, Submodule.span_le]
       rintro _ ⟨⟨y, x⟩, rfl⟩
@@ -81,7 +81,7 @@ theorem discriminantValueRelations_eq (L : IntegralLatticeCat R) :
       refine ⟨metricDualToValueDual R L y x, ?_⟩
       change algebraMap R (FractionRing R) (metricDualToValueDual R L y x) =
         rationalizedForm R L y (toRationalSpan R L x)
-      exact (rationalizedForm R L).dualSubmoduleParing_spec
+      exact (rationalizedForm R L).dualSubmodulePairing_spec
         y (toIntegralImage R L x)
   · exact le_trans le_sup_left le_sup_left
 
@@ -181,7 +181,8 @@ noncomputable def discriminantForm (L : IntegralLatticeCat R)
 noncomputable def discriminantBilinObject (L : IntegralLatticeCat R)
     (hL : IsFractionFieldPerfect R L) :
     BilinModuleCat R (FractionValueQuotient R) :=
-  op ⟨op (ModuleCat.of R L.obj.defect), discriminantForm R L hL⟩
+  op (Functor.elementsMk _ (op (ModuleCat.of R L.obj.defect))
+    (discriminantForm R L hL))
 
 omit [IsDomain R] in
 @[simp]
@@ -581,7 +582,7 @@ noncomputable def discriminantProjectionBilin (L : IntegralLatticeCat R)
     [Module.Finite R L.obj.carrier]
     (hL : IsFractionFieldPerfect R L) :
     (projectedRieszDualLattice R L hL).obj ⟶ discriminantBilinObject R L hL := by
-  refine Quiver.Hom.op (CategoryOfElements.homMk _ _
+  refine Quiver.Hom.op (Functor.Elements.homMk
     (op (ModuleCat.ofHom L.obj.defectProjection)) ?_)
   dsimp [bilinearForms]
   apply LinearMap.ext
@@ -725,6 +726,7 @@ theorem ker_discriminantCarrierProjection (L : IntegralLatticeCat R)
   rw [LinearMap.exact_iff.mp (exact_toMetricDual_discriminantCarrier R L),
     ker_metricDualToDiscriminant R L hL]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The categorical discriminant `A_L = L♯/L` is the adjoint defect `L*/b♯(L)`.
 
 `FOUNDATIONS.md` owns `A_L = L♯/L` as the definition of the discriminant module; this

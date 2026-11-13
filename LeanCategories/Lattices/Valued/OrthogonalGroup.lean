@@ -28,15 +28,21 @@ abbrev LatticeAutomorphismGroup (L : IntegralLatticeCat R) := CategoryTheory.Aut
 noncomputable def latticeAutEquivOrthogonalGroup (L : IntegralLatticeCat R) :
     LatticeAutomorphismGroup L ≃* OrthogonalGroup L :=
   { toFun := fun e ↦
-      ⟨BilinModuleCat.linearEquivOfIso ((isLattice R R).ι.mapIso e),
-        BilinModuleCat.linearEquivOfIso_pairing ((isLattice R R).ι.mapIso e)⟩
+      ⟨BilinModuleCat.linearEquivOfIso ((isLattice R R).ι.mapIso e.asIso),
+        (by
+          intro x y
+          exact BilinModuleCat.linearEquivOfIso_pairing ((isLattice R R).ι.mapIso e.asIso) x y)⟩
     invFun := fun g ↦
-      (isLattice R R).fullyFaithfulι.preimageIso
-        (BilinModuleCat.OrthogonalGroup.toIso g)
+      .of ((isLattice R R).fullyFaithfulι.preimageIso
+        (BilinModuleCat.OrthogonalGroup.toIso g))
     left_inv := by
       intro e
       apply CategoryTheory.Aut.ext
+      apply CategoryTheory.Iso.ext
       apply (isLattice R R).fullyFaithfulι.map_injective
+      rw [CategoryTheory.Functor.FullyFaithful.preimageIso_hom]
+      rw [CategoryTheory.Functor.FullyFaithful.map_preimage]
+      ext x
       rfl
     right_inv := by
       intro g

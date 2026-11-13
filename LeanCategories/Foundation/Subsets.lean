@@ -58,7 +58,7 @@ def naturalSection (G : C ⥤ Type w) (s : ∀ X, G.obj X)
 
 /-- Every object is the unique element of the terminal functor over it. -/
 def toTerminalElements : C ⥤ ((Functor.const C).obj PUnit.{w + 1}).Elements where
-  obj X := ⟨X, PUnit.unit⟩
+  obj X := Functor.elementsMk _ X PUnit.unit
   map f := ⟨f, rfl⟩
 
 /-- A natural section of `G`, as a functor `C ⥤ ∫G` over `C`. -/
@@ -68,7 +68,7 @@ def sectionFunctor (G : C ⥤ Type w) (s : ∀ X, G.obj X)
 
 @[simp] theorem sectionFunctor_obj (G : C ⥤ Type w) (s : ∀ X, G.obj X)
     (h : ∀ {X Y : C} (f : X ⟶ Y), G.map f (s X) = s Y) (X : C) :
-    (sectionFunctor G s h).obj X = ⟨X, s X⟩ := rfl
+    (sectionFunctor G s h).obj X = Functor.elementsMk _ X (s X) := rfl
 
 end Sections
 

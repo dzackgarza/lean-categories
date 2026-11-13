@@ -76,29 +76,33 @@ variable (C : Type u) [Category.{v} C]
 def endomorphisms : Core C ⥤ MonCat.{v} where
   obj X := MonCat.of (End X.of)
   map e := MonCat.ofHom e.iso.conj.toMonoidHom
-  map_id X := by ext a; simp [Iso.conj_apply]
-  map_comp e f := by ext a; simp [Iso.conj_apply]
+  map_id X := by ext a; simp
+  map_comp e f := by ext a; simp
 
 /-- `Aut : Core(C) ⥤ Grp`. -/
 def automorphisms : Core C ⥤ GrpCat.{v} where
   obj X := GrpCat.of (Aut X.of)
   map e := GrpCat.ofHom (Aut.autMulEquivOfIso e.iso).toMonoidHom
   map_id X := by
-    ext a : 2; apply Iso.ext
-    change (Iso.refl X.of).inv ≫ a.hom ≫ (Iso.refl X.of).hom = a.hom
+    ext a : 2
+    apply Aut.ext
+    apply Iso.ext
+    change (Iso.refl X.of).inv ≫ a.asIso.hom ≫ (Iso.refl X.of).hom = a.asIso.hom
     simp
   map_comp e f := by
-    ext a : 2; apply Iso.ext
-    change (e.iso ≪≫ f.iso).inv ≫ a.hom ≫ (e.iso ≪≫ f.iso).hom =
-      f.iso.inv ≫ (e.iso.inv ≫ a.hom ≫ e.iso.hom) ≫ f.iso.hom
+    ext a : 2
+    apply Aut.ext
+    apply Iso.ext
+    change (e.iso ≪≫ f.iso).inv ≫ a.asIso.hom ≫ (e.iso ≪≫ f.iso).hom =
+      f.iso.inv ≫ (e.iso.inv ≫ a.asIso.hom ≫ e.iso.hom) ≫ f.iso.hom
     simp
 
 /-- `Aut ≅ End ⋙ (−)ˣ`. -/
 def automorphismsIsoUnits : automorphisms C ≅ endomorphisms C ⋙ MonCat.units :=
   NatIso.ofComponents (fun X => (Aut.unitsEndEquivAut X.of).symm.toGrpIso) fun e => by
     ext a : 2; apply Units.ext
-    change e.iso.inv ≫ a.hom ≫ e.iso.hom = e.iso.conj a.hom
-    simp [Iso.conj_apply]
+    change End.of (e.iso.inv ≫ a.asIso.hom ≫ e.iso.hom) = e.iso.conj ⟨a.asIso.hom⟩
+    rfl
 
 end Generic
 
@@ -108,34 +112,35 @@ variable {C : Type u} [Category.{v} C] (U : C ⥤ Type v)
 
 /-- The inclusion `Aut(X, x) ↪ Aut(X)`. -/
 def stabilizerInclusion (p : U.Elements) : Aut p →* Aut p.1 :=
-  (CategoryOfElements.π U).mapAut p
+  (Functor.Elements.π U).mapAut p
 
 theorem stabilizerInclusion_injective (p : U.Elements) :
     Function.Injective (stabilizerInclusion U p) := fun _ _ h =>
-  Iso.ext ((CategoryOfElements.π U).map_injective (congrArg Iso.hom h))
+  Aut.ext (Iso.ext ((Functor.Elements.π U).map_injective
+    (congrArg (fun x => x.asIso.hom) h)))
 
 theorem mem_range_stabilizerInclusion_iff (p : U.Elements) (g : Aut p.1) :
-    g ∈ (stabilizerInclusion U p).range ↔ U.map g.hom p.2 = p.2 := by
+    g ∈ (stabilizerInclusion U p).range ↔ U.map g.asIso.hom p.2 = p.2 := by
   constructor
   · rintro ⟨a, rfl⟩
-    exact a.hom.2
+    exact a.asIso.hom.map_val
   · intro h
-    refine ⟨⟨⟨g.hom, h⟩, ⟨g.inv, ?_⟩, ?_, ?_⟩, rfl⟩
+    refine ⟨Aut.of ⟨⟨g.asIso.hom, h⟩, ⟨g.asIso.inv, ?_⟩, ?_, ?_⟩, rfl⟩
     · conv_lhs => rw [← h]
-      exact Iso.hom_inv_id_apply (U.mapIso g) p.2
-    · exact CategoryOfElements.ext _ _ _ g.hom_inv_id
-    · exact CategoryOfElements.ext _ _ _ g.inv_hom_id
+      exact Iso.hom_inv_id_apply (U.mapIso g.asIso) p.2
+    · exact Functor.Elements.hom_ext g.asIso.hom_inv_id
+    · exact Functor.Elements.hom_ext g.asIso.inv_hom_id
 
 /-- An isomorphism `e : (X, x) ≅ (Y, y)` of elements conjugates `Aut(X, x) ↪ Aut(X)` onto
 `Aut(Y, y) ↪ Aut(Y)`: the inclusions commute with conjugation by `e` and by `π e`. -/
 theorem stabilizerInclusion_conj {p q : Core U.Elements} (e : p ⟶ q) :
     (automorphisms U.Elements).map e ≫ GrpCat.ofHom (stabilizerInclusion U q.of) =
       GrpCat.ofHom (stabilizerInclusion U p.of) ≫
-        (automorphisms C).map ((CategoryOfElements.π U).core.map e) := by
-  refine GrpCat.ext fun a => Iso.ext ?_
-  change (CategoryOfElements.π U).map (e.iso.inv ≫ a.hom ≫ e.iso.hom) =
-    (CategoryOfElements.π U).map e.iso.inv ≫ (CategoryOfElements.π U).map a.hom ≫
-      (CategoryOfElements.π U).map e.iso.hom
+        (automorphisms C).map ((Functor.Elements.π U).core.map e) := by
+  refine GrpCat.ext fun a => Aut.ext (Iso.ext ?_)
+  change (Functor.Elements.π U).map (e.iso.inv ≫ a.asIso.hom ≫ e.iso.hom) =
+    (Functor.Elements.π U).map e.iso.inv ≫ (Functor.Elements.π U).map a.asIso.hom ≫
+      (Functor.Elements.π U).map e.iso.hom
   simp only [Functor.map_comp]
 
 /-- `Stab : Core(Elements(U)) ⥤ Subobjects(Grp)`, `(X, x) ↦ (Aut(X, x) ↪ Aut(X))`. -/
@@ -143,18 +148,18 @@ def stabilizers : Core U.Elements ⥤ (LeanCategories.isMonoArrow GrpCat.{v}).Fu
   obj p := ⟨Arrow.mk (GrpCat.ofHom (stabilizerInclusion U p.of)),
     (GrpCat.mono_iff_injective _).mpr (stabilizerInclusion_injective U p.of)⟩
   map e := ObjectProperty.homMk (Arrow.homMk ((automorphisms U.Elements).map e)
-    ((automorphisms C).map ((CategoryOfElements.π U).core.map e)) (stabilizerInclusion_conj U e))
+    ((automorphisms C).map ((Functor.Elements.π U).core.map e)) (stabilizerInclusion_conj U e))
   map_id p := ObjectProperty.hom_ext _ (Arrow.hom_ext _ _ ((automorphisms U.Elements).map_id p)
     ((automorphisms C).map_id _))
   map_comp e f := ObjectProperty.hom_ext _ (Arrow.hom_ext _ _
     ((automorphisms U.Elements).map_comp e f)
-    (((automorphisms C).congr_map ((CategoryOfElements.π U).core.map_comp e f)).trans
+    (((automorphisms C).congr_map ((Functor.Elements.π U).core.map_comp e f)).trans
       ((automorphisms C).map_comp _ _)))
 
 /-- The ambient group of `Stab(X, x)` is `Aut(X)`. -/
 def stabilizersCodomainIso :
     stabilizers U ⋙ (LeanCategories.isMonoArrow GrpCat.{v}).ι ⋙ Arrow.rightFunc ≅
-      (CategoryOfElements.π U).core ⋙ automorphisms C :=
+      (Functor.Elements.π U).core ⋙ automorphisms C :=
   NatIso.ofComponents (fun p => Iso.refl ((automorphisms C).obj ⟨p.of.1⟩)) fun _ => by
     simp only [Iso.refl_hom]
     rfl
@@ -235,14 +240,14 @@ theorem units_inverse (M : Type) [Monoid M] (u : MonCat.units.obj (MonCat.of M))
 /-! Separating examples: a stabilizer is a proper subgroup in general, and contains `1`. -/
 
 /-- The transposition of `Fin 2` does not fix `0`: `Stab(0) ≠ Aut(Fin 2)`. -/
-example : (Equiv.swap (0 : Fin 2) 1).toIso ∉
+example : Aut.of (Equiv.swap (0 : Fin 2) 1).toIso ∉
     (stabilizerInclusion (𝟭 Type) ((𝟭 Type).elementsMk (Fin 2) (0 : Fin 2))).range := by
   refine (mem_range_stabilizerInclusion_iff _ _ _).not.mpr ?_
   change Equiv.swap (0 : Fin 2) 1 0 ≠ 0
   decide
 
 /-- The identity fixes every point. -/
-example : (Iso.refl (Fin 2) : Aut (Fin 2)) ∈
+example : (Aut.of (Iso.refl (Fin 2)) : Aut (Fin 2)) ∈
     (stabilizerInclusion (𝟭 Type) ((𝟭 Type).elementsMk (Fin 2) (0 : Fin 2))).range := by
   exact (mem_range_stabilizerInclusion_iff _ _ _).mpr rfl
 
@@ -390,7 +395,7 @@ def coreModulesAutUnits (R : RingCat.{u}) :
 
 /-- `π : Sets_* ⥤ Sets`, forgetting the point. -/
 def pointedSetsProjectionDeclaration : pointedSetsCategory.{u} ⥤ Foundation.Mathlib.Sets.{u} :=
-  CategoryOfElements.π _
+  Functor.Elements.π _
 def pointedSetsProjectionRealization :
     FunctorRealization PointedSetsProjectionExpr pointedSetsCategory.{u}
       Foundation.Mathlib.Sets.{u} pointedSetsProjectionDeclaration :=

@@ -62,7 +62,7 @@ noncomputable def doubleCosetOfCoset (K Γ H : Subgroup G) [K.Normal] (hKΓ : K 
     have hgg'' : g⁻¹ * g' ∈ K := QuotientGroup.leftRel_apply.mp hgg'
     rw [DoubleCoset.eq]
     refine ⟨g * (g⁻¹ * g') * g⁻¹,
-      hKΓ (Subgroup.Normal.conj_mem inferInstance (g⁻¹ * g') hgg'' g), 1, H.one_mem, ?_⟩
+      hKΓ (Subgroup.Normal.conj_mem (g⁻¹ * g') hgg'' g), 1, H.one_mem, ?_⟩
     group)
 
 /-- For `K ◁ G` and `K ≤ Γ`, the double cosets `Γ \ G / H` are the double cosets in `G ⧸ K` of the
@@ -99,8 +99,8 @@ noncomputable def dosetQuotientEquiv (K Γ H : Subgroup G) [K.Normal] (hKΓ : K 
     have hg' : g' = γ * g * h * k := by
       rw [hkdef]; group
     refine ⟨γ * (g * (h * k * h⁻¹) * g⁻¹), ?_, h, hh, ?_⟩
-    · exact Γ.mul_mem hγ (hKΓ (Subgroup.Normal.conj_mem inferInstance (h * k * h⁻¹)
-        (Subgroup.Normal.conj_mem inferInstance k hkK h) g))
+    · exact Γ.mul_mem hγ (hKΓ (Subgroup.Normal.conj_mem (h * k * h⁻¹)
+        (Subgroup.Normal.conj_mem k hkK h) g))
     · rw [hg']; group)
   left_inv := by
     intro q
@@ -186,8 +186,7 @@ theorem cuspOrbitOfDoset_injective (Γ : FiniteIndexSubgroup L) {k : ℕ}
         g⁻¹ • ((γ : OrthogonalGroup L) • (g' • N)) := by
       simp [mul_smul]
     rw [hstep, hγ', inv_smul_smul]
-  refine (DoubleCoset.eq (Γ.toSubgroup)
-    (MulAction.stabilizer (OrthogonalGroup L) N) g g').mpr
+  refine DoubleCoset.eq.mpr
     ⟨(γ : OrthogonalGroup L)⁻¹, Γ.toSubgroup.inv_mem γ.2, g⁻¹ * (γ : OrthogonalGroup L) * g',
       hstab, by group⟩
 
