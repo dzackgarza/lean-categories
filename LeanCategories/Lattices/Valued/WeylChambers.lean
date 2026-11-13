@@ -1460,4 +1460,27 @@ theorem realFormOrthogonal_finite_of_compact (hL : L.obj.obj.IsNondegenerate)
 
 end Compactness
 
+/-! ## Lemma 1: local finiteness of the mirror arrangement (Bourbaki V §3 no. 1, p. 77)
+
+Only finitely many root hyperplanes meet a compact subset of the chosen sheet of the positive
+cone, counted as sets (several roots share one mirror). The reflections in the roots whose
+mirrors meet the compact set fix a point of it, so condition (D′2) bounds them. -/
+
+section LemmaOne
+
+/-- The fixed set of the reflection in a vector of nonzero value is exactly its mirror
+hyperplane: `reflectIn` fixes a point if and only if it pairs to zero with the vector. -/
+private theorem reflectIn_fix_iff {V : Type u} [AddCommGroup V] [Module ℝ V]
+    (Q : QuadraticForm ℝ V) {a : V} (ha : Q a ≠ 0) (x : V) :
+    reflectIn Q a ha x = x ↔ (associated Q) x a = 0 := by
+  constructor
+  · intro hx
+    have h4 := reflectIn_associated_comm Q ha x
+    rw [hx] at h4
+    linarith
+  · intro hx
+    exact associated_reflectIn_self Q ha hx
+
+end LemmaOne
+
 end LeanCategories.Lattices.Valued
