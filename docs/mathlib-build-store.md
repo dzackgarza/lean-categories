@@ -47,6 +47,23 @@ alone, so one worktree's rebuild can no longer rewrite or remove what another re
 `All targets up-to-date`, i.e. after Lake itself certifies that every trace in the tree matches the
 sources at that revision; that is what keeps a second worktree from inheriting stale outputs.
 
+## The order
+
+A worktree moves to a new Mathlib head in three steps, and the first one must not fetch the cache:
+
+```
+just update    # MATHLIB_NO_CACHE_ON_UPDATE=1 lake update -- resolution only
+just cache     # scripts/cache-get.sh -- link (or, for the first worktree, decompress) the tree
+just build     # lake build -- runs the cache step first, so this alone is enough
+```
+
+Mathlib's own lakefile decompresses the cache itself at the end of `lake update`
+(`lakefile.lean:193-197`, the `post_update` hook). That runs before this script
+can share anything, writes a full 6.8G tree into the worktree that ran the
+update, and four chats doing it at once is the disk exhaustion #148 reports.
+`MATHLIB_NO_CACHE_ON_UPDATE=1` is Mathlib's own switch for it, and `just update`
+sets it.
+
 ## Why not a mechanism Lake or the cache tool already provides
 
 - **Lake's `packagesDir`** (the pre-#143 layout) names *one* package directory, hence one Mathlib

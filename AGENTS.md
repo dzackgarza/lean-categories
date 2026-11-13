@@ -706,6 +706,13 @@ state of the same kind as `.lake/` — not probe state — so it is not deleted 
 make disk numbers look smaller either; deleting it costs every chat a full
 decompression of Mathlib.
 
+Move a worktree to a new Mathlib head with `just update`, never with a bare
+`lake update`: Mathlib's lakefile fetches the cache itself at the end of
+`lake update` (`lakefile.lean:193-197`, the `post_update` hook) and writes a full
+copy into that worktree, which is what exhausted the disk; `just update` sets
+`MATHLIB_NO_CACHE_ON_UPDATE=1` so `just cache`/`just build` can share one copy
+instead. Then `just test` before a push, as always.
+
 ### A wait is only delivery while the process is alive
 
 An aggregate `lake build` prints `4760/4761` and stops. Hours later the transcript

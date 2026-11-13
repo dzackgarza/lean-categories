@@ -17,6 +17,17 @@ ai_review_ci := env_var("HOME") / "ai-review-ci"
 default:
     @just --list
 
+# Move this worktree to the Mathlib master head without decompressing its build
+# tree here. Mathlib's own lakefile fetches the cache at the end of `lake update`
+# (lakefile.lean:193-197, the `post_update` hook) and writes it into this
+# worktree's tree -- that hook is what put four copies of Mathlib on the VM's
+# disk, because it runs before scripts/cache-get.sh can hand out the one shared
+# tree. MATHLIB_NO_CACHE_ON_UPDATE=1 turns it off, so the cache step below runs
+# instead, once per revision for every worktree. Use `just update`, not a bare
+# `lake update`, then `just cache` (or `just build`, which runs the cache step).
+update:
+    @MATHLIB_NO_CACHE_ON_UPDATE=1 lake update
+
 # Build the library on Mathlib's prebuilt cache (machine-wide in ~/.cache/mathlib).
 # scripts/cache-get.sh gives this worktree a tree of hardlinks into the one Mathlib
 # build the repository keeps per Mathlib revision (see docs/mathlib-build-store.md),
