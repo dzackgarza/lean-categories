@@ -138,7 +138,7 @@ private theorem linearCombination_mem_of_nonneg {ι : Type*} [Fintype ι]
       (Function.support c).toFinite.toFinset.card = n → 0 ≤ c → 0 ≤ f (L c) → L c ∈ D := by
     intro n
     induction n using Nat.strong_induction_on with
-    | h n ih =>
+    | _ n ih =>
       intro c hn hc hf
       by_cases hneg : ∃ j, c j ≠ 0 ∧ f (v j) < 0
       · obtain ⟨j, hcj, hj⟩ := hneg
