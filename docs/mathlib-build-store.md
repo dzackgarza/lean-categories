@@ -38,7 +38,9 @@ The store lives in the repository's own `git` directory, which is the one locati
 worktrees share, so it is repository-owned build state rather than a global cache. `df` counts the
 bytes once; `du` reports them once per inode. Per worktree this replaces about 7.3G with inodes, so
 four worktrees cost one copy in total instead of four, and the store's own size is what one worktree
-used to cost.
+used to cost -- as long as the worktrees are on the same revision. Moving one of them to a new
+Mathlib head seeds a second 6.7G entry for as long as the old head is needed, so the store also has
+to forget: see *An entry is kept only while a worktree names it*, below.
 
 ### Every package, not just Mathlib
 
@@ -91,10 +93,51 @@ for another's. Inside one worktree the fill order is Mathlib's cache first and t
 after it second, because `lake build +<Module>` for a package needs the oleans it imports to be in
 place.
 
-The store keeps the newest `MATHLIB_BUILD_STORE_KEEP` entries (default 2) of each package and prunes
-older ones; removing an entry only drops the store's links, so a worktree already linked to it keeps
-its bytes. A decompression refuses to start with less than `MATHLIB_BUILD_STORE_MIN_FREE_GB` (default
-7) free.
+### An entry is kept only while a worktree names it
+
+The store used to keep the newest `MATHLIB_BUILD_STORE_KEEP` (default 2) entries of each package. That
+number is not a property of anything, and it did not bound the store: on 2026-11-13 it held the head
+one worktree was on, the head it had left, and the revision a third worktree had resolved, and the
+VM's one disk stood at 9 GB free with three Lean chats stopped (lean-categories#149). An entry lives
+now while some worktree of the repository -- `git worktree list`, every one of them, not the newest
+two -- names that revision in its `lake-manifest.json`. Anything else in the store is dropped, of
+every package, including ones this workspace does not resolve at all, and so is an unfinished
+`<rev>-<toolchain>.tmp.<pid>` seed whose process is gone. `MATHLIB_BUILD_STORE_KEEP` is gone with the
+rule that needed it.
+
+Nothing is deleted out from under a build. Two things put an entry in use, and both are read from
+`/proc` before any removal:
+
+- **A process holds a path inside the entry.** That is another worktree's `cp -al`, a `du`, or a seed
+  being written. This has to be read from `/proc/<pid>/fd` *and* `/proc/<pid>/maps`, because Lean
+  maps an `.olean` and closes the descriptor it opened it with, so the descriptors alone would miss a
+  build that is in fact reading the file.
+- **A `lake`, `lean` or `leanc` process is working inside a worktree whose tree is that entry's
+  inodes** — the same inode test that decides whether a tree is linked. That is a build that started
+  before this run and has not finished, in a worktree whose manifest has since moved to another head;
+  it keeps its entry. Any process holding a path under a worktree's `.lake` counts the same way, so a
+  `lake update` whose manifest is momentarily half-written cannot be mistaken for a worktree that
+  names nothing.
+
+Removal also takes the entry's own per-key lock, so it cannot land inside another worktree's `fill`
+or `relink` of that key; an entry whose lock is held is skipped with a message. The eviction runs
+twice per invocation: once after every package with an entry is linked and before anything is
+decompressed -- which is what makes the space ordering work, since the head a worktree has left is
+named by no manifest any more and its 6.7 GB are released by the `unlink_tree` of the fill instead of
+being held beside the next 6.7 GB -- and once at the end, so the store is clean when the run returns.
+
+### What a stale worktree pins
+
+Removing an entry only unlinks the store's names for its inodes. A hardlinked file gives its space
+back when its last link goes, so an entry that is dropped frees nothing while a worktree still has
+that tree linked: the space arrives when the last linked worktree relinks (which `fill` does by
+dropping the tree before decompressing) or when that tree is deleted. A worktree that is registered
+but never relinks -- one left behind by a stopped chat -- keeps its copy of the bytes to itself, and
+no amount of eviction reclaims it; `du -sh .lake/packages` in that worktree shows it. The same
+worktree's `lake-manifest.json` also keeps alive the entry it names. Both are consequences of what
+the store is: a set of names for bytes that the worktrees own, not a cache it can clear on its own.
+
+A decompression refuses to start with less than `MATHLIB_BUILD_STORE_MIN_FREE_GB` (default 7) free.
 
 ## The order
 

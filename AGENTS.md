@@ -709,7 +709,12 @@ a copy of the `.trace` files and a link for everything else: Lake rewrites a
 trace in place, so a shared trace would let one worktree's rebuild invalidate
 another's tree. That store is build state of the same kind as `.lake/` — not
 probe state — so it is not deleted to make disk numbers look smaller either;
-deleting it costs every chat a full decompression of Mathlib.
+deleting it costs every chat a full decompression of Mathlib. What bounds it is
+its own rule, not a number: an entry is kept exactly while some worktree of the
+repository names its revision in its `lake-manifest.json`, and the cache step
+evicts the rest after it links (lean-categories#149). Nothing evicts the tree
+inside an abandoned worktree, which keeps its 6.7 GB of links to itself until
+someone removes it.
 
 Move a worktree to a new Mathlib head with `just update`, never with a bare
 `lake update`: Mathlib's lakefile fetches the cache itself at the end of

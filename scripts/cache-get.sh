@@ -52,13 +52,23 @@
 # tree that check passed on. Without that check the store could hand a second
 # worktree the stale outputs #143 was about.
 #
+# An entry lives exactly while some worktree names it. A store that keeps one
+# 6.7 GB Mathlib entry per revision it has ever seen grows as often as Mathlib
+# master moves, not as often as anyone builds: on 2026-11-13 it held the head this
+# worktree was on, the head it had left, and a revision a third worktree had
+# resolved, and the VM's one disk stood at 9 GB free with three Lean chats stopped
+# (lean-categories#149). So after linking, this script drops every entry -- of
+# every package, not only the ones this workspace resolves -- whose revision no
+# worktree of this repository names in its `lake-manifest.json`, and every
+# unfinished seed whose process is gone; it never drops an entry a running build
+# reads, nor one another worktree is filling or linking. See `gc` and `in_use`.
+#
 # One revision of a package is materialized once, under a per-key lock; every
 # other worktree at that head links it in about a second. Nothing else is
 # serialized -- each worktree still runs its own `lake update`, its own cache step
 # and its own build, and no worktree's build waits for another's.
 #
 # Environment: MATHLIB_BUILD_STORE (default <git-common-dir>/lake-build-store),
-# MATHLIB_BUILD_STORE_KEEP (entries to keep per package, default 2),
 # MATHLIB_BUILD_STORE_MIN_FREE_GB (free space a decompression needs, default 7).
 set -euo pipefail
 cd "$(dirname "$0")/.."
@@ -71,7 +81,6 @@ if [ -z "$STORE" ]; then
   STORE="$(git rev-parse --path-format=absolute --git-common-dir 2>/dev/null \
     || echo .lake)/lake-build-store"
 fi
-KEEP="${MATHLIB_BUILD_STORE_KEEP:-2}"
 MIN_FREE_GB="${MATHLIB_BUILD_STORE_MIN_FREE_GB:-7}"
 
 say() { echo "cache-get: $*"; }
@@ -96,10 +105,11 @@ entry() { printf '%s/%s/%s-%s' "$STORE" "$1" "$2" "$TOOL"; }
 
 # The module a package's library is rooted at: its namesake `.lean` file at the
 # package root (Batteries.lean, Qq.lean, ...). `lake exe cache get` takes that
-# module name, and so does the module-spec check that certifies the package.
+# module name, and so does the module-spec check that certifies the package. $2
+# is the `packages` directory holding the checkout, this worktree's by default.
 pkg_root_module() {
   local d f b lc
-  d="$(pkg_dir "$1")"
+  d="$(pkg_dir "$1" "${2:-$PKGDIR}")"
   lc="$(printf '%s' "$1" | tr '[:upper:]' '[:lower:]')"
   for f in "$d"/*.lean; do
     [ -e "$f" ] || continue
@@ -134,11 +144,12 @@ private_traces() {
   done < <(find "$1" \( -name '*.trace' -o -name '*.trace.hash' \) -print0 2>/dev/null)
 }
 
-# Whether this worktree's tree already is $2's inodes.
+# Whether the tree $1 has in worktree $3 (this worktree by default) already is
+# $2's inodes.
 linked() {
-  local p="$1" e="$2" m a b
-  m="$(pkg_root_module "$p")" || return 1
-  a="$(stat -c '%d:%i' "$(pkg_tree "$p")/$m.olean" 2>/dev/null || echo none)"
+  local p="$1" e="$2" base="${3:-$PKGDIR}" m a b
+  m="$(pkg_root_module "$p" "$base")" || return 1
+  a="$(stat -c '%d:%i' "$base/$p/.lake/build/lib/lean/$m.olean" 2>/dev/null || echo none)"
   b="$(stat -c '%d:%i' "$e/lib/lean/$m.olean" 2>/dev/null || echo none)"
   [ "$a" = "$b" ] && [ "$a" != none ]
 }
@@ -235,22 +246,220 @@ seed() {
   say "seeded $e ($(du -sh "$e" | cut -f1), $(pkg_oleans "$p") oleans)"
 }
 
-# Drop entries beyond the newest $KEEP of each package. Removing an entry only
-# unlinks the store's links; worktrees already linked to it keep their bytes, so
-# this can never break a running build.
-prune() {
-  local p d k kept
-  for p in $PACKAGES; do
-    kept=0
-    for d in $(ls -1dt "$STORE/$p"/*/ 2>/dev/null); do
+# ---- Eviction: an entry lives while a worktree's manifest names it -----------
+#
+# The store used to keep the newest two entries of each package, which is not a
+# property of anything: it held the head this worktree was on, the head it had
+# left, and whatever a third worktree had resolved, so one 6.7 GB Mathlib entry
+# accumulated per master head either way and the VM's disk filled
+# (lean-categories#149). The rule below is the one the entries already describe --
+# an entry is <package>/<rev>-<toolchain> -- read from every worktree of this
+# repository instead of from the two newest.
+
+# Every worktree of this repository, one absolute path per line. One whose
+# directory has been deleted is still listed; it has no manifest, so it names
+# nothing.
+worktrees() { git worktree list --porcelain | sed -n 's/^worktree //p'; }
+
+# "<package> <revision>" for every package of every worktree's manifest.
+named_revs() {
+  local w
+  while IFS= read -r w; do
+    [ -f "$w/lake-manifest.json" ] || continue
+    python3 - "$w/lake-manifest.json" <<'PY' || true
+import json, sys
+try:
+    manifest = json.load(open(sys.argv[1]))
+except Exception:
+    sys.exit(0)
+for package in manifest.get("packages", []):
+    if package.get("rev"):
+        print(package["name"], package["rev"])
+PY
+  done < <(worktrees)
+}
+
+# The revision an entry directory is keyed by: its name is <rev>-<toolchain>, and
+# Lake writes a revision as the 40 hex digits of the commit. `seed` can also leave
+# <rev>-<toolchain>.tmp.<pid> behind when it is interrupted, which is no entry.
+entry_rev() {
+  local k="${1%%.tmp.*}"
+  if [[ "$k" =~ ^([0-9a-f]{40}) ]]; then printf '%s' "${BASH_REMATCH[1]}"
+  else printf '%s' "$k"; fi
+}
+
+# What a running build reads: "<package>/<key>" for store entries, "<worktree>"
+# for worktrees that have a Lean process working in them.
+#
+# A linked tree is hardlinks, so a build in a worktree opens that worktree's own
+# paths and never $STORE: the bytes it reads are the entry's inodes under another
+# name. Two things therefore put an entry in use.
+#   * A process holds a path inside the entry itself -- another worktree's
+#     `cp -al`, a `du`, a seed being written. Read off /proc/<pid>/fd and
+#     /proc/<pid>/maps, since Lean maps an `.olean` and closes the descriptor it
+#     opened it with, so descriptors alone would miss a build.
+#   * A `lake`, `lean` or `leanc` process is working inside a worktree whose tree
+#     is that entry's inodes: a build that started before this run and has not
+#     finished. It must survive even though no manifest names it any more, because
+#     its worktree has moved on to another head.
+#   * Some process has a path open under a worktree's `.lake`, which is a
+#     `lake update`, a build or a `lake exe` in that worktree. Its manifest may be
+#     mid-write and name nothing at this instant, so the worktree's tree is treated
+#     as in use and its entries are kept rather than trusted to the manifest.
+# This script's own process tree is excluded: it is the process that just decided
+# about the entry, and it holds every entry it linked from.
+in_use() {
+  local wts=() line p d w
+  while IFS= read -r w; do wts+=("$w"); done < <(worktrees)
+  while IFS= read -r line; do
+    case "${line%% *}" in
+      E) printf '%s\n' "${line#* }" ;;
+      W) w="${line#* }"
+         for p in $(ls -1 "$w/.lake/packages" 2>/dev/null); do
+           [ -d "$STORE/$p" ] || continue
+           for d in "$STORE/$p"/*/; do
+             [ -d "$d" ] || continue
+             if linked "$p" "$d" "$w/.lake/packages"; then
+               printf '%s\n' "$p/$(basename "$d")"
+             fi
+           done
+         done ;;
+    esac
+  done < <(python3 - "$STORE" "$$" "${wts[@]}" <<'PY'
+import os, sys
+
+store = os.path.realpath(sys.argv[1])
+mine = int(sys.argv[2])
+worktrees = [os.path.realpath(w) for w in sys.argv[3:]]
+lean = ("lake", "lean", "leanc")
+
+
+def ppid_of(pid):
+    try:
+        with open("/proc/%d/stat" % pid) as f:
+            return int(f.read().rsplit(") ", 1)[1].split()[1])
+    except (OSError, IndexError, ValueError):
+        return 0
+
+
+pids = [int(p) for p in os.listdir("/proc") if p.isdigit()]
+parent = {p: ppid_of(p) for p in pids}
+
+
+def ours(pid):
+    for _ in range(64):
+        if pid == mine:
+            return True
+        pid = parent.get(pid, 0)
+        if not pid:
+            return False
+    return False
+
+
+def below(path, root):
+    return path == root or path.startswith(root + os.sep)
+
+
+def read(path):
+    try:
+        return os.readlink(path)
+    except OSError:
+        return ""
+
+
+seen = set()
+for pid in pids:
+    if ours(pid):
+        continue
+    cwd = read("/proc/%d/cwd" % pid)
+    if cwd and os.path.basename(read("/proc/%d/exe" % pid)) in lean:
+        for w in worktrees:
+            if below(cwd, w) and ("W " + w) not in seen:
+                seen.add("W " + w)
+                print("W " + w)
+    held = []
+    for fd in os.listdir("/proc/%d/fd" % pid) if os.access("/proc/%d/fd" % pid, os.R_OK) else []:
+        held.append(read("/proc/%d/fd/%s" % (pid, fd)))
+    try:
+        with open("/proc/%d/maps" % pid) as f:
+            for line in f:
+                fields = line.split(None, 5)
+                if len(fields) == 6:
+                    held.append(fields[5].rstrip("\n"))
+    except OSError:
+        pass
+    for path in held:
+        path = path.split(" (deleted)")[0]
+        if not path.startswith("/"):
+            continue
+        for w in worktrees:
+            if below(path, os.path.join(w, ".lake")) and ("W " + w) not in seen:
+                seen.add("W " + w)
+                print("W " + w)
+        if not below(path, store):
+            continue
+        parts = path[len(store) + 1:].split(os.sep)
+        if len(parts) >= 3 and ("E " + parts[0] + "/" + parts[1]) not in seen:
+            seen.add("E " + parts[0] + "/" + parts[1])
+            print("E " + parts[0] + "/" + parts[1])
+PY
+)
+}
+
+# Drop every entry no worktree names, and every unfinished seed whose process is
+# gone. A removal holds the entry's own per-key lock, so it cannot land inside
+# another worktree's `fill` or `relink` of that key, and an entry a running build
+# reads is skipped (`in_use`) along with an unfinished seed a live process owns.
+#
+# Removing an entry only unlinks the store's names for its inodes. A hardlinked
+# file gives up its disk space when its last link goes, so the space comes back
+# when the last worktree linked to it relinks (`unlink_tree` in `fill`) or is
+# deleted -- never before. A worktree that is registered but never relinks, such
+# as one left behind by a stopped chat, keeps its 6.7 GB to itself and this script
+# cannot reclaim it; `du -sh .lake/packages` in that worktree shows it, and its
+# `lake-manifest.json` also keeps alive the entry it names.
+human() { numfmt --to=iec --suffix=B "${1:-0}" 2>/dev/null || printf '%sB' "${1:-0}"; }
+
+gc() {
+  local named inuse p d k rev size note pid dropped=0 freed=0
+  named="$(named_revs | sort -u)"
+  inuse="$(in_use | sort -u)"
+  for p in $(ls -1 "$STORE" 2>/dev/null); do
+    [ -d "$STORE/$p" ] || continue
+    for d in "$STORE/$p"/*/; do
+      [ -d "$d" ] || continue
       k="$(basename "$d")"
-      kept=$((kept + 1))
-      [ "$kept" -le "$KEEP" ] && continue
+      rev="$(entry_rev "$k")"
+      note=""
+      case "$k" in
+        *.tmp.*)
+          pid="${k##*.tmp.}"
+          if grep -qa 'cache-get\.sh' "/proc/$pid/cmdline" 2>/dev/null; then
+            continue
+          fi
+          note=" (an interrupted seed)" ;;
+        *)
+          if printf '%s\n' "$named" | grep -qxF -- "$p $rev"; then continue; fi
+          if printf '%s\n' "$inuse" | grep -qxF -- "$p/$k"; then
+            say "$p/$k: kept; a running build reads it"
+            continue
+          fi ;;
+      esac
+      size="$(du -sb "$d" 2>/dev/null | cut -f1)"
       if flock -n "$STORE/$p/.$k.lock" rm -rf "$d" 2>/dev/null; then
-        say "pruned $p/$k (keeping $KEEP)"
+        dropped=$((dropped + 1))
+        freed=$((freed + ${size:-0}))
+        say "dropped $p/$k$note ($(human "${size:-0}")): no worktree names it"
+      else
+        say "$p/$k: kept; another worktree is filling or linking it"
       fi
     done
   done
+  if [ "$dropped" -gt 0 ]; then
+    say "store: dropped $dropped entries, $(human "$freed") of entry bytes"
+  else
+    say "store: every entry is named by some worktree's manifest"
+  fi
 }
 
 # This worktree's own tree, completed as before #148, for the cases where the
@@ -302,6 +511,12 @@ for p in $PACKAGES; do
   exec 9>&-
 done
 
+# Evict now that every package with an entry is linked, and before anything is
+# decompressed: the head this worktree has left is named by no manifest any more,
+# so its 6.7 GB come back here -- through the `unlink_tree` the fill below does --
+# instead of after the next 6.7 GB has been written beside them.
+gc
+
 # Fill what the store has no entry for, in the workspace order: Mathlib's cache
 # first, so the packages built after it find its oleans in place.
 for p in $COLD; do
@@ -347,4 +562,6 @@ for p in $PACKAGES; do
   say "$p: $(pkg_oleans "$p") oleans at $(pkg_rev "$p" 2>/dev/null | cut -c1-12), toolchain $TOOL"
 done
 
-prune
+# And once more at the end: the entries this run seeded are named now, and one a
+# concurrent worktree left unnamed while this run was filling is dropped here.
+gc
