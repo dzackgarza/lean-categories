@@ -170,10 +170,61 @@ theorem evenDiscriminantRestrictionMap_adjointRange_le_ker :
   rw [hmap, evenDiscriminantFstRestriction_adjoint L M, evenDiscriminantSndRestriction_adjoint L M]
   exact Prod.ext h1 h2
 
+/-! ## The transported adjoint
+
+The pair of the two coordinate restrictions of the orthogonal-sum adjoint is the pair of
+the two adjoints — the statement that the adjoint of the orthogonal sum, transported
+along the product-dual splitting `Module.dualProdDualEquivDual` of Mathlib, is the
+product of the two adjoints. This is the input the defect-quotient equivalence needs:
+it says the adjoint range of the orthogonal sum is the product of the two adjoint
+ranges, so the quotient the defect of the orthogonal sum splits into is the product of
+the two defects. -/
+
+omit [IsDomain R] in
+/-- The pair of the two coordinate restrictions of the orthogonal-sum adjoint is the pair
+of the two adjoints. This combines the two adjoint laws above into the single statement
+that the transported adjoint is the product of the two adjoints. -/
+theorem evenDiscriminantRestrictions_adjoint
+    (a : L.obj.carrier) (b : M.obj.carrier) :
+    (evenDiscriminantFstRestriction L M
+        ((orthogonalSum L M).obj.adjoint (a, b)),
+      evenDiscriminantSndRestriction L M
+        ((orthogonalSum L M).obj.adjoint (a, b))) =
+      (L.obj.adjoint a, M.obj.adjoint b) :=
+  Prod.ext (evenDiscriminantFstRestriction_adjoint L M a b)
+    (evenDiscriminantSndRestriction_adjoint L M a b)
+
+/-! ## The induced map on the defect
+
+The restriction map kills the adjoint range, so it descends to the quotient by it: the
+defect of the orthogonal sum maps to the product of the two defects. This is the map
+the defect-quotient equivalence is made of; the equivalence itself — the proof that
+this map is an isomorphism — needs the kernel equality and is not claimed here. -/
+
+/-- The induced map on the defect of the orthogonal sum: the restriction map descends
+to the quotient by the adjoint range, giving a linear map from the defect of the
+orthogonal sum to the product of the two defects. This is the map the defect-quotient
+equivalence is made of. -/
+noncomputable def evenDiscriminantDefectMap :
+    (orthogonalSum L M).obj.defect →ₗ[R] L.obj.defect × M.obj.defect :=
+  (LinearMap.range (orthogonalSum L M).obj.adjoint).liftQ
+    (evenDiscriminantRestrictionMap L M)
+    (evenDiscriminantRestrictionMap_adjointRange_le_ker L M)
+
+@[simp]
+theorem evenDiscriminantDefectMap_mk
+    (f : (orthogonalSum L M).obj.valueDual) :
+    evenDiscriminantDefectMap L M
+        ((orthogonalSum L M).obj.defectProjection f) =
+      evenDiscriminantRestrictionMap L M f :=
+  rfl
+
 end LeanCategories.Lattices.Valued
 
 #print axioms LeanCategories.Lattices.Valued.evenDiscriminantFstRestriction
 #print axioms LeanCategories.Lattices.Valued.evenDiscriminantFstRestriction_adjoint
 #print axioms LeanCategories.Lattices.Valued.evenDiscriminantSndRestriction
 #print axioms LeanCategories.Lattices.Valued.evenDiscriminantSndRestriction_adjoint
+#print axioms LeanCategories.Lattices.Valued.evenDiscriminantDefectMap
+#print axioms LeanCategories.Lattices.Valued.evenDiscriminantDefectMap_mk
 #print axioms LeanCategories.Lattices.Valued.evenDiscriminantAntiIsometryGraph
