@@ -35,7 +35,13 @@ rev = "v4.36.0-rc2"
 # `.lake/packages`, so a `lake update` or a build in one worktree cannot change or
 # delete the packages or `.olean` files another worktree is building against. The
 # compressed Mathlib cache in `~/.cache/mathlib` is shared by design, and
-# `lake exe cache get` decompresses it into the checkout of the project that runs it.
+# `lake exe cache get` decompresses it into the checkout of the project that runs it,
+# so what each worktree holds is its own *source* checkout of the one Mathlib head.
+# The decompressed build tree is shared on top of that (lean-categories#148):
+# `scripts/cache-get.sh` keeps one build tree per (Mathlib revision, Lean toolchain)
+# in the repository's git directory and hands each worktree a tree of hardlinks into
+# it, which is what keeps four concurrent worktrees inside one disk. See
+# `docs/mathlib-build-store.md` for the measurement and the rejected alternatives.
 [[require]]
 name = "mathlib"
 scope = "leanprover-community"
