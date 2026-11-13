@@ -190,6 +190,36 @@ Sizing, if the whole thing has to be repeated on a colder disk: the first worktr
 a new revision pays a 6.7G decompression (about 40 s, plus the download), and every
 worktree after it pays 0.65G.
 
+## Acceptance: three Mathlib head moves (lean-categories#149)
+
+Measured 2026-11-13 on the same VM, with the eviction in place and the main checkout as the only
+worktree holding a Mathlib tree. Mathlib's master head was `7bcc5e95` all afternoon, so `rev =
+"master"` would have resolved to the same revision three times and moved nothing; each run pinned the
+requirement to the commit it was meant to move to, and `just update` resolved that head, which is what
+it does when master moves on its own.
+
+| Move | Mathlib head | run | free before (bytes) | free after (bytes) | change |
+| --- | --- | --- | --- | --- | --- |
+| — | `7bcc5e95`, before | — | 16623714304 (16G) | — | — |
+| 1 | `3d487513` (08:50Z) | drop 6.3G entry, 7657 `.ltar`, decompress 18800 ms | 16623636480 | 16241729536 | −364 MiB |
+| 2 | `d9aae7cd` (11:38Z) | drop 6.3G entry, decompress, BrauerGroup refilled | 16241635328 | 16239517696 | −2.0 MiB |
+| 3 | `7bcc5e95` (master) | back to the master head, same way | 16239480832 | 16237748224 | −1.7 MiB |
+
+The store was 7.2G with **exactly one** Mathlib entry at every one of those measurements, before and
+after each move: the 6.3G entry a move left behind was dropped before the next head was decompressed.
+What the three moves cost in total is 367 MiB, all of it `.ltar` files in `~/.cache/mathlib` (458M to
+824M) and bookkeeping; the build trees replaced each other. Before this change the same three moves
+would have left 19G of Mathlib entries in the store and taken the disk to under zero.
+
+Two costs the runs show and this change does not remove. A head move decompresses Mathlib twice: the
+certification step finds `BrauerGroup` stale -- an entry is keyed by its own revision and the
+toolchain, not by the Mathlib revision it was compiled against -- and the refill path it triggers
+refills every package rather than the ones that failed, so Mathlib is decompressed again. And an
+entry's key is too coarse in the other direction as well: `batteries`, `aesop` and the rest are
+unaffected by a Mathlib bump that does not move their own pins, which is why most of those entries are
+linked rather than rebuilt, but a package that is stale for any reason costs a rebuild of itself the
+first time a worktree links it.
+
 ## Why not a mechanism Lake or the cache tool already provides
 
 - **Lake's `packagesDir`** (the pre-#143 layout) names *one* package directory, hence one Mathlib
