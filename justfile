@@ -20,12 +20,13 @@ default:
 # Build the library on Mathlib's prebuilt cache (machine-wide in ~/.cache/mathlib).
 # scripts/cache-get.sh first clears the stale traces that hide the gap after a
 # head move (see that script's header for the full cause), so the cache tool
-# fills the tree and `lake build` links without deleting anything.
+# fills this worktree's own package tree and `lake build` links against it
+# without deleting anything.
 build:
     @scripts/cache-get.sh
     @lake build
 
-# Fetch Mathlib's prebuilt compilation cache (completing the shared tree first)
+# Fetch Mathlib's prebuilt compilation cache (completing this worktree's own tree first)
 cache:
     @scripts/cache-get.sh
 

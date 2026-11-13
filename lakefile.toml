@@ -1,5 +1,4 @@
 name = "lean_categories"
-packagesDir = "../../.local/share/lean/v4.36.0-rc2/packages"
 version = "0.1.0"
 keywords = ["math"]
 defaultTargets = ["LeanCategories"]
@@ -29,7 +28,14 @@ rev = "v4.36.0-rc2"
 # `.github/workflows/mathlib-head.yml` moves that pin and `lean-toolchain` to each new
 # master head and reports breakage there as a failing run. Requiring `mathlib` last
 # makes Mathlib's own dependency pins take precedence over the other packages' pins, so
-# `lake exe cache get` computes the hashes the shared store's build files are keyed to.
+# `lake exe cache get` computes the hashes the build files are keyed to.
+#
+# Each worktree resolves its own package checkouts (lean-categories#143): with no
+# `packagesDir` set, Lake materializes every dependency in this workspace's own
+# `.lake/packages`, so a `lake update` or a build in one worktree cannot change or
+# delete the packages or `.olean` files another worktree is building against. The
+# compressed Mathlib cache in `~/.cache/mathlib` is shared by design, and
+# `lake exe cache get` decompresses it into the checkout of the project that runs it.
 [[require]]
 name = "mathlib"
 scope = "leanprover-community"
