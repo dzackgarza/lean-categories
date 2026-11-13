@@ -2491,3 +2491,81 @@ downstream assertions, computational observations, or downstream diagnostics.
   Mathlib's `exists_finrank_eq_sigPos_and_posDef`, no coordinates), and
   `cobleCuspLatticePositiveConeStabilizer` = `latticePositiveConeStabilizer` at `M`, with
   index at most two.
+
+### No order on `FractionRing ℤ` blocks `PointedCone` over the repository rational span (2026-11-12, #37)
+
+- **Need:** #37 item 1 places the rational polyhedral cone in `N_ℚ = ℚ ⊗_ℤ L` as Mathlib's
+  `PointedCone` over the fraction field of `ℤ`, i.e. over `RationalSpan ℤ L`
+  (`Rationalization.lean`). `PointedCone R E` demands `[PartialOrder R] [IsOrderedRing R]`
+  on its scalar ring.
+- **Evidence:** probed against pinned Mathlib `5d0d3c0c77dbf2374216ade5470667f31eaa8786`
+  (toolchain `v4.36.0-rc2`): `Semiring (FractionRing ℤ)` and
+  `Module (FractionRing ℤ) (RationalSpan ℤ L)` synthesize, but
+  `PartialOrder (FractionRing ℤ)` fails with `failed to synthesize instance of type class`.
+  `Algebra/Order/` has no `Localization` directory and no order instance on `FractionRing R`
+  for an ordered domain, so there is no ordered-localization theory to instantiate.
+- **Gap and impact:** the cone, dual, face and fan objects of #37 cannot be stated over
+  `RationalSpan ℤ L` while the scalar ring carries no order; the earliest affected owner is
+  `IsRationalPolyhedral` (`RationalPolyhedralCone.lean`). Worked around, not repaired: the
+  cone is taken over `ℚ` in `TensorProduct ℤ ℚ L.obj.carrier`, canonically isomorphic to
+  `RationalSpan ℤ L` along `FractionRing.algEquiv` on the left factor, with
+  `Rat.isFractionRing : IsFractionRing ℤ ℚ` the canonical fraction-field realization carrying
+  the full ordered-field hierarchy.
+- **Coverage:** searched `Algebra/Order/` (directory listing: no `Localization` subdirectory),
+  read `RingTheory/Localization/FractionRing.lean` in full (no order instance on
+  `FractionRing R`; `Rat.isFractionRing` present), and probed instance synthesis on
+  `FractionRing ℤ` directly. Confidence high; what remains uninspected is whether a later
+  Mathlib master head gains ordered-localization theory.
+- **Repair link:** the optimal repair is an order structure on `FractionRing R` for ordered
+  domains at its Mathlib home (`RingTheory/Localization/FractionRing.lean` or a new
+  `Algebra/Order/Localization`); when it exists, `IsRationalPolyhedral` restates over
+  `RationalSpan ℤ L` unchanged and the twin carrier `TensorProduct ℤ ℚ L.obj.carrier` is
+  deleted in favor of the repository's own rational span.
+
+### No face-of-finitely-generated-cone theorem in Mathlib blocks #37 item 3 (2026-11-12)
+
+- **Need:** #37 item 3 asks for the theorem that a face of a rational polyhedral cone is
+  rational polyhedral (Cox–Little–Schenck, *Toric Varieties*, GSM 124 (2011), §1.2 p. 25,
+  item (a)): if σ is the conical hull of a finite set of lattice vectors and τ is a face of
+  σ (`PointedCone.IsFaceOf`), then τ is the conical hull of the sub-Finset of those
+  generators that lie in τ.
+- **Evidence:** searched the pinned Mathlib `5d0d3c0c77dbf2374216ade5470667f31eaa8786`
+  (`Geometry/Convex/Cone/`, whole tree) for any lemma combining `IsFaceOf` with finite
+  generation (`FG`, `DualFG`, finiteness): none exists. The face API
+  (`Face/Basic.lean`) provides the extraction lemmas (`mem_of_sum_mem`,
+  `mem_of_sum_smul_mem`, `sum_mem_iff_mem`) only in Fintype-indexed sum form, while the
+  conical-combination decomposition of `PointedCone.mem_hull_set` is Finsupp-indexed
+  (`c : E →₀ R`); the bridge from the Finsupp sum to the Fintype sum (via
+  `Finset.sum_coe_sort` over the support subtype) did not elaborate in the formulations
+  attempted (higher-order pattern matching of `?f ↑i` against `c ↑i • ↑i` fails; the
+  anonymous-constructor application of the support subtype mis-elaborates the index type).
+- **Gap and impact:** the fan definition (`IsFan`) states face closure over cones declared
+  rational polyhedral; without the face theorem, face closure does not provably preserve
+  rational polyhedrality, so the fan's cones could have faces outside the rational
+  polyhedral class. The earliest affected owner is `IsFan`
+  (`RationalPolyhedralCone.lean`); its consumers are the #37 fan items and the #24
+  semifan pipeline.
+- **Coverage:** searched `Geometry/Convex/Cone/` (all files) for `FG`-face combinations
+  and read `Face/Basic.lean`'s extraction lemmas in full; probed the Finsupp-to-subtype
+  sum conversion with `Finset.sum_coe_sort` (exists at
+  `Mathlib/Algebra/BigOperators/Group/Finset/Basic.lean`), which states the subtype sum
+  but whose higher-order pattern does not match the pointwise-smuled form. Confidence
+  high that no direct lemma exists; what remains uninspected is whether a different
+  formulation (e.g. via `Submodule.span_induction` or a Finset-sum face lemma stated
+  outside the Cone directory) would close the gap.
+- **Repair link:** the optimal repair is a Finsupp-indexed extraction lemma at the face
+  API's Mathlib home (`Geometry/Convex/Cone/Face/Basic.lean`):
+  `IsFaceOf.mem_of_finsupp_sum_smul_mem`, bridging `PointedCone.mem_hull_set`'s
+  decomposition directly; when it exists, `IsRationalPolyhedral.of_isFaceOf` is stated
+  and proved at `RationalPolyhedralCone.lean` with the filter-extraction proof sketched
+  in the item 3 docstring.
+
+- **Resolution (2026-11-12, this batch):** the #37 item 3 theorem is now stated and proved
+  as a port of the reference implementation: `TauCeti/Geometry/Convex/Cone/Face/Finite.lean`'s
+  `PointedCone.IsFaceOf.eq_hull_inter_of_eq_hull` (proved by `Submodule.span_induction`,
+  the route this entry had flagged as the alternative) feeds
+  `TauCeti/Geometry/Toric/Algebraic/Cone/Basic.lean`'s `IsLatticeRational.of_isFaceOf`,
+  both ported to the rational carrier in `RationalPolyhedralCone.lean` with full
+  provenance. The hand-authored `IsRationalPolyhedral` formulation that could not close
+  the gap is deleted and replaced by the ported `IsLatticeRational`; the Finsupp-to-
+  Fintype sum bridge this entry had sought is not needed by the reference proof.
