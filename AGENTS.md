@@ -697,6 +697,22 @@ it. Delete disposable probe state when the unit that needed it is finished.
 Persistent `.lake/` artifacts are different: they are the repository's shared
 build cache and must not be thrown away merely to make disk numbers look smaller.
 
+The one location every worktree of this repository shares is its git directory,
+so the one Mathlib build that all of them use lives there:
+`.git/lake-build-store`, one build tree per Mathlib revision and toolchain, whose
+files `scripts/cache-get.sh` hardlinks into each worktree (lean-categories#148,
+[docs/mathlib-build-store.md](docs/mathlib-build-store.md)). That store is build
+state of the same kind as `.lake/` — not probe state — so it is not deleted to
+make disk numbers look smaller either; deleting it costs every chat a full
+decompression of Mathlib.
+
+Move a worktree to a new Mathlib head with `just update`, never with a bare
+`lake update`: Mathlib's lakefile fetches the cache itself at the end of
+`lake update` (`lakefile.lean:193-197`, the `post_update` hook) and writes a full
+copy into that worktree, which is what exhausted the disk; `just update` sets
+`MATHLIB_NO_CACHE_ON_UPDATE=1` so `just cache`/`just build` can share one copy
+instead. Then `just test` before a push, as always.
+
 ### A wait is only delivery while the process is alive
 
 An aggregate `lake build` prints `4760/4761` and stops. Hours later the transcript
