@@ -1534,7 +1534,7 @@ theorem rootMirror_meet_finite (hL : L.obj.obj.IsNondegenerate)
       {g : OrthogonalGroup L.obj | ∃ x ∈ K, realFormOrthogonalHom L g x ∈ K} := by
     intro H hH
     obtain ⟨r, hrn, hHr, hHne⟩ := hH
-    obtain ⟨hrIsRef, hrneg⟩ := mem_negativeReflectiveRoots_iff.mp hrn
+    obtain ⟨hrIsRef, hrneg⟩ := (mem_negativeReflectiveRoots_iff L).mp hrn
     have hrneg' : realFormQuadratic L (toRealForm L r) < 0 := by
       rw [realFormQuadratic_toRealForm L r]
       exact_mod_cast hrneg
