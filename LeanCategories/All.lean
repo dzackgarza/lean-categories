@@ -152,6 +152,11 @@ public import LeanCategories.ForMathlib.FiltrationTopology
 public import LeanCategories.ForMathlib.FiltrationGraded
 public import LeanCategories.ForMathlib.GaussianPrimeIdeals
 public import LeanCategories.ForMathlib.MvPolynomialIdealOfVars
+public import LeanCategories.ForMathlib.PointedConeAlternative
+public import LeanCategories.ForMathlib.PointedConeRelations
+public import LeanCategories.ForMathlib.PointedConeFiniteGeneration
+public import LeanCategories.ForMathlib.PointedConeFiniteDuality
+public import LeanCategories.ForMathlib.PointedConeMinkowskiWeyl
 public import LeanCategories.ForMathlib.QuadraticMapHyperbolicPlane
 public import LeanCategories.ForMathlib.QuadraticMapRepresentation
 public import LeanCategories.ForMathlib.QuadraticReflection
