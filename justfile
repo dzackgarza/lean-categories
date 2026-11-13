@@ -17,14 +17,17 @@ ai_review_ci := env_var("HOME") / "ai-review-ci"
 default:
     @just --list
 
-# Build the library on Mathlib's prebuilt cache (machine-wide in ~/.cache/mathlib)
+# Build the library on Mathlib's prebuilt cache (machine-wide in ~/.cache/mathlib).
+# scripts/cache-get.sh first clears the stale traces that hide the gap after a
+# head move (see that script's header for the full cause), so the cache tool
+# fills the tree and `lake build` links without deleting anything.
 build:
-    @lake exe cache get
+    @scripts/cache-get.sh
     @lake build
 
-# Fetch Mathlib's prebuilt compilation cache
+# Fetch Mathlib's prebuilt compilation cache (completing the shared tree first)
 cache:
-    @lake exe cache get
+    @scripts/cache-get.sh
 
 # Run the complete repository quality gate
 test: build
