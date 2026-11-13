@@ -47,6 +47,22 @@ alone, so one worktree's rebuild can no longer rewrite or remove what another re
 `All targets up-to-date`, i.e. after Lake itself certifies that every trace in the tree matches the
 sources at that revision; that is what keeps a second worktree from inheriting stale outputs.
 
+## A linked tree is never fetched into again
+
+`lake exe cache get` judges a module stale by its own map
+(`Cache/IO.lean:472-490`, `ModuleHashMap.filterNeedsDecompression`), and that is not Lake's
+judgement. On the tree built for this change the two disagreed about 403 modules: the cache tool
+re-decompressed them although Lake considered the tree up to date. Because a linked tree's files
+are shared inodes, those rewrites changed what **every** worktree saw — the oleans no longer matched
+the traces of the modules importing them — and three of four worktrees then rebuilt 417 Mathlib
+modules from source, which is the disk blow-up from the other direction.
+
+So `lake exe cache get` runs in exactly one case: a worktree whose tree has to be filled, on that
+worktree's own unshared tree, before the store entry exists. A worktree whose tree is the store's
+entry fetches nothing and says so. That is not a weaker check than fetching: the script verifies
+that the entry is keyed by the revision and toolchain this worktree resolved, that every module at
+that revision has an `.olean`, and that the files are the certified entry's own inodes.
+
 ## The order
 
 A worktree moves to a new Mathlib head in three steps, and the first one must not fetch the cache:

@@ -24,8 +24,8 @@
 # build tree per key, and each worktree's `.lake/packages/mathlib/.lake/build/
 # lib/lean` is a tree of hardlinks into it:
 #
-#   $STORE/<mathlib-rev>-<toolchain>/lib/lean   one copy of the bytes
-#   .lake/packages/mathlib/.lake/build/lib/lean this worktree's links
+#   $STORE/<mathlib-rev>-<toolchain>/lib/lean    one copy of the bytes
+#   .lake/packages/mathlib/.lake/build/lib/lean  this worktree's links
 #
 # $STORE is the repository's own git directory, which is the one place all of
 # its worktrees share, so it is repository-owned build state rather than a global
@@ -33,6 +33,16 @@
 # writes a build file in place — Lake deletes a module's outputs before
 # rebuilding it, and the cache tool writes only what it judged stale — so a
 # rebuild replaces an inode and leaves every other worktree's bytes alone.
+#
+# A linked tree is never decompressed again, and that is the second half of the
+# point. `lake exe cache get` judges a module stale by its own map, which is not
+# Lake's judgement: on the tree measured for #148 it re-decompressed 403 modules
+# that Lake considered up to date, and because the files were links shared with
+# every other worktree, the rewritten oleans invalidated the traces of everything
+# downstream and three worktrees then rebuilt 417 Mathlib modules from source.
+# So `cache get` runs only on a worktree's own unshared tree, in the one case
+# where that tree has to be filled; a worktree whose tree is the store's entry
+# needs nothing fetched, and the script says so instead of re-fetching.
 #
 # A worktree is handed a store entry only after `lake build --no-build Mathlib`
 # reports the tree up to date, i.e. after Lake itself certifies that every trace
@@ -159,7 +169,7 @@ cold() {
 
 # Replace this worktree's tree with hardlinks into the store's entry.
 relink() {
-  echo "mathlib build: linking this worktree's tree to $ENTRY"
+  echo "mathlib build: linking this worktree's tree to $ENTRY (nothing to fetch)"
   rm -rf "$LINKED"
   mkdir -p "$BUILD/lib"
   cp -al "$ENTRY/lib/lean" "$LINKED"
@@ -216,24 +226,21 @@ if ! flock -n 9; then
 fi
 if [ -f "$ENTRY/.complete" ]; then
   if [ "$(cat "$KEYFILE" 2>/dev/null || true)" = "$KEY" ] && [ "$(gap)" -eq 0 ] && linked; then
-    echo "mathlib build: this worktree's tree is already linked from $ENTRY"
+    echo "mathlib build: this worktree's tree is already linked from $ENTRY, nothing to fetch"
   else
     relink
   fi
   touch "$ENTRY"
 else
+  # Nothing to link to: fill this worktree's own tree, certify it, seed the store.
   cold
   GOT=1
 fi
 exec 9>&-
 
-# The store entry is linked or seeded, so this worktree no longer needs the lock.
-# `lake exe cache get` still runs in both cases, and decompresses nothing when the
-# traces are already at this head.
-if [ "$GOT" -eq 0 ]; then
-  lake exe cache get
+if [ "$GOT" -eq 1 ]; then
+  echo "mathlib build: $REV, toolchain $TOOL, tree filled and seeded from the cache"
 fi
-
 MISS="$(gap)"
 echo "mathlib build: $REV, toolchain $TOOL, $MISS module(s) without an .olean"
 prune
