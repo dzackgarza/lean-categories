@@ -1464,7 +1464,23 @@ end Compactness
 
 Only finitely many root hyperplanes meet a compact subset of the chosen sheet of the positive
 cone, counted as sets (several roots share one mirror). The reflections in the roots whose
-mirrors meet the compact set fix a point of it, so condition (D′2) bounds them. -/
+mirrors meet the compact set fix a point of it, so condition (D′2) bounds them.
+
+**LC-09 search record** (14 queries, `scripts/formalization_corpus.py`, no direct hit for
+the statement): `content:locallyFinite`, `content:reflection`, `content:mirror`,
+`content:rootHyperplane`, `content:rootHyperplane content:compact`,
+`content:mirror content:reflect`, `content:reflectIn content:fixed`,
+`content:reflection content:hyperplane content:finitely`,
+`content:locallyFinite content:root`, `content:positiveCone content:compact content:finitely`,
+`content:fixes content:hyperplane content:pointwise`,
+`content:fixedPoints content:reflection`, `Set.Finite content:hyperplane`,
+`content:discrete content:group content:compact content:finite`. The nearest neighbours are
+different mathematics (TauCeti `RootSystem/Chamber` walls of finite root systems; Atlas
+`Buildings/Reflection` affine Weyl walls). The reuse set is this repository's own:
+`realFormOrthogonal_finite_of_compact` (the D′2 theorem, #128), the square theorem
+`realFormOrthogonalHom_latticeReflection`, `reflectIn_associated_comm` and
+`associated_reflectIn_self` (the fix-iff), `realFormPairing_eq_associated`, and Mathlib's
+`Set.Finite.image` and `Set.Finite.subset`. -/
 
 section LemmaOne
 
