@@ -108,7 +108,7 @@ before any of this work). What the store does, measured end to end:
 | First worktree at a revision, cold | 44.7 s wall (incl. building the cache tool), 6.8G on disk |
 | Every later worktree at that revision | link, 0.8 s wall, 0 additional bytes |
 | `df` during a link | unchanged; the tree is one inode set |
-| `lake build` in the main checkout, linked | `Build completed successfully (8338 jobs)`, none of Mathlib rebuilt |
+| `lake build` in the main checkout, linked | `Build completed successfully (8338 jobs)`, no Mathlib rebuild |
 
 The four-way concurrent pipeline is **not** closed, and the reason is not the
 duplication this issue names. Three runs, all with the four worktrees at the same
