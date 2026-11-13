@@ -85,7 +85,7 @@ abbrev Simplices (n i : ℕ) : Type := {s : Finset (Fin (n+1)) // s.card = i + 1
 abbrev chains (n i : ℕ) : Type := Simplices n i →₀ ℤ
 
 /-- The position of `v` in the increasing enumeration of `s`. -/
-def pos_of {m : ℕ} (s : Finset (Fin m)) (v : Fin m) : ℕ := (s.filter (· < v)).card
+def posOf {m : ℕ} (s : Finset (Fin m)) (v : Fin m) : ℕ := (s.filter (· < v)).card
 
 /-- The chain `c • [t]` in degree `i`: the generator indexed by `t` when `t` is an
 `i`-simplex (an `(i+1)`-element vertex subset), `0` otherwise. Total on all vertex subsets,
@@ -97,7 +97,7 @@ noncomputable def genC (n i : ℕ) (t : Finset (Fin (n+1))) (c : ℤ) : chains n
 of its vertices in increasing order. -/
 noncomputable def boundary (n j : ℕ) : chains n (j+1) →ₗ[ℤ] chains n j :=
   (Finsupp.llift (chains n j) ℤ ℤ (Simplices n (j+1))) (fun s =>
-    ∑ v ∈ s.1, genC n j (s.1.erase v) ((-1 : ℤ) ^ pos_of s.1 v))
+    ∑ v ∈ s.1, genC n j (s.1.erase v) ((-1 : ℤ) ^ posOf s.1 v))
 
 /-- The cone contraction `h : C_j → C_{j+1}`, `s ↦ (-1)^j (0 if n ∈ s, else s ∪ {n})`: on a
 simplex not containing the last vertex `n`, the signed simplex `s ∪ {n}`; the cardinality
@@ -117,27 +117,27 @@ noncomputable def hMinus (n : ℕ) : ℤ →ₗ[ℤ] chains n 0 :=
 /-! ## The deletion position -/
 
 lemma pos_of_erase_lt {m : ℕ} {v w : Fin m} (s : Finset (Fin m)) (hv : v ∈ s)
-    (hvw : v < w) : pos_of (s.erase v) w = pos_of s w - 1 := by
-  rw [pos_of, pos_of, Finset.filter_erase,
+    (hvw : v < w) : posOf (s.erase v) w = posOf s w - 1 := by
+  rw [posOf, posOf, Finset.filter_erase,
     Finset.card_erase_of_mem (Finset.mem_filter.2 ⟨hv, hvw⟩)]
 
 lemma pos_of_erase_of_notMem {m : ℕ} {v w : Fin m} (s : Finset (Fin m)) (h : ¬ v < w) :
-    pos_of (s.erase v) w = pos_of s w := by
+    posOf (s.erase v) w = posOf s w := by
   have hvf : v ∉ s.filter (· < w) := fun hmem => h (Finset.mem_filter.1 hmem).2
-  rw [pos_of, pos_of, Finset.filter_erase, Finset.erase_eq_of_notMem hvf]
+  rw [posOf, posOf, Finset.filter_erase, Finset.erase_eq_of_notMem hvf]
 
 lemma pos_of_last {n : ℕ} (s : Finset (Fin (n+1))) (h : Fin.last n ∉ s) :
-    pos_of s (Fin.last n) = s.card := by
+    posOf s (Fin.last n) = s.card := by
   have h2 : s.filter (· < Fin.last n) = s := Finset.filter_eq_self.2
     fun u hu => Fin.lt_last_iff_ne_last.2 (fun heq => h (heq ▸ hu))
-  rw [pos_of, h2]
+  rw [posOf, h2]
 
 lemma pos_of_insert_last {n : ℕ} (t : Finset (Fin (n+1))) (h : Fin.last n ∉ t) :
-    pos_of (insert (Fin.last n) t) (Fin.last n) = t.card := by
+    posOf (insert (Fin.last n) t) (Fin.last n) = t.card := by
   have h1 : (insert (Fin.last n) t).filter (· < Fin.last n) = t.filter (· < Fin.last n) := by
     rw [Finset.filter_insert]
     simp
-  rw [pos_of, h1]
+  rw [posOf, h1]
   exact pos_of_last t h
 
 /-! ## The generators -/
@@ -158,13 +158,13 @@ lemma single_smul_one {α : Type} {a : α} (c : ℤ) :
 
 lemma boundary_single (n j : ℕ) (s : Simplices n (j+1)) :
     boundary n j (Finsupp.single s 1) =
-      ∑ v ∈ s.1, genC n j (s.1.erase v) ((-1 : ℤ) ^ pos_of s.1 v) := by
+      ∑ v ∈ s.1, genC n j (s.1.erase v) ((-1 : ℤ) ^ posOf s.1 v) := by
   simp only [boundary, Finsupp.llift_apply, Finsupp.lift_apply, Finsupp.sum_single_index,
     one_smul, zero_smul]
 
 lemma boundary_gen_c (n j : ℕ) {t : Finset (Fin (n+1))} (c : ℤ) (ht : t.card = j + 2) :
     boundary n j (genC n (j+1) t c) =
-      ∑ v ∈ t, genC n j (t.erase v) (c * (-1 : ℤ) ^ pos_of t v) := by
+      ∑ v ∈ t, genC n j (t.erase v) (c * (-1 : ℤ) ^ posOf t v) := by
   rw [gen_c_of_card _ _ c (by simpa using ht), single_smul_one, map_smul, boundary_single,
     Finset.smul_sum]
   exact Finset.sum_congr rfl fun v _ => gen_c_smul n j (t.erase v) c _
@@ -236,9 +236,9 @@ lemma neg_one_pow_pair_cancel (A B : ℕ) (h : 1 ≤ B) :
 /-- The alternating sum of the deletion positions over a two-element set. -/
 lemma sum_neg_one_pow_pair {m : ℕ} (v w : Fin m) (hvw : v < w) :
     ∑ u ∈ insert v (insert w (∅ : Finset (Fin m))),
-        (-1 : ℤ) ^ pos_of (insert v (insert w (∅ : Finset (Fin m)))) u = 0 := by
-  have h0 : pos_of (insert v (insert w (∅ : Finset (Fin m)))) v = 0 := by
-    rw [pos_of]
+        (-1 : ℤ) ^ posOf (insert v (insert w (∅ : Finset (Fin m)))) u = 0 := by
+  have h0 : posOf (insert v (insert w (∅ : Finset (Fin m)))) v = 0 := by
+    rw [posOf]
     have h : (insert v (insert w (∅ : Finset (Fin m)))).filter (· < v) = ∅ := by
       ext u
       simp only [Finset.mem_filter, Finset.mem_insert, Finset.mem_singleton]
@@ -251,8 +251,8 @@ lemma sum_neg_one_pow_pair {m : ℕ} (v w : Fin m) (hvw : v < w) :
         exact absurd hu (Finset.notMem_empty u)
     rw [h]
     simp
-  have h1 : pos_of (insert v (insert w (∅ : Finset (Fin m)))) w = 1 := by
-    rw [pos_of]
+  have h1 : posOf (insert v (insert w (∅ : Finset (Fin m)))) w = 1 := by
+    rw [posOf]
     have h : (insert v (insert w (∅ : Finset (Fin m)))).filter (· < w) = {v} := by
       ext u
       simp only [Finset.mem_filter, Finset.mem_insert, Finset.mem_singleton]
@@ -333,15 +333,15 @@ theorem boundary_comp_boundary (n i : ℕ) : (boundary n i).comp (boundary n (i+
   rcases lt_or_gt_of_ne (Ne.symm hpne) with hlt | hlt
   · have e1 := pos_of_erase_lt s.1 hp1 hlt
     have e2 := pos_of_erase_of_notMem s.1 (lt_asymm hlt)
-    have hB : 1 ≤ pos_of s.1 p.2 :=
+    have hB : 1 ≤ posOf s.1 p.2 :=
       Finset.card_pos.2 ⟨p.1, Finset.mem_filter.2 ⟨hp1, hlt⟩⟩
     rw [e1, e2, neg_one_pow_pair_cancel _ _ hB, Finsupp.single_zero]
   · have e1 := pos_of_erase_lt s.1 hp2 hlt
     have e2 := pos_of_erase_of_notMem s.1 (lt_asymm hlt)
-    have hA : 1 ≤ pos_of s.1 p.1 :=
+    have hA : 1 ≤ posOf s.1 p.1 :=
       Finset.card_pos.2 ⟨p.2, Finset.mem_filter.2 ⟨hp2, hlt⟩⟩
     rw [e1, e2,
-      add_comm (((-1 : ℤ) ^ pos_of s.1 p.1) * ((-1 : ℤ) ^ pos_of s.1 p.2)),
+      add_comm (((-1 : ℤ) ^ posOf s.1 p.1) * ((-1 : ℤ) ^ posOf s.1 p.2)),
       neg_one_pow_pair_cancel _ _ hA, Finsupp.single_zero]
 
 lemma gen_c_neg (n i : ℕ) (t : Finset (Fin (n+1))) (c : ℤ) :
@@ -351,7 +351,7 @@ lemma gen_c_neg (n i : ℕ) (t : Finset (Fin (n+1))) (c : ℤ) :
   · rw [gen_c_of_ne_card _ _ _ ht, gen_c_of_ne_card _ _ c ht, neg_zero]
 
 lemma pos_of_last_mem {n : ℕ} (s : Finset (Fin (n+1))) (h : Fin.last n ∈ s) :
-    pos_of s (Fin.last n) = s.card - 1 := by
+    posOf s (Fin.last n) = s.card - 1 := by
   have h1 : s.filter (· < Fin.last n) = s.erase (Fin.last n) := by
     ext u
     simp only [Finset.mem_filter, Finset.mem_erase]
@@ -360,7 +360,7 @@ lemma pos_of_last_mem {n : ℕ} (s : Finset (Fin (n+1))) (h : Fin.last n ∈ s) 
       exact ⟨Fin.ne_of_lt hult, hus⟩
     · rintro ⟨hune, hus⟩
       exact ⟨hus, Fin.lt_last_iff_ne_last.mpr hune⟩
-  rw [pos_of, h1, Finset.card_erase_of_mem h]
+  rw [posOf, h1, Finset.card_erase_of_mem h]
 
 /-! ## The cone contraction -/
 
@@ -396,22 +396,22 @@ theorem homotopy_succ (n j : ℕ) (x : chains n (j+1)) :
         exact absurd hl hcon
     · have hcard : (insert (Fin.last n) s.1).card = j + 1 + 2 := by
         rw [Finset.card_insert_of_notMem hl, s.2]
-      have hpos : ∀ u ∈ s.1, pos_of (insert (Fin.last n) s.1) u = pos_of s.1 u := by
+      have hpos : ∀ u ∈ s.1, posOf (insert (Fin.last n) s.1) u = posOf s.1 u := by
         intro u hu
         have hlt : u < Fin.last n :=
           Fin.lt_last_iff_ne_last.mpr (fun heq => hl (heq ▸ hu))
-        rw [pos_of, pos_of, Finset.filter_insert, ite_eq_right (lt_asymm hlt)]
+        rw [posOf, posOf, Finset.filter_insert, ite_eq_right (lt_asymm hlt)]
       have hnelast : ∀ u ∈ s.1, Fin.last n ≠ u := fun u hu heq => hl (heq ▸ hu)
       have hsum1 : (∑ u ∈ s.1, genC n (j+1) ((insert (Fin.last n) s.1).erase u)
-            ((-1 : ℤ) ^ (j+1) * (-1 : ℤ) ^ pos_of (insert (Fin.last n) s.1) u))
+            ((-1 : ℤ) ^ (j+1) * (-1 : ℤ) ^ posOf (insert (Fin.last n) s.1) u))
           = (∑ u ∈ s.1, genC n (j+1) (insert (Fin.last n) (s.1.erase u))
-            ((-1 : ℤ) ^ (j+1) * (-1 : ℤ) ^ pos_of s.1 u)) := by
+            ((-1 : ℤ) ^ (j+1) * (-1 : ℤ) ^ posOf s.1 u)) := by
         refine Finset.sum_congr rfl fun u hu => ?_
         rw [Finset.erase_insert_of_ne (hnelast u hu), hpos u hu]
       have hsum2 : (∑ v ∈ s.1, genC n (j+1) (insert (Fin.last n) (s.1.erase v))
-            ((-1 : ℤ) ^ pos_of s.1 v * (-1 : ℤ) ^ j))
+            ((-1 : ℤ) ^ posOf s.1 v * (-1 : ℤ) ^ j))
           = -(∑ u ∈ s.1, genC n (j+1) (insert (Fin.last n) (s.1.erase u))
-            ((-1 : ℤ) ^ (j+1) * (-1 : ℤ) ^ pos_of s.1 u)) := by
+            ((-1 : ℤ) ^ (j+1) * (-1 : ℤ) ^ posOf s.1 u)) := by
         rw [← Finset.sum_neg_distrib]
         refine Finset.sum_congr rfl fun u _ => ?_
         rw [← gen_c_neg, neg_one_pow_succ]
@@ -423,9 +423,9 @@ theorem homotopy_succ (n j : ℕ) (x : chains n (j+1)) :
         hsum1, hsum2]
       have hcancel : genC n (j+1) s.1 ((-1 : ℤ) ^ (j + 1) * (-1 : ℤ) ^ (j + 1 + 1))
           + (∑ u ∈ s.1, genC n (j+1) (insert (Fin.last n) (s.1.erase u))
-            ((-1 : ℤ) ^ (j+1) * (-1 : ℤ) ^ pos_of s.1 u))
+            ((-1 : ℤ) ^ (j+1) * (-1 : ℤ) ^ posOf s.1 u))
           + -(∑ u ∈ s.1, genC n (j+1) (insert (Fin.last n) (s.1.erase u))
-            ((-1 : ℤ) ^ (j+1) * (-1 : ℤ) ^ pos_of s.1 u))
+            ((-1 : ℤ) ^ (j+1) * (-1 : ℤ) ^ posOf s.1 u))
           + Finsupp.single s (1 : ℤ)
           = genC n (j+1) s.1 ((-1 : ℤ) ^ (j + 1) * (-1 : ℤ) ^ (j + 1 + 1))
             + Finsupp.single s (1 : ℤ) := by
@@ -463,8 +463,8 @@ theorem homotopy_zero (n : ℕ) (x : chains n 0) :
       rw [ha] at hl ⊢
       have hne : a ≠ Fin.last n := fun heq => hl (heq ▸ Finset.mem_singleton_self a)
       have halt : a < Fin.last n := Fin.lt_last_iff_ne_last.mpr hne
-      have hposa : pos_of (insert (Fin.last n) {a}) a = 0 := by
-        rw [pos_of, Finset.filter_insert, ite_eq_right (lt_asymm halt),
+      have hposa : posOf (insert (Fin.last n) {a}) a = 0 := by
+        rw [posOf, Finset.filter_insert, ite_eq_right (lt_asymm halt),
           Finset.filter_singleton, ite_eq_right (lt_irrefl a), Finset.card_empty]
       rw [pow_zero, boundary_gen_c n 0 (1 : ℤ) (by rw [Finset.card_insert_of_notMem hl,
         Finset.card_singleton]), Finset.sum_insert hl, Finset.erase_insert hl,
