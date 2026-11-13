@@ -243,11 +243,9 @@ public import LeanCategories.Homological.AlgebraicDeRham
 public import LeanCategories.Homological.ColimitTensor
 public import LeanCategories.Homological.TorTorsion
 public import LeanCategories.Homological.TorReductions
-public import LeanCategories.Homological.TorBridge
 public import LeanCategories.Homological.TorArbitrary
 public import LeanCategories.Homological.TorStages
 public import LeanCategories.Homological.TorFreeResolution
-public import LeanCategories.Homological.CyclicTor
 public import LeanCategories.Homological.TorFGTorsion
 public import LeanCategories.Homological.TorTorsionClass
 public import LeanCategories.Homological.SimplexChains
