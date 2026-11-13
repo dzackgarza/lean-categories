@@ -112,6 +112,41 @@ writes a full 6.8G tree into the worktree that ran the update, and four chats do
 disk exhaustion #148 reports. `MATHLIB_NO_CACHE_ON_UPDATE=1` is Mathlib's own switch for it, and
 `just update` sets it.
 
+## Acceptance
+
+Measured 2026-11-13 on the team VM (4 cores, 15G RAM, one 248G disk). Four **fresh**
+worktrees of the same commit, each running `just update`, `scripts/cache-get.sh` and
+`lake build` at the same time, started 11:29:33Z:
+
+| Worktree | `just update` | cache step | `lake build` | Pipeline ends |
+| --- | --- | --- | --- | --- |
+| wt1 | 1m49s | 21s | 6m28s | 11:37:50Z, `Build completed successfully (8338 jobs)` |
+| wt2 | 2m18s | 23s | 6m57s | 11:38:48Z, `Build completed successfully (8338 jobs)` |
+| wt3 | 4m19s | 25s | 5m36s | 11:39:28Z, `Build completed successfully (8338 jobs)` |
+| wt4 | 3m12s | 20s | 6m29s | 11:39:14Z, `Build completed successfully (8338 jobs)` |
+
+Every one of them linked all ten packages ("nothing to fetch"), certified all ten
+(`All targets up-to-date`), and rebuilt **no** Mathlib module and **no** module of any
+dependency — the only thing `lake build` compiled was the repository's own 8338-job
+target graph.
+
+| Quantity | Value |
+| --- | --- |
+| `df -h /` before | 16G available (15.6G exact) |
+| `df -h /` during | never below 14G (13.xG exact) — the 10G floor was never approached |
+| `df -h /` after | 14G available (13.0G exact) |
+| New bytes per worktree | about 0.65G — 433M of `LeanCategories` build tree, 220M of package sources |
+| `du -sh .git/lake-build-store` | 7.2G for ten packages: 6.7G Mathlib, 0.5G the rest |
+| `du -sh .lake/packages` in a linked worktree | 7.4G, of which 6.9G are the store's inodes |
+
+The 1.7G Mathlib *download* cache in `~/.cache/mathlib` was removed before the run to
+give it headroom; the store holds the decompressed trees, so nothing that run did
+depended on the cache. A later `lake exe cache get` re-downloads what it needs.
+
+Sizing, if the whole thing has to be repeated on a colder disk: the first worktree at
+a new revision pays a 6.7G decompression (about 40 s, plus the download), and every
+worktree after it pays 0.65G.
+
 ## Why not a mechanism Lake or the cache tool already provides
 
 - **Lake's `packagesDir`** (the pre-#143 layout) names *one* package directory, hence one Mathlib

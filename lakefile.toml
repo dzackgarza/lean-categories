@@ -30,9 +30,9 @@ rev = "bb53b6f9b8cc007204fc852f53bf04da498ae555"
 
 # Mathlib tracks `master` (lean-categories#118): the research image carries one shared
 # Lean project, always on the latest Mathlib, and this repository follows it. The exact
-# head is pinned by `lake-manifest.json` (which `lake build` resolves from), and
-# `.github/workflows/mathlib-head.yml` moves that pin and `lean-toolchain` to each new
-# master head and reports breakage there as a failing run. Requiring `mathlib` last
+# head is pinned by `lake-manifest.json` (which `lake build` resolves from), and moving
+# it to a new master head is `just update` plus the dependency pins that head breaks.
+# Requiring `mathlib` last
 # makes Mathlib's own dependency pins take precedence over the other packages' pins, so
 # `lake exe cache get` computes the hashes the build files are keyed to.
 #
