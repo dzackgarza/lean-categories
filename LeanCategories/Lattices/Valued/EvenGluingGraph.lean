@@ -164,10 +164,11 @@ theorem evenDiscriminantRestrictionMap_adjointRange_le_ker :
     change Submodule.Quotient.mk (M.obj.adjoint b) = 0
     rw [Submodule.Quotient.mk_eq_zero]
     exact LinearMap.mem_range_self _ _
-  show (evenDiscriminantRestrictionMap L M) ((orthogonalSum L M).obj.adjoint (a, b)) = (0, 0)
-  rw [evenDiscriminantFstRestriction_adjoint L M, evenDiscriminantSndRestriction_adjoint L M]
-  simp [evenDiscriminantRestrictionMap, LinearMap.prod_apply,
-    LinearMap.comp_apply, h1, h2]
+  have hmap : (evenDiscriminantRestrictionMap L M) ((orthogonalSum L M).obj.adjoint (a, b)) =
+      (L.obj.defectProjection (evenDiscriminantFstRestriction L M ((orthogonalSum L M).obj.adjoint (a, b))),
+       M.obj.defectProjection (evenDiscriminantSndRestriction L M ((orthogonalSum L M).obj.adjoint (a, b)))) := rfl
+  rw [hmap, evenDiscriminantFstRestriction_adjoint L M, evenDiscriminantSndRestriction_adjoint L M]
+  exact Prod.ext h1 h2
 
 end LeanCategories.Lattices.Valued
 
