@@ -47,7 +47,10 @@ of Lemma 1 from the properness condition (D2), p. 77) are not proved here: in th
 is the discreteness of `O(L)` in `O(L ⊗ ℝ)` — the matrix presentation of
 `TopologicalOrthogonalGroup.lean` — and the Bourbaki chain through local finiteness, the
 closest-point argument of Lemma 2 (i) and the exchange conditions of Ch. IV §1 no. 7 is future
-work.
+work. The separation layer of that chain is here: only finitely many mirrors separate two
+points of the sheet (`mirrorSeparating_finite`), and two regular points lie in the same chamber
+exactly when no mirror separates them
+(`chamberOf_eq_iff_mirrorSeparating_eq_empty`).
 
 ## References
 
@@ -1459,5 +1462,260 @@ theorem realFormOrthogonal_finite_of_compact (hL : L.obj.obj.IsNondegenerate)
   exact Set.Finite.of_injOn hmaps hinj hT
 
 end Compactness
+
+/-! ## Lemma 1: local finiteness of the mirror arrangement (Bourbaki V §3 no. 1, p. 77)
+
+Only finitely many root hyperplanes meet a compact subset of the chosen sheet of the positive
+cone, counted as sets (several roots share one mirror). The reflections in the roots whose
+mirrors meet the compact set fix a point of it, so condition (D′2) bounds them.
+
+**LC-09 search record** (14 queries, `scripts/formalization_corpus.py`, no direct hit for
+the statement): `content:locallyFinite`, `content:reflection`, `content:mirror`,
+`content:rootHyperplane`, `content:rootHyperplane content:compact`,
+`content:mirror content:reflect`, `content:reflectIn content:fixed`,
+`content:reflection content:hyperplane content:finitely`,
+`content:locallyFinite content:root`, `content:positiveCone content:compact content:finitely`,
+`content:fixes content:hyperplane content:pointwise`,
+`content:fixedPoints content:reflection`, `Set.Finite content:hyperplane`,
+`content:discrete content:group content:compact content:finite`. The nearest neighbours are
+different mathematics (TauCeti `RootSystem/Chamber` walls of finite root systems; Atlas
+`Buildings/Reflection` affine Weyl walls). The reuse set is this repository's own:
+`realFormOrthogonal_finite_of_compact` (the D′2 theorem, #128), the square theorem
+`realFormOrthogonalHom_latticeReflection`, `reflectIn_associated_comm` and
+`associated_reflectIn_self` (the fix-iff), `realFormPairing_eq_associated`, and Mathlib's
+`Set.Finite.image` and `Set.Finite.subset`. -/
+
+section LemmaOne
+
+/-- The fixed set of the reflection in a vector of nonzero value is exactly its mirror
+hyperplane: `reflectIn` fixes a point if and only if it pairs to zero with the vector. -/
+private theorem reflectIn_fix_iff {V : Type u} [AddCommGroup V] [Module ℝ V]
+    (Q : QuadraticForm ℝ V) {a : V} (ha : Q a ≠ 0) (x : V) :
+    reflectIn Q a ha x = x ↔ (associated Q) x a = 0 := by
+  constructor
+  · intro hx
+    have h4 := reflectIn_associated_comm Q ha x
+    rw [hx] at h4
+    linarith
+  · intro hx
+    exact associated_reflectIn_self Q ha hx
+
+/-- The mirror of a root is the fixed set of its lattice reflection: the square theorem
+transports the reflection to the real form, and the fix-iff identifies the fixed set with
+the orthogonal complement of the root vector. -/
+theorem mem_rootMirror_iff_fixed (hL : L.obj.obj.IsNondegenerate)
+    (h2 : IsRegular (2 : ℤ))
+    {r : L.obj.obj.carrier} (hr : IsReflectiveRoot L.obj r)
+    (hr' : realFormQuadratic L (toRealForm L r) ≠ 0)
+    (x : (realForm L).obj.carrier) :
+    x ∈ rootMirror L r ↔
+      realFormOrthogonalHom L (latticeReflection L hL h2 hr) x = x := by
+  rw [realFormOrthogonalHom_latticeReflection L hL h2 hr hr']
+  constructor
+  · intro hx
+    apply (reflectIn_fix_iff (realFormQuadratic L) hr' x).mpr
+    rw [← realFormPairing_eq_associated L x (toRealForm L r)]
+    exact hx
+  · intro hx
+    have h0 := (reflectIn_fix_iff (realFormQuadratic L) hr' x).mp hx
+    rw [← realFormPairing_eq_associated L x (toRealForm L r)] at h0
+    exact h0
+
+/-- **Only finitely many root hyperplanes meet a compact subset of the positive cone**
+(Bourbaki V §3 no. 1, Lemma 1, p. 77): for compact nonempty `K` in the chosen sheet
+of the positive cone, the set of mirrors that meet `K` is finite. The reflections in
+the roots whose mirrors meet `K` fix a point of `K`, so the (D′2) theorem bounds them. -/
+theorem rootMirror_meet_finite (hL : L.obj.obj.IsNondegenerate)
+    (h2 : IsRegular (2 : ℤ)) (hpos : sigPos (realFormQuadratic L) = 1)
+    (t : (realForm L).obj.carrier) (ht : 0 < realFormQuadratic L t)
+    {K : Set (realForm L).obj.carrier}
+    (hK : IsCompact K) (hKne : K.Nonempty)
+    (hKupper : K ⊆ positiveCone.upper (realFormQuadratic L) t)
+    {I : Type} [Fintype I] [DecidableEq I] (i₀ : I)
+    (b : Module.Basis I ℤ L.obj.obj.carrier) :
+    {H : Set (realForm L).obj.carrier | ∃ r ∈ negativeReflectiveRoots L,
+      rootMirror L r = H ∧ (H ∩ K).Nonempty}.Finite := by
+  -- the D′2 set (with K' := K) is finite by the #128 theorem
+  have hD2 : {g : OrthogonalGroup L.obj | ∃ x ∈ K,
+      realFormOrthogonalHom L g x ∈ K}.Finite :=
+    realFormOrthogonal_finite_of_compact L hL hpos t ht hK hKne hK hKne hKupper i₀ b
+  -- the image of the D′2 set under the fixed-set map is finite
+  have hImg : ((fun g : OrthogonalGroup L.obj =>
+      {x | realFormOrthogonalHom L g x = x}) ''
+      {g : OrthogonalGroup L.obj | ∃ x ∈ K,
+        realFormOrthogonalHom L g x ∈ K}).Finite :=
+    Set.Finite.image (fun g : OrthogonalGroup L.obj =>
+      {x | realFormOrthogonalHom L g x = x}) hD2
+  -- every mirror meeting K is the fixed set of a reflection in the D′2 set
+  have hSub : {H : Set (realForm L).obj.carrier | ∃ r ∈ negativeReflectiveRoots L,
+      rootMirror L r = H ∧ (H ∩ K).Nonempty} ⊆
+      (fun g : OrthogonalGroup L.obj => {x | realFormOrthogonalHom L g x = x}) ''
+      {g : OrthogonalGroup L.obj | ∃ x ∈ K, realFormOrthogonalHom L g x ∈ K} := by
+    intro H hH
+    obtain ⟨r, hrn, hHr, hHne⟩ := hH
+    obtain ⟨hrIsRef, hrneg⟩ := (mem_negativeReflectiveRoots_iff L).mp hrn
+    have hrneg' : realFormQuadratic L (toRealForm L r) < 0 := by
+      rw [realFormQuadratic_toRealForm L r]
+      exact_mod_cast hrneg
+    have hr' := ne_of_lt hrneg'
+    obtain ⟨x, hxH, hxK⟩ := hHne
+    rw [← hHr] at hxH
+    refine ⟨latticeReflection L hL h2 hrIsRef, ?_, ?_⟩
+    · exact ⟨x, hxK, by
+        have hfix : realFormOrthogonalHom L (latticeReflection L hL h2 hrIsRef) x = x :=
+          (mem_rootMirror_iff_fixed L hL h2 hrIsRef hr' x).mp hxH
+        rw [hfix]
+        exact hxK⟩
+    · rw [← hHr]
+      show {x | realFormOrthogonalHom L (latticeReflection L hL h2 hrIsRef) x = x}
+        = rootMirror L r
+      ext y
+      exact (mem_rootMirror_iff_fixed L hL h2 hrIsRef hr' y).symm
+  exact hImg.subset hSub
+
+end LemmaOne
+
+/-! ## Lemma 2: the mirrors separating two points of the sheet (Bourbaki V §3 no. 2, p. 77)
+
+For two points of the chosen sheet of the positive cone, the mirrors on whose two sides
+the points lie. Only finitely many mirrors separate two points of the sheet: a separating
+mirror meets the segment between the points — the pairing with the root is affine along
+the segment, so it vanishes between values of opposite strict sign — and only finitely
+many mirrors meet the compact segment (Lemma 1, `rootMirror_meet_finite`).
+
+Two regular points of the sheet lie in the same chamber exactly when no mirror separates
+them: the pairing signs are constant on a chamber (`pos_mul_of_mem_chamberOf`), and equal
+signs put the segment between the points in the regular locus
+(`segment_subset_weylRegularLocus_of_pos_mul`), whence the same chamber
+(`chamberOf_eq_of_pos_mul`).
+
+The two headline theorems of Bourbaki, Ch. V §3 no. 2 — the reflections in the walls of
+one chamber generate `W(M)`, and `W(M)` acts simply transitively on the chambers
+(Lemma 2 (iii) and Theorem 1, pp. 77–78) — are not proved here: the classical chain
+through the closest-point argument of Lemma 2 (i) and the exchange conditions of
+Ch. IV §1 no. 7 is future work. This section delivers the separation finiteness and the
+stabilization criterion that the chain rests on.
+
+**LC-09 search record** (8 queries, `scripts/formalization_corpus.py`, no direct hit for
+the statements in the Lorentzian-lattice setting): `content:IsChamber`,
+`content:simplyTransitive`, `content:reflection content:generate`,
+`content:wall content:reflection`, `content:chamber content:Coxeter`,
+`content:fundamentalDomain`, `content:reflection content:generate content:chamber`,
+`content:simply content:transitive content:chamber`. The nearest neighbours are
+Atlas-lean `ReflectionGroupsCoxeter.lean` (which axiomatizes `faithful_on_chambers`)
+and the AFP `Buildings/Chamber.thy` (the abstract chamber-complex theory). The reuse set
+is this repository's own: `rootMirror_meet_finite` (#129), `pairing_segment`,
+`convex_upper`, `segment_subset_weylRegularLocus_of_pos_mul`,
+`pos_mul_of_mem_chamberOf` and `chamberOf_eq_of_pos_mul`. -/
+
+section LemmaTwo
+
+/-- The mirrors separating two points of the sheet: the mirrors of the negative
+reflective roots pairing with the two points with opposite strict sign. -/
+def mirrorSeparating (x y : (realForm L).obj.carrier) :
+    Set (Set (realForm L).obj.carrier) :=
+  {H | ∃ r ∈ negativeReflectiveRoots L, rootMirror L r = H ∧
+    (realForm L).obj.pairing x (toRealForm L r) *
+      (realForm L).obj.pairing y (toRealForm L r) < 0}
+
+/-- **Lemma 2 (i)** (Bourbaki V §3 no. 2, p. 77, the separation finiteness): only
+finitely many mirrors separate two points of the chosen sheet of the positive cone. A
+separating mirror meets the segment between the points — the pairing with the root is
+affine along the segment (`pairing_segment`), so it vanishes between values of opposite
+strict sign — and only finitely many mirrors meet the compact segment (Lemma 1,
+`rootMirror_meet_finite`). -/
+theorem mirrorSeparating_finite (hL : L.obj.obj.IsNondegenerate)
+    (h2 : IsRegular (2 : ℤ)) (hpos : sigPos (realFormQuadratic L) = 1)
+    (t : (realForm L).obj.carrier) (ht : 0 < realFormQuadratic L t)
+    (x y : (realForm L).obj.carrier)
+    (hx : x ∈ positiveCone.upper (realFormQuadratic L) t)
+    (hy : y ∈ positiveCone.upper (realFormQuadratic L) t)
+    {I : Type} [Fintype I] [DecidableEq I] (i₀ : I)
+    (b : Module.Basis I ℤ L.obj.obj.carrier) :
+    (mirrorSeparating L x y).Finite := by
+  have hKcompact : IsCompact [x -[ℝ] y] := by
+    rw [segment_eq_image]
+    exact isCompact_Icc.image (by fun_prop)
+  have hKne : [x -[ℝ] y].Nonempty :=
+    ⟨x, ⟨1, 0, by norm_num, by norm_num, by norm_num, by simp⟩⟩
+  have hKupper : [x -[ℝ] y] ⊆ positiveCone.upper (realFormQuadratic L) t :=
+    (convex_upper (realFormQuadratic L) hpos ht).segment_subset hx hy
+  refine (rootMirror_meet_finite L hL h2 hpos t ht hKcompact hKne hKupper i₀ b).subset ?_
+  rintro H ⟨r, hr, hHeq, hsep⟩
+  refine ⟨r, hr, hHeq, ?_⟩
+  -- the pairings with the root have opposite strict sign
+  set p := (realForm L).obj.pairing x (toRealForm L r) with hp
+  set q := (realForm L).obj.pairing y (toRealForm L r) with hqdef
+  have hsubne : p - q ≠ 0 := by
+    intro hcon
+    rw [eq_of_sub_eq_zero hcon] at hsep
+    exact absurd hsep (by nlinarith [sq_nonneg p])
+  -- the point of the segment where the pairing vanishes
+  set s := p / (p - q) with hsdef
+  have hb0 : 0 < s := by
+    rcases lt_trichotomy p 0 with hpneg | hpzero | hppos
+    · have hq : 0 < q := by nlinarith [hsep, hpneg]
+      rw [hsdef, div_pos_iff]
+      exact Or.inr ⟨hpneg, by linarith⟩
+    · rw [hpzero] at hsep
+      simp at hsep
+    · have hq : q < 0 := by nlinarith [hsep, hppos]
+      rw [hsdef, div_pos_iff]
+      exact Or.inl ⟨hppos, by linarith⟩
+  have hb1 : s < 1 := by
+    rcases lt_trichotomy p 0 with hpneg | hpzero | hppos
+    · have hq : 0 < q := by nlinarith [hsep, hpneg]
+      rw [hsdef, div_lt_one_of_neg (by linarith : p - q < 0)]
+      linarith
+    · rw [hpzero] at hsep
+      simp at hsep
+    · have hq : q < 0 := by nlinarith [hsep, hppos]
+      rw [hsdef, div_lt_one (by linarith : 0 < p - q)]
+      linarith
+  -- the point of the segment on the mirror
+  refine ⟨(1 - s) • x + s • y, ?_, ?_⟩
+  · rw [← hHeq]
+    change (realForm L).obj.pairing ((1 - s) • x + s • y) (toRealForm L r) = 0
+    rw [pairing_segment L r x y (1 - s) s, hsdef]
+    field_simp
+    ring
+  · exact ⟨1 - s, s, by linarith, by linarith, by ring, rfl⟩
+
+/-- **Lemma 2 (ii)** (the stabilization criterion): two regular points of the sheet lie in
+the same chamber exactly when no mirror separates them. The forward direction is the
+constancy of the pairing signs on a chamber (`pos_mul_of_mem_chamberOf`); the reverse
+direction is the same-sign criterion for the chamber (`chamberOf_eq_of_pos_mul`), the
+signs being nonzero by regularity. -/
+theorem chamberOf_eq_iff_mirrorSeparating_eq_empty
+    (hpos : (integralSignature L).1 = 1) (ht : 0 < realFormQuadratic L t)
+    {x y : (realForm L).obj.carrier}
+    (hx : x ∈ weylRegularLocus L t) (hy : y ∈ weylRegularLocus L t) :
+    chamberOf L t x = chamberOf L t y ↔ mirrorSeparating L x y = ∅ := by
+  constructor
+  · intro heq
+    rw [Set.eq_empty_iff_forall_notMem]
+    rintro H ⟨r, hr, -, hsep⟩
+    have hmem : y ∈ chamberOf L t x := by rw [heq]; exact mem_chamberOf L t hy
+    have hprod := pos_mul_of_mem_chamberOf L t hx (mem_chamberOf L t hx) hmem hr
+    exact absurd hsep (by linarith)
+  · intro hempty
+    refine chamberOf_eq_of_pos_mul L t hx hy hpos ht ?_
+    intro r hr
+    have hxr := ((mem_weylRegularLocus_iff L t).mp hx).2 r hr
+    have hyr := ((mem_weylRegularLocus_iff L t).mp hy).2 r hr
+    have hnotsep : ¬((realForm L).obj.pairing x (toRealForm L r) *
+        (realForm L).obj.pairing y (toRealForm L r) < 0) := by
+      intro hcon
+      have hmem : rootMirror L r ∈ mirrorSeparating L x y := ⟨r, hr, rfl, hcon⟩
+      rw [hempty] at hmem
+      simp at hmem
+    rcases lt_trichotomy ((realForm L).obj.pairing x (toRealForm L r) *
+        (realForm L).obj.pairing y (toRealForm L r)) 0 with hneg | hzero | hpos'
+    · exact absurd hneg hnotsep
+    · exact absurd hzero (mul_ne_zero hxr hyr)
+    · exact hpos'
+
+end LemmaTwo
+
 
 end LeanCategories.Lattices.Valued

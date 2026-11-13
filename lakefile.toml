@@ -13,20 +13,26 @@ weak.linter.style.header = false
 maxSynthPendingDepth = 3
 
 # `BrauerGroup` publishes one tag per Mathlib release and is imported by
-# `LeanCategories.Algebra.{CrossedProduct,BrauerGroup}Data`, so its pin has to name the
-# release the Mathlib pin below belongs to. The tags are the Lean release Mathlib pins:
-# `v4.36.0-rc2` is the tag for Lean `v4.36.0-rc2`, the toolchain of the Mathlib master head.
-# A new Mathlib release breaks this package first, which is what the scheduled run reports.
+# `LeanCategories.Algebra.{CrossedProduct,BrauerGroup}Data`, so its pin has to be a
+# commit that compiles against the Mathlib head below. The tag `v4.36.0-rc2` names
+# the Lean release the toolchain comes from but not that head: Mathlib master moved
+# on, and at `048fffa1` the tag fails on `Unknown identifier ext_iff`
+# (`CSA/ReducedCharPoly.lean:254`), `Unknown constant Module.Projective.tensorProduct`
+# (`Azumaya/Mul.lean:349`) and two `rewrite`s in `ToSecond.lean`. `bb53b6f` is the
+# upstream commit that bumps the package to the Mathlib revision which separated that
+# constant (`089be9f`, an ancestor of the head below), and the package compiles there.
+# A new Mathlib release breaks this package first, which is what the scheduled run
+# reports; moving this pin is then part of moving the Mathlib head.
 [[require]]
 name = "BrauerGroup"
 git = "https://github.com/Whysoserioushah/BrauerGroup.git"
-rev = "v4.36.0-rc2"
+rev = "bb53b6f9b8cc007204fc852f53bf04da498ae555"
 
 # Mathlib tracks `master` (lean-categories#118): the research image carries one shared
 # Lean project, always on the latest Mathlib, and this repository follows it. The exact
-# head is pinned by `lake-manifest.json` (which `lake build` resolves from), and
-# `.github/workflows/mathlib-head.yml` moves that pin and `lean-toolchain` to each new
-# master head and reports breakage there as a failing run. Requiring `mathlib` last
+# head is pinned by `lake-manifest.json` (which `lake build` resolves from), and moving
+# it to a new master head is `just update` plus the dependency pins that head breaks.
+# Requiring `mathlib` last
 # makes Mathlib's own dependency pins take precedence over the other packages' pins, so
 # `lake exe cache get` computes the hashes the build files are keyed to.
 #
@@ -38,10 +44,12 @@ rev = "v4.36.0-rc2"
 # `lake exe cache get` decompresses it into the checkout of the project that runs it,
 # so what each worktree holds is its own *source* checkout of the one Mathlib head.
 # The decompressed build tree is shared on top of that (lean-categories#148):
-# `scripts/cache-get.sh` keeps one build tree per (Mathlib revision, Lean toolchain)
-# in the repository's git directory and hands each worktree a tree of hardlinks into
-# it, which is what keeps four concurrent worktrees inside one disk. See
-# `docs/mathlib-build-store.md` for the measurement and the rejected alternatives.
+# `scripts/cache-get.sh` keeps one build tree per package, revision and toolchain --
+# Mathlib and every dependency, since a missing dependency tree makes a worktree
+# rebuild hundreds of Mathlib modules -- in the repository's git directory, and hands
+# each worktree a tree of hardlinks into it, which is what keeps four concurrent
+# worktrees inside one disk. See `docs/mathlib-build-store.md` for the measurement
+# and the rejected alternatives.
 [[require]]
 name = "mathlib"
 scope = "leanprover-community"

@@ -29,15 +29,17 @@ update:
     @MATHLIB_NO_CACHE_ON_UPDATE=1 lake update
 
 # Build the library on Mathlib's prebuilt cache (machine-wide in ~/.cache/mathlib).
-# scripts/cache-get.sh gives this worktree a tree of hardlinks into the one Mathlib
-# build the repository keeps per Mathlib revision (see docs/mathlib-build-store.md),
-# so four worktrees cost one copy of it, and a head move still cannot leave stale
-# traces hiding the gap behind a fresh `lake build`.
+# scripts/cache-get.sh gives this worktree a tree of hardlinks into the one build
+# the repository keeps of each package per (revision, toolchain) -- Mathlib's and
+# every dependency's (see docs/mathlib-build-store.md) -- so four worktrees cost
+# one copy of them all, and a head move still cannot leave stale traces hiding the
+# gap behind a fresh `lake build`.
 build:
     @scripts/cache-get.sh
     @lake build
 
-# Fetch Mathlib's prebuilt compilation cache (linking this worktree to the shared tree)
+# Fetch the prebuilt compilation cache of every package (linking this worktree to the
+# repository's shared build trees)
 cache:
     @scripts/cache-get.sh
 

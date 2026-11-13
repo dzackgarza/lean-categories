@@ -698,13 +698,23 @@ Persistent `.lake/` artifacts are different: they are the repository's shared
 build cache and must not be thrown away merely to make disk numbers look smaller.
 
 The one location every worktree of this repository shares is its git directory,
-so the one Mathlib build that all of them use lives there:
-`.git/lake-build-store`, one build tree per Mathlib revision and toolchain, whose
-files `scripts/cache-get.sh` hardlinks into each worktree (lean-categories#148,
-[docs/mathlib-build-store.md](docs/mathlib-build-store.md)). That store is build
-state of the same kind as `.lake/` — not probe state — so it is not deleted to
-make disk numbers look smaller either; deleting it costs every chat a full
-decompression of Mathlib.
+so the one build of each package that all of them use lives there:
+`.git/lake-build-store/<package>/<rev>-<toolchain>`, one tree per package,
+revision and toolchain, whose files `scripts/cache-get.sh` hardlinks into each
+worktree -- every package of `lake-manifest.json`, not just Mathlib, because a
+missing batteries or aesop tree makes a worktree rebuild hundreds of Mathlib
+modules (lean-categories#148,
+[docs/mathlib-build-store.md](docs/mathlib-build-store.md)). The linked tree gets
+a copy of the `.trace` files and a link for everything else: Lake rewrites a
+trace in place, so a shared trace would let one worktree's rebuild invalidate
+another's tree. That store is build state of the same kind as `.lake/` — not
+probe state — so it is not deleted to make disk numbers look smaller either;
+deleting it costs every chat a full decompression of Mathlib. What bounds it is
+its own rule, not a number: an entry is kept exactly while some worktree of the
+repository names its revision in its `lake-manifest.json`, and the cache step
+evicts the rest after it links (lean-categories#149). Nothing evicts the tree
+inside an abandoned worktree, which keeps its 6.7 GB of links to itself until
+someone removes it.
 
 Move a worktree to a new Mathlib head with `just update`, never with a bare
 `lake update`: Mathlib's lakefile fetches the cache itself at the end of

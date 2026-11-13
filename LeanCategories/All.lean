@@ -152,6 +152,11 @@ public import LeanCategories.ForMathlib.FiltrationTopology
 public import LeanCategories.ForMathlib.FiltrationGraded
 public import LeanCategories.ForMathlib.GaussianPrimeIdeals
 public import LeanCategories.ForMathlib.MvPolynomialIdealOfVars
+public import LeanCategories.ForMathlib.PointedConeAlternative
+public import LeanCategories.ForMathlib.PointedConeRelations
+public import LeanCategories.ForMathlib.PointedConeFiniteGeneration
+public import LeanCategories.ForMathlib.PointedConeFiniteDuality
+public import LeanCategories.ForMathlib.PointedConeMinkowskiWeyl
 public import LeanCategories.ForMathlib.QuadraticMapHyperbolicPlane
 public import LeanCategories.ForMathlib.QuadraticMapRepresentation
 public import LeanCategories.ForMathlib.QuadraticReflection
@@ -336,6 +341,7 @@ public import LeanCategories.Lattices.Valued.IsotropicReductionBaseChange
 public import LeanCategories.Lattices.Valued.CarrierIntActionTests
 public import LeanCategories.Lattices.Valued.PrimitiveReduction
 public import LeanCategories.Lattices.Valued.RationalPolyhedralCone
+public import LeanCategories.Lattices.Valued.RationalConeDuality
 public import LeanCategories.Lattices.Valued.EvenReduction
 public import LeanCategories.Lattices.Valued.DiscriminantIsotropic
 public import LeanCategories.Lattices.Valued.DiscriminantQuotient
