@@ -77,7 +77,8 @@ MIN_FREE_GB="${MATHLIB_BUILD_STORE_MIN_FREE_GB:-7}"
 say() { echo "cache-get: $*"; }
 warn() { echo "cache-get: $*" >&2; }
 
-[ -d "$PKGDIR/mathlib" ] || { warn "no Mathlib checkout at $PKGDIR/mathlib; run 'just update' first"; exit 1; }
+[ -d "$PKGDIR/mathlib" ] \
+  || { warn "no Mathlib checkout at $PKGDIR/mathlib; run 'just update' first"; exit 1; }
 
 # Every package of the manifest, Mathlib first: the others are built against it.
 PACKAGES="$(python3 - <<'PY'
@@ -269,7 +270,8 @@ plain() {
   exit 0
 }
 
-mkdir -p "$STORE" 2>/dev/null || { warn "cannot create $STORE; completing this worktree's own tree only"; plain; }
+mkdir -p "$STORE" 2>/dev/null \
+  || { warn "cannot create $STORE; completing this worktree's own tree only"; plain; }
 
 COLD=""
 for p in $PACKAGES; do
