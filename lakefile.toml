@@ -44,10 +44,12 @@ rev = "bb53b6f9b8cc007204fc852f53bf04da498ae555"
 # `lake exe cache get` decompresses it into the checkout of the project that runs it,
 # so what each worktree holds is its own *source* checkout of the one Mathlib head.
 # The decompressed build tree is shared on top of that (lean-categories#148):
-# `scripts/cache-get.sh` keeps one build tree per (Mathlib revision, Lean toolchain)
-# in the repository's git directory and hands each worktree a tree of hardlinks into
-# it, which is what keeps four concurrent worktrees inside one disk. See
-# `docs/mathlib-build-store.md` for the measurement and the rejected alternatives.
+# `scripts/cache-get.sh` keeps one build tree per package, revision and toolchain --
+# Mathlib and every dependency, since a missing dependency tree makes a worktree
+# rebuild hundreds of Mathlib modules -- in the repository's git directory, and hands
+# each worktree a tree of hardlinks into it, which is what keeps four concurrent
+# worktrees inside one disk. See `docs/mathlib-build-store.md` for the measurement
+# and the rejected alternatives.
 [[require]]
 name = "mathlib"
 scope = "leanprover-community"
