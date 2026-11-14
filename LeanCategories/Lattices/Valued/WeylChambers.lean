@@ -4088,10 +4088,16 @@ wall must cross that wall again later, and then the two steps delete from the wo
 pairing with that root, because a step reflects only in its own wall
 (`wallRoot_reflectIn_pairing_pos`).
 
-**LC-09 search record** (this section; the reuse set is this repository's own
+**LC-09 record** (this section): no new corpus queries were run — these statements are the
+uniqueness half of the unit whose search is recorded for #130 and #152 below and above (the
+maintainer asked that the Atlas-lean/corpus search for it not be repeated), and the problem-specific
+inputs are all in this file. The reuse set is this repository's own
 `weylSubgroup_eq_wallReflectionSubgroup`, `exists_wordProd`, `exists_weylSubgroup_chamberOf_eq`,
 `wallRoot_reflectIn_pairing_pos`, `latticeReflection_eq_of_rootMirror_eq`,
-`conj_latticeReflection`, `pos_mul_of_mem_chamberOf`, `chamberOf_eq_iff_mirrorSeparating_eq_empty`).
+`conj_latticeReflection`, `pos_mul_of_mem_chamberOf`, `chamberOf_eq_iff_mirrorSeparating_eq_empty`,
+`realFormIsometry_pairing`, `image_negativeReflectiveRoots`, `weylSubgroup_weylRegularLocus_image`
+and Mathlib's `Nat.find_spec`/`Nat.find_min'`, `Module.Free.chooseBasis`,
+`List.prod_append`.
 -/
 
 /-- The reflection in a wall root of the chamber of `x₀`, as an element of the orthogonal
