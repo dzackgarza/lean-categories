@@ -50,7 +50,12 @@ closest-point argument of Lemma 2 (i) and the exchange conditions of Ch. IV §1 
 work. The separation layer of that chain is here: only finitely many mirrors separate two
 points of the sheet (`mirrorSeparating_finite`), and two regular points lie in the same chamber
 exactly when no mirror separates them
-(`chamberOf_eq_iff_mirrorSeparating_eq_empty`).
+(`chamberOf_eq_iff_mirrorSeparating_eq_empty`). The half-space layer is here as well: the
+sheet is open (`isOpen_positiveCone_upper`), the side of a mirror in the sheet is convex and
+is the connected component of the sheet minus the mirror
+(`connectedComponentIn_mirrorComplement`), a mirror meeting the sheet has points of the sheet
+on both of its sides (`mirror_two_sides_nonempty`), and `pairing_reflectIn` is the identity on
+the real-form pairing that replaces the Euclidean distance step of Lemma 2 (i).
 
 ## References
 
