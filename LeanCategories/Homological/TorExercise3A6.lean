@@ -73,7 +73,7 @@ where the finitely generated case is the coordinate analysis of
 namespace LeanCategories.Homological.TorExercise3A6
 
 open CategoryTheory Limits MonoidalCategory
-open scoped TensorProduct DirectSum
+open scoped TensorProduct DirectSum ZeroObject
 
 /-! ## Order arithmetic -/
 
@@ -167,5 +167,153 @@ theorem addOrderOf_add_eq_mul_of_coprime (x y : M) (hx : 0 < addOrderOf x)
     exact absurd (Nat.le_of_dvd hm habm) (not_le.2 hmlt)
 
 end OrderArithmetic
+
+/-! ## The two-term resolution of a free presentation, at any free middle term
+
+`TorFreeResolution` builds its two-term projective resolution only for presentations whose
+middle term is `(Fin r → ℤ)`.  The structure-theorem presentation below has middle term
+`(Fin n →₀ ℤ) × (⨁ i, ℤ)`, so the construction is generalized here: any surjection `f : F₀ →ₗ A`
+with `F₀` free and the syzygy `ker f` projective carries the same two-term resolution, with
+the same quasi-isomorphism proof.  The `(Fin r → ℤ)`-shaped original is the special case
+`F₀ = Fin r → ℤ`; the generalization is a copy with the type and the projectivity proof
+abstracted, not new mathematics. -/
+
+section GeneralTwoTerm
+
+variable {F₀ A : Type} [AddCommGroup F₀] [AddCommGroup A] [Module ℤ F₀] [Module ℤ A]
+  (f : F₀ →ₗ[ℤ] A)
+
+/-- The syzygy's carrier as a `ModuleCat` object, with the instances `ModuleCat` synthesizes:
+the `toIntModule` structure, reached through the explicit instance arguments so that no
+`Submodule.module` diamond is synthesized at the application site. -/
+noncomputable def kerOf : ModuleCat ℤ :=
+  @ModuleCat.of ℤ Int.instRing ↥(LinearMap.ker f) (LinearMap.ker f).addCommGroup
+    (AddCommGroup.toIntModule ↥(LinearMap.ker f))
+
+/-- The syzygy inclusion into the free middle term: `Subtype.val` as a ℤ-linear map for the
+`toIntModule` structure on the syzygy, the structure-bridge `int_smul_eq_zsmul` supplying
+scalar-linearity. -/
+noncomputable def kerSubtypeHom : kerOf f ⟶ ModuleCat.of ℤ F₀ :=
+  @ModuleCat.ofHom ℤ Int.instRing ↥(LinearMap.ker f) F₀
+    (LinearMap.ker f).addCommGroup (AddCommGroup.toIntModule ↥(LinearMap.ker f))
+    _ _
+    { toFun := (Subtype.val : ↥(LinearMap.ker f) → F₀)
+      map_add' := fun x y => rfl
+      map_smul' := fun c x => by
+        simp only [RingHom.id_apply]
+        exact (int_smul_eq_zsmul (inferInstance : Module ℤ F₀) c (x : F₀)).symm }
+
+/-- The two-term complex `K → F₀ → 0 → ⋯` of a free presentation with projective syzygy. -/
+noncomputable def twoTermComplexG : ChainComplex (ModuleCat ℤ) ℕ :=
+  ChainComplex.mk' (ModuleCat.of ℤ F₀) (kerOf f) (kerSubtypeHom f)
+    (fun _ => ⟨0, 0, by simp⟩)
+
+theorem twoTermComplexG_X_zero : (twoTermComplexG f).X 0 = ModuleCat.of ℤ F₀ :=
+  ChainComplex.mk'_X_0 ..
+
+theorem twoTermComplexG_X_one : (twoTermComplexG f).X 1 = kerOf f :=
+  ChainComplex.mk'_X_1 ..
+
+theorem twoTermComplexG_d_one_zero :
+    (twoTermComplexG f).d 1 0 = kerSubtypeHom f :=
+  ChainComplex.mk'_d_1_0 ..
+
+theorem twoTermComplexG_isZero_X_two : IsZero ((twoTermComplexG f).X 2) :=
+  IsZero.of_iso (isZero_zero (ModuleCat ℤ))
+    (ChainComplex.mk'XIso (ModuleCat.of ℤ F₀) (kerOf f) (kerSubtypeHom f)
+      (fun _ => ⟨0, 0, by simp⟩) 0)
+
+theorem twoTermComplexG_isZero_X (n : ℕ) (hn : 2 ≤ n) : IsZero ((twoTermComplexG f).X n) := by
+  obtain ⟨k, rfl⟩ : ∃ k, n = k + 2 := ⟨n - 2, by omega⟩
+  exact IsZero.of_iso (isZero_zero (ModuleCat ℤ))
+    (ChainComplex.mk'XIso (ModuleCat.of ℤ F₀) (kerOf f) (kerSubtypeHom f)
+      (fun _ => ⟨0, 0, by simp⟩) k)
+
+theorem twoTermComplexG_mono_d_one_zero :
+    Mono ((twoTermComplexG f).d 1 0) :=
+  ConcreteCategory.mono_of_injective _ fun x y h => Subtype.ext h
+
+theorem twoTermComplexG_projective [Module.Free ℤ F₀]
+    [Projective (kerOf f)] (n : ℕ) :
+    Projective ((twoTermComplexG f).X n) := by
+  match n with
+  | 0 =>
+    exact (twoTermComplexG_X_zero f).symm ▸
+      (by infer_instance : Projective (ModuleCat.of ℤ F₀))
+  | 1 =>
+    exact (twoTermComplexG_X_one f).symm ▸ ‹Projective (kerOf f)›
+  | k + 2 =>
+    exact Projective.of_iso (Iso.symm (ChainComplex.mk'XIso (ModuleCat.of ℤ F₀)
+      (kerOf f) (kerSubtypeHom f)
+      (fun _ => ⟨0, 0, by simp⟩) k)) (inferInstance : Projective (0 : ModuleCat ℤ))
+
+noncomputable def twoTermPiG :
+    twoTermComplexG f ⟶ (ChainComplex.single₀ (ModuleCat ℤ)).obj (ModuleCat.of ℤ A) :=
+  (ChainComplex.toSingle₀Equiv _ _).symm ⟨ModuleCat.ofHom f, by
+    rw [twoTermComplexG_d_one_zero]
+    apply ModuleCat.hom_ext
+    ext x
+    exact x.2⟩
+
+theorem twoTermComplexG_homology_one_isZero :
+    IsZero ((twoTermComplexG f).homology 1) := by
+  haveI : Mono ((twoTermComplexG f).d 1 0) := twoTermComplexG_mono_d_one_zero f
+  exact IsZero.of_iso (isZero_kernel_of_mono ((twoTermComplexG f).d 1 0))
+    (TorBridge.homologyOneIsoKernel (twoTermComplexG_isZero_X_two f))
+
+theorem twoTermComplexG_homology_isZero (k : ℕ) :
+    IsZero ((twoTermComplexG f).homology (k + 2)) := by
+  have hzero3 : IsZero ((twoTermComplexG f).X (k + 3)) :=
+    twoTermComplexG_isZero_X f (k + 3) (by omega)
+  have hd : (twoTermComplexG f).d (k + 3) (k + 2) = 0 := IsZero.eq_of_src hzero3 _ _
+  refine IsZero.of_iso (TorFreeResolution.isZero_kernel_of_isZero_source
+    ((twoTermComplexG f).d (k + 2) (k + 1)) (twoTermComplexG_isZero_X f (k + 2) (by omega)))
+    (TorFreeResolution.homologyIsoKernelAt (twoTermComplexG f) k hd)
+
+theorem twoTermComplexG_homology_pos_isZero (i : ℕ) (hi : i ≠ 0) :
+    IsZero ((twoTermComplexG f).homology i) := by
+  match i with
+  | 0 => exact absurd rfl hi
+  | 1 => exact twoTermComplexG_homology_one_isZero f
+  | k + 2 => exact twoTermComplexG_homology_isZero f k
+
+theorem quasiIsoAt_twoTermPiG_zero (hf : Function.Surjective f) :
+    QuasiIsoAt (twoTermPiG f) 0 := by
+  rw [ChainComplex.quasiIsoAt₀_iff]
+  have hc := ModuleCat.isColimitCokernelCofork
+    (f := kerSubtypeHom f)
+    (g := (ModuleCat.ofHom f : ModuleCat.of ℤ F₀ ⟶ ModuleCat.of ℤ A))
+    (fun a => ⟨fun h => ⟨⟨a, h⟩, rfl⟩, fun h => by
+      obtain ⟨y, hy⟩ := h
+      rw [← hy]
+      exact y.2⟩) hf
+  refine (ShortComplex.quasiIso_iff_of_zeros'
+    (φ := (HomologicalComplex.shortComplexFunctor' (ModuleCat ℤ) (ComplexShape.down ℕ) 1 0 0).map
+      (twoTermPiG f)) rfl rfl rfl).2 ?_
+  exact ⟨ShortComplex.exact_of_g_is_cokernel (S := _) hc, Limits.epi_of_isColimit_cofork hc⟩
+
+theorem quasiIsoAt_twoTermPiG_of_pos (i : ℕ) (hi : i ≠ 0) :
+    QuasiIsoAt (twoTermPiG f) i := by
+  rw [quasiIsoAt_iff_isIso_homologyMap]
+  exact IsZero.isIso (twoTermComplexG_homology_pos_isZero f i hi)
+    (TorFreeResolution.single₀_homology_pos_isZero (A := A) i hi) _
+
+theorem quasiIso_twoTermPiG (hf : Function.Surjective f) : QuasiIso (twoTermPiG f) where
+  quasiIsoAt := fun i => by
+    rcases Nat.eq_zero_or_pos i with h | h
+    · subst h
+      exact quasiIsoAt_twoTermPiG_zero f hf
+    · exact quasiIsoAt_twoTermPiG_of_pos f i h.ne'
+
+/-- The two-term projective resolution of a free presentation with projective syzygy. -/
+noncomputable def twoTermProjectiveResolutionG (hf : Function.Surjective f)
+    [Module.Free ℤ F₀] [Projective (kerOf f)] :
+    ProjectiveResolution (ModuleCat.of ℤ A) where
+  complex := twoTermComplexG f
+  projective := twoTermComplexG_projective f
+  π := twoTermPiG f
+  quasiIso := quasiIso_twoTermPiG f hf
+
+end GeneralTwoTerm
 
 end LeanCategories.Homological.TorExercise3A6
