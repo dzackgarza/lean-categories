@@ -314,6 +314,24 @@ noncomputable def twoTermProjectiveResolutionG (hf : Function.Surjective f)
   π := twoTermPiG f
   quasiIso := quasiIso_twoTermPiG f hf
 
+/-! ### The master isomorphism: `Tor₁` as a right-tensored kernel -/
+
+/-- **`Tor₁(A, B)` is the kernel of the right-tensored syzygy inclusion**, for a surjection
+`f : F₀ →ₗ A` with `F₀` free and the syzygy projective: the two-term bridge
+`TorBridge.torOneIsoTorKernel` at the generalized resolution.  The kernel is carried as the
+categorical kernel of `TorBridge.diffRight`, whose underlying linear map is
+`(kerSubtypeHom f).hom.rTensor ↥B` up to a definitional unfold; the further identification with
+the linear-map kernel `↥(LinearMap.ker ((kerSubtypeHom f).hom.rTensor ↥B))` through
+`ModuleCat.kernelIsoKer` meets the tensor-carrier `toIntModule`-versus-`instModule` diamond
+(the same family as the repaired `TorBridge.lean:343`) and is left at the categorical kernel,
+which the element-level work below consumes through `ModuleCat.kernelIsoKer` at each use. -/
+noncomputable def torOneIsoKerTensor (hf : Function.Surjective f)
+    [Module.Free ℤ F₀] [Projective (kerOf f)] (B : ModuleCat ℤ) :
+    TorBridge.torOne (ModuleCat.of ℤ A) B ≅
+      Limits.kernel (TorBridge.diffRight (B := B) (twoTermProjectiveResolutionG f hf)) :=
+  TorBridge.torOneIsoTorKernel (B := B)
+    (twoTermProjectiveResolutionG f hf) (twoTermComplexG_isZero_X_two f)
+
 end GeneralTwoTerm
 
 end LeanCategories.Homological.TorExercise3A6
