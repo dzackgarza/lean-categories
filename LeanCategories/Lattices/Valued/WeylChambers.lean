@@ -2371,6 +2371,40 @@ theorem exists_mem_rootMirror_inter_upper (ht : 0 < realFormQuadratic L t)
       exact hpos'⟩,
     (mem_rootMirror_iff L (r := r)).mpr hmir⟩
 
+/-- **A wall of a chamber** (Bourbaki V §1 no. 4, Def. 3, md 2389–2390: a wall of a chamber
+`C` is a hyperplane that is the support of a face of `C`; with `E` replaced by the open sheet
+`M` and the facets of the closure read through the sign calculus of the regular locus): a
+negative reflective root `r` is a **wall root** of the chamber of `x` when the mirror of `r`
+carries a point `y` of the sheet that lies on no other mirror and pairs with every other
+negative reflective root with the strict sign of `x`. The witness `y` is the mirror-section
+form of a point of the facet of the closure of `C(x)` whose support is the mirror of `r`; by
+`chamberOf_eq_iff_mirrorSeparating_eq_empty` the strict sign of `x` is constant on the
+chamber, so the predicate does not depend on the choice of the point of the chamber. The
+reflection of such a root is determined by the mirror
+(`latticeReflection_eq_of_rootMirror_eq`), so the wall roots of a chamber index their wall
+reflections. **LC-09**: queries `two chambers adjacent common wall reflection`,
+`wall reflections generate Weyl group`, `simply transitive chambers reflection group` —
+nearest neighbours are atlas-lean buildings code that axiomatizes these properties
+(`ReflectionGroupsCoxeter.lean` assumes `faithful_on_chambers`; `WallSeparation.lean` and
+`HyperplaneChambers.lean` are affine-Weyl, normed-space code) and TauCeti
+`RootSystem/Chamber` for finite root systems; no portable statement, so the predicate is
+this repository's own. -/
+def IsWallRoot (x : (realForm L).obj.carrier) (r : L.obj.obj.carrier) : Prop :=
+  r ∈ negativeReflectiveRoots L ∧
+    ∃ y, y ∈ positiveCone.upper (realFormQuadratic L) t ∧ y ∈ rootMirror L r ∧
+      ∀ s ∈ negativeReflectiveRoots L, rootMirror L s ≠ rootMirror L r →
+        0 < (realForm L).obj.pairing x (toRealForm L s) *
+          (realForm L).obj.pairing y (toRealForm L s)
+
+theorem isWallRoot_iff {x : (realForm L).obj.carrier} {r : L.obj.obj.carrier} :
+    IsWallRoot L t x r ↔
+      r ∈ negativeReflectiveRoots L ∧
+        ∃ y, y ∈ positiveCone.upper (realFormQuadratic L) t ∧ y ∈ rootMirror L r ∧
+          ∀ s ∈ negativeReflectiveRoots L, rootMirror L s ≠ rootMirror L r →
+            0 < (realForm L).obj.pairing x (toRealForm L s) *
+              (realForm L).obj.pairing y (toRealForm L s) :=
+  Iff.rfl
+
 end WallLayer
 
 end LeanCategories.Lattices.Valued
