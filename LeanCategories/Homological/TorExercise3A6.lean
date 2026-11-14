@@ -172,8 +172,8 @@ end OrderArithmetic
 
 `TorFreeResolution` builds its two-term projective resolution only for presentations whose
 middle term is `(Fin r → ℤ)`.  The structure-theorem presentation below has middle term
-`(Fin n →₀ ℤ) × (⨁ i, ℤ)`, so the construction is generalized here: any surjection `f : F₀ →ₗ A`
-with `F₀` free and the syzygy `ker f` projective carries the same two-term resolution, with
+`(Fin n →₀ ℤ) × (⨁ i, ℤ)`, so the construction is generalized here: any surjection with
+`F₀` free and the syzygy `ker f` projective carries the same two-term resolution, with
 the same quasi-isomorphism proof.  The `(Fin r → ℤ)`-shaped original is the special case
 `F₀ = Fin r → ℤ`; the generalization is a copy with the type and the projectivity proof
 abstracted, not new mathematics. -/
@@ -203,7 +203,7 @@ noncomputable def kerSubtypeHom : kerOf f ⟶ ModuleCat.of ℤ F₀ :=
         simp only [RingHom.id_apply]
         exact (int_smul_eq_zsmul (inferInstance : Module ℤ F₀) c (x : F₀)).symm }
 
-/-- The two-term complex `K → F₀ → 0 → ⋯` of a free presentation with projective syzygy. -/
+/-- The two-term complex of a free presentation with projective syzygy. -/
 noncomputable def twoTermComplexG : ChainComplex (ModuleCat ℤ) ℕ :=
   ChainComplex.mk' (ModuleCat.of ℤ F₀) (kerOf f) (kerSubtypeHom f)
     (fun _ => ⟨0, 0, by simp⟩)
@@ -288,7 +288,8 @@ theorem quasiIsoAt_twoTermPiG_zero (hf : Function.Surjective f) :
       rw [← hy]
       exact y.2⟩) hf
   refine (ShortComplex.quasiIso_iff_of_zeros'
-    (φ := (HomologicalComplex.shortComplexFunctor' (ModuleCat ℤ) (ComplexShape.down ℕ) 1 0 0).map
+    (φ := (HomologicalComplex.shortComplexFunctor' (ModuleCat ℤ)
+      (ComplexShape.down ℕ) 1 0 0).map
       (twoTermPiG f)) rfl rfl rfl).2 ?_
   exact ⟨ShortComplex.exact_of_g_is_cokernel (S := _) hc, Limits.epi_of_isColimit_cofork hc⟩
 
