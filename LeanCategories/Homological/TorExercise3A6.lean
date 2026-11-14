@@ -66,9 +66,16 @@ injective.
 
 *The order statement.*  Both directions reduce to prime powers by the coprime
 order law `addOrderOf_add_eq_mul_addOrderOf_of_coprime` and the scaling law
-`addOrderOf_nsmul'`; the prime-power case is read off the same stage descent,
-where the finitely generated case is the coordinate analysis of
-`TorTorsion.exists_coord` in the cyclic decomposition.
+`addOrderOf_nsmul'`.  For a prime power the two halves are dual.  An element of
+order `p ^ k` in `A` gives the syzygy element `z = p ^ k • single a 1`, whose
+cyclic subgroup is pure in the syzygy because `z` is supported at `a` alone; the
+quotient is torsion-free, hence flat, so `z ⊗ b` survives in `ker (pres A) ⊗ B`
+with order exactly `p ^ k` and transports to `Tor1` along the presentation
+bridge.  Conversely an element of `Tor1` descends to a finitely generated stage,
+whose relation map is put in Smith normal form; the coordinate engine
+`tensorPiEquiv` reads a coordinate of order `p ^ k` in `B` off the diagonal
+entries, and the diagonal entry itself is an elementary divisor of the stage's
+group, giving an element of order `p ^ k` in `A`.
 -/
 
 namespace LeanCategories.Homological.TorExercise3A6
@@ -1219,15 +1226,23 @@ theorem isAddTorsion_torOne {A B : Type} [AddCommGroup A] [AddCommGroup B] :
 /-! ## Hatcher §3.A Exercise 6, second statement (#155): elements of order `n`
 
 `Tor1(A, B)` has an element of order `n` if and only if both `A` and `B` have one.  Both
-directions reduce to prime powers `p ^ k` (the assembling direction by
+directions reduce to prime powers `p ^ k` — the assembling direction by
 `exists_addOrderOf_of_forall_prime_pow`, the extracting direction by
-`exists_addOrderOf_of_dvd_addOrderOf`, as in the `PrimePow` section above); the
-prime-power core `torOne_prime_pow_iff` is the remaining obligation.  Its `←` half starts
-from the two construction lemmas below: for `a : A` and `b : B` of order `p ^ k`, the
-element `(p ^ k • Finsupp.single a 1) ⊗ b` lies in the kernel of the right-tensed syzygy
-inclusion (it exchanges to `Finsupp.single a 1 ⊗ (p ^ k • b) = 0`), and is killed by
-`p ^ k`; the exactness `p ^ (k - 1) • ((p ^ k • ã) ⊗ b) ≠ 0` and the transport along the
-Step 1 bridge are what remains. -/
+`exists_addOrderOf_of_dvd_addOrderOf`, as in the `PrimePow` section above — and the prime-power
+core `torOne_prime_pow_iff` is proved by the two halves below.
+
+* The `←` half (`exists_torOne_of_addOrderOf`) starts from `a : A` and `b : B` of order
+  `p ^ k`: the syzygy element `z = p ^ k • Finsupp.single a 1` and the kernel element `z ⊗ b`
+  (they lie in the tensored syzygy kernel by `kerTmul_mem_ker`).  `ℤ z` is *pure* in the
+  syzygy, so the quotient is torsion-free, hence flat, and `ℤ z ⊗ B → ker (pres A) ⊗ B` is
+  injective: `z ⊗ b` is nonzero of order exactly `p ^ k`, and the order transports to `Tor1`
+  along the bijection `torOne_torKernel_addEquiv`.
+* The `→` half (`exists_addOrderOf_of_torOne`) descends an element of `Tor1` to a finitely
+  generated stage of the universal presentation (`TorStages.exists_stage_of_free`), puts the
+  stage's relation map in Smith normal form, and reads the order off the coordinates: a
+  coordinate of order `p ^ k` in `B`, and a diagonal entry divisible by `p ^ k`, which is an
+  elementary divisor of the stage's group and so gives an element of order `p ^ k` in `A`.
+-/
 
 section Hatcher3A6Order
 
@@ -1489,10 +1504,10 @@ An element `a` of order `p ^ k` gives the syzygy element `z = p ^ k • single a
 `b` of order `p ^ k` gives the kernel element `z ⊗ b`.  The content of the section is that
 `z ⊗ b` is nonzero of order exactly `p ^ k`.  The cyclic subgroup `ℤ z` is *pure* in the syzygy:
 a multiple `m • y` of an element of the syzygy that lands in `ℤ z` puts `y` there too, because
-`z` is supported at the single index `a`, so no coordinate off `a` can survive multiplication by
-`m ≠ 0`, and the `a`-coordinate is pinned by the order of `a`.  The quotient is therefore
-torsion-free, hence flat, and `ℤ z ⊗ B → ker (pres A) ⊗ B` is injective — no functional out of
-the syzygy and no basis of it is needed. -/
+`z` is supported at the single index `a`, so no coordinate off `a` can survive multiplication
+by `m ≠ 0`, and the `a`-coordinate is pinned by the order of `a`.  The quotient is therefore
+torsion-free, hence flat, and `ℤ z ⊗ B → ker (pres A) ⊗ B` is injective — no functional out
+of the syzygy and no basis of it is needed. -/
 
 section OrderBackward
 
@@ -1500,7 +1515,7 @@ variable {A B : Type} [AddCommGroup A] [AddCommGroup B]
 
 /-- **The `←` half of the prime-power core.**  Elements of order `p ^ k` in `A` and in `B` give
 an element of `Tor1(A, B)` of order `p ^ k`. -/
-theorem exists_torOne_of_addOrderOf {p k : ℕ} (hp : p.Prime) (hk : 0 < k)
+theorem exists_torOne_of_addOrderOf {p k : ℕ} (hp : p.Prime) (_hk : 0 < k)
     {a : A} (ha : addOrderOf a = p ^ k) {b : B} (hb : addOrderOf b = p ^ k) :
     ∃ x : TorBridge.torOne (ModuleCat.of ℤ A) (ModuleCat.of ℤ B), addOrderOf x = p ^ k := by
   classical
@@ -1571,7 +1586,8 @@ theorem exists_torOne_of_addOrderOf {p k : ℕ} (hp : p.Prime) (hk : 0 < k)
     show c' • (z : A →₀ ℤ) = (y : A →₀ ℤ)
     rw [hzval, Finsupp.smul_single', hsingle, hc', mul_comm]
   -- the quotient is torsion-free, hence flat
-  have htors : Submodule.torsion ℤ (↥(LinearMap.ker (pres A)) ⧸ LinearMap.range f₀) = ⊥ := by
+  have htors : Submodule.torsion ℤ
+      (↥(LinearMap.ker (pres A)) ⧸ LinearMap.range f₀) = ⊥ := by
     rw [Submodule.eq_bot_iff]
     rintro x hx
     obtain ⟨r, hr⟩ := hx
@@ -1587,14 +1603,17 @@ theorem exists_torOne_of_addOrderOf {p k : ℕ} (hp : p.Prime) (hk : 0 < k)
   have hinj : Function.Injective (LinearMap.rTensor B f₀) :=
     TorReductions.rTensor_injective_of_flat_cokernel (B := B) f₀ hf₀inj
   -- the kernel element
-  have hker : (z ⊗ₜ[ℤ] b) ∈ LinearMap.ker (((LinearMap.ker (pres A)).subtype).rTensor B) := by
+  have hker : (z ⊗ₜ[ℤ] b) ∈
+      LinearMap.ker (((LinearMap.ker (pres A)).subtype).rTensor B) := by
     rw [hzdef]
     exact kerTmul_mem_ker haz hbz
-  set e : ↥(LinearMap.ker (((LinearMap.ker (pres A)).subtype).rTensor B)) := ⟨_, hker⟩ with hedef
+  set e : ↥(LinearMap.ker (((LinearMap.ker (pres A)).subtype).rTensor B)) := ⟨_, hker⟩
+    with hedef
   -- its order is `p ^ k`
   have heordval : addOrderOf ((z : ↥(LinearMap.ker (pres A))) ⊗ₜ[ℤ] b) = p ^ k := by
     refine addOrderOf_eq_of_nsmul hpk' _ ?_ ?_
-    · have h : ((p ^ k : ℕ) : ℤ) • ((z : ↥(LinearMap.ker (pres A))) ⊗ₜ[ℤ] b) = 0 := by
+    · have h : ((p ^ k : ℕ) : ℤ) •
+          ((z : ↥(LinearMap.ker (pres A))) ⊗ₜ[ℤ] b) = 0 := by
         rw [Nat.cast_pow, TensorProduct.smul_tmul', TensorProduct.smul_tmul, hbz,
           TensorProduct.tmul_zero]
       rwa [Nat.cast_smul_eq_nsmul] at h
@@ -1627,39 +1646,208 @@ theorem exists_torOne_of_addOrderOf {p k : ℕ} (hp : p.Prime) (hk : 0 < k)
 
 end OrderBackward
 
+/-! ### The `→` half: the stage and Smith normal form
+
+An element of `Tor1(A, B)` of order `p ^ k` descends to a finitely generated stage of the
+universal presentation (`TorStages.exists_stage_of_free`), whose middle term is free of finite
+rank.  Smith normal form puts the stage's relation map in diagonal form, and the coordinate
+engine reads the order: a coordinate of order `p ^ k` in `B`, and a diagonal entry divisible by
+`p ^ k`, which is an elementary divisor of the stage's group and so gives an element of order
+`p ^ k` in `A`. -/
+
+section OrderForward
+
+variable {A B : Type} [AddCommGroup A] [AddCommGroup B]
+
+/-- The stage's relation map is injective: it is the restriction of the syzygy inclusion. -/
+theorem stageRelMap_injective {K F : Type} [AddCommGroup K] [AddCommGroup F]
+    (f : K →ₗ[ℤ] F) (hf : Function.Injective f) (F' : Submodule ℤ F) :
+    Function.Injective (TorStages.stageRelMap f F') := by
+  intro x y hxy
+  exact Subtype.ext (hf (congrArg Subtype.val hxy))
+
+/-- **The `→` half of the prime-power core.**  An element of `Tor1(A, B)` of order `p ^ k`
+forces elements of order `p ^ k` in `A` and in `B`. -/
+theorem exists_addOrderOf_of_torOne {p k : ℕ} (hp : p.Prime) (hk : 0 < k)
+    (h : ∃ x : TorBridge.torOne (ModuleCat.of ℤ A) (ModuleCat.of ℤ B), addOrderOf x = p ^ k) :
+    (∃ a : A, addOrderOf a = p ^ k) ∧ (∃ b : B, addOrderOf b = p ^ k) := by
+  classical
+  obtain ⟨x, hx⟩ := h
+  have hpk : 0 < p ^ k := pow_pos hp.pos k
+  have hpk1 : 1 < p ^ k := Nat.one_lt_pow hk.ne' hp.one_lt
+  have hxne : x ≠ 0 := by
+    intro h0
+    rw [h0, addOrderOf_zero] at hx
+    exact hpk1.ne' hx.symm
+  -- the kernel element of the universal presentation
+  set φ := torOne_torKernel_addEquiv (B := B) (pres A) (pres_surjective A) with hφ
+  set e := φ x with he
+  have heord : addOrderOf e = p ^ k := by rw [he, AddEquiv.addOrderOf_eq, hx]
+  have hene : e ≠ 0 := by
+    intro h0
+    rw [h0, addOrderOf_zero] at heord
+    exact hpk1.ne' heord.symm
+  have heord1 : addOrderOf (e : TensorProduct ℤ ↥(LinearMap.ker (pres A)) B) = p ^ k :=
+    (addOrderOf_coe_submodule _ e).trans heord
+  -- the stage descent
+  obtain ⟨F', hF'fg, ρ, hρ, t, ht1, ht2⟩ :=
+    TorStages.exists_stage_of_free (K := ↥(LinearMap.ker (pres A))) (presBasis A)
+      (LinearMap.ker (pres A)).subtype (x := (e : TensorProduct ℤ ↥(LinearMap.ker (pres A)) B))
+      (LinearMap.mem_ker.mp e.2)
+  -- the order of the stage element
+  have htne : t ≠ 0 := by
+    intro h0
+    apply hene
+    have h1 : (e : TensorProduct ℤ ↥(LinearMap.ker (pres A)) B) = 0 := by
+      rw [← ht1, h0, map_zero]
+    exact Subtype.ext h1
+  have htord : p ^ k ∣ addOrderOf t := by
+    have h1 : addOrderOf (e : TensorProduct ℤ ↥(LinearMap.ker (pres A)) B) ∣
+        addOrderOf t := by
+      refine addOrderOf_dvd_iff_nsmul_eq_zero.mpr ?_
+      rw [← ht1, ← map_nsmul, addOrderOf_nsmul_eq_zero, map_zero]
+    rwa [heord1] at h1
+  -- `F'` is finitely generated and torsion-free, hence free
+  haveI hFin : Module.Finite ℤ ↥F' := Module.Finite.of_fg hF'fg
+  haveI hTF : Module.IsTorsionFree ℤ ↥F' :=
+    Function.Injective.moduleIsTorsionFree F'.subtype F'.subtype_injective (fun _ _ => rfl)
+  obtain ⟨n₀, bM⟩ := Module.basisOfFiniteTypeTorsionFree' (R := ℤ) (M := ↥F')
+  -- Smith normal form of the stage's relation module inside `F'`
+  set i := TorStages.stageRelMap (LinearMap.ker (pres A)).subtype F' with hi
+  have hinj : Function.Injective i :=
+    stageRelMap_injective _ (fun _ _ hab => Subtype.ext hab) F'
+  set N : Submodule ℤ ↥F' := LinearMap.range i with hN
+  have hNrange : LinearMap.range i = N := rfl
+  obtain ⟨nn, bM', bN, g, a, hdiag⟩ := N.smithNormalForm bM
+  -- the stage's presentation is the inclusion of `N`
+  set eN : ↥(Submodule.comap (LinearMap.ker (pres A)).subtype F') ≃ₗ[ℤ] ↥N :=
+    LinearEquiv.ofInjective i hinj with heN
+  have hcomp : N.subtype.comp
+      (eN : ↥(Submodule.comap (LinearMap.ker (pres A)).subtype F') →ₗ[ℤ] ↥N) = i := by
+    ext k
+    rfl
+  -- transport the stage element along that identification
+  set t' : TensorProduct ℤ ↥N B := (LinearMap.rTensor B (eN : _ →ₗ[ℤ] _)) t with ht'
+  have htker : t' ∈ LinearMap.ker (N.subtype.rTensor B) := by
+    rw [LinearMap.mem_ker, ht', ← LinearMap.comp_apply, ← LinearMap.rTensor_comp, hcomp]
+    exact LinearMap.mem_ker.mp ht2
+  have ht'ord : addOrderOf t' = addOrderOf t := by
+    rw [ht']
+    exact AddEquiv.addOrderOf_eq (LinearEquiv.rTensor B eN).toAddEquiv t
+  have ht'pos : 0 < addOrderOf t' := by
+    have hfin : ((∏ j : Fin nn, (a j).natAbs : ℕ) : ℤ) • t' = 0 :=
+      natAbs_prod_smul_eq_zero bN bM' N.subtype g a hdiag g.injective ⟨t', htker⟩
+    have hpos : 0 < (∏ j : Fin nn, (a j).natAbs : ℕ) := Finset.prod_pos fun j _ =>
+      Int.natAbs_pos.mpr (by
+        intro h0
+        have h1 : (bN j : ↥F') = 0 := by rw [hdiag j, h0, zero_smul]
+        exact bN.ne_zero j (Subtype.ext h1))
+    refine Nat.pos_of_dvd_of_pos ?_ hpos
+    rw [addOrderOf_dvd_iff_nsmul_eq_zero]
+    simpa only [Nat.cast_smul_eq_nsmul] using hfin
+  have ht'div : p ^ k ∣ addOrderOf (⟨t', htker⟩ :
+      ↥(LinearMap.ker (N.subtype.rTensor B))) := by
+    rw [(addOrderOf_coe_submodule _ ⟨t', htker⟩).symm, ht'ord]
+    exact htord
+  have ht'pos' : 0 < addOrderOf (⟨t', htker⟩ : ↥(LinearMap.ker (N.subtype.rTensor B))) := by
+    rw [(addOrderOf_coe_submodule _ ⟨t', htker⟩).symm]
+    exact ht'pos
+  -- the engine at the stage
+  obtain ⟨kk, b, hb, hdvd⟩ :=
+    exists_coord_of_prime_pow bN bM' N.subtype g a hdiag g.injective hp hk
+      ⟨t', htker⟩ ht'pos' ht'div
+  refine ⟨?_, ⟨b, hb⟩⟩
+  -- the elementary divisor gives an element of `A`
+  set x₀ : ↥F' := bM' (g kk) with hx₀
+  have hane : a kk ≠ 0 := by
+    intro h0
+    have h1 : (bN kk : ↥F') = 0 := by rw [hdiag kk, h0, zero_smul]
+    exact bN.ne_zero kk (Subtype.ext h1)
+  have hNeq : TorStages.stageRel (LinearMap.ker (pres A)).subtype F' = N := by
+    rw [← TorStages.range_stageRelMap, hN]
+  have hmem : (a kk) • x₀ ∈ N := by
+    rw [← hdiag kk]
+    exact (bN kk).2
+  have hkey : ∀ n : ℕ, (n : ℤ) • x₀ ∈ N → (a kk).natAbs ∣ n := by
+    intro n hn
+    set z : ↥N := ⟨(n : ℤ) • x₀, hn⟩ with hz
+    have h1 : (bM'.repr ((n : ℤ) • x₀)) (g kk) = (n : ℤ) := by
+      rw [map_zsmul, hx₀, Module.Basis.repr_self, Finsupp.smul_single', mul_one,
+        Finsupp.single_eq_same]
+    have hzval : (N.subtype z : ↥F') = (n : ℤ) • x₀ := rfl
+    have h2 : (bM'.repr ((n : ℤ) • x₀)) (g kk) = (bN.repr z) kk * a kk := by
+      rw [← hzval, basis_repr_comp_eq_sum bN bM' N.subtype g a hdiag z, Finset.sum_apply',
+        Finset.sum_eq_single kk]
+      · rw [Finsupp.single_eq_same]
+      · intro j _ hj
+        rw [Finsupp.single_eq_of_ne (g.injective.ne hj).symm]
+      · intro hj
+        exact absurd (Finset.mem_univ kk) hj
+    have h3 : a kk ∣ (n : ℤ) := by
+      rw [← h1, h2]
+      exact dvd_mul_left _ _
+    simpa using Int.natAbs_dvd_natAbs.mpr h3
+  have hcoker : addOrderOf (Submodule.Quotient.mk (p := N) x₀) = (a kk).natAbs := by
+    have hA : addOrderOf (Submodule.Quotient.mk (p := N) x₀) ∣ (a kk).natAbs := by
+      have hz : (a kk) • (Submodule.Quotient.mk (p := N) x₀) = 0 := by
+        show (a kk) • (N.mkQ x₀) = 0
+        rw [← map_zsmul, Submodule.mkQ_apply]
+        exact (Submodule.Quotient.mk_eq_zero N).mpr hmem
+      have h4 := addOrderOf_dvd_iff_zsmul_eq_zero.mpr hz
+      simpa using Int.natAbs_dvd_natAbs.mpr h4
+    have hB : (a kk).natAbs ∣ addOrderOf (Submodule.Quotient.mk (p := N) x₀) := by
+      refine hkey _ ?_
+      have h6 : Submodule.Quotient.mk (p := N)
+          (((addOrderOf (Submodule.Quotient.mk (p := N) x₀) : ℕ) : ℤ) • x₀) = 0 := by
+        rw [← Submodule.mkQ_apply, map_zsmul, Submodule.mkQ_apply,
+          Nat.cast_smul_eq_nsmul, addOrderOf_nsmul_eq_zero]
+      exact (Submodule.Quotient.mk_eq_zero N).mp h6
+    exact Nat.dvd_antisymm hA hB
+  -- transport the cokernel element into `A`
+  set y₁ : ↥F' ⧸ TorStages.stageRel (LinearMap.ker (pres A)).subtype F' :=
+    (Submodule.quotEquivOfEq N _ hNeq.symm).toLinearMap
+      (Submodule.Quotient.mk (p := N) x₀) with hy₁
+  have hy₁ord : addOrderOf y₁ = (a kk).natAbs := by
+    rw [hy₁]
+    exact (AddEquiv.addOrderOf_eq (Submodule.quotEquivOfEq N _ hNeq.symm).toAddEquiv _).trans
+      hcoker
+  set y₂ : (A →₀ ℤ) ⧸ LinearMap.range (LinearMap.ker (pres A)).subtype :=
+    TorStages.stageMap (LinearMap.ker (pres A)).subtype F' y₁ with hy₂
+  have hy₂ord : addOrderOf y₂ = (a kk).natAbs := by
+    rw [hy₂]
+    rw [addOrderOf_map_eq_of_injective _ (TorStages.stageMap_injective _ _)]
+    exact hy₁ord
+  set y₃ : (A →₀ ℤ) ⧸ LinearMap.ker (pres A) :=
+    (Submodule.quotEquivOfEq (LinearMap.range (LinearMap.ker (pres A)).subtype)
+      (LinearMap.ker (pres A)) (Submodule.range_subtype _)).toLinearMap y₂ with hy₃
+  have hy₃ord : addOrderOf y₃ = (a kk).natAbs := by
+    rw [hy₃]
+    exact (AddEquiv.addOrderOf_eq (Submodule.quotEquivOfEq _ _
+      (Submodule.range_subtype _)).toAddEquiv _).trans hy₂ord
+  set y₄ : A := (LinearMap.quotKerEquivOfSurjective (pres A) (pres_surjective A)).toLinearMap y₃
+    with hy₄
+  have hy₄ord : addOrderOf y₄ = (a kk).natAbs := by
+    rw [hy₄]
+    exact (AddEquiv.addOrderOf_eq
+      (LinearMap.quotKerEquivOfSurjective (pres A) (pres_surjective A)).toAddEquiv _).trans
+      hy₃ord
+  have hdvd' : p ^ k ∣ (a kk).natAbs := by
+    rw [← Int.natCast_pow] at hdvd
+    simpa using Int.natAbs_dvd_natAbs.mpr hdvd
+  obtain ⟨a', ha'⟩ := exists_addOrderOf_of_dvd_addOrderOf
+    (Int.natAbs_pos.mpr hane) hdvd' y₄ hy₄ord
+  exact ⟨a', ha'⟩
+
+end OrderForward
+
 /-- **The prime-power core of the order statement (#155).**  `Tor1(A, B)` has an element
 of order `p ^ k` if and only if both `A` and `B` have one. -/
 theorem torOne_prime_pow_iff {A B : Type} [AddCommGroup A] [AddCommGroup B]
     {p k : ℕ} (hp : p.Prime) (hk : 0 < k) :
     (∃ x : TorBridge.torOne (ModuleCat.of ℤ A) (ModuleCat.of ℤ B), addOrderOf x = p ^ k) ↔
-    (∃ a : A, addOrderOf a = p ^ k) ∧ (∃ b : B, addOrderOf b = p ^ k) := by
-  sorry
-
-/-- **Hatcher, *Algebraic Topology* (2002), §3.A Exercise 6, printed p. 267, second
-statement (#155).**  For all abelian groups `A` and `B` and every positive `n`,
-`Tor1(A, B)` has an element of order `n` if and only if both `A` and `B` have one:
-both directions assemble from the prime-power core through the coprime order law. -/
-theorem torOne_exists_addOrderOf_iff {A B : Type} [AddCommGroup A] [AddCommGroup B] {n : ℕ}
-    (hn : 0 < n) :
-    (∃ x : TorBridge.torOne (ModuleCat.of ℤ A) (ModuleCat.of ℤ B), addOrderOf x = n) ↔
-    (∃ a : A, addOrderOf a = n) ∧ (∃ b : B, addOrderOf b = n) := by
-  constructor
-  · intro h
-    have hpp : ∀ p : ℕ, p.Prime → ∀ k : ℕ, 0 < k → p ^ k ∣ n →
-        (∃ a : A, addOrderOf a = p ^ k) ∧ (∃ b : B, addOrderOf b = p ^ k) := by
-      intro p hp' k hk hdvd
-      obtain ⟨y, hy⟩ := h
-      obtain ⟨y', hy'⟩ := exists_addOrderOf_of_dvd_addOrderOf hn hdvd y hy
-      exact (torOne_prime_pow_iff hp' hk).mp ⟨y', hy'⟩
-    exact ⟨exists_addOrderOf_of_forall_prime_pow hn fun p hp' k hk hdvd =>
-      (hpp p hp' k hk hdvd).1,
-      exists_addOrderOf_of_forall_prime_pow hn fun p hp' k hk hdvd =>
-      (hpp p hp' k hk hdvd).2⟩
-  · rintro ⟨⟨a, ha⟩, b, hb⟩
-    refine exists_addOrderOf_of_forall_prime_pow hn fun p hp' k hk hdvd => ?_
-    obtain ⟨a', ha'⟩ := exists_addOrderOf_of_dvd_addOrderOf hn hdvd a ha
-    obtain ⟨b', hb'⟩ := exists_addOrderOf_of_dvd_addOrderOf hn hdvd b hb
-    exact (torOne_prime_pow_iff hp' hk).mpr ⟨⟨a', ha'⟩, b', hb'⟩
+    (∃ a : A, addOrderOf a = p ^ k) ∧ (∃ b : B, addOrderOf b = p ^ k) :=
+  ⟨exists_addOrderOf_of_torOne hp hk,
+    fun ⟨⟨_, ha⟩, ⟨_, hb⟩⟩ => exists_torOne_of_addOrderOf hp hk ha hb⟩
 
 end Hatcher3A6Order
 end Hatcher3A6Torsion
