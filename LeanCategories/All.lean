@@ -46,6 +46,7 @@ public import LeanCategories.Topology.MooreSpaceExactness
 public import LeanCategories.Topology.IntervalWedge
 public import LeanCategories.Topology.SingularRealization
 public import LeanCategories.Topology.SmashProduct
+public import LeanCategories.Topology.PairHomotopySequence
 public import LeanCategories.Foundation.Cards.range_ambientEquiv
 public import LeanCategories.Topology.Cards.basedSingularRealizationCounit_surjective
 public import LeanCategories.Topology.Cards.map_point

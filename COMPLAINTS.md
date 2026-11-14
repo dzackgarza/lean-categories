@@ -2601,3 +2601,38 @@ downstream assertions, computational observations, or downstream diagnostics.
   statements obtained by specialization; when it exists, `BarySubdiv.baryWeight` and
   `baryWeight_mem` are deleted and `BarySubdiv` uses the owner. Tracked as
   `-- TODO(LC-12)` at `baryWeight`.
+
+### Mathlib has no relative homotopy set `π₁(X, A, x₀)` and no `π₀` tail of the pair sequence
+
+- **Need:** Hatcher, *Algebraic Topology*, §4.1 (printed pp. 343 and 358) and lean-categories#156
+  need, for a pair `(X, A)` with `x₀ ∈ A`, the set `π₁(X, A, x₀)` of homotopy classes of maps of
+  triples `(I, ∂I, {1}) → (X, A, x₀)` — equivalently of paths starting in `A` and ending at
+  `x₀`, modulo homotopies through such paths, so that the start point may move inside `A` — the
+  maps `π₁(X, x₀) → π₁(X, A, x₀) → π₀(A, x₀) → π₀(X, x₀)` with their exactness, and the quotient
+  `π₀(X, A, x₀) := π₀(X, x₀)/i_*π₀(A, x₀)`.
+- **Evidence:** LC-09 searches (`content:ZerothHomotopy`, `content:relative homotopy`,
+  `content:"relative homotopy group"`, `content:Path.Homotopic`, `content:FundamentalGroupoid`,
+  `content:"five lemma"`, `content:"π_rel"`, `repo:TauCeti file:Relative`) and local Mathlib:
+  Mathlib has `ZerothHomotopy`, `Path.Homotopic.Quotient` and the fundamental groupoid, and
+  `HomotopyGroup N X x` for `N = Fin n` with `n ≥ 0`, but no relative group for a pair at any `n`;
+  `Mathlib/Topology/Homotopy/HomotopyGroup.lean` is absolute only. The corpus has
+  `Vilin97/lean-pool`'s `π_rel n X A a` (relative homotopy groups of disks inside a
+  Whitehead-theorem development) and TauCeti's relative Hurewicz homomorphism, neither of which
+  provides the `n = 1` set or the `π₀` tail. Mathlib's `CategoryTheory.FiveLemma` is for abelian
+  categories and does not apply to the pointed-set end of the sequence.
+- **Gap and impact:** the pair sequence cannot be expressed at all without inventing the
+  definition, so anything stated in terms of relative homotopy groups — Hatcher §4.1 Exercises 5–9,
+  the relative Hurewicz theorem, `π_n(X, A) ≅ π_{n-1}` of a homotopy fibre — is downstream of it.
+  The subtlest point is the one the definition exists for: a naive `Σ a : A, π₁(X, x₀)` model gives
+  the wrong set, and the five lemma of Exercise 9(a) is then false at the `π₁(X, A, x₀)` term
+  (folding `[0,1]` into itself over `X = Y = ℝ`, `A = B = [0,1]`).
+- **Coverage:** the search is recorded in the module docstring of
+  `LeanCategories/Topology/PairHomotopySequence.lean`, which supplies the definitions, the three
+  exactness statements and the two five-lemma conclusions as the project's own declaration set.
+  Mathlib's `HomotopyGroup` for `N = Fin 1` is the absolute `π₁` and was not compared with the
+  relative case beyond the API reading.
+- **Repair link:** lean-categories#156; upstream candidates `RelativePiOne` (with
+  `map`/`ofLoop`/`boundary` and their exactness) and `PairZerothHomotopy`. The proving
+  declarations are `LeanCategories.Topology.RelativePiOne.{boundary_eq_base_iff,
+  zerothHomotopyMk_eq_iff}` and the two five-lemma theorems in that module; they stay here as an
+  upstream candidate until Mathlib or the corpus owns a relative homotopy-group API.
