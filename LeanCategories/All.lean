@@ -135,6 +135,7 @@ public import LeanCategories.Algebra.MatrixFamilies
 public import LeanCategories.Algebra.MatrixIndecomposable
 public import LeanCategories.Algebra.QuadraticGaussSum
 public import LeanCategories.AlgebraicGeometry.HessianSingular
+public import LeanCategories.AlgebraicGeometry.TenNodalStratumClosure
 public import LeanCategories.Analytic.LocalModel
 public import LeanCategories.Algebra.MonoidAlgebra
 public import LeanCategories.Algebra.PureSubmodule
@@ -253,6 +254,9 @@ public import LeanCategories.Homological.TorStages
 public import LeanCategories.Homological.TorFreeResolution
 public import LeanCategories.Homological.TorFGTorsion
 public import LeanCategories.Homological.TorTorsionClass
+public import LeanCategories.Homological.TorBridge
+public import LeanCategories.Homological.CyclicTor
+public import LeanCategories.Homological.TorExercise3A6
 public import LeanCategories.Homological.SimplexChains
 public import LeanCategories.Homological.ChainLevelSteps
 public import LeanCategories.Homological.SkeletonHomology
