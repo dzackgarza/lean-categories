@@ -803,7 +803,81 @@ theorem torOne_exists_torKernel {F A : Type} [AddCommGroup F] [AddCommGroup A]
     fun x => (TensorProduct.comm ℤ ↥Bm ↥(LinearMap.ker (ModuleCat.ofHom π).hom))
       (((tensorLeft Bm).map ι).hom
         ((TorArbitrary.torOneIsoKerIncl (ModuleCat.ofHom π) Bm).hom.hom x).1) with hw
-  sorry
+  -- **the kernel condition**: functoriality of `tensorLeft` past
+  -- `kernelIsoKer_hom_ker_subtype` turns the right-tensored syzygy inclusion into the
+  -- tensored kernel inclusion, which kills the element by its `kerIncl` membership
+  have hker : ∀ x : ↥(TorBridge.torOne (ModuleCat.of ℤ A) Bm),
+      (((LinearMap.ker π).subtype).rTensor B) (w x) = 0 := by
+    intro x
+    simp only [hw]
+    set u := (TorArbitrary.torOneIsoKerIncl (ModuleCat.ofHom π) Bm).hom.hom x with hu
+    set v := ((tensorLeft Bm).map ι).hom u.1 with hv
+    have hfun : (tensorLeft Bm).map ι ≫ (tensorLeft Bm).map (ModuleCat.ofHom
+        ((LinearMap.ker (ModuleCat.ofHom π).hom).subtype)) =
+        (tensorLeft Bm).map (Limits.kernel.ι (ModuleCat.ofHom π)) := by
+      rw [hi, ← CategoryTheory.Functor.map_comp,
+        ModuleCat.kernelIsoKer_hom_ker_subtype (ModuleCat.ofHom π)]
+    have hzero : ((tensorLeft Bm).map (ModuleCat.ofHom
+        ((LinearMap.ker (ModuleCat.ofHom π).hom).subtype))).hom v = 0 := by
+      have h2 : ((tensorLeft Bm).map ι ≫ (tensorLeft Bm).map (ModuleCat.ofHom
+          ((LinearMap.ker (ModuleCat.ofHom π).hom).subtype))).hom u.1 = 0 := by
+        rw [hfun]
+        exact LinearMap.mem_ker.mp u.2
+      exact h2
+    have hc := LinearMap.rTensor_comm
+      ((LinearMap.ker (ModuleCat.ofHom π).hom).subtype) v
+    have hfinal : (TensorProduct.comm ℤ ↥Bm F)
+        (LinearMap.lTensor ↥Bm ((LinearMap.ker (ModuleCat.ofHom π).hom).subtype) v) = 0 := by
+      have h3 : LinearMap.lTensor ↥Bm ((LinearMap.ker (ModuleCat.ofHom π).hom).subtype) v = 0 :=
+        hzero
+      rw [h3]
+      exact LinearEquiv.map_zero _
+    exact hc.trans hfinal
+  -- **additivity and zero**: every layer of the chain is additive
+  have hw0 : w 0 = 0 := by
+    simp only [hw, map_zero, Submodule.coe_zero]
+  have hwa : ∀ x y : ↥(TorBridge.torOne (ModuleCat.of ℤ A) Bm),
+      w (x + y) = w x + w y := by
+    intro x y
+    simp only [hw, map_add, Submodule.coe_add]
+  -- **injectivity**: the functor-mapped kernel isomorphism and the bridge isomorphism
+  -- have left inverses, the subtype coercion and the tensor symmetry are injective
+  have hinvL : ∀ z, ((tensorLeft Bm).map
+      (ModuleCat.kernelIsoKer (ModuleCat.ofHom π)).inv).hom
+      (((tensorLeft Bm).map ι).hom z) = z := by
+    have h : (tensorLeft Bm).map ι ≫ (tensorLeft Bm).map
+        (ModuleCat.kernelIsoKer (ModuleCat.ofHom π)).inv = 𝟙 _ := by
+      rw [hi, ← CategoryTheory.Functor.map_comp, CategoryTheory.Iso.hom_inv_id,
+        CategoryTheory.Functor.map_id]
+    intro z
+    exact DFunLike.congr_fun (congrArg (fun m => m.hom) h) z
+  have hinvE : Function.LeftInverse
+      ((TorArbitrary.torOneIsoKerIncl (ModuleCat.ofHom π) Bm).inv.hom)
+      ((TorArbitrary.torOneIsoKerIncl (ModuleCat.ofHom π) Bm).hom.hom) := by
+    intro z
+    exact DFunLike.congr_fun (congrArg (fun m => m.hom)
+      (CategoryTheory.Iso.hom_inv_id (TorArbitrary.torOneIsoKerIncl (ModuleCat.ofHom π) Bm))) z
+  refine
+    ⟨{ toFun := fun x => ⟨w x, hker x⟩
+       map_zero' := Subtype.ext hw0
+       map_add' := fun x y => Subtype.ext (hwa x y) }, ?_⟩
+  intro x x' hxx
+  have hwx : w x = w x' := congrArg Subtype.val hxx
+  have h1 : ((tensorLeft Bm).map ι).hom
+      ((TorArbitrary.torOneIsoKerIncl (ModuleCat.ofHom π) Bm).hom.hom x).1 =
+      ((tensorLeft Bm).map ι).hom
+      ((TorArbitrary.torOneIsoKerIncl (ModuleCat.ofHom π) Bm).hom.hom x').1 := by
+    have h2 := congrArg (⇑(TensorProduct.comm ℤ ↥Bm
+      ↥(LinearMap.ker (ModuleCat.ofHom π).hom)).symm) hwx
+    simp only [hw] at h2
+    simpa using h2
+  have h3 : ((TorArbitrary.torOneIsoKerIncl (ModuleCat.ofHom π) Bm).hom.hom x).1 =
+      ((TorArbitrary.torOneIsoKerIncl (ModuleCat.ofHom π) Bm).hom.hom x').1 := by
+    have h4 := congrArg (((tensorLeft Bm).map
+      (ModuleCat.kernelIsoKer (ModuleCat.ofHom π)).inv).hom) h1
+    simp only [hinvL] at h4
+    exact h4
+  exact hinvE.injective (Subtype.ext h3)
 
 /-- **Step 2 (the stage descent).**  For an injective relation map `i : K →ₗ F` into a free
 module with basis `b`, every element of `ker (i ⊗ B)` comes from an element of the kernel of
