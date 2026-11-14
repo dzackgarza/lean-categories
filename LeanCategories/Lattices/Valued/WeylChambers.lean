@@ -2149,8 +2149,7 @@ the uniqueness half of the wall-reflection dictionary of Bourbaki V §3 no. 1 (m
 the displacements `s_H` indexed by the hyperplanes). -/
 theorem realFormPairing_eq_zero_of_forall (hL : L.obj.obj.IsNondegenerate)
     {w : (realForm L).obj.carrier}
-    (hw : ∀ x : (realForm L).obj.carrier,
-      ((baseChangeIntegral ℤ ℝ).obj L.obj).obj.pairing x w = 0) :
+    (hw : ∀ x : (realForm L).obj.carrier, (realForm L).obj.pairing x w = 0) :
     w = 0 := by
   classical
   set d := (baseChangeBasis ℝ L.obj (carrierFinBasis L)).equivFun w with hd
@@ -2200,6 +2199,177 @@ theorem realFormPairing_eq_zero_of_forall (hL : L.obj.obj.IsNondegenerate)
   exact Finset.sum_eq_zero fun x _ => by
     rw [Pi.zero_apply, zero_smul]
     rfl
+
+/-- **Two nonzero linear functionals with the same kernel are proportional** (over `ℝ`): the
+linear-algebra core of the uniqueness of the reflection with a given wall. If `f v ≠ 0`, then
+every `x` differs from a multiple of `v` by an element of the common kernel, so `g` is the
+scalar `g v / f v` times `f`. **LC-09**: queries `linear functional equal kernels
+proportional`, `LinearMap ker eq ker proportional scalar` — no hit (nearest neighbour
+atlas-lean CategoryO, different mathematics); no Mathlib identifier
+(`eq_smul_of_ker_eq_ker` does not exist), so this is the repository's own. -/
+theorem exists_ne_zero_smul_of_ker_eq_ker {V : Type u} [AddCommGroup V] [Module ℝ V]
+    {f g : V →ₗ[ℝ] ℝ} (hf : f ≠ 0) (hker : LinearMap.ker f = LinearMap.ker g) :
+    ∃ c : ℝ, c ≠ 0 ∧ g = c • f := by
+  obtain ⟨v, hv⟩ : ∃ v, f v ≠ 0 := by
+    by_contra hcon
+    push_neg at hcon
+    exact hf (LinearMap.ext fun x => hcon x)
+  have hgv : g v ≠ 0 := by
+    intro hzero
+    have hmem : v ∈ LinearMap.ker g := LinearMap.mem_ker.mpr hzero
+    rw [← hker] at hmem
+    exact hv (LinearMap.mem_ker.mp hmem)
+  refine ⟨g v / f v, div_ne_zero hgv hv, ?_⟩
+  ext x
+  have hmem : x - (f x / f v) • v ∈ LinearMap.ker g := by
+    have hfz : x - (f x / f v) • v ∈ LinearMap.ker f := by
+      simp only [LinearMap.mem_ker, map_sub, map_smul, smul_eq_mul]
+      rw [div_mul_cancel₀ (f x) hv, sub_self]
+    rw [hker] at hfz
+    exact hfz
+  have hgx : g x - (f x / f v) * g v = 0 := by
+    have := LinearMap.mem_ker.mp hmem
+    simpa only [map_sub, map_smul, smul_eq_mul] using this
+  have hfx : (g v / f v) * f x = g x := by
+    rw [eq_of_sub_eq_zero hgx, div_mul_eq_mul_div, div_mul_eq_mul_div,
+      mul_comm (f x) (g v)]
+  simpa only [LinearMap.smul_apply, smul_eq_mul] using hfx.symm
+
+/-- **A lattice reflection is determined by its mirror** (Bourbaki V §3 no. 1, md 2738–2740:
+the displacements of the group are indexed by the hyperplanes of the arrangement): two
+negative reflective roots with the same mirror have the same reflection. The root
+functionals have the mirrors as kernels, so they are proportional
+(`exists_ne_zero_smul_of_ker_eq_ker`), the proportionality transfers to the image vectors by
+the nondegenerability of the real form (`realFormPairing_eq_zero_of_forall`), and the real
+reflection is unchanged by rescaling its vector (`reflectIn_smul`), so the square theorem
+and the injectivity of `realFormOrthogonalHom` identify the lattice reflections.
+**LC-09**: queries `reflection determined by hyperplane wall`,
+`reflection equal hyperplane fixed set equal`, `rootMirror eq rootMirror reflection eq`,
+`HyperplaneReflection equal reflectIn proportional normal vector` — no hit (nearest
+neighbours TauCeti `InnerProductSpace/HyperplaneReflection.lean`, an inner-product-space
+theory, and atlas-lean buildings code that axiomatizes the property); this proof is the
+repository's own. -/
+theorem latticeReflection_eq_of_rootMirror_eq (hL : L.obj.obj.IsNondegenerate)
+    (h2 : IsRegular (2 : ℤ))
+    {r s : L.obj.obj.carrier} (hr : IsReflectiveRoot L.obj r)
+    (hrn : L.obj.obj.pairing r r < 0)
+    (hs : IsReflectiveRoot L.obj s) (hsn : L.obj.obj.pairing s s < 0)
+    (hmir : rootMirror L r = rootMirror L s) :
+    latticeReflection L hL h2 hr = latticeReflection L hL h2 hs := by
+  have hφr : rootFunctional L r ≠ 0 := rootFunctional_ne_of_neg L r hrn
+  have hφs : rootFunctional L s ≠ 0 := rootFunctional_ne_of_neg L s hsn
+  have hker : LinearMap.ker (rootFunctional L r) = LinearMap.ker (rootFunctional L s) := by
+    ext x
+    rw [LinearMap.mem_ker, LinearMap.mem_ker,
+      ← (mem_rootMirror_iff L (r := r)), ← (mem_rootMirror_iff L (r := s)), hmir]
+  obtain ⟨c, hc0, hcsmul⟩ := exists_ne_zero_smul_of_ker_eq_ker hφr hker
+  have hpts : ∀ x, rootFunctional L s x = c * rootFunctional L r x := by
+    intro x
+    rw [hcsmul]
+    simp
+  have hzero : toRealForm L s - c • toRealForm L r = 0 := by
+    refine realFormPairing_eq_zero_of_forall L hL ?_
+    intro x
+    have h1 : (realForm L).obj.pairing x (toRealForm L s)
+        = rootFunctional L s x := rfl
+    have h2 : (realForm L).obj.pairing x (toRealForm L r)
+        = rootFunctional L r x := rfl
+    have h3 : (realForm L).obj.pairing x (c • toRealForm L r)
+        = c * (realForm L).obj.pairing x (toRealForm L r) := by
+      rw [BilinModuleCat.pairing_smul_right, smul_eq_mul]
+    rw [pairing_sub_right L, h1, h3, h2, hpts x]
+    ring
+  have hvec : toRealForm L s = c • toRealForm L r := eq_of_sub_eq_zero hzero
+  have hrneg' : realFormQuadratic L (toRealForm L r) < 0 := by
+    rw [realFormQuadratic_toRealForm L r]
+    exact_mod_cast hrn
+  have hsneg' : realFormQuadratic L (toRealForm L s) < 0 := by
+    rw [realFormQuadratic_toRealForm L s]
+    exact_mod_cast hsn
+  have hcv : realFormQuadratic L (c • toRealForm L r) ≠ 0 := by
+    rw [← hvec]
+    exact ne_of_lt hsneg'
+  have hfinal : reflectIn (realFormQuadratic L) (toRealForm L r) (ne_of_lt hrneg')
+      = reflectIn (realFormQuadratic L) (toRealForm L s) (ne_of_lt hsneg') := by
+    apply isometryEquiv_ext
+    refine (show (reflectIn (realFormQuadratic L) (toRealForm L r)
+        (ne_of_lt hrneg')).toLinearEquiv
+      = (reflectIn (realFormQuadratic L) (toRealForm L s)
+        (ne_of_lt hsneg')).toLinearEquiv from ?_)
+    refine LinearEquiv.ext fun x => ?_
+    show (reflectIn (realFormQuadratic L) (toRealForm L r) (ne_of_lt hrneg')) x
+      = (reflectIn (realFormQuadratic L) (toRealForm L s) (ne_of_lt hsneg')) x
+    rw [reflectIn_apply _ _ x, reflectIn_apply _ _ x, hvec]
+    have hB : (associated (realFormQuadratic L)) x (c • toRealForm L r)
+        = c * (associated (realFormQuadratic L)) x (toRealForm L r) := by
+      rw [map_smul, smul_eq_mul]
+    have hQ : realFormQuadratic L (c • toRealForm L r)
+        = c * c * realFormQuadratic L (toRealForm L r) := by
+      rw [QuadraticMap.map_smul, smul_eq_mul]
+    rw [hB, hQ, ← smul_assoc, smul_eq_mul]
+    have hcoef : (2 * (c * (associated (realFormQuadratic L)) x (toRealForm L r))
+        / (c * c * realFormQuadratic L (toRealForm L r))) * c
+        = 2 * (associated (realFormQuadratic L)) x (toRealForm L r)
+          / realFormQuadratic L (toRealForm L r) := by
+      field_simp
+    rw [hcoef]
+  apply realFormOrthogonalHom_injective L hL
+  rw [realFormOrthogonalHom_latticeReflection L hL h2 hr (ne_of_lt hrneg'),
+    realFormOrthogonalHom_latticeReflection L hL h2 hs (ne_of_lt hsneg')]
+  exact hfinal
+
+/-- **Every mirror of a negative-square root meets the open sheet** (the hypothesis under
+which Bourbaki V §1 no. 4, Prop. 8, md 2406–2408, finds a chamber of which a given
+hyperplane is a wall: the hyperplane must carry points of the space). The witness is the
+component of the chosen point `t` off the root, `spatialPart`: it pairs to zero with the
+root (`associated_spatialPart_right`), and its quadratic value is `Q t` plus the nonnegative
+term `B(t, r̃)² / |Q(r̃)|` (`quadratic_spatialPart`), so it is positive, and its pairing with
+`t` is the same value. **LC-09**: queries `spatialPart orthogonal complement positive cone`,
+`hyperplane meets positive cone Lorentzian`, `mirror meets positive cone sheet` — no hit; the
+witness is the repository's own `spatialPart` calculus of `PositiveCone.lean`. -/
+theorem exists_mem_rootMirror_inter_upper (ht : 0 < realFormQuadratic L t)
+    {r : L.obj.obj.carrier} (hrn : L.obj.obj.pairing r r < 0) :
+    ∃ y, y ∈ positiveCone.upper (realFormQuadratic L) t ∧ y ∈ rootMirror L r := by
+  have hrneg' : realFormQuadratic L (toRealForm L r) < 0 := by
+    rw [realFormQuadratic_toRealForm L r]
+    exact_mod_cast hrn
+  have hrne := ne_of_lt hrneg'
+  have hq : realFormQuadratic L (spatialPart (realFormQuadratic L) (toRealForm L r) t)
+      = realFormQuadratic L t
+        - (associated (realFormQuadratic L)) t (toRealForm L r) ^ 2
+          / realFormQuadratic L (toRealForm L r) :=
+    quadratic_spatialPart (realFormQuadratic L) hrne t
+  have hperp : (associated (realFormQuadratic L))
+      (spatialPart (realFormQuadratic L) (toRealForm L r) t) (toRealForm L r) = 0 :=
+    associated_spatialPart_right (realFormQuadratic L) hrne t
+  have hle : (associated (realFormQuadratic L)) t (toRealForm L r) ^ 2
+      / realFormQuadratic L (toRealForm L r) ≤ 0 :=
+    div_nonpos_of_nonneg_of_nonpos (sq_nonneg _) (le_of_lt hrneg')
+  have hpos' : 0 < realFormQuadratic L t
+        - (associated (realFormQuadratic L)) t (toRealForm L r) ^ 2
+          / realFormQuadratic L (toRealForm L r) := by
+    linarith
+  have hpair : (realForm L).obj.pairing t
+      (spatialPart (realFormQuadratic L) (toRealForm L r) t)
+      = realFormQuadratic L t
+        - (associated (realFormQuadratic L)) t (toRealForm L r) ^ 2
+          / realFormQuadratic L (toRealForm L r) := by
+    rw [spatialPart, pairing_sub_right L, BilinModuleCat.pairing_smul_right,
+      smul_eq_mul, ← realFormQuadratic_apply L t,
+      realFormPairing_eq_associated L t (toRealForm L r), div_mul_eq_mul_div, ← pow_two]
+  have hmir : (realForm L).obj.pairing
+      (spatialPart (realFormQuadratic L) (toRealForm L r) t) (toRealForm L r) = 0 := by
+    rw [realFormPairing_eq_associated L
+      (spatialPart (realFormQuadratic L) (toRealForm L r) t) (toRealForm L r)]
+    exact hperp
+  refine ⟨spatialPart (realFormQuadratic L) (toRealForm L r) t,
+    ⟨by rw [hq]; exact hpos', by
+      rw [← realFormPairing_eq_associated L
+        (spatialPart (realFormQuadratic L) (toRealForm L r) t) t,
+        (realForm L).property.2 (spatialPart (realFormQuadratic L) (toRealForm L r) t) t,
+        hpair]
+      exact hpos'⟩,
+    (mem_rootMirror_iff L (r := r)).mpr hmir⟩
 
 end WallLayer
 
