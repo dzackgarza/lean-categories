@@ -757,10 +757,10 @@ integer.  The proof is the four steps below, assembled in `isAddTorsion_torOne`.
   already lies at a finitely generated stage whose middle term is a finitely generated
   submodule of the free middle term `F`.
 * Step 3 (`exists_nsmul_eq_zero_of_stage`) is the finitely generated case: Smith normal form
-  (`Submodule.exists_smith_normal_form_of_le`) puts the stage's relation submodule into
-  diagonal form with respect to a basis of the stage, where the kernel condition says each
-  coordinate of the analysis lies in the `d i`-torsion of `B`, so the product of the `|d i|`
-  kills the element.
+  (`Submodule.smithNormalForm`) puts the stage's relation submodule into diagonal form
+  inside the finitely generated coordinate summand containing it, and the diagonal entries
+  define a division map `ν` with `ν ∘ inclusion = (∏ |d i|) · id`; tensoring `ν` with `B`
+  then kills every element of the kernel by that product.
 * Step 4 (`nsmul_eq_zero_of_nsmul_map_eq_zero`) transports the killing integer back along the
   injective additive map of Step 1.
 
@@ -931,16 +931,149 @@ theorem exists_fg_stage {F K B : Type} [AddCommGroup F] [AddCommGroup K] [AddCom
     exact hta
 
 /-- **Step 3 (the finitely generated stage).**  For a finitely generated submodule `F'` of a
-free module and any relation submodule `R`, every element of
-`ker ((R ⊓ F') ⊗ B → F' ⊗ B)` is killed by a positive integer: Smith normal form
-(`Submodule.exists_smith_normal_form_of_le`) diagonalizes the inclusion, the kernel
-condition makes each analysis coordinate `d i`-torsion in `B`, and the product of the
-`|d i|` kills the element. -/
+free module with basis `b` and any relation submodule `R`, every element of
+`ker ((R ⊓ F') ⊗ B → F ⊗ B)` is killed by a positive integer.  Smith normal form
+(`Submodule.smithNormalForm`) puts `R ⊓ F'` into diagonal form `g i = d i • e (f i)` inside
+the finitely generated coordinate summand `F₀ ⊇ F'`; the diagonal entries define a division
+map `ν : F₀ →ₗ R ⊓ F'` with `ν ∘ incl = ∏ |d i| · id` (send `e (f i)` to
+`(N / d i) • g i` and the other basis vectors to `0`).  Tensoring `ν ∘ (R ⊓ F').subtype`
+with `B` then exhibits `N • t` as the image of `0`, so `N` kills the element; extending `ν`
+along the coordinate retraction `F → F₀` needs no injectivity of any tensored inclusion. -/
+
 theorem exists_nsmul_eq_zero_of_stage {F B : Type} [AddCommGroup F] [AddCommGroup B]
+    {ι : Type*} (b : Module.Basis ι ℤ F)
     (F' R : Submodule ℤ F) (hF'fg : F'.FG)
     (t : ↥(LinearMap.ker (((R ⊓ F').subtype).rTensor B))) :
     ∃ N : ℕ, 0 < N ∧ (N : ℤ) • t = 0 := by
-  sorry
+  classical
+  -- **the stage**: `F'` lies in the span of finitely many basis vectors, a direct summand
+  obtain ⟨S, hSfin, hSspan⟩ := Submodule.fg_def.mp hF'fg
+  set s : Finset ι := hSfin.toFinset.biUnion fun x => (b.repr x).support with hsdef
+  set F₀ := TorStages.coordSpan b s with hF₀def
+  have hF'le : F' ≤ F₀ := by
+    rw [← hSspan, Submodule.span_le]
+    rintro x hx
+    have hsupp : (b.repr x).support ⊆ s := fun i hi =>
+      Finset.mem_biUnion.mpr ⟨x, hSfin.mem_toFinset.mpr hx, hi⟩
+    rw [← Module.Basis.linearCombination_repr b x, Finsupp.linearCombination_apply,
+      Finsupp.sum]
+    refine Submodule.sum_mem _ fun i hi => Submodule.smul_mem _ _ ?_
+    exact Submodule.subset_span ⟨i, Finset.mem_coe.mpr (hsupp hi), rfl⟩
+  have hP : R ⊓ F' ≤ F₀ := inf_le_right.trans hF'le
+  -- **the finite basis of `F₀`**, from the linear independence of the basis vectors in `s`
+  have hli : LinearIndependent ℤ (fun i : (s : Set ι) => b i.val) :=
+    b.linearIndependent.comp Subtype.val Subtype.val_injective
+  have he : Submodule.span ℤ (Set.range fun i : (s : Set ι) => b i.val) = F₀ :=
+    congrArg (fun T => Submodule.span ℤ T) (Set.image_eq_range b (s : Set ι)).symm
+  have hmem : ∀ x : ↥(Submodule.span ℤ (Set.range fun i : (s : Set ι) => b i.val)),
+      (Submodule.span ℤ (Set.range fun i : (s : Set ι) => b i.val)).subtype x ∈ F₀ := by
+    intro x
+    rw [← he]
+    exact x.2
+  set hfwd := (Submodule.span ℤ (Set.range fun i : (s : Set ι) => b i.val)).subtype.codRestrict
+    F₀ hmem with hhfwd
+  have ε₀ : ↥(Submodule.span ℤ (Set.range fun i : (s : Set ι) => b i.val)) ≃ₗ[ℤ] ↥F₀ :=
+    LinearEquiv.ofBijective hfwd
+      ⟨fun x y hxy => Subtype.ext
+          (show x.val = y.val from congrArg (fun z : ↥F₀ => (z : F)) hxy),
+        fun y => ⟨⟨y.1, by rw [he]; exact y.2⟩, Subtype.ext rfl⟩⟩
+  set bF₀ := (Module.Basis.span hli).map ε₀ with hbF₀
+  -- **Smith normal form** of `R ⊓ F'` inside `F₀`
+  obtain ⟨n, snf⟩ :=
+    (Submodule.comap F₀.subtype (R ⊓ F')).smithNormalForm bF₀
+  obtain ⟨bQ, bN₀, f, a, hdiag⟩ := snf
+  set ε := Submodule.comapSubtypeEquivOfLe hP with hε
+  set bP := bN₀.map ε with hbP
+  have hεcoe : ∀ y : ↥(Submodule.comap F₀.subtype (R ⊓ F')),
+      Submodule.inclusion hP (ε y) = (y : ↥F₀) := fun y => Subtype.ext rfl
+  have hdiag' : ∀ i : Fin n, Submodule.inclusion hP (bP i) = a i • bQ (f i) := by
+    intro i
+    rw [hbP, Module.Basis.map_apply, hεcoe]
+    exact hdiag i
+  -- **the diagonal entries are nonzero**, so `N := ∏ |a i|` is positive and divisible
+  have hane : ∀ i : Fin n, a i ≠ 0 := by
+    intro i h0
+    have h1 : (bN₀ i : ↥F₀) = 0 := by rw [hdiag i, h0, zero_smul]
+    exact bN₀.ne_zero i (Subtype.ext h1)
+  set N : ℕ := ∏ i : Fin n, (a i).natAbs with hNdef
+  have hNpos : 0 < N := Finset.prod_pos fun i _ => Int.natAbs_pos.mpr (hane i)
+  have hdvd : ∀ i : Fin n, a i ∣ (N : ℤ) := by
+    intro i
+    have h1 : (a i).natAbs ∣ N := Finset.dvd_prod_of_mem _ (Finset.mem_univ i)
+    have h2 : (a i).natAbs ∣ (N : ℤ).natAbs := by rw [Int.natAbs_natCast]; exact h1
+    exact Int.natAbs_dvd_natAbs.mp h2
+  -- **the division map**: `ν₀ (e (f i)) = (N / a i) • g i`, zero on the other basis vectors
+  set g : ↥(s : Set ι) → ↥(R ⊓ F') := fun j =>
+    ∑ i : Fin n, if f i = j then ((N : ℤ) / a i) • bP i else 0 with hgdef
+  have hgσ : ∀ i : Fin n, g (f i) = ((N : ℤ) / a i) • bP i := by
+    intro i
+    simp only [hgdef]
+    rw [Finset.sum_eq_single i]
+    · simp
+    · intro i' _ hne
+      have hf : ¬(f i' = f i) := fun hcon => hne (f.injective hcon)
+      simp [hf]
+    · intro hi
+      exact (hi (Finset.mem_univ i)).elim
+  set ν₀ := (bQ.constr ℤ) g with hν₀def
+  have hν₀apply : ∀ j : ↥(s : Set ι), ν₀ (bQ j) = g j := by
+    intro j
+    rw [hν₀def]
+    simp [Module.Basis.constr_apply_fintype]
+  have hbPprop : ∀ i : Fin n, ν₀ (Submodule.inclusion hP (bP i)) = (N : ℤ) • bP i := by
+    intro i
+    rw [hdiag' i, map_smul, hν₀apply, hgσ, smul_smul, Int.mul_ediv_cancel' (hdvd i)]
+  -- the division map is `N ·` on all of `R ⊓ F'`, by linearity from the basis `bP`
+  have hprop : ∀ p : ↥(R ⊓ F'), ν₀ (Submodule.inclusion hP p) = (N : ℤ) • p := by
+    intro p
+    have hr : ∑ i : Fin n, (bP.repr p) i • bP i = p := bP.sum_repr p
+    have hincl : Submodule.inclusion hP (∑ i : Fin n, (bP.repr p) i • bP i)
+        = ∑ i : Fin n, (bP.repr p) i • Submodule.inclusion hP (bP i) := by
+      simp only [map_sum, map_smul]
+    have e1 : ν₀ (Submodule.inclusion hP p)
+        = ∑ i : Fin n, (bP.repr p) i • ν₀ (Submodule.inclusion hP (bP i)) := by
+      rw [show Submodule.inclusion hP p =
+          Submodule.inclusion hP (∑ i : Fin n, (bP.repr p) i • bP i) from
+          (congrArg (Submodule.inclusion hP) hr).symm, hincl]
+      simp only [map_sum, map_smul]
+    have hrhs : (N : ℤ) • ∑ i : Fin n, (bP.repr p) i • bP i
+        = ∑ i : Fin n, (bP.repr p) i • ((N : ℤ) • bP i) := by
+      rw [Finset.smul_sum]
+      refine Finset.sum_congr rfl fun i _ => ?_
+      rw [smul_smul, smul_smul, mul_comm]
+    rw [e1]
+    simp only [hbPprop]
+    rw [← hrhs, hr]
+  -- **extend along the coordinate retraction** `F → F₀`
+  set ρ := TorStages.coordRetract b s with hρdef
+  have hrid : ∀ x : ↥F₀, ρ (F₀.subtype x) = x := by
+    intro x
+    have h := DFunLike.congr_fun (TorStages.coordRetract_comp_subtype b s) x
+    simpa using h
+  set ν := ν₀.comp ρ with hνdef
+  have hνprop : ∀ p : ↥(R ⊓ F'), ν ((R ⊓ F').subtype p) = (N : ℤ) • p := by
+    intro p
+    have h1 : (R ⊓ F').subtype p = F₀.subtype (Submodule.inclusion hP p) := rfl
+    rw [hνdef, LinearMap.comp_apply, h1, hrid]
+    exact hprop p
+  -- **the kill**: `N • t` is `(ν ⊗ B)` applied to the image of `t`, which is `0`
+  refine ⟨N, hNpos, Subtype.ext ?_⟩
+  have hcomp : ν.comp (R ⊓ F').subtype
+      = ((N : ℤ) • LinearMap.id : ↥(R ⊓ F') →ₗ[ℤ] ↥(R ⊓ F')) := by
+    refine LinearMap.ext fun p => ?_
+    rw [hνdef, LinearMap.comp_apply, hνprop, LinearMap.smul_apply, LinearMap.id_apply]
+  calc (N : ℤ) • t.1
+      = (LinearMap.rTensor B (((N : ℤ) • LinearMap.id :
+          ↥(R ⊓ F') →ₗ[ℤ] ↥(R ⊓ F')))) t.1 := by
+        rw [LinearMap.rTensor_smul, LinearMap.rTensor_id, LinearMap.smul_apply,
+          LinearMap.id_apply]
+    _ = (LinearMap.rTensor B (ν.comp (R ⊓ F').subtype)) t.1 := by rw [hcomp]
+    _ = ((LinearMap.rTensor B ν).comp (LinearMap.rTensor B (R ⊓ F').subtype)) t.1 := by
+        rw [LinearMap.rTensor_comp]
+    _ = (LinearMap.rTensor B ν) ((LinearMap.rTensor B ((R ⊓ F').subtype)) t.1) :=
+        LinearMap.comp_apply _ _ _
+    _ = (LinearMap.rTensor B ν) 0 := by rw [LinearMap.mem_ker.mp t.2]
+    _ = 0 := map_zero _
 
 /-- The free abelian group on `A`, as a `ℤ`-module at the `AddCommGroup`-synthesized
 structure, with its basis transported from the canonical Finsupp one along the committed
@@ -991,7 +1124,7 @@ theorem isAddTorsion_torOne {A B : Type} [AddCommGroup A] [AddCommGroup B] :
     LinearMap.mem_ker.mp (φ x).2
   obtain ⟨F', hF'fg, t, htim⟩ := exists_fg_stage (b := presBasis A)
     ((LinearMap.ker (pres A)).subtype) (fun a b h => Subtype.ext h) hw
-  obtain ⟨N, hNpos, hNt⟩ := exists_nsmul_eq_zero_of_stage F'
+  obtain ⟨N, hNpos, hNt⟩ := exists_nsmul_eq_zero_of_stage (b := presBasis A) F'
     (LinearMap.range ((LinearMap.ker (pres A)).subtype)) hF'fg t
   refine isOfFinAddOrder_iff_zsmul_eq_zero.mpr ⟨(N : ℤ), ?_, ?_⟩
   · exact_mod_cast hNpos.ne'
