@@ -178,6 +178,7 @@ theorem quadC_energy (b : Fin 10 → ℤ) :
   rw [quadC, e10Cartan_eq, sub_mulVec, dotProduct_sub, smul_mulVec, Matrix.one_mulVec,
     two_smul, dotProduct_adjacency, dotProduct]
   simp only [Pi.add_apply, pow_two, Finset.mul_sum]
+  rw [Finset.sum_mul, Finset.sum_mul]
   ring
 
 /-- The quadratic form of the diagram is even: it is twice an integer. -/
@@ -193,10 +194,13 @@ noncomputable def e10BlockGram : Matrix (Fin 2 ⊕ Fin 8) (Fin 2 ⊕ Fin 8) ℤ 
 
 theorem e10BlockGram_isSymm : e10BlockGram.IsSymm := by
   refine Matrix.IsSymm.ext fun i j => ?_
-  rcases i with i | i <;> rcases j with j | j <;>
-    simp only [e10BlockGram, Matrix.fromBlocks, Sum.elim_inl, Sum.elim_inr,
-      Matrix.of_apply, Matrix.zero_apply, hyperbolicPlaneGramMatrix, e8GramMatrix_isSymm.eq] <;>
-    decide +revert
+  rcases i with i | i <;> rcases j with j | j
+  · fin_cases i <;> fin_cases j <;>
+      simp [e10BlockGram, hyperbolicPlaneGramMatrix, Matrix.smul_apply]
+  · simp [e10BlockGram]
+  · simp [e10BlockGram]
+  · simp only [e10BlockGram, Matrix.fromBlocks, Sum.elim_inr, Matrix.smul_apply]
+    rw [e8GramMatrix_isSymm.apply i j]
 
 /-- `E₁₀(2)`, the doubled even unimodular lattice of signature `(1,9)`. -/
 noncomputable def e10Lattice : IntegralLatticeCat ℤ := by
@@ -235,8 +239,15 @@ set_option maxHeartbeats 4000000 in
 /-- The determinant of the Gram matrix of `E₁₀(2)` is `-2¹⁰`, computed from the block
 decomposition: `det (2·U) = 4·(-1)` and `det (2·E₈) = 2⁸·1`. -/
 theorem e10BlockGram_det : e10BlockGram.det = -1024 := by
-  rw [e10BlockGram, e8GramMatrix_eq, Matrix.det_fromBlocks_zero₁₂, Matrix.det_smul,
-    Matrix.det_smul, Matrix.det_fin_two]
+  have h1 : (2 • hyperbolicPlaneGramMatrix).det = -4 := by
+    simp only [Matrix.det_fin_two, Matrix.smul_apply, hyperbolicPlaneGramMatrix,
+      Matrix.cons_val', Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.head_cons,
+      Matrix.of_apply, Matrix.cons_val, Matrix.empty_val']
+    norm_num
+  have h2 : (2 • e8GramMatrix).det = 256 := by
+    rw [Matrix.det_smul, e8GramMatrix_det]
+    norm_num
+  rw [e10BlockGram, Matrix.det_fromBlocks_zero₁₂, h1, h2]
   norm_num
 
 set_option maxRecDepth 100000 in
@@ -249,12 +260,15 @@ theorem e10BlockGram_signature :
       matrixBlockSum ((2 : ℝ) • (hyperbolicPlaneGramMatrix.map (Int.castRingHom ℝ)))
         ((2 : ℝ) • (e8GramMatrix.map (Int.castRingHom ℝ))) := by
     ext i j
-    rcases i with i | i <;> rcases j with j | j <;>
-      simp only [e10BlockGram, matrixBlockSum, Matrix.map_apply, Matrix.fromBlocks,
-        Sum.elim_inl, Sum.elim_inr, Matrix.of_apply, Matrix.zero_apply, Matrix.smul_apply,
-        hyperbolicPlaneGramMatrix, e8GramMatrix_eq, Matrix.cons_val', Matrix.cons_val_zero,
-        Matrix.cons_val_one, Matrix.head_cons, Int.cast_ofNat, Int.cast_neg] <;>
-      norm_num
+    rcases i with i | i <;> rcases j with j | j
+    · fin_cases i <;> fin_cases j <;>
+        simp [e10BlockGram, matrixBlockSum, hyperbolicPlaneGramMatrix, Matrix.smul_apply]
+    · simp [e10BlockGram, matrixBlockSum]
+    · simp [e10BlockGram, matrixBlockSum]
+    · simp only [e10BlockGram, matrixBlockSum, Matrix.map_apply, Matrix.fromBlocks,
+        Sum.elim_inr, Matrix.smul_apply]
+      push_cast
+      ring
   rw [hmap, matrixSignature_blockSum, matrixSignature_smul_pos _ (by norm_num : (0:ℝ) < 2),
     matrixSignature_smul_pos _ (by norm_num : (0:ℝ) < 2), hyperbolicPlane_matrixSignature,
     e8Lattice_matrixSignature]
@@ -262,8 +276,11 @@ theorem e10BlockGram_signature :
 
 /-- The integral signature of `E₁₀(2)` is `(1,9,0)`, so it has signature `(1,9)`. -/
 theorem e10Lattice_integralSignature : integralSignature e10FiniteLattice = (1, 9, 0) := by
-  rw [integralSignature_eq_matrixSignature e10FiniteLattice (Pi.basisFun ℤ (Fin 2 ⊕ Fin 8)),
-    e10Lattice_gramMatrix]
+  let b : Module.Basis (Fin 2 ⊕ Fin 8) ℤ e10FiniteLattice.obj.obj.carrier :=
+    Pi.basisFun ℤ (Fin 2 ⊕ Fin 8)
+  rw [integralSignature_eq_matrixSignature e10FiniteLattice b]
+  have hb : gramMatrix e10FiniteLattice.obj b = e10BlockGram := e10Lattice_gramMatrix
+  rw [hb]
   exact e10BlockGram_signature
 
 /-! ## The ten simple roots of `E₁₀` inside `E₁₀(2)` -/
@@ -309,7 +326,7 @@ def e10RootMatrixInverse : Matrix (Fin 10) (Fin 2 ⊕ Fin 8) ℤ :=
               ![4, 4, 0, 0, 0, 0, 0, 1, 0, 0],
               ![3, 3, 0, 0, 0, 0, 0, 0, 1, 0],
               ![2, 2, 0, 0, 0, 0, 0, 0, 0, 1],
-              ![0, 1, 0, 0, 0, 0, 0, 0, 0, 0]] i c
+              ![0, 1, 0, 0, 0, 0, 0, 0, 0, 0]] i (finSumFinEquiv c)
 
 set_option maxRecDepth 100000 in
 set_option maxHeartbeats 4000000 in
@@ -328,7 +345,8 @@ theorem e10RootMatrix_mul_inverse : e10RootMatrix * e10RootMatrixInverse = 1 := 
 /-- The lattice pairing of two simple roots is `-2` times the Cartan matrix: the roots of
 `E₁₀(2)` have square `-4` and pair by `2` along the edges. -/
 theorem e10Root_pairing (i j : Fin 10) :
-    e10Lattice.obj.pairing (e10Root i) (e10Root j) = -2 * e10Cartan i j := by
+    e10Lattice.obj.pairing (e10Root i : e10Lattice.obj.carrier)
+      (e10Root j : e10Lattice.obj.carrier) = -2 * e10Cartan i j := by
   rw [e10Lattice_pairing, e8GramMatrix_eq]
   simp only [Matrix.toBilin'_apply', e10BlockGram, e10Root, e10RootE, e10RootF, e10RootW,
     e10Cartan, Matrix.fromBlocks, Matrix.cons_val', Matrix.cons_val_zero, Matrix.cons_val_one,
@@ -346,7 +364,10 @@ variable {L : FiniteProjectiveLatticeCat ℤ ℤ}
 /-- The image in the real form of a `ℤ`-linear combination of lattice vectors. -/
 theorem toRealForm_sum {n : ℕ} (b : Fin n → ℤ) (R : Fin n → L.obj.obj.carrier) :
     toRealForm L (∑ i, b i • R i) = ∑ i, (b i : ℝ) • toRealForm L (R i) := by
-  simp only [toRealForm, TensorProduct.tmul_sum, TensorProduct.tmul_smul, Int.cast_smul_eq_zsmul]
+  simp only [toRealForm, map_sum]
+  refine Finset.sum_congr rfl fun i _ => ?_
+  rw [TensorProduct.tmul_smul, smul_eq_mul, mul_one,
+    TensorProduct.tmul_eq_smul_one_tmul]
 
 /-- **A same-sign combination pairs strictly one way with the interior cone**: if `s` is a
 `ℤ`-combination of the roots whose coordinates all have one sign and `s ≠ 0`, then no point of the
@@ -373,8 +394,7 @@ theorem pairing_ne_zero_of_signs {t : (realForm L).obj.carrier} {n : ℕ}
         exact mul_nonneg (by exact_mod_cast h i) (le_of_lt (hpos i))
       · exact ⟨i₀, Finset.mem_univ _, mul_pos (by exact_mod_cast lt_of_le_of_ne (h i₀) hi₀.symm) (hpos i₀)⟩
     intro hzero
-    rw [map_sum] at hzero
-    simp only [map_smul, smul_eq_mul] at hzero
+    simp only [map_sum, map_smul, smul_eq_mul] at hzero
     linarith
   · obtain ⟨i₀, hi₀⟩ := hsome
     have : ∑ i, b i * (realForm L).obj.pairing z (toRealForm L (R i)) < 0 := by
@@ -382,10 +402,9 @@ theorem pairing_ne_zero_of_signs {t : (realForm L).obj.carrier} {n : ℕ}
       · intro i _
         exact mul_nonpos_of_nonpos_of_nonneg (by exact_mod_cast h i) (le_of_lt (hpos i))
       · exact ⟨i₀, Finset.mem_univ _, mul_neg_of_neg_of_pos
-          (by exact_mod_cast lt_of_le_of_ne (h i₀) (Ne.symm hi₀)) (hpos i₀)⟩
+          (by exact_mod_cast lt_of_le_of_ne (h i₀) hi₀) (hpos i₀)⟩
     intro hzero
-    rw [map_sum] at hzero
-    simp only [map_smul, smul_eq_mul] at hzero
+    simp only [map_sum, map_smul, smul_eq_mul] at hzero
     linarith
 
 /-- **The criterion.** Let `R` be a finite family of negative reflective roots whose interior cone
@@ -410,7 +429,7 @@ theorem isChamberWithWalls_of_signs {t : (realForm L).obj.carrier} {n : ℕ}
     have hne : s ≠ 0 := by
       intro h0
       rw [h0] at hs
-      exact absurd hs.2 (lt_irrefl 0)
+      simpa using hs.2
     exact pairing_ne_zero_of_signs (L := L) hz b hb hne hsignb hpair
 
 end Criterion
