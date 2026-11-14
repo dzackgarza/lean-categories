@@ -1718,4 +1718,316 @@ theorem chamberOf_eq_iff_mirrorSeparating_eq_empty
 end LemmaTwo
 
 
+/-! ## The two sides of a mirror in the sheet (Bourbaki V §1, Notations, md 2276–2281)
+
+The half-space theory of a mirror of the arrangement, in the chosen sheet `M` of the positive
+cone. Bourbaki's `E` is a real affine space carrying a locally finite set `𝔥` of hyperplanes;
+here `E` is replaced by the open convex sheet `M` of the positive cone of the real form —
+`M` is convex (`convex_upper`) and the mirror arrangement is locally finite on the compact
+subsets of `M` (`rootMirror_meet_finite`) — and `H` by the mirror of a root, the zero set of
+the nonzero continuous linear functional `rootFunctional`. The two connected components of
+`E − H` (Bourbaki V §1, Notations, md 2276–2281: the open half-spaces bounded by `H`) become
+the two strict sign sides of the root functional in `M`, each convex, and the connected
+component of a point of `M` off the mirror is exactly its side
+(`connectedComponentIn_mirrorComplement`). A mirror that meets the sheet has points of the
+sheet on both of its sides (`mirror_two_sides_nonempty`), which is the replacement, in the
+sheet, of Bourbaki's hyperplane separating `E` into two open half-spaces. The Lorentzian
+replacement of the Euclidean distance step of Bourbaki V §3 no. 1, Lemma 2 (i), md 2770–2781,
+is `pairing_reflectIn`: the pairing of a point with the mirror image of a second point under
+the root reflection, from which the inequality `B(a, y) ≤ B(a, s y)` of the minimization
+argument reads as the closed half-space of the mirror containing the chamber, as `(t | u) ≥ 0`
+does in the text.
+
+The LC-09 record of the #130 separation layer above covers this section: no direct hit for
+these statements in the corpus, and the reuse set is this repository's own (`convex_upper`,
+`continuous_rootFunctional`, `connected_pos_or_neg`, `pairing_segment`, the square theorem
+`realFormOrthogonalHom_latticeReflection` of `WeylCone.lean`). -/
+
+section MirrorSides
+
+/-- The root functional of a root of negative square is nonzero: it takes the negative value
+`(r, r)` at the image of the root, so it cannot be the zero map. -/
+theorem rootFunctional_ne_of_neg (r : L.obj.obj.carrier)
+    (hr : L.obj.obj.pairing r r < 0) : rootFunctional L r ≠ 0 := by
+  intro hzero
+  have hval : rootFunctional L r (toRealForm L r) = 0 := by rw [hzero]; rfl
+  rw [rootFunctional_apply L r (toRealForm L r), realFormPairing_toRealForm L r r] at hval
+  have hcast : ((L.obj.obj.pairing r r : ℝ)) < 0 := by exact_mod_cast hr
+  linarith
+
+/-- The chosen sheet of the positive cone is open: it is defined by two strict inequalities
+whose left-hand sides are continuous — the quadratic form (`continuous_realFormQuadratic`)
+and the pairing with the chosen point `t`, continuous as the composite of the joint
+continuity of the pairing with the diagonal embedding of `t`. This replaces, for the sheet
+`M`, the ambient affine space `E` of Bourbaki V §1 (md 2264), which is open by construction. -/
+theorem isOpen_positiveCone_upper :
+    IsOpen (positiveCone.upper (realFormQuadratic L) t) := by
+  have hQ : Continuous (realFormQuadratic L) := continuous_realFormQuadratic L
+  have hfix : Continuous
+      ((fun p : (realForm L).obj.carrier × (realForm L).obj.carrier =>
+        (realForm L).obj.pairing p.1 p.2) ∘
+        fun x : (realForm L).obj.carrier => (x, t)) :=
+    Continuous.comp (continuous_realFormPairing L)
+      (continuous_prodMk.mpr ⟨continuous_id, continuous_const⟩)
+  have hpair : Continuous (fun x : (realForm L).obj.carrier =>
+      (realForm L).obj.pairing x t) :=
+    Continuous.congr hfix (fun x => rfl)
+  have hpair' : Continuous (fun x : (realForm L).obj.carrier =>
+      (associated (realFormQuadratic L)) x t) := by
+    refine Continuous.congr hpair (fun x => realFormPairing_eq_associated L x t)
+  have hA : IsOpen ((realFormQuadratic L) ⁻¹' Set.Ioi (0:ℝ)) :=
+    isOpen_Ioi.preimage hQ
+  have hB : IsOpen ((fun x : (realForm L).obj.carrier =>
+      (associated (realFormQuadratic L)) x t) ⁻¹' Set.Ioi (0:ℝ)) :=
+    isOpen_Ioi.preimage hpair'
+  have hEq : ((realFormQuadratic L) ⁻¹' Set.Ioi (0:ℝ)) ∩
+      ((fun x : (realForm L).obj.carrier =>
+        (associated (realFormQuadratic L)) x t) ⁻¹' Set.Ioi (0:ℝ)) =
+      positiveCone.upper (realFormQuadratic L) t := by
+    ext x
+    constructor
+    · rintro ⟨hx1, hx2⟩
+      exact ⟨hx1, hx2⟩
+    · intro hx
+      exact ⟨hx.1, hx.2⟩
+  rw [← hEq]
+  exact hA.inter hB
+
+/-- The side of the mirror of `r` in the sheet containing `x`: the points of the sheet
+pairing with `r` with the same strict sign as `x`. This is the replacement, in the open
+convex sheet `M` of the positive cone, of the open half-space bounded by a hyperplane `H`
+that contains a point `x` (Bourbaki V §1, Notations, md 2276–2281, `E` replaced by `M`). -/
+def mirrorSide (r : L.obj.obj.carrier) (x : (realForm L).obj.carrier) :
+    Set (realForm L).obj.carrier :=
+  {z | z ∈ positiveCone.upper (realFormQuadratic L) t ∧
+    0 < (realForm L).obj.pairing x (toRealForm L r) *
+      (realForm L).obj.pairing z (toRealForm L r)}
+
+theorem mem_mirrorSide (r : L.obj.obj.carrier) {x z : (realForm L).obj.carrier} :
+    z ∈ mirrorSide L t r x ↔
+      z ∈ positiveCone.upper (realFormQuadratic L) t ∧
+        0 < (realForm L).obj.pairing x (toRealForm L r) *
+          (realForm L).obj.pairing z (toRealForm L r) :=
+  Iff.rfl
+
+/-- The side of a mirror is convex: it is the part of the convex sheet (`convex_upper`) on
+which the root functional — affine along segments (`pairing_segment`) — keeps the strict
+sign of `x`. -/
+theorem convex_mirrorSide (hpos : sigPos (realFormQuadratic L) = 1)
+    (ht : 0 < realFormQuadratic L t) (r : L.obj.obj.carrier)
+    (x : (realForm L).obj.carrier) : Convex ℝ (mirrorSide L t r x) := by
+  rw [convex_iff_add_mem]
+  intro y hy z hz a b ha hb hab
+  have hmem : a • y + b • z ∈ [y -[ℝ] z] := ⟨a, b, ha, hb, hab, rfl⟩
+  have hupper : a • y + b • z ∈ positiveCone.upper (realFormQuadratic L) t :=
+    (convex_upper (realFormQuadratic L) hpos ht).segment_subset hy.1 hz.1 hmem
+  refine ⟨hupper, ?_⟩
+  have hp := hy.2
+  have hq := hz.2
+  rcases lt_trichotomy ((realForm L).obj.pairing x (toRealForm L r)) 0 with
+    hsneg | hszero | hspos
+  · have hpp : (realForm L).obj.pairing y (toRealForm L r) < 0 := by
+      rcases mul_pos_iff.mp hp with ⟨h1, h2⟩ | ⟨h1, h2⟩
+      · exact absurd h1 (not_lt.mpr hsneg.le)
+      · exact h2
+    have hqq : (realForm L).obj.pairing z (toRealForm L r) < 0 := by
+      rcases mul_pos_iff.mp hq with ⟨h1, h2⟩ | ⟨h1, h2⟩
+      · exact absurd h1 (not_lt.mpr hsneg.le)
+      · exact h2
+    rw [pairing_segment L r y z a b]
+    exact mul_pos_of_neg_of_neg hsneg (add_neg_comb hpp hqq ha hb hab)
+  · rw [hszero, zero_mul] at hp
+    exact absurd hp (not_lt.mpr (le_refl 0))
+  · have hpp : 0 < (realForm L).obj.pairing y (toRealForm L r) := by
+      rcases mul_pos_iff.mp hp with ⟨h1, h2⟩ | ⟨h1, h2⟩
+      · exact h2
+      · exact absurd h1 (not_lt.mpr hspos.le)
+    have hqq : 0 < (realForm L).obj.pairing z (toRealForm L r) := by
+      rcases mul_pos_iff.mp hq with ⟨h1, h2⟩ | ⟨h1, h2⟩
+      · exact h2
+      · exact absurd h1 (not_lt.mpr hspos.le)
+    rw [pairing_segment L r y z a b]
+    exact mul_pos hspos (add_pos_comb hpp hqq ha hb hab)
+
+/-- **The two sides of a mirror** (Bourbaki V §1, Notations, md 2276–2281, with `E` replaced
+by the open convex sheet `M` of the positive cone of the real form): the connected component
+of a point `x` of the sheet off the mirror of `r` is exactly the side of the mirror
+containing `x`. The side is convex, hence connected, and contains `x`, so it lies in the
+component; conversely the root functional is continuous (`continuous_rootFunctional`) and
+never zero on the component (the component stays off the mirror), so a connected set on one
+side of zero (`connected_pos_or_neg`) keeps the strict sign of `x` throughout the component. -/
+theorem connectedComponentIn_mirrorComplement (hpos : sigPos (realFormQuadratic L) = 1)
+    (ht : 0 < realFormQuadratic L t) (r : L.obj.obj.carrier)
+    {x : (realForm L).obj.carrier}
+    (hx : x ∈ positiveCone.upper (realFormQuadratic L) t)
+    (hxmir : rootFunctional L r x ≠ 0) :
+    connectedComponentIn
+        (positiveCone.upper (realFormQuadratic L) t \ rootMirror L r) x
+      = mirrorSide L t r x := by
+  have hne : (realForm L).obj.pairing x (toRealForm L r) ≠ 0 := by
+    rw [← rootFunctional_apply L r x]
+    exact hxmir
+  have hside : mirrorSide L t r x ⊆
+      positiveCone.upper (realFormQuadratic L) t \ rootMirror L r := by
+    intro z hz
+    obtain ⟨hz1, hz2⟩ := hz
+    refine ⟨hz1, ?_⟩
+    rw [mem_rootMirror_iff]
+    intro hzero
+    rw [rootFunctional_apply L r z] at hzero
+    rw [hzero, mul_zero] at hz2
+    exact absurd hz2 (not_lt.mpr (le_refl 0))
+  have hxmem : x ∈ mirrorSide L t r x := by
+    refine ⟨hx, ?_⟩
+    rcases lt_trichotomy ((realForm L).obj.pairing x (toRealForm L r)) 0 with h1 | h1 | h1
+    · exact mul_pos_of_neg_of_neg h1 h1
+    · exact absurd h1 hne
+    · exact mul_pos h1 h1
+  have hxU : x ∈ positiveCone.upper (realFormQuadratic L) t \ rootMirror L r := by
+    refine ⟨hx, ?_⟩
+    rw [mem_rootMirror_iff]
+    exact hxmir
+  refine Set.Subset.antisymm ?_
+    ((convex_mirrorSide L t hpos ht r x).isPreconnected.subset_connectedComponentIn
+      hxmem hside)
+  have hCsub : connectedComponentIn
+      (positiveCone.upper (realFormQuadratic L) t \ rootMirror L r) x ⊆
+      positiveCone.upper (realFormQuadratic L) t \ rootMirror L r :=
+    connectedComponentIn_subset _ _
+  intro z hz
+  refine ⟨(hCsub hz).1, ?_⟩
+  have hCconn : IsConnected (connectedComponentIn
+      (positiveCone.upper (realFormQuadratic L) t \ rootMirror L r) x) :=
+    isConnected_connectedComponentIn_iff.mpr hxU
+  have hne' : ∀ w ∈ connectedComponentIn
+      (positiveCone.upper (realFormQuadratic L) t \ rootMirror L r) x,
+      rootFunctional L r w ≠ 0 := by
+    intro w hw
+    intro hzero
+    exact (hCsub hw).2 ((mem_rootMirror_iff L).mpr hzero)
+  have hsign := connected_pos_or_neg hCconn (continuous_rootFunctional L r) hne'
+  have hxin : x ∈ connectedComponentIn
+      (positiveCone.upper (realFormQuadratic L) t \ rootMirror L r) x :=
+    mem_connectedComponentIn hxU
+  rcases hsign with hpos' | hneg'
+  · have hxpos : 0 < rootFunctional L r x := hpos' x hxin
+    have hzpos : 0 < rootFunctional L r z := hpos' z hz
+    rw [← rootFunctional_apply L r x, ← rootFunctional_apply L r z]
+    exact mul_pos hxpos hzpos
+  · have hxneg : rootFunctional L r x < 0 := hneg' x hxin
+    have hzneg : rootFunctional L r z < 0 := hneg' z hz
+    rw [← rootFunctional_apply L r x, ← rootFunctional_apply L r z]
+    exact mul_pos_of_neg_of_neg hxneg hzneg
+
+/-- **A mirror that meets the sheet has points of the sheet on both of its sides** (Bourbaki
+V §1, Notations, md 2276–2281, with `E` replaced by the open convex sheet `M`): if the mirror
+of a negative-square root meets the sheet, then the root functional takes both strict signs
+on the sheet. The sheet is open (`isOpen_positiveCone_upper`), so a point of the mirror in
+the sheet has neighbouring sheet points in the direction of the root and in the opposite
+direction, and the root functional is nonzero on that direction (it takes the negative value
+`(r, r)` at the image of the root), so the two neighbours lie on the two sides. This is the
+replacement, in the sheet, of a hyperplane of a real affine space separating it into two
+open half-spaces. -/
+theorem mirror_two_sides_nonempty {r : L.obj.obj.carrier}
+    (hr : L.obj.obj.pairing r r < 0)
+    (hmeet : ∃ z ∈ positiveCone.upper (realFormQuadratic L) t, rootFunctional L r z = 0) :
+    (∃ y, y ∈ positiveCone.upper (realFormQuadratic L) t ∧
+      0 < (realForm L).obj.pairing y (toRealForm L r)) ∧
+    (∃ y, y ∈ positiveCone.upper (realFormQuadratic L) t ∧
+      (realForm L).obj.pairing y (toRealForm L r) < 0) := by
+  obtain ⟨z, hzM, hzφ⟩ := hmeet
+  have hφu : rootFunctional L r (toRealForm L r)
+      = (L.obj.obj.pairing r r : ℝ) := by
+    rw [rootFunctional_apply L r (toRealForm L r), realFormPairing_toRealForm L r r]
+  have hr' : ((L.obj.obj.pairing r r : ℝ)) < 0 := by exact_mod_cast hr
+  have hM : IsOpen (positiveCone.upper (realFormQuadratic L) t) :=
+    isOpen_positiveCone_upper L t
+  have hcont : Continuous (fun δ : ℝ => z + δ • (toRealForm L r)) := by fun_prop
+  have hP : IsOpen ((fun δ : ℝ => z + δ • (toRealForm L r)) ⁻¹'
+      positiveCone.upper (realFormQuadratic L) t) :=
+    IsOpen.preimage hcont hM
+  have h0 : (0:ℝ) ∈ (fun δ : ℝ => z + δ • (toRealForm L r)) ⁻¹'
+      positiveCone.upper (realFormQuadratic L) t := by
+    show (fun δ : ℝ => z + δ • (toRealForm L r)) 0
+      ∈ positiveCone.upper (realFormQuadratic L) t
+    simpa only [zero_smul, add_zero] using hzM
+  obtain ⟨ε, hε, hball⟩ := Metric.mem_nhds_iff.mp (hP.mem_nhds h0)
+  have hδ : 0 < ε / 2 := by linarith
+  have hw1 : z + (ε / 2) • (toRealForm L r) ∈ positiveCone.upper (realFormQuadratic L) t :=
+    Set.mem_preimage.mp (hball (Metric.mem_ball.mpr
+      (by
+        rw [Real.dist_eq, sub_zero, abs_of_pos hδ]
+        linarith)))
+  have hw2 : z + (-(ε / 2)) • (toRealForm L r)
+      ∈ positiveCone.upper (realFormQuadratic L) t :=
+    Set.mem_preimage.mp (hball (Metric.mem_ball.mpr
+      (by
+        rw [Real.dist_eq, sub_zero, abs_neg, abs_of_pos hδ]
+        linarith)))
+  have hval : ∀ c : ℝ, rootFunctional L r (z + c • (toRealForm L r))
+      = c * (L.obj.obj.pairing r r : ℝ) := by
+    intro c
+    rw [map_add, map_smul, hzφ, zero_add, hφu, smul_eq_mul]
+  refine ⟨⟨z + (-(ε / 2)) • (toRealForm L r), hw2, ?_⟩,
+    ⟨z + (ε / 2) • (toRealForm L r), hw1, ?_⟩⟩
+  · rw [← rootFunctional_apply L r (z + (-(ε / 2)) • (toRealForm L r)), hval]
+    have hmul : (ε / 2) * (L.obj.obj.pairing r r : ℝ) < 0 :=
+      mul_neg_of_pos_of_neg hδ hr'
+    linarith
+  · rw [← rootFunctional_apply L r (z + (ε / 2) • (toRealForm L r)), hval]
+    exact mul_neg_of_pos_of_neg hδ hr'
+
+private theorem pairing_sub_right (a y v : (realForm L).obj.carrier) :
+    (realForm L).obj.pairing a (y - v)
+      = (realForm L).obj.pairing a y - (realForm L).obj.pairing a v := by
+  rw [sub_eq_add_neg, BilinModuleCat.pairing_add_right]
+  have hneg : (realForm L).obj.pairing a (-v)
+      = -((realForm L).obj.pairing a v) := by
+    rw [← neg_one_smul ℝ v, BilinModuleCat.pairing_smul_right, neg_one_smul ℝ]
+  rw [hneg]
+  linarith
+
+/-- **The Lorentzian replacement of the distance step of Bourbaki V §3 no. 1, Lemma 2 (i)**
+(md 2770–2781): the pairing of a point `a` with the image of a point `y` under the reflection
+in the mirror of a negative-square root `r` is the pairing of the two points, minus twice the
+product of the two pairings with `r`, divided by the square of `r`. In the text the inequality
+`d(a, y)² ≤ d(a, s_H y)²` of the Euclidean distance is read as `(t | u) ≥ 0`, that `y` lies in
+the closed half-space of the wall `H` containing the chamber; here the same reading runs
+through this identity on the pairing of the real form, the wall being the mirror of `r`. -/
+theorem pairing_reflectIn (hL : L.obj.obj.IsNondegenerate) (h2 : IsRegular (2 : ℤ))
+    {r : L.obj.obj.carrier} (hr : IsReflectiveRoot L.obj r)
+    (hrneg : L.obj.obj.pairing r r < 0)
+    (a y : (realForm L).obj.carrier) :
+    (realForm L).obj.pairing a
+        (realFormOrthogonalHom L (latticeReflection L hL h2 hr) y)
+      = (realForm L).obj.pairing a y
+        - 2 / (realForm L).obj.pairing (toRealForm L r) (toRealForm L r)
+          * (realForm L).obj.pairing a (toRealForm L r)
+          * (realForm L).obj.pairing y (toRealForm L r) := by
+  have hrneg' : realFormQuadratic L (toRealForm L r) < 0 := by
+    rw [realFormQuadratic_toRealForm L r]
+    exact_mod_cast hrneg
+  have hrne := ne_of_lt hrneg'
+  have hsq : realFormQuadratic L (toRealForm L r)
+      = (realForm L).obj.pairing (toRealForm L r) (toRealForm L r) :=
+    realFormQuadratic_apply L (toRealForm L r)
+  have hq0 : (realForm L).obj.pairing (toRealForm L r) (toRealForm L r) ≠ 0 := by
+    rw [← hsq]
+    exact hrne
+  rw [realFormOrthogonalHom_latticeReflection L hL h2 hr hrne,
+    reflectIn_apply (realFormQuadratic L) hrne y,
+    pairing_sub_right L a y ((2 * (associated (realFormQuadratic L)) y (toRealForm L r)
+      / realFormQuadratic L (toRealForm L r)) • (toRealForm L r))]
+  have hsmul : (realForm L).obj.pairing a
+      ((2 * (associated (realFormQuadratic L)) y (toRealForm L r)
+        / realFormQuadratic L (toRealForm L r)) • (toRealForm L r))
+      = 2 * (associated (realFormQuadratic L)) y (toRealForm L r)
+        / realFormQuadratic L (toRealForm L r)
+          * (realForm L).obj.pairing a (toRealForm L r) := by
+    rw [BilinModuleCat.pairing_smul_right, smul_eq_mul]
+  rw [hsmul, hsq, ← realFormPairing_eq_associated L y (toRealForm L r)]
+  field_simp
+
+end MirrorSides
+
 end LeanCategories.Lattices.Valued
