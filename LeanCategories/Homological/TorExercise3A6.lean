@@ -231,7 +231,7 @@ theorem twoTermComplexG_isZero_X (n : ℕ) (hn : 2 ≤ n) : IsZero ((twoTermComp
 
 theorem twoTermComplexG_mono_d_one_zero :
     Mono ((twoTermComplexG f).d 1 0) :=
-  ConcreteCategory.mono_of_injective _ fun x y h => Subtype.ext h
+  ConcreteCategory.mono_of_injective _ fun _x _y h => Subtype.ext h
 
 theorem twoTermComplexG_projective [Module.Free ℤ F₀]
     [Projective (kerOf f)] (n : ℕ) :
@@ -257,7 +257,7 @@ noncomputable def twoTermPiG :
 
 theorem twoTermComplexG_homology_one_isZero :
     IsZero ((twoTermComplexG f).homology 1) := by
-  haveI : Mono ((twoTermComplexG f).d 1 0) := twoTermComplexG_mono_d_one_zero f
+  have hmono : Mono ((twoTermComplexG f).d 1 0) := twoTermComplexG_mono_d_one_zero f
   exact IsZero.of_iso (isZero_kernel_of_mono ((twoTermComplexG f).d 1 0))
     (TorBridge.homologyOneIsoKernel (twoTermComplexG_isZero_X_two f))
 
