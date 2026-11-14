@@ -14,6 +14,7 @@ public import Mathlib.Topology.Algebra.Module.ModuleTopology
 public import Mathlib.Topology.Order.IntermediateValue
 public import Mathlib.Geometry.Convex.Cone.Pointed
 public import Mathlib.Geometry.Convex.Cone.Face.Basic
+public import Mathlib.GroupTheory.CosetCover
 
 /-!
 # Chambers, walls and Coxeter diagrams of a Lorentzian reflection group
@@ -2406,5 +2407,1060 @@ theorem isWallRoot_iff {x : (realForm L).obj.carrier} {r : L.obj.obj.carrier} :
   Iff.rfl
 
 end WallLayer
+
+/-! ## The wall-generation layer (Davis, Theorem 10.1.5 (a), p. 179)
+
+The inputs of the induction on the separating mirrors: every mirror of a negative reflective
+root is the wall of some chamber (`exists_isWallRoot`, the local-finiteness perturbation: a
+point of the mirror in the sheet, off every other mirror — only finitely many mirrors meet a
+compact segment, and a finite union of proper subspaces of the mirror cannot cover it), the
+wall predicate of a chamber does not depend on the chamber point
+(`isWallRoot_of_chamberOf_eq`, the pairing signs are constant on a chamber), and, for two
+regular points of the sheet in different chambers, some wall root of the first chamber has
+its mirror among the mirrors separating the two points (`exists_isWallRoot_separating`,
+Davis, *The Geometry and Topology of Coxeter Groups*, Princeton, 2008, Lemma 6.6.4, p. 89:
+the chamber graph is connected — here, the wall root is the mirror crossed first by a
+generic segment from one point to a perturbed point of the other chamber).
+
+**LC-09 search record** (this section; `scripts/formalization_corpus.py` and the pinned
+Mathlib): `wall reflections generate reflection group` (nearest neighbour TauCeti
+`GroupTheory/Coxeter/Geometric/Basic.lean`, the simple reflections of a root pairing),
+`reflections in walls of chamber generate Weyl group` and
+`transitive on chambers reflection group` (nearest neighbour atlas-lean
+`Buildings/Buildings.lean`, navigation-import-only), `hyperplane arrangement open complement
+locally finite` and `point on hyperplane on no other hyperplane general position` (no
+match), `number of hyperplanes separating decreases under reflection` (no match),
+`Subspace.exists_eq_top_of_iUnion_eq_univ` (the Mathlib hit,
+`Mathlib.GroupTheory.CosetCover.lean`: a vector space over an infinite field is not a
+finite union of proper subspaces — imported and used for the direction-avoidance steps),
+`finite union of proper subspaces vector space infinite field` (nearest neighbour AFP
+`VectorSpace/VectorSpace.thy`), `chambers Coxeter arrangement gallery distance separating
+hyperplanes` (nearest neighbour atlas-lean `ReflectionGroupsCoxeter.lean`, which axiomatizes
+`faithful_on_chambers`), `IsWallRoot wall of chamber facet` (no match), `locally finite set
+of hyperplanes complement open`, `conjugate of reflection is reflection in image
+hyperplane`, `reflectIn conj_reflectIn`, `sign of linear functional constant on connected
+component` (no portable statement). The wall layer is this repository's own; the reuse set
+is `rootMirror_meet_finite` (#129), `mirrorSeparating_finite`, `exists_mem_rootMirror_inter_upper`,
+`latticeReflection_eq_of_rootMirror_eq`, `exists_ne_zero_smul_of_ker_eq_ker`,
+`realFormPairing_eq_zero_of_forall`, `rootFunctional_ne_of_neg`, `pairing_segment`,
+`convex_upper`, `isOpen_positiveCone_upper` and Mathlib's `Subspace.exists_eq_top_of_iUnion_eq_univ`.
+-/
+
+section WallGeneration
+
+variable (t : (realForm L).obj.carrier)
+
+/-- **The affine sign dichotomy on a segment**: for a root `r` and points `x, y`, either the
+pairings with `r` have the same strict sign, or some point of the segment `[x, y]` pairs to
+zero with `r` (the pairing is affine along the segment, so it vanishes between opposite-sign
+values). -/
+private theorem pairing_segment_sign (r : L.obj.obj.carrier) (x y : (realForm L).obj.carrier) :
+    (0 < (realForm L).obj.pairing x (toRealForm L r) *
+      (realForm L).obj.pairing y (toRealForm L r)) ∨
+    ∃ z ∈ [x -[ℝ] y], (realForm L).obj.pairing z (toRealForm L r) = 0 := by
+  rcases lt_trichotomy ((realForm L).obj.pairing x (toRealForm L r) *
+      (realForm L).obj.pairing y (toRealForm L r)) 0 with h | h | h
+  · refine Or.inr ?_
+    set p := (realForm L).obj.pairing x (toRealForm L r) with hp
+    set q := (realForm L).obj.pairing y (toRealForm L r) with hq
+    have hne : p - q ≠ 0 := by
+      intro hcon
+      rw [eq_of_sub_eq_zero hcon] at h
+      exact absurd h (by nlinarith [sq_nonneg p])
+    set s := p / (p - q) with hsdef
+    have hb0 : 0 < s := by
+      rcases lt_trichotomy p 0 with hpneg | hpzero | hppos
+      · have hq : 0 < q := by nlinarith [h, hpneg]
+        rw [hsdef, div_pos_iff]
+        exact Or.inr ⟨hpneg, by linarith⟩
+      · rw [hpzero] at h
+        simp at h
+      · have hq : q < 0 := by nlinarith [h, hppos]
+        rw [hsdef, div_pos_iff]
+        exact Or.inl ⟨hppos, by linarith⟩
+    have hb1 : s < 1 := by
+      rcases lt_trichotomy p 0 with hpneg | hpzero | hppos
+      · have hq : 0 < q := by nlinarith [h, hpneg]
+        rw [hsdef, div_lt_one_of_neg (by linarith : p - q < 0)]
+        linarith
+      · rw [hpzero] at h
+        simp at h
+      · have hq : q < 0 := by nlinarith [h, hppos]
+        rw [hsdef, div_lt_one (by linarith : 0 < p - q)]
+        linarith
+    refine ⟨(1 - s) • x + s • y, ⟨1 - s, s, by linarith, by linarith, by ring, rfl⟩, ?_⟩
+    rw [pairing_segment L r x y (1 - s) s, hsdef]
+    field_simp
+    ring
+  · refine Or.inr ?_
+    rcases mul_eq_zero.mp h with h0 | h0
+    · exact ⟨x, ⟨1, 0, by norm_num, by norm_num, by norm_num, by simp⟩, h0⟩
+    · exact ⟨y, ⟨0, 1, by norm_num, by norm_num, by norm_num, by simp⟩, h0⟩
+  · exact Or.inl h
+
+/-- Mirror membership in the pairing form: the pointwise restatement of `mem_rootMirror_iff`
+under `rootFunctional_apply`, avoiding the functional/pairing defeq friction. -/
+private theorem mem_rootMirror_iff' {r : L.obj.obj.carrier} {x : (realForm L).obj.carrier} :
+    x ∈ rootMirror L r ↔ (realForm L).obj.pairing x (toRealForm L r) = 0 :=
+  mem_rootMirror_iff L
+
+/-- **Roots with the same mirror are proportional**: two negative reflective roots whose
+mirrors coincide have real images that are nonzero scalar multiples of one another (the root
+functionals have the same kernel, so they are proportional, and the nondegeneracy of the real
+form carries the proportionality to the vectors). This is the mirror-to-root dictionary
+under which the separating status of a mirror does not depend on the root defining it. -/
+theorem exists_ne_zero_smul_of_rootMirror_eq (hL : L.obj.obj.IsNondegenerate)
+    {r s : L.obj.obj.carrier} (hr : L.obj.obj.pairing r r < 0)
+    (hs : L.obj.obj.pairing s s < 0) (hmir : rootMirror L r = rootMirror L s) :
+    ∃ c : ℝ, c ≠ 0 ∧ toRealForm L s = c • toRealForm L r := by
+  have hφr : rootFunctional L r ≠ 0 := rootFunctional_ne_of_neg L r hr
+  have hφs : rootFunctional L s ≠ 0 := rootFunctional_ne_of_neg L s hs
+  have hker : LinearMap.ker (rootFunctional L r) = LinearMap.ker (rootFunctional L s) := by
+    ext x
+    rw [LinearMap.mem_ker, LinearMap.mem_ker,
+      ← (mem_rootMirror_iff L (r := r)), ← (mem_rootMirror_iff L (r := s)), hmir]
+  obtain ⟨c, hc0, hcsmul⟩ := exists_ne_zero_smul_of_ker_eq_ker hφr hker
+  have hpts : ∀ x, rootFunctional L s x = c * rootFunctional L r x := by
+    intro x
+    rw [hcsmul]
+    simp
+  refine ⟨c, hc0, ?_⟩
+  refine eq_of_sub_eq_zero (realFormPairing_eq_zero_of_forall L hL ?_)
+  intro x
+  have h1 : (realForm L).obj.pairing x (toRealForm L s)
+      = rootFunctional L s x := rfl
+  have h2 : (realForm L).obj.pairing x (toRealForm L r)
+      = rootFunctional L r x := rfl
+  have h3 : (realForm L).obj.pairing x (c • toRealForm L r)
+      = c * (realForm L).obj.pairing x (toRealForm L r) := by
+    rw [BilinModuleCat.pairing_smul_right, smul_eq_mul]
+  have hsub : (realForm L).obj.pairing x (toRealForm L s - c • toRealForm L r)
+      = (realForm L).obj.pairing x (toRealForm L s)
+        - (realForm L).obj.pairing x (c • toRealForm L r) := by
+    rw [sub_eq_add_neg, BilinModuleCat.pairing_add_right]
+    have hneg : (realForm L).obj.pairing x (-(c • toRealForm L r))
+        = -((realForm L).obj.pairing x (c • toRealForm L r)) := by
+      rw [← neg_one_smul ℝ (c • toRealForm L r), BilinModuleCat.pairing_smul_right,
+        neg_one_smul ℝ]
+    rw [hneg]
+    linarith
+  rw [hsub, h1, h3, h2, hpts x]
+  ring
+
+/-- A short initial segment of any ray from a point of the open sheet stays in the sheet. -/
+private theorem exists_segment_upper {w : (realForm L).obj.carrier}
+    (hw : w ∈ positiveCone.upper (realFormQuadratic L) t) (d : (realForm L).obj.carrier) :
+    ∃ ε > 0, ∀ δ ∈ Set.Icc (0:ℝ) ε, w + δ • d
+      ∈ positiveCone.upper (realFormQuadratic L) t := by
+  have hcont : Continuous (fun δ : ℝ => w + δ • d) := by fun_prop
+  have hpre : (fun δ : ℝ => w + δ • d) ⁻¹'
+      positiveCone.upper (realFormQuadratic L) t ∈ nhds (0:ℝ) := by
+    refine hcont.continuousAt.preimage_mem_nhds ?_
+    simpa only [zero_smul, add_zero] using
+      (isOpen_positiveCone_upper L t).mem_nhds hw
+  obtain ⟨ε, hε, hball⟩ := Metric.mem_nhds_iff.mp hpre
+  refine ⟨ε / 2, by linarith, fun δ hδ => ?_⟩
+  refine hball ?_
+  rw [Metric.mem_ball, Real.dist_eq, sub_zero]
+  obtain ⟨hlo, hhi⟩ := Set.mem_Icc.mp hδ
+  rw [abs_of_nonneg hlo]
+  linarith
+
+/-- **One defining root per mirror meeting a compact subset of the sheet**: a finite set of
+negative reflective roots representing every mirror that meets `K` (Lemma 1, the local
+finiteness `rootMirror_meet_finite`, read through chosen roots). -/
+theorem exists_finite_rootSet (hL : L.obj.obj.IsNondegenerate) (h2 : IsRegular (2 : ℤ))
+    (hpos : (integralSignature L).1 = 1) (ht : 0 < realFormQuadratic L t)
+    {I : Type} [Fintype I] [DecidableEq I] (i₀ : I) (b : Module.Basis I ℤ L.obj.obj.carrier)
+    {K : Set (realForm L).obj.carrier} (hK : IsCompact K) (hKne : K.Nonempty)
+    (hKupper : K ⊆ positiveCone.upper (realFormQuadratic L) t) :
+    ∃ R : Set L.obj.obj.carrier, R.Finite ∧ R ⊆ negativeReflectiveRoots L ∧
+      ∀ s ∈ negativeReflectiveRoots L, (rootMirror L s ∩ K).Nonempty →
+        ∃ s' ∈ R, rootMirror L s' = rootMirror L s := by
+  have hsig : sigPos (realFormQuadratic L) = 1 := by
+    rw [realFormQuadratic_sigPos]; exact hpos
+  have hfin := rootMirror_meet_finite L hL h2 hsig t ht hK hKne hKupper i₀ b
+  classical
+  set M : Set (Set (realForm L).obj.carrier) := {H | ∃ r ∈ negativeReflectiveRoots L,
+    rootMirror L r = H ∧ (H ∩ K).Nonempty} with hM
+  have hchoice : ∀ H : {H : Set (realForm L).obj.carrier // H ∈ M},
+      ∃ r ∈ negativeReflectiveRoots L,
+        rootMirror L r = (H : Set (realForm L).obj.carrier) := by
+    rintro ⟨H, hH⟩
+    obtain ⟨r, hr, hHr, -⟩ := hH
+    exact ⟨r, hr, hHr⟩
+  choose R' hR'mem hR'mir using hchoice
+  have : Fintype {H : Set (realForm L).obj.carrier // H ∈ M} := hfin.fintype
+  refine ⟨Set.range (fun H : {H : Set (realForm L).obj.carrier // H ∈ M} => R' H),
+    Set.finite_range _, ?_, ?_⟩
+  · intro s hs
+    obtain ⟨H, rfl⟩ := hs
+    exact hR'mem _
+  · intro s hs hne
+    have hmem : rootMirror L s ∈ M := ⟨s, hs, rfl, hne⟩
+    exact ⟨R' ⟨rootMirror L s, hmem⟩, ⟨⟨rootMirror L s, hmem⟩, rfl⟩,
+      hR'mir ⟨rootMirror L s, hmem⟩⟩
+
+/-- **A finite watch set of roots stays nonzero on a short initial interval**: for a base
+point `w`, a direction `d` and a finite set `R` of roots whose pairings with `w` are nonzero,
+there is `ε > 0` with `ε ≤ ε₀` such that no pairing with a root of `R` vanishes on the
+parameters of `[0, ε]` (each pairing is affine in the parameter and nonzero at zero, so it has
+at most one zero, and a finite union of singletons cannot cover an interval). -/
+private theorem exists_segment_nonzero
+    {w : (realForm L).obj.carrier}
+    (d : (realForm L).obj.carrier)
+    {R : Set L.obj.obj.carrier} (hRfin : R.Finite)
+    (hRne0 : ∀ s ∈ R, (realForm L).obj.pairing w (toRealForm L s) ≠ 0)
+    (ε₀ : ℝ) (hε₀ : ε₀ > 0) :
+    ∃ ε, 0 < ε ∧ ε ≤ ε₀ ∧ ∀ δ ∈ Set.Icc (0:ℝ) ε, ∀ s ∈ R,
+      (realForm L).obj.pairing (w + δ • d) (toRealForm L s) ≠ 0 := by
+  classical
+  set F : Set ℝ := {δ | δ ∈ Set.Icc (0:ℝ) ε₀ ∧ ∃ s ∈ R,
+    (realForm L).obj.pairing (w + δ • d) (toRealForm L s) = 0} with hFdef
+  have hFfin : F.Finite := by
+    have hinner : ∀ s ∈ R,
+        {δ : ℝ | (realForm L).obj.pairing (w + δ • d) (toRealForm L s) = 0}.Finite := by
+      intro s hs
+      refine Set.Subsingleton.finite fun δ₁ h₁ δ₂ h₂ => ?_
+      have h₁' : (realForm L).obj.pairing (w + δ₁ • d) (toRealForm L s) = 0 := h₁
+      have h₂' : (realForm L).obj.pairing (w + δ₂ • d) (toRealForm L s) = 0 := h₂
+      by_contra hne
+      have haff : ∀ δ : ℝ, (realForm L).obj.pairing (w + δ • d) (toRealForm L s)
+          = (realForm L).obj.pairing w (toRealForm L s)
+            + δ * (realForm L).obj.pairing d (toRealForm L s) := by
+        intro δ
+        have hseg' := pairing_segment L s w d 1 δ
+        simp
+      rw [haff δ₁] at h₁'
+      rw [haff δ₂] at h₂'
+      have hc : (δ₁ - δ₂) * (realForm L).obj.pairing d (toRealForm L s) = 0 := by
+        linear_combination h₁' - h₂'
+      rcases mul_eq_zero.mp hc with h | h
+      · exact hne (sub_eq_zero.mp h)
+      · rw [h, mul_zero, add_zero] at h₁'
+        exact hRne0 s hs h₁'
+    have hbig : (⋃ s ∈ R, {δ : ℝ |
+        (realForm L).obj.pairing (w + δ • d) (toRealForm L s) = 0}).Finite :=
+      Set.Finite.biUnion hRfin (fun s hs => hinner s hs)
+    refine hbig.subset ?_
+    intro δ hδ
+    obtain ⟨-, s, hs, hzero⟩ := hδ
+    exact Set.mem_iUnion₂.mpr ⟨s, hs, hzero⟩
+  have hF0 : (0:ℝ) ∉ F := by
+    intro hF
+    rw [hFdef] at hF
+    obtain ⟨-, s, hs, hzero⟩ := hF
+    rw [zero_smul, add_zero] at hzero
+    exact hRne0 s hs hzero
+  rcases Set.eq_empty_or_nonempty F with hFempty | hFne
+  · refine ⟨ε₀, hε₀, le_rfl, fun δ hδ s hs hzero => ?_⟩
+    have hmem : δ ∈ F := ⟨hδ, s, hs, hzero⟩
+    rw [hFempty] at hmem
+    exact absurd hmem (by simp)
+  · have : Fintype F := hFfin.fintype
+    obtain ⟨m, hm⟩ := hFne
+    have hne' : (Finset.univ : Finset F).Nonempty := ⟨⟨m, hm⟩, Finset.mem_univ _⟩
+    have hminmem : (((Finset.univ : Finset F).min' hne' : F) : ℝ) ∈ F :=
+      ((Finset.univ : Finset F).min' hne' : F).2
+    have hin := hminmem.1
+    have hminle : ∀ δ ∈ F, (((Finset.univ : Finset F).min' hne' : F) : ℝ) ≤ δ := fun δ hδ =>
+      Finset.min'_le (Finset.univ : Finset F) (x := ⟨δ, hδ⟩) (Finset.mem_univ _)
+    have hmin0 : (0:ℝ) ≤ (((Finset.univ : Finset F).min' hne' : F) : ℝ) := hin.1
+    have hminε₀ : (((Finset.univ : Finset F).min' hne' : F) : ℝ) ≤ ε₀ := hin.2
+    have hminpos : 0 < (((Finset.univ : Finset F).min' hne' : F) : ℝ) := by
+      rcases lt_or_eq_of_le hmin0 with h | h
+      · exact h
+      · rw [← h] at hminmem
+        exact absurd hminmem hF0
+    refine ⟨(((Finset.univ : Finset F).min' hne' : F) : ℝ) / 2, by linarith, by linarith,
+      fun δ hδ s hs hzero => ?_⟩
+    have hmem : δ ∈ F := ⟨⟨hδ.1, hδ.2.trans (by linarith)⟩, s, hs, hzero⟩
+    have hle := hminle δ hmem
+    have hlt : δ < (((Finset.univ : Finset F).min' hne' : F) : ℝ) := by
+      have := hδ.2
+      linarith
+    linarith
+
+/-- The packaging of a short initial ray: sheet membership of its parameters, compactness of
+the segment it cuts, and its description as a ray. -/
+private theorem exists_ray_in_upper {w : (realForm L).obj.carrier}
+    (hw : w ∈ positiveCone.upper (realFormQuadratic L) t) (d : (realForm L).obj.carrier) :
+    ∃ ε₀ > 0, (∀ ρ ∈ Set.Icc (0:ℝ) ε₀, w + ρ • d
+      ∈ positiveCone.upper (realFormQuadratic L) t) ∧
+      IsCompact [w -[ℝ] w + ε₀ • d] ∧ [w -[ℝ] w + ε₀ • d].Nonempty ∧
+      [w -[ℝ] w + ε₀ • d] ⊆ positiveCone.upper (realFormQuadratic L) t ∧
+      ∀ ρ ∈ Set.Icc (0:ℝ) ε₀, w + ρ • d ∈ [w -[ℝ] w + ε₀ • d] := by
+  obtain ⟨ε₀, hε₀, hseg⟩ := exists_segment_upper L t hw d
+  refine ⟨ε₀, hε₀, hseg, ?_, ⟨w, ⟨1, 0, by norm_num, by norm_num, by norm_num, by simp⟩⟩,
+    ?_, ?_⟩
+  · rw [segment_eq_image]
+    exact isCompact_Icc.image (by fun_prop)
+  · rintro z hz
+    obtain ⟨a, b, ha, hb, hab, rfl⟩ := hz
+    have hzmem : a • w + b • (w + ε₀ • d) = w + (b * ε₀) • d := by
+      rw [smul_add, smul_smul, ← add_assoc, ← add_smul, hab, one_smul]
+    rw [hzmem]
+    exact hseg (b * ε₀) ⟨by positivity, by nlinarith⟩
+  · intro ρ hρ
+    have hr : ρ / ε₀ * ε₀ = ρ := by field_simp
+    exact ⟨1 - ρ / ε₀, ρ / ε₀, sub_nonneg.mpr ((div_le_one hε₀).mpr hρ.2),
+      div_nonneg hρ.1 hε₀.le, by
+        have := (div_le_one hε₀).mpr hρ.2
+        linarith, by rw [smul_add, smul_smul, hr, ← add_assoc, ← add_smul, sub_add_cancel,
+          one_smul]⟩
+
+/-- **The root signs are locally constant at a regular point** (Lemma 1, the local finiteness,
+read along a ray): for a regular point `y` of the sheet and any direction `d`, a short initial
+segment of the ray `y + δ • d` stays in the sheet, stays off every mirror, and keeps the sign
+of the pairing with every negative reflective root. Only finitely many mirrors meet the
+compact initial segment (`rootMirror_meet_finite`), and the pairing with a root is affine
+along a segment (`pairing_segment`), so it cannot change sign without vanishing. -/
+theorem exists_segment_sign_eq (hL : L.obj.obj.IsNondegenerate) (h2 : IsRegular (2 : ℤ))
+    (hpos : (integralSignature L).1 = 1) (ht : 0 < realFormQuadratic L t)
+    {I : Type} [Fintype I] [DecidableEq I] (i₀ : I) (b : Module.Basis I ℤ L.obj.obj.carrier)
+    {y : (realForm L).obj.carrier} (hy : y ∈ weylRegularLocus L t)
+    (d : (realForm L).obj.carrier) :
+    ∃ ε > 0, ∀ δ ∈ Set.Ioc (0:ℝ) ε, y + δ • d ∈ weylRegularLocus L t ∧
+      ∀ s ∈ negativeReflectiveRoots L,
+        0 < (realForm L).obj.pairing y (toRealForm L s) *
+          (realForm L).obj.pairing (y + δ • d) (toRealForm L s) := by
+  classical
+  obtain ⟨ε₀, hε₀, hseg, hKcompact, hKne, hKupper, hKray⟩ :=
+    exists_ray_in_upper L t hy.1 d
+  obtain ⟨R, hRfin, hRsub, hRrep⟩ :=
+    exists_finite_rootSet L t hL h2 hpos ht i₀ b hKcompact hKne hKupper
+  have hRne0 : ∀ s ∈ R, (realForm L).obj.pairing y (toRealForm L s) ≠ 0 :=
+    fun s hs => ((mem_weylRegularLocus_iff L t).mp hy).2 s (hRsub hs)
+  obtain ⟨ε, hε, hε₀le, hnonzero⟩ :=
+    exists_segment_nonzero L d hRfin hRne0 ε₀ hε₀
+  refine ⟨ε, hε, fun δ hδ => ⟨⟨hseg δ ⟨hδ.1.le, hδ.2.trans hε₀le⟩, ?_⟩, ?_⟩⟩
+  · intro hmem
+    obtain ⟨r, hr, hrz⟩ := (mem_rootMirrorArrangement_iff L).mp hmem
+    have hmemK : y + δ • d ∈ [y -[ℝ] y + ε₀ • d] := hKray δ ⟨hδ.1.le, hδ.2.trans hε₀le⟩
+    have hmeet : (rootMirror L r ∩ [y -[ℝ] y + ε₀ • d]).Nonempty :=
+      ⟨y + δ • d, (mem_rootMirror_iff L).mpr hrz, hmemK⟩
+    obtain ⟨s', hs'R, hs'mir⟩ := hRrep r hr hmeet
+    have hzz : (realForm L).obj.pairing (y + δ • d) (toRealForm L s') = 0 := by
+      have h1 : y + δ • d ∈ rootMirror L r := (mem_rootMirror_iff L).mpr hrz
+      rw [← hs'mir] at h1
+      exact (mem_rootMirror_iff L).mp h1
+    exact absurd hzz (hnonzero δ ⟨hδ.1.le, hδ.2⟩ s' hs'R)
+  · intro s hs
+    rcases pairing_segment_sign L s y (y + δ • d) with h | h
+    · exact h
+    · obtain ⟨z, hzseg, hzzero⟩ := h
+      obtain ⟨a, c, ha, hc, hac, rfl⟩ := hzseg
+      have hzval : a • y + c • (y + δ • d) = y + (c * δ) • d := by
+        rw [smul_add, smul_smul, ← add_assoc, ← add_smul, hac, one_smul]
+      rw [hzval] at hzzero
+      have hδpos : 0 < δ := hδ.1
+      have hcδ0 : 0 ≤ c * δ := by positivity
+      have hcδδ : c * δ ≤ δ := by
+        have hc1 : c ≤ 1 := by linarith
+        have hmul := mul_le_mul_of_nonneg_right hc1 hδpos.le
+        simpa using hmul
+      rcases eq_or_lt_of_le hcδ0 with hρ0 | hρ0
+      · rw [← hρ0, zero_smul, add_zero] at hzzero
+        exact absurd hzzero (((mem_weylRegularLocus_iff L t).mp hy).2 s hs)
+      · have hρK : c * δ ∈ Set.Icc (0:ℝ) ε₀ :=
+          ⟨hcδ0, (hcδδ.trans hδ.2).trans hε₀le⟩
+        have hmemK : y + (c * δ) • d ∈ [y -[ℝ] y + ε₀ • d] := hKray _ hρK
+        have hmeet : (rootMirror L s ∩ [y -[ℝ] y + ε₀ • d]).Nonempty :=
+          ⟨y + (c * δ) • d, (mem_rootMirror_iff L).mpr hzzero, hmemK⟩
+        obtain ⟨s', hs'R, hs'mir⟩ := hRrep s hs hmeet
+        have hzz : (realForm L).obj.pairing (y + (c * δ) • d) (toRealForm L s') = 0 := by
+          have h1 : y + (c * δ) • d ∈ rootMirror L s := (mem_rootMirror_iff L).mpr hzzero
+          rw [← hs'mir] at h1
+          exact (mem_rootMirror_iff L).mp h1
+        exact absurd hzz (hnonzero (c * δ) ⟨hcδ0, hcδδ.trans hδ.2⟩ s' hs'R)
+
+
+/-- **A mirror containing a mirror equals it**: if the mirror of `v` (the kernel of its root
+functional) is contained in the mirror of `s`, the mirrors coincide — over `ℝ`, a linear
+functional vanishing on the kernel of a nonzero functional is a nonzero multiple of it. -/
+private theorem rootMirror_eq_of_ker_le_ker
+    {v s : L.obj.obj.carrier} (hvn : L.obj.obj.pairing v v < 0)
+    (hsn : L.obj.obj.pairing s s < 0)
+    (hsub : LinearMap.ker (rootFunctional L v) ≤ LinearMap.ker (rootFunctional L s)) :
+    rootMirror L v = rootMirror L s := by
+  have hφv : rootFunctional L v ≠ 0 := rootFunctional_ne_of_neg L v hvn
+  have hφs : rootFunctional L s ≠ 0 := rootFunctional_ne_of_neg L s hsn
+  obtain ⟨w₁, hw₁⟩ : ∃ w₁, rootFunctional L v w₁ ≠ 0 := by
+    by_contra hcon
+    push Not at hcon
+    exact hφv (LinearMap.ext hcon)
+  set w₀ : (realForm L).obj.carrier := (1 / rootFunctional L v w₁) • w₁ with hw₀def
+  have hw₀ : rootFunctional L v w₀ = 1 := by
+    rw [hw₀def, map_smul, smul_eq_mul]
+    field_simp
+  have key : ∀ x : (realForm L).obj.carrier, rootFunctional L s x
+      = rootFunctional L v x * rootFunctional L s w₀ := by
+    intro x
+    have hmem : x - rootFunctional L v x • w₀ ∈ LinearMap.ker (rootFunctional L v) := by
+      simp only [LinearMap.mem_ker, map_sub, map_smul, hw₀, smul_eq_mul, mul_one, sub_self]
+    have hzero := LinearMap.mem_ker.mp (hsub hmem)
+    simp only [map_sub, map_smul, smul_eq_mul] at hzero
+    linarith
+  have hc0 : rootFunctional L s w₀ ≠ 0 := by
+    intro hcon
+    refine hφs (LinearMap.ext fun x => ?_)
+    show rootFunctional L s x = 0
+    rw [key x, hcon, mul_zero]
+  have hiff : ∀ x : (realForm L).obj.carrier,
+      rootFunctional L v x = 0 ↔ rootFunctional L s x = 0 := by
+    intro x
+    constructor
+    · intro h
+      rw [key x, h]
+      ring
+    · intro h
+      have hc : rootFunctional L v x * rootFunctional L s w₀ = 0 := by
+        rw [← key x, h]
+      rcases mul_eq_zero.mp hc with h0 | h0
+      · exact h0
+      · exact absurd h0 hc0
+  ext x
+  rw [mem_rootMirror_iff, mem_rootMirror_iff]
+  exact hiff x
+
+/-- **Every mirror of a negative reflective root is the wall of some chamber** (Davis,
+*The Geometry and Topology of Coxeter Groups*, Princeton, 2008, Theorem 10.1.5 (a), first
+input, p. 179: a wall of a chamber is a mirror carrying a point of the space on no other
+wall): for every negative reflective root `v` there is a regular point `x₀` of the sheet
+whose chamber has `v` as a wall root. The point `z` of the mirror is found by perturbing a
+point of the mirror in the sheet along a direction of the mirror avoiding the finitely many
+kernels of the other mirrors through it (only finitely many mirrors meet the compact segment
+from that point to the sheet point, `rootMirror_meet_finite`; a finite union of proper
+subspaces of the mirror cannot cover it), and `x₀` by perturbing `z` off the mirror along the
+root vector, keeping the signs of every other root (`exists_segment_nonzero`). -/
+theorem exists_isWallRoot (hL : L.obj.obj.IsNondegenerate) (h2 : IsRegular (2 : ℤ))
+    (hpos : (integralSignature L).1 = 1) (ht : 0 < realFormQuadratic L t)
+    {I : Type} [Fintype I] [DecidableEq I] (i₀ : I) (b : Module.Basis I ℤ L.obj.obj.carrier)
+    {v : L.obj.obj.carrier} (hv : v ∈ negativeReflectiveRoots L) :
+    ∃ x₀, x₀ ∈ weylRegularLocus L t ∧ IsWallRoot L t x₀ v := by
+  classical
+  have hsig : sigPos (realFormQuadratic L) = 1 := by
+    rw [realFormQuadratic_sigPos]; exact hpos
+  obtain ⟨hrIsRef, hrn⟩ := (mem_negativeReflectiveRoots_iff L).mp hv
+  -- a point of the mirror in the sheet
+  obtain ⟨z₀, hz₀up, hz₀mir⟩ := exists_mem_rootMirror_inter_upper L t ht hrn
+  have hz₀φ' : (realForm L).obj.pairing z₀ (toRealForm L v) = 0 :=
+    (mem_rootMirror_iff' L).mp hz₀mir
+  -- the mirrors through z₀ are finite: they meet the compact segment to the sheet point
+  have hz₀K₀ : z₀ ∈ [z₀ -[ℝ] t] :=
+    ⟨1, 0, by norm_num, by norm_num, by norm_num, by simp⟩
+  have hK₀compact : IsCompact [z₀ -[ℝ] t] := by
+    rw [segment_eq_image]
+    exact isCompact_Icc.image (by fun_prop)
+  have hK₀ne : [z₀ -[ℝ] t].Nonempty := ⟨z₀, hz₀K₀⟩
+  have htup : t ∈ positiveCone.upper (realFormQuadratic L) t :=
+    ⟨ht, by rw [← realFormPairing_eq_associated L t t, ← realFormQuadratic_apply L t]; exact ht⟩
+  have hK₀upper : [z₀ -[ℝ] t] ⊆ positiveCone.upper (realFormQuadratic L) t :=
+    (convex_upper (realFormQuadratic L) hsig ht).segment_subset hz₀up htup
+  obtain ⟨R₀, hR₀fin, hR₀sub, hR₀rep⟩ :=
+    exists_finite_rootSet L t hL h2 hpos ht i₀ b hK₀compact hK₀ne hK₀upper
+  -- the direction: a vector of the mirror of v avoiding the kernels of the other mirrors
+  -- through z₀
+  set Hv : Submodule ℝ (realForm L).obj.carrier :=
+    LinearMap.ker (rootFunctional L v) with hHv
+  set R' : Set L.obj.obj.carrier := {s ∈ R₀ | rootMirror L s ≠ rootMirror L v} with hR'def
+  have hR'fin : R'.Finite := hR₀fin.subset (fun s hs => hs.1)
+  obtain ⟨u, huHv, hu⟩ : ∃ u : (realForm L).obj.carrier,
+      u ∈ LinearMap.ker (rootFunctional L v) ∧
+      ∀ s ∈ R', (realForm L).obj.pairing u (toRealForm L s) ≠ 0 := by
+    by_contra hcon
+    push Not at hcon
+    have : Fintype R' := hR'fin.fintype
+    have hcover : (⋃ s : {s : L.obj.obj.carrier // s ∈ R'}, (LinearMap.ker
+        ((rootFunctional L (s : L.obj.obj.carrier)).comp
+          (LinearMap.ker (rootFunctional L v)).subtype) : Set Hv)) = Set.univ := by
+      rw [Set.eq_univ_iff_forall]
+      intro w
+      obtain ⟨s, hs, hmem⟩ := hcon (w : (realForm L).obj.carrier) w.2
+      refine Set.mem_iUnion.mpr ⟨⟨s, hs⟩, ?_⟩
+      exact hmem
+    obtain ⟨s, hs⟩ := Subspace.exists_eq_top_of_iUnion_eq_univ hcover
+    have hsn : L.obj.obj.pairing (s : L.obj.obj.carrier) (s : L.obj.obj.carrier) < 0 := by
+      obtain ⟨-, hsn⟩ := hR₀sub s.2.1
+      exact hsn
+    have hvanish : ∀ w ∈ LinearMap.ker (rootFunctional L v),
+        rootFunctional L (s : L.obj.obj.carrier) w = 0 := by
+      intro w hw
+      have hmem : (⟨w, hw⟩ : Hv) ∈ LinearMap.ker
+          ((rootFunctional L (s : L.obj.obj.carrier)).comp
+            (LinearMap.ker (rootFunctional L v)).subtype) := by
+        rw [hs]
+        trivial
+      exact LinearMap.mem_ker.mp hmem
+    have hmir := rootMirror_eq_of_ker_le_ker L hrn hsn
+      (fun w hw => LinearMap.mem_ker.mpr (hvanish w hw))
+    exact s.2.2 hmir.symm
+  -- the first ray: from z₀ along u
+  obtain ⟨ε₀, hε₀, hseg₀, hK₁compact, hK₁ne, hK₁upper, hK₁ray⟩ :=
+    exists_ray_in_upper L t hz₀up u
+  obtain ⟨R₁, hR₁fin, hR₁sub, hR₁rep⟩ :=
+    exists_finite_rootSet L t hL h2 hpos ht i₀ b hK₁compact hK₁ne hK₁upper
+  set R₁' : Set L.obj.obj.carrier :=
+    {s ∈ R₁ | (realForm L).obj.pairing z₀ (toRealForm L s) ≠ 0} with hR₁'def
+  have hR₁'fin : R₁'.Finite := hR₁fin.subset (fun s hs => hs.1)
+  have hR₁'ne0 : ∀ s ∈ R₁',
+      (realForm L).obj.pairing z₀ (toRealForm L s) ≠ 0 := fun s hs => hs.2
+  obtain ⟨ε, hε, hε₀le, hnonzero₁⟩ :=
+    exists_segment_nonzero L u hR₁'fin hR₁'ne0 ε₀ hε₀
+  -- the point of the mirror, in the sheet, on no other mirror
+  obtain ⟨z, hzdef⟩ : ∃ z, z = z₀ + ε • u := ⟨_, rfl⟩
+  have hzup : z ∈ positiveCone.upper (realFormQuadratic L) t := by
+    rw [hzdef]
+    exact hseg₀ ε ⟨hε.le, hε₀le⟩
+  have haff : ∀ s : L.obj.obj.carrier, (realForm L).obj.pairing (z₀ + ε • u) (toRealForm L s)
+      = (realForm L).obj.pairing z₀ (toRealForm L s)
+        + ε * (realForm L).obj.pairing u (toRealForm L s) := by
+    intro s
+    simp
+  have huφ : (realForm L).obj.pairing u (toRealForm L v) = 0 :=
+    LinearMap.mem_ker.mp huHv
+  have hzmir : z ∈ rootMirror L v := by
+    rw [mem_rootMirror_iff', hzdef, haff v, hz₀φ', huφ]
+    ring
+  have hzoff : ∀ s ∈ negativeReflectiveRoots L, rootMirror L s ≠ rootMirror L v →
+      (realForm L).obj.pairing z (toRealForm L s) ≠ 0 := by
+    intro s hs hmir
+    rcases em ((realForm L).obj.pairing z₀ (toRealForm L s) = 0) with hzero | hne
+    · -- the mirror of s passes through z₀: the direction u avoids its kernel
+      have hmeet : (rootMirror L s ∩ [z₀ -[ℝ] t]).Nonempty :=
+        ⟨z₀, (mem_rootMirror_iff' L).mpr hzero, hz₀K₀⟩
+      obtain ⟨s₀, hs₀R, hs₀mir⟩ := hR₀rep s hs hmeet
+      have hu₀ : (realForm L).obj.pairing u (toRealForm L s₀) ≠ 0 :=
+        hu s₀ ⟨hs₀R, by rw [hs₀mir]; exact hmir⟩
+      have hus : (realForm L).obj.pairing u (toRealForm L s) ≠ 0 := by
+        intro hcon
+        have h0 : u ∈ rootMirror L s₀ := by
+          rw [hs₀mir]
+          exact (mem_rootMirror_iff' L).mpr hcon
+        exact hu₀ ((mem_rootMirror_iff' L).mp h0)
+      rw [hzdef, haff s, hzero, zero_add]
+      exact mul_ne_zero (ne_of_gt hε) hus
+    · -- the mirror of s avoids z₀: it is near or far from the first ray
+      by_cases hnear : (rootMirror L s ∩ [z₀ -[ℝ] z₀ + ε₀ • u]).Nonempty
+      · obtain ⟨s₁, hs₁R, hs₁mir⟩ := hR₁rep s hs hnear
+        have hs₁' : s₁ ∈ R₁' := by
+          refine ⟨hs₁R, ?_⟩
+          intro hcon
+          have h0 : z₀ ∈ rootMirror L s₁ := (mem_rootMirror_iff' L).mpr hcon
+          rw [hs₁mir] at h0
+          exact hne ((mem_rootMirror_iff' L).mp h0)
+        have hz₁ := hnonzero₁ ε ⟨hε.le, le_rfl⟩ s₁ hs₁'
+        intro hcon
+        rw [hzdef] at hcon
+        have h0 : z₀ + ε • u ∈ rootMirror L s₁ := by
+          rw [hs₁mir]
+          exact (mem_rootMirror_iff' L).mpr hcon
+        exact hz₁ ((mem_rootMirror_iff' L).mp h0)
+      · have hmemK : z ∈ [z₀ -[ℝ] z₀ + ε₀ • u] := by
+          rw [hzdef]
+          exact hK₁ray ε ⟨hε.le, hε₀le⟩
+        intro hcon
+        exact hnear ⟨z, (mem_rootMirror_iff' L).mpr hcon, hmemK⟩
+  -- the second ray: from z along the root vector
+  have hvq : realFormQuadratic L (toRealForm L v) < 0 := by
+    rw [realFormQuadratic_toRealForm L v]
+    exact_mod_cast hrn
+  obtain ⟨ε₁, hε₁, hseg₁, hK₂compact, hK₂ne, hK₂upper, hK₂ray⟩ :=
+    exists_ray_in_upper L t hzup (toRealForm L v)
+  obtain ⟨R₂, hR₂fin, hR₂sub, hR₂rep⟩ :=
+    exists_finite_rootSet L t hL h2 hpos ht i₀ b hK₂compact hK₂ne hK₂upper
+  set R₂' : Set L.obj.obj.carrier :=
+    {s ∈ R₂ | rootMirror L s ≠ rootMirror L v} with hR₂'def
+  have hR₂'fin : R₂'.Finite := hR₂fin.subset (fun s hs => hs.1)
+  have hR₂'ne0 : ∀ s ∈ R₂',
+      (realForm L).obj.pairing z (toRealForm L s) ≠ 0 := fun s hs =>
+    hzoff s (hR₂sub hs.1) hs.2
+  obtain ⟨ε₂, hε₂, hε₂le, hnonzero₂⟩ :=
+    exists_segment_nonzero L (toRealForm L v) hR₂'fin hR₂'ne0 ε₁ hε₁
+  have haff₂ : ∀ s : L.obj.obj.carrier,
+      (realForm L).obj.pairing (z + ε₂ • (toRealForm L v)) (toRealForm L s)
+      = (realForm L).obj.pairing z (toRealForm L s)
+        + ε₂ * (realForm L).obj.pairing (toRealForm L v) (toRealForm L s) := by
+    intro s
+    simp
+  have hzφpair : (realForm L).obj.pairing z (toRealForm L v) = 0 :=
+    (mem_rootMirror_iff' L).mp hzmir
+  have hQQ : (realForm L).obj.pairing (toRealForm L v) (toRealForm L v)
+      = realFormQuadratic L (toRealForm L v) := (realFormQuadratic_apply L _).symm
+  have hx₀off : ∀ s ∈ negativeReflectiveRoots L,
+      (realForm L).obj.pairing (z + ε₂ • (toRealForm L v)) (toRealForm L s) ≠ 0 := by
+    intro s hsmem
+    rcases em (rootMirror L s = rootMirror L v) with hmir | hmir
+    · intro hcon
+      have h0 : z + ε₂ • (toRealForm L v) ∈ rootMirror L s :=
+        (mem_rootMirror_iff' L).mpr hcon
+      rw [hmir] at h0
+      have h1 := (mem_rootMirror_iff' L).mp h0
+      rw [haff₂ v, hzφpair, hQQ, zero_add] at h1
+      exact absurd h1 (mul_ne_zero (ne_of_gt hε₂) (ne_of_lt hvq))
+    · by_cases hnear : (rootMirror L s ∩ [z -[ℝ] z + ε₁ • (toRealForm L v)]).Nonempty
+      · obtain ⟨s₂, hs₂R, hs₂mir⟩ := hR₂rep s hsmem hnear
+        have hs₂' : s₂ ∈ R₂' := ⟨hs₂R, by rw [hs₂mir]; exact hmir⟩
+        have hz₂ := hnonzero₂ ε₂ ⟨hε₂.le, le_rfl⟩ s₂ hs₂'
+        intro hcon
+        have h0 : z + ε₂ • (toRealForm L v) ∈ rootMirror L s₂ := by
+          rw [hs₂mir]
+          exact (mem_rootMirror_iff' L).mpr hcon
+        exact hz₂ ((mem_rootMirror_iff' L).mp h0)
+      · have hmemK : z + ε₂ • (toRealForm L v) ∈ [z -[ℝ] z + ε₁ • (toRealForm L v)] :=
+          hK₂ray ε₂ ⟨hε₂.le, hε₂le⟩
+        intro hcon
+        exact hnear ⟨z + ε₂ • (toRealForm L v), (mem_rootMirror_iff' L).mpr hcon, hmemK⟩
+  refine ⟨z + ε₂ • (toRealForm L v), ?_, ⟨hv, z, hzup, hzmir, ?_⟩⟩
+  · rw [weylRegularLocus, Set.mem_sdiff]
+    refine ⟨hseg₁ ε₂ ⟨hε₂.le, hε₂le⟩, ?_⟩
+    intro hmem
+    obtain ⟨s, hsmem, hsz⟩ := (mem_rootMirrorArrangement_iff L).mp hmem
+    exact hx₀off s hsmem hsz
+  · intro s hs hmir
+    rcases pairing_segment_sign L s z (z + ε₂ • (toRealForm L v)) with h | h
+    · rw [mul_comm]
+      exact h
+    · obtain ⟨w, hwseg, hwzero⟩ := h
+      obtain ⟨a, c, ha, hc, hac, rfl⟩ := hwseg
+      have hwval : a • z + c • (z + ε₂ • (toRealForm L v))
+          = z + (c * ε₂) • (toRealForm L v) := by
+        rw [smul_add, smul_smul, ← add_assoc, ← add_smul, hac, one_smul]
+      rw [hwval] at hwzero
+      have hcε₂0 : 0 ≤ c * ε₂ := by positivity
+      have hcε₂ : c * ε₂ ≤ ε₂ := by
+        have hc1 : c ≤ 1 := by linarith
+        have hmul := mul_le_mul_of_nonneg_right hc1 hε₂.le
+        simpa using hmul
+      rcases eq_or_lt_of_le hcε₂0 with hρ0 | hρ0
+      · rw [← hρ0, zero_smul, add_zero] at hwzero
+        exact absurd hwzero (hzoff s hs hmir)
+      · have hρK : c * ε₂ ∈ Set.Icc (0:ℝ) ε₁ :=
+          ⟨hcε₂0, hcε₂.trans hε₂le⟩
+        have hmemK : z + (c * ε₂) • (toRealForm L v) ∈
+            [z -[ℝ] z + ε₁ • (toRealForm L v)] := hK₂ray _ hρK
+        have hmeet : (rootMirror L s ∩ [z -[ℝ] z + ε₁ • (toRealForm L v)]).Nonempty :=
+          ⟨z + (c * ε₂) • (toRealForm L v), (mem_rootMirror_iff' L).mpr hwzero, hmemK⟩
+        obtain ⟨s₂, hs₂R, hs₂mir⟩ := hR₂rep s hs hmeet
+        have hs₂' : s₂ ∈ R₂' := ⟨hs₂R, by rw [hs₂mir]; exact hmir⟩
+        have hz₂ := hnonzero₂ (c * ε₂) ⟨hcε₂0, hcε₂⟩ s₂ hs₂'
+        have h0 : z + (c * ε₂) • (toRealForm L v) ∈ rootMirror L s₂ := by
+          rw [hs₂mir]
+          exact (mem_rootMirror_iff' L).mpr hwzero
+        exact absurd ((mem_rootMirror_iff' L).mp h0) hz₂
+
+/-- Same-sign transitivity through a common factor: if `A` has the strict sign of `B` and of
+`C`, then `B` has the strict sign of `C`. -/
+private theorem pos_mul_trans' {A B C : ℝ} (h1 : 0 < A * B) (h2 : 0 < A * C) : 0 < B * C := by
+  rcases mul_pos_iff.mp h1 with ⟨hA, hB⟩ | ⟨hA, hB⟩
+  · rcases mul_pos_iff.mp h2 with ⟨hA', hC⟩ | ⟨hA', hC⟩
+    · exact mul_pos hB hC
+    · exact absurd hA' (not_lt.mpr hA.le)
+  · rcases mul_pos_iff.mp h2 with ⟨hA', hC⟩ | ⟨hA', hC⟩
+    · exact absurd hA' (not_lt.mpr hA.le)
+    · exact mul_pos_of_neg_of_neg hB hC
+
+/-- A convex combination of two positive numbers is positive. -/
+private theorem pos_convex_comb {P Q : ℝ} (hP : 0 < P) (hQ : 0 < Q) {a b : ℝ}
+    (ha : 0 ≤ a) (hb : 0 ≤ b) (hab : a + b = 1) : 0 < a * P + b * Q := by
+  rcases eq_or_lt_of_le ha with rfl | ha'
+  · rw [zero_mul, zero_add]
+    have hb1 : b = 1 := by linarith
+    rw [hb1, one_mul]
+    exact hQ
+  · have h1 : 0 < a * P := mul_pos ha' hP
+    have h2 : 0 ≤ b * Q := mul_nonneg hb hQ.le
+    linarith
+
+/-- A convex combination of two negative numbers is negative. -/
+private theorem neg_convex_comb {P Q : ℝ} (hP : P < 0) (hQ : Q < 0) {a b : ℝ}
+    (ha : 0 ≤ a) (hb : 0 ≤ b) (hab : a + b = 1) : a * P + b * Q < 0 := by
+  have h := pos_convex_comb (neg_pos.mpr hP) (neg_pos.mpr hQ) ha hb hab
+  linarith
+
+/-- **The wall roots of a chamber do not depend on the chamber point**: the strict sign of
+the pairing with every negative reflective root is constant on a chamber
+(`pos_mul_of_mem_chamberOf`), so the wall predicate of one point of the chamber is the wall
+predicate of every point of it. -/
+theorem isWallRoot_of_chamberOf_eq
+    {x x' : (realForm L).obj.carrier} (hx : x ∈ weylRegularLocus L t)
+    (hx' : x' ∈ weylRegularLocus L t) (hcham : chamberOf L t x = chamberOf L t x')
+    {r : L.obj.obj.carrier} :
+    IsWallRoot L t x r ↔ IsWallRoot L t x' r := by
+  have hxmem : x' ∈ chamberOf L t x := by
+    rw [hcham]
+    exact mem_chamberOf L t hx'
+  constructor
+  · rintro ⟨hr, y, hyup, hymir, hsign⟩
+    refine ⟨hr, y, hyup, hymir, ?_⟩
+    intro s hs hne
+    have hxsign : 0 < (realForm L).obj.pairing x (toRealForm L s) *
+        (realForm L).obj.pairing x' (toRealForm L s) :=
+      pos_mul_of_mem_chamberOf L t hx (mem_chamberOf L t hx) hxmem hs
+    exact pos_mul_trans' hxsign (hsign s hs hne)
+  · rintro ⟨hr, y, hyup, hymir, hsign⟩
+    refine ⟨hr, y, hyup, hymir, ?_⟩
+    intro s hs hne
+    have hxsign : 0 < (realForm L).obj.pairing x (toRealForm L s) *
+        (realForm L).obj.pairing x' (toRealForm L s) :=
+      pos_mul_of_mem_chamberOf L t hx (mem_chamberOf L t hx) hxmem hs
+    exact pos_mul_trans' (lt_of_lt_of_eq hxsign
+      (mul_comm ((realForm L).obj.pairing x (toRealForm L s))
+        ((realForm L).obj.pairing x' (toRealForm L s)))) (hsign s hs hne)
+
+/-- Sign transport along a sign-matched pair: if `B` and `B'` have the same strict sign and
+`A` the sign opposite to `B`, then `A` has the sign opposite to `B'`. -/
+private theorem mul_neg_of_mul_neg_of_pos {A B B' : ℝ} (h1 : 0 < B * B')
+    (h2 : A * B < 0) : A * B' < 0 := by
+  rcases mul_pos_iff.mp h1 with ⟨hB, hB'⟩ | ⟨hB, hB'⟩
+  · rcases mul_neg_iff.mp h2 with ⟨hA, hB2⟩ | ⟨hA, -⟩
+    · exact absurd hB2 (not_lt.mpr hB.le)
+    · exact mul_neg_of_neg_of_pos hA hB'
+  · rcases mul_neg_iff.mp h2 with ⟨hA, -⟩ | ⟨-, hB2⟩
+    · exact mul_neg_of_pos_of_neg hA hB'
+    · exact absurd hB2 (not_lt.mpr hB.le)
+
+
+set_option maxHeartbeats 1000000 in
+/-- **A wall of the chamber separates it from any other chamber** (Davis, *The Geometry and
+Topology of Coxeter Groups*, Princeton, 2008, the input of the induction on the separating
+mirrors, Theorem 10.1.5 (a), p. 179): if the chambers of the regular points `x` and `y` of
+the sheet are different — some mirror separates them — then some wall root of the chamber of
+`x` has its mirror among the separating mirrors. The wall root is the mirror crossed first
+by a generic segment from `x` to a point `y'` of the chamber of `y`: the perturbation `y'`
+(a short move of `y` inside its chamber, `exists_segment_sign_eq`, in a direction avoiding
+the finitely many directions that make two separating mirrors crossed at the same parameter
+— a finite union of proper subspaces cannot cover the real form) makes the crossing
+parameters of the finitely many separating mirrors pairwise distinct, so the first crossing
+point lies on one mirror only, and the pairing with every other root keeps the sign it has
+at `x` along the uncrossed part of the segment (the pairing is affine along the segment). -/
+theorem exists_isWallRoot_separating (hL : L.obj.obj.IsNondegenerate)
+    (h2 : IsRegular (2 : ℤ)) (hpos : (integralSignature L).1 = 1)
+    (ht : 0 < realFormQuadratic L t)
+    {I : Type} [Fintype I] [DecidableEq I] (i₀ : I) (b : Module.Basis I ℤ L.obj.obj.carrier)
+    {x y : (realForm L).obj.carrier} (hx : x ∈ weylRegularLocus L t)
+    (hy : y ∈ weylRegularLocus L t)
+    (hne : (mirrorSeparating L x y).Nonempty) :
+    ∃ r, IsWallRoot L t x r ∧
+      (realForm L).obj.pairing x (toRealForm L r) *
+        (realForm L).obj.pairing y (toRealForm L r) < 0 := by
+  classical
+  have hsig : sigPos (realFormQuadratic L) = 1 := by
+    rw [realFormQuadratic_sigPos]; exact hpos
+  have hSepfin : (mirrorSeparating L x y).Finite :=
+    mirrorSeparating_finite L hL h2 hsig t ht x y hx.1 hy.1 i₀ b
+  have : Fintype (mirrorSeparating L x y) := hSepfin.fintype
+  -- one defining root per separating mirror
+  have hchoice : ∀ M ∈ mirrorSeparating L x y, ∃ r ∈ negativeReflectiveRoots L,
+      rootMirror L r = M ∧
+        (realForm L).obj.pairing x (toRealForm L r) *
+          (realForm L).obj.pairing y (toRealForm L r) < 0 := by
+    intro M hM
+    obtain ⟨r, hr, hMmir, hsep⟩ := hM
+    exact ⟨r, hr, hMmir, hsep⟩
+  choose u hu_mem hu_mir hu_sep using hchoice
+  set u' : (mirrorSeparating L x y) → L.obj.obj.carrier := fun M => u M M.2 with hu'def
+  have hu'mem : ∀ M, u' M ∈ negativeReflectiveRoots L := fun M => hu_mem _ M.2
+  have hu'mir : ∀ M, rootMirror L (u' M) = (M : Set (realForm L).obj.carrier) :=
+    fun M => hu_mir _ M.2
+  have hu'sep : ∀ M, (realForm L).obj.pairing x (toRealForm L (u' M)) *
+      (realForm L).obj.pairing y (toRealForm L (u' M)) < 0 := fun M => hu_sep _ M.2
+  -- the shorthand pairings
+  set A : (mirrorSeparating L x y) → ℝ :=
+    fun M => (realForm L).obj.pairing x (toRealForm L (u' M)) with hAdef
+  set Bv : (mirrorSeparating L x y) → ℝ :=
+    fun M => (realForm L).obj.pairing y (toRealForm L (u' M)) with hBdef
+  have hAne : ∀ M, A M ≠ 0 := fun M =>
+    ((mem_weylRegularLocus_iff L t).mp hx).2 (u' M) (hu'mem M)
+  have hBne : ∀ M, Bv M ≠ 0 := fun M =>
+    ((mem_weylRegularLocus_iff L t).mp hy).2 (u' M) (hu'mem M)
+  -- the perturbation direction
+  set P : Type := {q : (mirrorSeparating L x y) × (mirrorSeparating L x y) //
+    rootMirror L (u' q.1) ≠ rootMirror L (u' q.2)} with hPdef
+  have : Fintype P := inferInstance
+  set w : P → (realForm L).obj.carrier := fun p =>
+    (A p.1.1) • (toRealForm L (u' p.1.2)) - (A p.1.2) • (toRealForm L (u' p.1.1)) with hwdef
+  have hwne : ∀ p : P, w p ≠ 0 := by
+    intro p hzero
+    have hkey : toRealForm L (u' p.1.2)
+        = ((A p.1.1)⁻¹ * (A p.1.2)) • toRealForm L (u' p.1.1) := by
+      have h0 : (A p.1.1) • toRealForm L (u' p.1.2) =
+          (A p.1.2) • toRealForm L (u' p.1.1) := sub_eq_zero.mp hzero
+      have h1 := congrArg ((A p.1.1)⁻¹ • ·) h0
+      rw [inv_smul_smul₀ (hAne p.1.1), smul_smul] at h1
+      exact h1
+    have hmirEq : rootMirror L (u' p.1.2) = rootMirror L (u' p.1.1) := by
+      ext z
+      rw [mem_rootMirror_iff', mem_rootMirror_iff', hkey, BilinModuleCat.pairing_smul_right,
+        smul_eq_mul]
+      have hc : (A p.1.1)⁻¹ * (A p.1.2) ≠ 0 :=
+        mul_ne_zero (inv_ne_zero (hAne p.1.1)) (hAne p.1.2)
+      constructor
+      · intro h
+        rcases mul_eq_zero.mp h with h0 | h0
+        · exact absurd h0 hc
+        · exact h0
+      · intro h
+        rw [h, mul_zero]
+    exact p.2 hmirEq.symm
+  obtain ⟨d, hd⟩ : ∃ d : (realForm L).obj.carrier, ∀ p : P,
+      (realForm L).obj.pairing d (w p) ≠ 0 := by
+    by_contra hcon
+    push Not at hcon
+    have hcover : (⋃ p : P, (LinearMap.ker
+        ((realForm L).obj.rightAdjoint (w p)) : Set (realForm L).obj.carrier)) = Set.univ := by
+      rw [Set.eq_univ_iff_forall]
+      intro z
+      obtain ⟨p, hmem⟩ := hcon z
+      refine Set.mem_iUnion.mpr ⟨p, ?_⟩
+      rw [SetLike.mem_coe, LinearMap.mem_ker]
+      exact hmem
+    obtain ⟨p, hp⟩ := Subspace.exists_eq_top_of_iUnion_eq_univ hcover
+    refine hwne p (realFormPairing_eq_zero_of_forall L hL fun z => ?_)
+    have h0 : z ∈ LinearMap.ker ((realForm L).obj.rightAdjoint (w p)) := by
+      rw [hp]
+      trivial
+    exact LinearMap.mem_ker.mp h0
+  -- a short move of y inside its chamber, in the direction d
+  obtain ⟨ε, hε, hgood⟩ := exists_segment_sign_eq L t hL h2 hpos ht i₀ b hy d
+  -- the bad parameters: those making two chosen roots crossed at the same time
+  set C : P → ℝ := fun p =>
+    (A p.1.1) * (Bv p.1.2) - (A p.1.2) * (Bv p.1.1) with hCdef
+  have hbadfin : (Set.range fun p : P => -(C p) / (realForm L).obj.pairing d (w p)).Finite :=
+    Set.finite_range _
+  obtain ⟨δ, hδpos, hδlt, hδbad⟩ : ∃ δ, 0 < δ ∧ δ < ε ∧
+      δ ∉ Set.range fun p : P => -(C p) / (realForm L).obj.pairing d (w p) := by
+    have hinf : (Set.Ioo (0:ℝ) ε).Infinite :=
+      Set.infinite_coe_iff.mp (Set.Ioo.infinite hε)
+    obtain ⟨δ, hδ⟩ := (hinf.sdiff hbadfin).nonempty
+    exact ⟨δ, hδ.1.1, hδ.1.2, hδ.2⟩
+  set y' : (realForm L).obj.carrier := y + δ • d with hy'def
+  have hy'reg : y' ∈ weylRegularLocus L t := (hgood δ ⟨hδpos, hδlt.le⟩).1
+  have hy'sign : ∀ s ∈ negativeReflectiveRoots L,
+      0 < (realForm L).obj.pairing y (toRealForm L s) *
+        (realForm L).obj.pairing y' (toRealForm L s) := fun s hs =>
+    (hgood δ ⟨hδpos, hδlt.le⟩).2 s hs
+  -- the pairings with the perturbed point
+  set A' : (mirrorSeparating L x y) → ℝ :=
+    fun M => (realForm L).obj.pairing y' (toRealForm L (u' M)) with hA'def
+  have haff' : ∀ v : (realForm L).obj.carrier,
+      (realForm L).obj.pairing (y + δ • d) v
+        = (realForm L).obj.pairing y v + δ * (realForm L).obj.pairing d v := by
+    intro v
+    rw [BilinModuleCat.pairing_add_left, BilinModuleCat.pairing_smul_left, smul_eq_mul]
+  have hA'eq : ∀ M : (mirrorSeparating L x y), A' M
+      = Bv M + δ * (realForm L).obj.pairing d (toRealForm L (u' M)) := fun M => haff' _
+  -- the chosen roots still separate the perturbed pair
+  have hsep' : ∀ M : (mirrorSeparating L x y), (A M) * (A' M) < 0 := by
+    intro M
+    exact mul_neg_of_mul_neg_of_pos (hy'sign (u' M) (hu'mem M)) (hu'sep M)
+  -- the crossing parameters of the chosen roots
+  set tp : (mirrorSeparating L x y) → ℝ :=
+    fun M => (A M) / (A M - A' M) with htpdef
+  have htpoo : ∀ M : (mirrorSeparating L x y), tp M ∈ Set.Ioo (0:ℝ) 1 := by
+    intro M
+    have h := hsep' M
+    rw [htpdef]
+    constructor
+    · rcases lt_trichotomy (A M) 0 with hA | hA | hA
+      · have h2 : A M - A' M < 0 := by nlinarith
+        rw [div_pos_iff]
+        exact Or.inr ⟨hA, h2⟩
+      · exact absurd hA (fun hcon => by
+          have := hsep' M
+          rw [hcon, zero_mul] at this
+          linarith)
+      · have h2 : 0 < A M - A' M := by nlinarith
+        rw [div_pos_iff]
+        exact Or.inl ⟨hA, h2⟩
+    · rcases lt_trichotomy (A M) 0 with hA | hA | hA
+      · have hA' : 0 < A' M := by nlinarith
+        have h2 : A M - A' M < 0 := by nlinarith
+        rw [div_lt_one_of_neg h2]
+        linarith
+      · exact absurd hA (fun hcon => by
+          have := hsep' M
+          rw [hcon, zero_mul] at this
+          linarith)
+      · have hA' : A' M < 0 := by nlinarith
+        have h2 : 0 < A M - A' M := by nlinarith
+        rw [div_lt_one h2]
+        linarith
+  -- distinctness of the crossing parameters
+  have htpdistinct : ∀ p : P, tp p.1.1 ≠ tp p.1.2 := by
+    intro p hcon
+    have hDne : (realForm L).obj.pairing d (w p) ≠ 0 := hd p
+    have hkey : (A p.1.1) * (A' p.1.2) - (A p.1.2) * (A' p.1.1) = 0 := by
+      have h1 : A p.1.1 - A' p.1.1 ≠ 0 := by
+        intro hcon2
+        have hAA : A p.1.1 = A' p.1.1 := sub_eq_zero.mp hcon2
+        have hzero := hsep' p.1.1
+        rw [hAA] at hzero
+        nlinarith [sq_nonneg (A p.1.1)]
+      have h2 : A p.1.2 - A' p.1.2 ≠ 0 := by
+        intro hcon2
+        have hAA : A p.1.2 = A' p.1.2 := sub_eq_zero.mp hcon2
+        have hzero := hsep' p.1.2
+        rw [hAA] at hzero
+        nlinarith [sq_nonneg (A p.1.2)]
+      rw [htpdef] at hcon
+      rw [div_eq_div_iff h1 h2] at hcon
+      linear_combination -hcon
+    rw [hA'eq p.1.1, hA'eq p.1.2] at hkey
+    have hval : (C p) + δ * (realForm L).obj.pairing d (w p) = 0 := by
+      have hsubr : ∀ a v₁ v₂ : (realForm L).obj.carrier,
+          (realForm L).obj.pairing a (v₁ - v₂)
+            = (realForm L).obj.pairing a v₁ - (realForm L).obj.pairing a v₂ := by
+        intro a v₁ v₂
+        rw [sub_eq_add_neg, BilinModuleCat.pairing_add_right]
+        have hneg : (realForm L).obj.pairing a (-v₂)
+            = -((realForm L).obj.pairing a v₂) := by
+          rw [← neg_one_smul ℝ v₂, BilinModuleCat.pairing_smul_right, neg_one_smul ℝ]
+        rw [hneg]
+        linarith
+      have hBd : (realForm L).obj.pairing d (w p)
+          = (A p.1.1) * (realForm L).obj.pairing d (toRealForm L (u' p.1.2))
+            - (A p.1.2) * (realForm L).obj.pairing d (toRealForm L (u' p.1.1)) := by
+        rw [hwdef, hsubr, BilinModuleCat.pairing_smul_right, smul_eq_mul,
+          BilinModuleCat.pairing_smul_right, smul_eq_mul]
+      rw [hBd]
+      linear_combination hkey
+    have hδbad' : δ = -(C p) / (realForm L).obj.pairing d (w p) := by
+      field_simp
+      linear_combination hval
+    exact hδbad ⟨p, hδbad'.symm⟩
+  -- the affine identity along the segment, and the crossing parameters
+  have hsegaff : ∀ s : L.obj.obj.carrier, ∀ t : ℝ,
+      (realForm L).obj.pairing ((1 - t) • x + t • y') (toRealForm L s)
+        = (1 - t) * (realForm L).obj.pairing x (toRealForm L s)
+          + t * (realForm L).obj.pairing y' (toRealForm L s) := by
+    intro s t
+    simp
+  have hAne' : ∀ M : (mirrorSeparating L x y), A M - A' M ≠ 0 := by
+    intro M hcon
+    have hAA : A M = A' M := sub_eq_zero.mp hcon
+    have hzero := hsep' M
+    rw [hAA] at hzero
+    nlinarith [sq_nonneg (A M)]
+  have htpzero : ∀ M : (mirrorSeparating L x y),
+      (realForm L).obj.pairing ((1 - tp M) • x + tp M • y') (toRealForm L (u' M)) = 0 := by
+    intro M
+    have hcalc : (1 - tp M) * A M + tp M * A' M
+        = A M - tp M * (A M - A' M) := by ring
+    have htp : tp M = A M / (A M - A' M) := rfl
+    rw [hsegaff, hcalc, htp, div_mul_cancel₀ _ (hAne' M)]
+    ring
+  have honezero : ∀ M : (mirrorSeparating L x y), ∀ t₁ t₂ : ℝ,
+      (realForm L).obj.pairing ((1 - t₁) • x + t₁ • y') (toRealForm L (u' M)) = 0 →
+      (realForm L).obj.pairing ((1 - t₂) • x + t₂ • y') (toRealForm L (u' M)) = 0 →
+      t₁ = t₂ := by
+    intro M t₁ t₂ h₁ h₂
+    rw [hsegaff] at h₁ h₂
+    have hkey : (t₂ - t₁) * (A M - A' M) = 0 := by
+      linear_combination h₁ - h₂
+    rcases mul_eq_zero.mp hkey with h | h
+    · exact sub_eq_zero.mp h |>.symm
+    · exact absurd h (hAne' M)
+  -- the first crossing
+  obtain ⟨M₀sep, hM₀sep⟩ := hne
+  have hSepne : (Finset.univ : Finset (mirrorSeparating L x y)).Nonempty :=
+    ⟨⟨M₀sep, hM₀sep⟩, Finset.mem_univ _⟩
+  have himg : (Finset.image tp Finset.univ).Nonempty :=
+    Finset.image_nonempty.mpr hSepne
+  obtain ⟨M₀, -, ht₀eq⟩ :=
+    Finset.mem_image.mp ((Finset.image tp Finset.univ).min'_mem himg)
+  have ht₀le : ∀ M : (mirrorSeparating L x y), tp M₀ ≤ tp M := by
+    intro M
+    have hle := Finset.min'_le (Finset.image tp Finset.univ) (x := tp M)
+      (Finset.mem_image.mpr ⟨M, Finset.mem_univ M, rfl⟩)
+    rw [← ht₀eq] at hle
+    exact hle
+  -- the first crossing point
+  obtain ⟨z₀, hz₀def⟩ : ∃ z₀ : (realForm L).obj.carrier,
+      z₀ = (1 - tp M₀) • x + tp M₀ • y' := ⟨_, rfl⟩
+  have ht₀pos : 0 < tp M₀ := (htpoo M₀).1
+  have ht₀lt1 : tp M₀ < 1 := (htpoo M₀).2
+  have hz₀up : z₀ ∈ positiveCone.upper (realFormQuadratic L) t := by
+    have hconv : Convex ℝ (positiveCone.upper (realFormQuadratic L) t) :=
+      convex_upper (realFormQuadratic L) hsig ht
+    rw [hz₀def]
+    exact hconv.segment_subset hx.1 hy'reg.1
+      ⟨1 - tp M₀, tp M₀, by linarith, by linarith, by ring, rfl⟩
+  have hz₀mir : z₀ ∈ rootMirror L (u' M₀) := by
+    rw [mem_rootMirror_iff', hz₀def]
+    exact htpzero M₀
+  -- the signs at the first crossing point
+  have hz₀sign : ∀ s ∈ negativeReflectiveRoots L,
+      rootMirror L s ≠ rootMirror L (u' M₀) →
+        0 < (realForm L).obj.pairing x (toRealForm L s) *
+          (realForm L).obj.pairing z₀ (toRealForm L s) := by
+    intro s hs hmir
+    have hsneg : L.obj.obj.pairing s s < 0 := hs.2
+    rcases lt_trichotomy ((realForm L).obj.pairing x (toRealForm L s) *
+        (realForm L).obj.pairing y (toRealForm L s)) 0 with hxy | hxy | hxy
+    · -- s separates x from y: its mirror is a separating mirror whose crossing
+      -- parameter lies strictly beyond the first crossing
+      have hmem : rootMirror L s ∈ mirrorSeparating L x y := ⟨s, hs, rfl, hxy⟩
+      set N : (mirrorSeparating L x y) := ⟨rootMirror L s, hmem⟩ with hNdef
+      have hNmir : rootMirror L (u' N) = rootMirror L s := hu'mir N
+      obtain ⟨-, hNneg⟩ := hu'mem N
+      obtain ⟨c, hc0, hcsmul⟩ := exists_ne_zero_smul_of_rootMirror_eq L hL hNneg hsneg hNmir
+      have htrans : ∀ z : (realForm L).obj.carrier,
+          (realForm L).obj.pairing z (toRealForm L s)
+            = c * (realForm L).obj.pairing z (toRealForm L (u' N)) := by
+        intro z
+        rw [hcsmul, BilinModuleCat.pairing_smul_right, smul_eq_mul]
+      have hNM₀ : rootMirror L (u' N) ≠ rootMirror L (u' M₀) := by
+        rw [hNmir]
+        exact hmir
+      have ht₀lt : tp M₀ < tp N := by
+        have hle := ht₀le N
+        rcases lt_or_eq_of_le hle with h | h
+        · exact h
+        · exact absurd h (fun heq => htpdistinct ⟨(N, M₀), hNM₀⟩ heq.symm)
+      rcases pairing_segment_sign L s x z₀ with h | h
+      · exact h
+      · obtain ⟨w, hwseg, hwzero⟩ := h
+        obtain ⟨a, bb, hbb0, hbb1, habb, rfl⟩ := hwseg
+        rw [show a = 1 - bb from by linarith] at hwzero
+        have hw : (1 - bb) • x + bb • z₀
+            = (1 - bb * tp M₀) • x + (bb * tp M₀) • y' := by
+          rw [hz₀def]
+          module
+        have hzN : (realForm L).obj.pairing ((1 - bb) • x + bb • z₀)
+            (toRealForm L (u' N)) = 0 := by
+          have hz := htrans ((1 - bb) • x + bb • z₀)
+          rw [hwzero] at hz
+          rcases mul_eq_zero.mp hz.symm with h0 | h0
+          · exact absurd h0 hc0
+          · exact h0
+        rw [hw] at hzN
+        have hpar := honezero N (bb * tp M₀) (tp N) hzN (htpzero N)
+        have hbbt₀ : bb * tp M₀ ≤ tp M₀ := by
+          have hbb1' : bb ≤ 1 := by linarith
+          have hmul := mul_le_mul_of_nonneg_right hbb1' ht₀pos.le
+          simpa using hmul
+        rw [hpar] at hbbt₀
+        exact absurd hbbt₀ (by linarith)
+    · -- the product vanishes: one of the points is on the mirror of s, contradicting
+      -- regularity
+      exact absurd hxy (fun hcon => by
+        rcases mul_eq_zero.mp hcon with h0 | h0
+        · exact ((mem_weylRegularLocus_iff L t).mp hx).2 s hs h0
+        · exact ((mem_weylRegularLocus_iff L t).mp hy).2 s hs h0)
+    · -- s does not separate x from y: it does not separate x from y' either, and the
+      -- first crossing point is a convex combination keeping the common sign
+      have hxy' : 0 < (realForm L).obj.pairing x (toRealForm L s) *
+          (realForm L).obj.pairing y' (toRealForm L s) :=
+        pos_mul_trans' (lt_of_lt_of_eq hxy (mul_comm _ _)) (hy'sign s hs)
+      rw [hz₀def, hsegaff s (tp M₀)]
+      rcases mul_pos_iff.mp hxy' with ⟨hp, hq⟩ | ⟨hp, hq⟩
+      · refine mul_pos hp ?_
+        exact pos_convex_comb hp hq (by linarith) (by linarith) (by ring)
+      · exact mul_pos_of_neg_of_neg hp
+          (neg_convex_comb hp hq (by linarith) (by linarith) (by ring))
+  refine ⟨u' M₀, ⟨hu'mem M₀, z₀, hz₀up, hz₀mir, hz₀sign⟩, hu'sep M₀⟩
+
+end WallGeneration
 
 end LeanCategories.Lattices.Valued
