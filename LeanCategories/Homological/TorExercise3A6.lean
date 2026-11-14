@@ -792,6 +792,17 @@ theorem torOne_exists_torKernel {F A : Type} [AddCommGroup F] [AddCommGroup A]
     ∃ (φ : ↥(TorBridge.torOne (ModuleCat.of ℤ A) (ModuleCat.of ℤ B)) →+
         ↥(LinearMap.ker (((LinearMap.ker π).subtype).rTensor B))),
       Function.Injective φ := by
+  classical
+  haveI : Epi (ModuleCat.ofHom π) := (ModuleCat.epi_iff_surjective _).mpr hπ
+  haveI : CategoryTheory.Projective (ModuleCat.of ℤ F) := inferInstance
+  -- the composite element chain: torOne -> kerIncl -> functor-mapped kernelIsoKer -> comm
+  set Bm := ModuleCat.of ℤ B with hBm
+  set ι := (ModuleCat.kernelIsoKer (ModuleCat.ofHom π)).hom with hi
+  set w : ↥(TorBridge.torOne (ModuleCat.of ℤ A) Bm) →
+      TensorProduct ℤ ↥(LinearMap.ker π) B :=
+    fun x => (TensorProduct.comm ℤ ↥Bm ↥(LinearMap.ker (ModuleCat.ofHom π).hom))
+      (((tensorLeft Bm).map ι).hom
+        ((TorArbitrary.torOneIsoKerIncl (ModuleCat.ofHom π) Bm).hom.hom x).1) with hw
   sorry
 
 /-- **Step 2 (the stage descent).**  For an injective relation map `i : K →ₗ F` into a free
