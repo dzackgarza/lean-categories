@@ -15,6 +15,7 @@ public import Mathlib.Topology.Order.IntermediateValue
 public import Mathlib.Geometry.Convex.Cone.Pointed
 public import Mathlib.Geometry.Convex.Cone.Face.Basic
 public import Mathlib.GroupTheory.CosetCover
+public import Mathlib.Algebra.Group.Subgroup.Lattice
 
 /-!
 # Chambers, walls and Coxeter diagrams of a Lorentzian reflection group
@@ -3694,6 +3695,363 @@ theorem mirrorSeparating_reflectIn_ncard_lt (hL : L.obj.obj.IsNondegenerate)
   refine Set.ncard_lt_ncard ⟨hsub, ?_⟩ hfin
   intro hsub'
   exact hout (hsub' hin)
+
+/-- **The reflection group permutes the regular locus**: an element of `W(L)` preserves the
+sheet and permutes the mirrors, so it carries regular points to regular points. This is the
+regularity half of `weylSubgroup_chamberOf_image`, stated for the locus itself. -/
+theorem weylSubgroup_weylRegularLocus_image (hL : L.obj.obj.IsNondegenerate)
+    (h2 : IsRegular (2 : ℤ)) (hpos : (integralSignature L).1 = 1)
+    (ht : 0 < realFormQuadratic L t) {w : OrthogonalGroup L.obj}
+    (hw : w ∈ weylSubgroup L hL h2) :
+    (realFormOrthogonalHom L w) '' weylRegularLocus L t = weylRegularLocus L t := by
+  have hupper : (realFormOrthogonalHom L w) '' positiveCone.upper (realFormQuadratic L) t
+      = positiveCone.upper (realFormQuadratic L) t :=
+    ((mem_positiveConeStabilizer_iff (realFormQuadratic L) hpos ht)
+        (realFormOrthogonalHom L w)).mp
+      (((mem_latticePositiveConeStabilizer_iff L hpos t ht) w).mp
+        (weylSubgroup_le_latticePositiveConeStabilizer L hL h2 hpos ht hw))
+  have hinj : Function.Injective (realFormOrthogonalHom L w) :=
+    ((realFormOrthogonalHom L w :
+      (realForm L).obj.carrier ≃ₗ[ℝ] (realForm L).obj.carrier)).injective
+  rw [weylRegularLocus, Set.image_sdiff hinj, hupper,
+    realFormIsometry_image_rootMirrorArrangement L w]
+
+/-- **The wall roots conjugate along the group** (Davis, Theorem 10.1.5 (a), printed p. 179,
+the input of the generation argument): if `v` is a wall root of the chamber of the image
+`w x` of a point under an element `w` of the reflection group, then the pulled-back root
+`w⁻¹ v` is a wall root of the chamber of `x`. The witness is carried back by `w⁻¹` — an
+element of the reflection group preserves the sheet — the mirrors correspond under the
+isometry, and the sign conditions transport because the pairing is preserved. -/
+theorem isWallRoot_preimage (hL : L.obj.obj.IsNondegenerate) (h2 : IsRegular (2 : ℤ))
+    (hpos : (integralSignature L).1 = 1) (ht : 0 < realFormQuadratic L t)
+    {w : OrthogonalGroup L.obj} (hw : w ∈ weylSubgroup L hL h2)
+    {x : (realForm L).obj.carrier} {v : L.obj.obj.carrier}
+    (h : IsWallRoot L t (realFormOrthogonalHom L w x) v) :
+    IsWallRoot L t x ((w⁻¹ : OrthogonalGroup L.obj).1 v) := by
+  classical
+  obtain ⟨hvmem, y_w, hyup, hymir, hsign⟩ := h
+  have hinvw : (w⁻¹ : OrthogonalGroup L.obj) ∈ weylSubgroup L hL h2 := inv_mem hw
+  have hpres : ∀ g : OrthogonalGroup L.obj, g ∈ weylSubgroup L hL h2 →
+      ∀ z ∈ positiveCone.upper (realFormQuadratic L) t,
+        realFormOrthogonalHom L g z ∈ positiveCone.upper (realFormQuadratic L) t := by
+    intro g hg z hz
+    have himg := ((mem_positiveConeStabilizer_iff (realFormQuadratic L) hpos ht)
+        (realFormOrthogonalHom L g)).mp
+      (((mem_latticePositiveConeStabilizer_iff L hpos t ht) g).mp
+        (weylSubgroup_le_latticePositiveConeStabilizer L hL h2 hpos ht hg))
+    have hmem : realFormOrthogonalHom L g z ∈ (realFormOrthogonalHom L g) ''
+        positiveCone.upper (realFormQuadratic L) t := Set.mem_image_of_mem _ hz
+    rwa [himg] at hmem
+  have hwv : (w.1 : L.obj.obj.carrier → L.obj.obj.carrier)
+      ((w⁻¹ : OrthogonalGroup L.obj).1 v) = v := by
+    have h1 : ((w * w⁻¹ : OrthogonalGroup L.obj).1 :
+        L.obj.obj.carrier → L.obj.obj.carrier) v = v := by
+      rw [mul_inv_cancel]
+      rfl
+    exact h1
+  have hwinv : realFormOrthogonalHom L (w⁻¹ : OrthogonalGroup L.obj) y_w
+      = (realFormOrthogonalHom L w).symm y_w := by
+    rw [map_inv (realFormOrthogonalHom L) w]
+    rfl
+  refine ⟨(image_negativeReflectiveRoots L (w⁻¹ : OrthogonalGroup L.obj)).subset
+      ⟨v, hvmem, rfl⟩, realFormOrthogonalHom L (w⁻¹ : OrthogonalGroup L.obj) y_w,
+    hpres _ hinvw y_w hyup, ?_, ?_⟩
+  · -- the mirror membership of the pulled-back witness
+    have hmir : (realFormOrthogonalHom L w) ''
+        rootMirror L ((w⁻¹ : OrthogonalGroup L.obj).1 v) = rootMirror L v := by
+      rw [realFormIsometry_image_rootMirror L w _, hwv]
+    have hyw' : y_w ∈ (realFormOrthogonalHom L w) ''
+        rootMirror L ((w⁻¹ : OrthogonalGroup L.obj).1 v) := by
+      rw [hmir]
+      exact hymir
+    obtain ⟨m, hm, hmeq⟩ := hyw'
+    rw [hwinv, ← hmeq, QuadraticMap.IsometryEquiv.symm_apply_apply]
+    exact hm
+  · -- the sign conditions
+    intro s hs hne
+    have hs' : (w.1 : L.obj.obj.carrier → L.obj.obj.carrier) s
+        ∈ negativeReflectiveRoots L :=
+      (image_negativeReflectiveRoots L w).subset ⟨s, hs, rfl⟩
+    have hne' : rootMirror L ((w.1 : L.obj.obj.carrier → L.obj.obj.carrier) s)
+        ≠ rootMirror L v := by
+      intro hcon
+      apply hne
+      have e1 : (realFormOrthogonalHom L w) '' rootMirror L s
+          = rootMirror L ((w.1 : L.obj.obj.carrier → L.obj.obj.carrier) s) :=
+        realFormIsometry_image_rootMirror L w s
+      have e2 : (realFormOrthogonalHom L w) ''
+          rootMirror L ((w⁻¹ : OrthogonalGroup L.obj).1 v) = rootMirror L v := by
+        rw [realFormIsometry_image_rootMirror L w _, hwv]
+      rw [← e1, ← e2] at hcon
+      exact Set.image_injective.mpr
+        ((realFormOrthogonalHom L w :
+          (realForm L).obj.carrier ≃ₗ[ℝ] (realForm L).obj.carrier)).injective hcon
+    have h2' := hsign _ hs' hne'
+    -- the two pairing transports
+    have hA : (realForm L).obj.pairing (realFormOrthogonalHom L w x)
+        (toRealForm L ((w.1 : L.obj.obj.carrier → L.obj.obj.carrier) s))
+        = (realForm L).obj.pairing x (toRealForm L s) := by
+      rw [← realFormOrthogonalHom_toRealForm L w s]
+      exact realFormIsometry_pairing L w x (toRealForm L s)
+    have hB : (realForm L).obj.pairing y_w
+        (toRealForm L ((w.1 : L.obj.obj.carrier → L.obj.obj.carrier) s))
+        = (realForm L).obj.pairing
+            (realFormOrthogonalHom L (w⁻¹ : OrthogonalGroup L.obj) y_w)
+            (toRealForm L s) := by
+      rw [← realFormOrthogonalHom_toRealForm L w s]
+      have hiso := realFormIsometry_pairing L w
+        (realFormOrthogonalHom L (w⁻¹ : OrthogonalGroup L.obj) y_w) (toRealForm L s)
+      have hww : realFormOrthogonalHom L w
+          (realFormOrthogonalHom L (w⁻¹ : OrthogonalGroup L.obj) y_w) = y_w := by
+        rw [hwinv]
+        exact QuadraticMap.IsometryEquiv.apply_symm_apply _ y_w
+      rw [hww] at hiso
+      exact hiso
+    rw [← hA, ← hB]
+    exact h2'
+
+/-- The application of a product of real-form homomorphisms: the homomorphism into the
+isometry group of the real form applies products factor by factor. -/
+private theorem realFormOrthogonalHom_mul_apply (a b : OrthogonalGroup L.obj)
+    (z : (realForm L).obj.carrier) :
+    realFormOrthogonalHom L (a * b) z
+      = realFormOrthogonalHom L a (realFormOrthogonalHom L b z) := by
+  rw [map_mul]
+  rfl
+
+/-- **A reflection conjugated by an isometry is the reflection in the pulled-back root**:
+for any lattice isometry `w` and any negative reflective root `a`, the reflection in `a` is
+the conjugate by `w` of the reflection in the pulled-back root `w⁻¹ a` — the real form of
+`conj_reflectIn`, transported through the square theorem and the injectivity of the
+real-form homomorphism. -/
+theorem latticeReflection_eq_conj (hL : L.obj.obj.IsNondegenerate)
+    (h2 : IsRegular (2 : ℤ)) {w : OrthogonalGroup L.obj}
+    {a : L.obj.obj.carrier} (ha : IsReflectiveRoot L.obj a)
+    (han : L.obj.obj.pairing a a < 0) :
+    latticeReflection L hL h2 ha = w * latticeReflection L hL h2
+      (isReflectiveRoot_of_isometry L (w⁻¹ : OrthogonalGroup L.obj) ha) * w⁻¹ := by
+  have ha' : realFormQuadratic L (toRealForm L a) ≠ 0 := by
+    rw [realFormQuadratic_toRealForm L a]
+    exact_mod_cast (ne_of_lt han)
+  have haneg : L.obj.obj.pairing ((w⁻¹ : OrthogonalGroup L.obj).1 a)
+      ((w⁻¹ : OrthogonalGroup L.obj).1 a) < 0 := by
+    rw [isometry_pairing L (w⁻¹ : OrthogonalGroup L.obj) a a]
+    exact han
+  have haneg' : realFormQuadratic L
+      (toRealForm L ((w⁻¹ : OrthogonalGroup L.obj).1 a)) ≠ 0 := by
+    rw [realFormQuadratic_toRealForm L _]
+    exact_mod_cast (ne_of_lt haneg)
+  have hwa : (w.1 : L.obj.obj.carrier → L.obj.obj.carrier)
+      ((w⁻¹ : OrthogonalGroup L.obj).1 a) = a := by
+    have h1 : ((w * w⁻¹ : OrthogonalGroup L.obj).1 :
+      L.obj.obj.carrier → L.obj.obj.carrier) a = a := by
+      rw [mul_inv_cancel]
+      rfl
+    exact h1
+  apply realFormOrthogonalHom_injective L hL
+  rw [map_mul, map_mul, map_inv,
+    realFormOrthogonalHom_latticeReflection L hL h2 ha ha',
+    realFormOrthogonalHom_latticeReflection L hL h2
+      (isReflectiveRoot_of_isometry L (w⁻¹ : OrthogonalGroup L.obj) ha) haneg']
+  -- the pointwise conjugation computation, following `conj_reflectIn`
+  refine DFunLike.ext _ _ (fun z => ?_)
+  have hz : realFormOrthogonalHom L w ((realFormOrthogonalHom L w)⁻¹ z) = z :=
+    QuadraticMap.IsometryEquiv.apply_symm_apply _ z
+  have hB : (QuadraticMap.associated (realFormQuadratic L))
+      ((realFormOrthogonalHom L w)⁻¹ z)
+      (toRealForm L ((w⁻¹ : OrthogonalGroup L.obj).1 a))
+      = (QuadraticMap.associated (realFormQuadratic L)) z (toRealForm L a) := by
+    rw [← realFormOrthogonalHom_toRealForm L (w⁻¹ : OrthogonalGroup L.obj) a,
+      ← map_inv (realFormOrthogonalHom L) w]
+    exact associated_map _ z (toRealForm L a)
+  have hQ : realFormQuadratic L (toRealForm L ((w⁻¹ : OrthogonalGroup L.obj).1 a))
+      = realFormQuadratic L (toRealForm L a) := by
+    rw [← realFormOrthogonalHom_toRealForm L (w⁻¹ : OrthogonalGroup L.obj) a]
+    exact QuadraticMap.IsometryEquiv.map_app _ _
+  have hv : realFormOrthogonalHom L w
+      (toRealForm L ((w⁻¹ : OrthogonalGroup L.obj).1 a)) = toRealForm L a := by
+    rw [realFormOrthogonalHom_toRealForm L w ((w⁻¹ : OrthogonalGroup L.obj).1 a)]
+    exact congrArg (toRealForm L) hwa
+  have hexp : ((realFormOrthogonalHom L w * reflectIn (realFormQuadratic L)
+      (toRealForm L ((w⁻¹ : OrthogonalGroup L.obj).1 a)) haneg' *
+      (realFormOrthogonalHom L w)⁻¹ : (realFormQuadratic L).IsometryEquiv
+      (realFormQuadratic L))) z = realFormOrthogonalHom L w (reflectIn
+      (realFormQuadratic L) (toRealForm L ((w⁻¹ : OrthogonalGroup L.obj).1 a)) haneg'
+      ((realFormOrthogonalHom L w)⁻¹ z)) := rfl
+  rw [hexp, reflectIn_apply, reflectIn_apply, map_sub, map_smul, hz, hQ, hB, hv]
+
+/-- **The subgroup generated by the wall reflections of a chamber** (Davis, Theorem
+10.1.5 (a), printed p. 179: `S` is the set of reflections `s` such that the mirror of `s` is
+a wall of the fundamental chamber): the closure of the lattice reflections in the wall roots
+of the chamber of a point `x₀`. -/
+noncomputable def wallReflectionSubgroup (hL : L.obj.obj.IsNondegenerate)
+    (h2 : IsRegular (2 : ℤ)) (x₀ : (realForm L).obj.carrier) :
+    Subgroup (OrthogonalGroup L.obj) :=
+  Subgroup.closure {g | ∃ r, ∃ hr : IsWallRoot L t x₀ r,
+    latticeReflection L hL h2 ((mem_negativeReflectiveRoots_iff L).mp hr.1).1 = g}
+
+/-- The reflection in a wall root of the chamber of `x₀` lies in the subgroup generated by
+the wall reflections of that chamber. -/
+theorem latticeReflection_mem_wallReflectionSubgroup
+    (hL : L.obj.obj.IsNondegenerate) (h2 : IsRegular (2 : ℤ))
+    {x₀ : (realForm L).obj.carrier} {r : L.obj.obj.carrier} (hr : IsWallRoot L t x₀ r) :
+    latticeReflection L hL h2 ((mem_negativeReflectiveRoots_iff L).mp hr.1).1
+      ∈ wallReflectionSubgroup L t hL h2 x₀ :=
+  Subgroup.subset_closure ⟨r, hr, rfl⟩
+
+/-- The wall-reflection subgroup of a chamber is contained in the reflection group: every
+wall root is a negative reflective root. -/
+theorem wallReflectionSubgroup_le_weylSubgroup (hL : L.obj.obj.IsNondegenerate)
+    (h2 : IsRegular (2 : ℤ)) (x₀ : (realForm L).obj.carrier) :
+    wallReflectionSubgroup L t hL h2 x₀ ≤ weylSubgroup L hL h2 := by
+  have hle : Subgroup.closure {g | ∃ r, ∃ hr : IsWallRoot L t x₀ r,
+      latticeReflection L hL h2 ((mem_negativeReflectiveRoots_iff L).mp hr.1).1 = g}
+      ≤ weylSubgroup L hL h2 :=
+    (Subgroup.closure_le (weylSubgroup L hL h2)).mpr (by
+      rintro g ⟨r, hr, rfl⟩
+      exact Subgroup.subset_closure ⟨r, ((mem_negativeReflectiveRoots_iff L).mp hr.1).1,
+        ((mem_negativeReflectiveRoots_iff L).mp hr.1).2, rfl⟩)
+  exact hle
+
+/-- **The induction on the separating mirrors** (Davis, Theorem 10.1.5 (a), printed p. 179,
+with Lemmas 6.6.4, 6.6.5 and 6.6.7 (i), pp. 89–90): if the moving point `x` is the image of
+the fundamental point `x₀` under an element of the wall-reflection subgroup of the chamber
+of `x₀`, and at most `n` mirrors separate `x` from `y`, then some element of that subgroup
+carries `x` into the chamber of `y`. The step reflects `x` in a wall of its own chamber
+whose mirror separates it from `y` (`exists_isWallRoot_separating`), which lowers the
+separating count (`mirrorSeparating_reflectIn_ncard_lt`); the wall reflection of the moving
+chamber is a conjugate, by the moving element itself, of a wall reflection of the
+fundamental chamber (`latticeReflection_eq_conj` with `isWallRoot_preimage`), so the
+invariant is preserved. -/
+private theorem exists_mem_wallReflectionSubgroup_chamberOf_eq
+    (hL : L.obj.obj.IsNondegenerate) (h2 : IsRegular (2 : ℤ))
+    (hpos : (integralSignature L).1 = 1) (ht : 0 < realFormQuadratic L t)
+    {I : Type} [Fintype I] [DecidableEq I] (i₀ : I) (b : Module.Basis I ℤ L.obj.obj.carrier)
+    {x₀ : (realForm L).obj.carrier}
+    {y : (realForm L).obj.carrier} (hy : y ∈ weylRegularLocus L t)
+    (n : ℕ) : ∀ x : (realForm L).obj.carrier, x ∈ weylRegularLocus L t →
+    (mirrorSeparating L x y).ncard ≤ n →
+    (∃ ψ ∈ wallReflectionSubgroup L t hL h2 x₀,
+      x = realFormOrthogonalHom L ψ x₀) →
+    ∃ w ∈ wallReflectionSubgroup L t hL h2 x₀,
+      chamberOf L t (realFormOrthogonalHom L w x) = chamberOf L t y := by
+  induction n with
+  | zero =>
+    intro x hx hn hinv
+    have hfin : (mirrorSeparating L x y).Finite :=
+      mirrorSeparating_finite L hL h2 (by rw [realFormQuadratic_sigPos]; exact hpos) t ht
+        x y hx.1 hy.1 i₀ b
+    have hempty : mirrorSeparating L x y = ∅ :=
+      (Set.ncard_eq_zero (hs := hfin)).mp (Nat.le_zero.mp hn)
+    refine ⟨1, one_mem _, ?_⟩
+    have hcham : chamberOf L t x = chamberOf L t y :=
+      (chamberOf_eq_iff_mirrorSeparating_eq_empty L t hpos ht hx hy).mpr hempty
+    rw [map_one]
+    exact hcham
+  | succ n ih =>
+    intro x hx hn hinv
+    rcases Set.eq_empty_or_nonempty (mirrorSeparating L x y) with hempty | hne
+    · refine ⟨1, one_mem _, ?_⟩
+      have hcham : chamberOf L t x = chamberOf L t y :=
+        (chamberOf_eq_iff_mirrorSeparating_eq_empty L t hpos ht hx hy).mpr hempty
+      rw [map_one]
+      exact hcham
+    · obtain ⟨r, hr, hsep⟩ := exists_isWallRoot_separating L t hL h2 hpos ht i₀ b hx hy hne
+      have hrcopy := hr
+      obtain ⟨hrmem, -⟩ := hrcopy
+      have hrr := hrmem
+      obtain ⟨hrIsRef, hrn⟩ := hrr
+      set g : OrthogonalGroup L.obj := latticeReflection L hL h2 hrIsRef with hgdef
+      set x' : (realForm L).obj.carrier := realFormOrthogonalHom L g x with hx'def
+      -- the reflected point is regular
+      have hx' : x' ∈ weylRegularLocus L t := by
+        have himg := weylSubgroup_weylRegularLocus_image L t hL h2 hpos ht
+          (Subgroup.subset_closure ⟨r, hrIsRef, hrn, rfl⟩ : g ∈ weylSubgroup L hL h2)
+        have hmem : x' ∈ (realFormOrthogonalHom L g) '' weylRegularLocus L t :=
+          ⟨x, hx, rfl⟩
+        rwa [himg] at hmem
+      -- the separating count drops
+      have hlt := mirrorSeparating_reflectIn_ncard_lt L t hL h2 hpos ht i₀ b hx hy hr hsep
+      have hn' : (mirrorSeparating L x' y).ncard ≤ n :=
+        Nat.lt_succ_iff.mp (hlt.trans_le hn)
+      -- the invariant: the wall reflection of the moving chamber lies in the subgroup
+      obtain ⟨ψ, hψ, hxψ⟩ := hinv
+      have hψW : ψ ∈ weylSubgroup L hL h2 :=
+        (wallReflectionSubgroup_le_weylSubgroup L t hL h2 x₀) hψ
+      have hwallψ : IsWallRoot L t (realFormOrthogonalHom L ψ x₀) r := by
+        rw [← hxψ]
+        exact hr
+      have hw₀ := isWallRoot_preimage L t hL h2 hpos ht hψW hwallψ
+      have hgH : g ∈ wallReflectionSubgroup L t hL h2 x₀ := by
+        rw [hgdef, latticeReflection_eq_conj L hL h2 hrIsRef hrn]
+        exact mul_mem (mul_mem hψ
+          (latticeReflection_mem_wallReflectionSubgroup L t hL h2 hw₀)) (inv_mem hψ)
+      have hinv' : ∃ ψ' ∈ wallReflectionSubgroup L t hL h2 x₀,
+          x' = realFormOrthogonalHom L ψ' x₀ :=
+        ⟨g * ψ, mul_mem hgH hψ, by
+          rw [hx'def, realFormOrthogonalHom_mul_apply L g ψ x₀, hxψ]⟩
+      obtain ⟨w', hw', hwcham⟩ := ih x' hx' hn' hinv'
+      refine ⟨w' * g, mul_mem hw' hgH, ?_⟩
+      rw [realFormOrthogonalHom_mul_apply L w' g x, ← hx'def]
+      exact hwcham
+
+/-- **Transitivity on the chambers** (Davis, *The Geometry and Topology of Coxeter Groups*,
+Princeton, 2008, Theorem 10.1.5 (a) with Lemma 6.6.7 (i) and Lemma 3.2.2, printed p. 179
+and pp. 30–34): for regular points `x₀` and `y` of the chosen sheet, some element of the
+reflection group `W(M)` carries the chamber of `x₀` to the chamber of `y`. The element is
+produced by the induction on the separating mirrors from the wall reflections of the
+chamber of `x₀`. -/
+theorem exists_weylSubgroup_chamberOf_eq (hL : L.obj.obj.IsNondegenerate)
+    (h2 : IsRegular (2 : ℤ)) (hpos : (integralSignature L).1 = 1)
+    (ht : 0 < realFormQuadratic L t)
+    {I : Type} [Fintype I] [DecidableEq I] (i₀ : I) (b : Module.Basis I ℤ L.obj.obj.carrier)
+    {x₀ y : (realForm L).obj.carrier} (hx₀ : x₀ ∈ weylRegularLocus L t)
+    (hy : y ∈ weylRegularLocus L t) :
+    ∃ w ∈ weylSubgroup L hL h2,
+      chamberOf L t (realFormOrthogonalHom L w x₀) = chamberOf L t y := by
+  obtain ⟨w, hw, hcham⟩ :=
+    exists_mem_wallReflectionSubgroup_chamberOf_eq L t hL h2 hpos ht i₀ b hy
+      (mirrorSeparating L x₀ y).ncard x₀ hx₀ le_rfl
+      ⟨1, one_mem _, by rw [map_one (realFormOrthogonalHom L)]; rfl⟩
+  exact ⟨w, (wallReflectionSubgroup_le_weylSubgroup L t hL h2 x₀) hw, hcham⟩
+
+/-- **Generation: the wall reflections of one chamber generate `W(M)`** (Davis, *The
+Geometry and Topology of Coxeter Groups*, Princeton, 2008, Theorem 10.1.5 (a) with Lemma
+3.2.5, printed p. 179 and p. 31): the reflection group of the lattice equals the subgroup
+generated by the reflections in the walls of the chamber of any regular point. The
+inclusion `≥` is that every wall root is a negative reflective root; the inclusion `≤`
+conjugates: for a generator, the reflection in its root, some element of the
+wall-reflection subgroup carries the fundamental chamber to the wall chamber of the root
+(the transitivity induction), and the reflection is then the conjugate of a wall reflection
+of the fundamental chamber (`latticeReflection_eq_conj` with `isWallRoot_preimage`). -/
+theorem weylSubgroup_eq_wallReflectionSubgroup (hL : L.obj.obj.IsNondegenerate)
+    (h2 : IsRegular (2 : ℤ)) (hpos : (integralSignature L).1 = 1)
+    (ht : 0 < realFormQuadratic L t)
+    {I : Type} [Fintype I] [DecidableEq I] (i₀ : I) (b : Module.Basis I ℤ L.obj.obj.carrier)
+    {x₀ : (realForm L).obj.carrier} (hx₀ : x₀ ∈ weylRegularLocus L t) :
+    weylSubgroup L hL h2 = wallReflectionSubgroup L t hL h2 x₀ := by
+  refine le_antisymm ?_ (wallReflectionSubgroup_le_weylSubgroup L t hL h2 x₀)
+  have hgen : weylGenerators L hL h2 ⊆ wallReflectionSubgroup L t hL h2 x₀ := by
+    rintro g ⟨a, ha, han, rfl⟩
+    obtain ⟨x_v, hx_v, hwall⟩ := exists_isWallRoot L t hL h2 hpos ht i₀ b ⟨ha, han⟩
+    obtain ⟨w, hw, hcham⟩ :=
+      exists_mem_wallReflectionSubgroup_chamberOf_eq L t hL h2 hpos ht i₀ b hx_v
+        (mirrorSeparating L x₀ x_v).ncard x₀ hx₀ le_rfl
+        ⟨1, one_mem _, by rw [map_one (realFormOrthogonalHom L)]; rfl⟩
+    have hwW : w ∈ weylSubgroup L hL h2 :=
+      (wallReflectionSubgroup_le_weylSubgroup L t hL h2 x₀) hw
+    have hreg : realFormOrthogonalHom L w x₀ ∈ weylRegularLocus L t := by
+      have himg := weylSubgroup_weylRegularLocus_image L t hL h2 hpos ht hwW
+      have hmem : realFormOrthogonalHom L w x₀ ∈ (realFormOrthogonalHom L w) ''
+          weylRegularLocus L t := ⟨x₀, hx₀, rfl⟩
+      rwa [himg] at hmem
+    have hwall' : IsWallRoot L t (realFormOrthogonalHom L w x₀) a :=
+      (isWallRoot_of_chamberOf_eq L t hreg hx_v hcham).mpr hwall
+    have hw₀ := isWallRoot_preimage L t hL h2 hpos ht hwW hwall'
+    rw [latticeReflection_eq_conj L hL h2 ha han]
+    exact mul_mem (mul_mem hw
+      (latticeReflection_mem_wallReflectionSubgroup L t hL h2 hw₀)) (inv_mem hw)
+  exact (Subgroup.closure_le (wallReflectionSubgroup L t hL h2 x₀)).mpr hgen
 
 end Descent
 
