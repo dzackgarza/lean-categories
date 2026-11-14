@@ -43,21 +43,25 @@ no. 2, Prop. 5, pp. 64–65). Every isometry of the lattice permutes the mirrors
 elements of `W(L)` preserve the sheet, so `W(L)` permutes the chambers (Bourbaki V §3 no. 1,
 p. 77: any displacement of `W` permutes the chambers, facets and walls).
 
-The wall reflections of a chamber generate `W(L)` and `W(L)` acts simply transitively on the
-chambers (Bourbaki V §3 no. 2, Th. 1, p. 78, from Lemma 2 (iii), p. 77, via the local finiteness
-of Lemma 1 from the properness condition (D2), p. 77) are not proved here: in this setting (D2)
-is the discreteness of `O(L)` in `O(L ⊗ ℝ)` — the matrix presentation of
-`TopologicalOrthogonalGroup.lean` — and the Bourbaki chain through local finiteness, the
-closest-point argument of Lemma 2 (i) and the exchange conditions of Ch. IV §1 no. 7 is future
-work. The separation layer of that chain is here: only finitely many mirrors separate two
-points of the sheet (`mirrorSeparating_finite`), and two regular points lie in the same chamber
-exactly when no mirror separates them
+The wall reflections of a chamber generate `W(L)` and `W(L)` acts transitively on the
+chambers: `weylSubgroup_eq_wallReflectionSubgroup` and `exists_weylSubgroup_chamberOf_eq`
+(Davis, *The Geometry and Topology of Coxeter Groups*, 2008, Theorem 10.1.5 (a), printed
+p. 179, with Lemmas 6.6.4, 6.6.5, 6.6.7 (i), pp. 89–90, and §3.2 Lemmas 3.2.2, 3.2.5,
+pp. 30–34), by the induction on the number of separating mirrors: every mirror of a
+negative reflective root is the wall of some chamber (`exists_isWallRoot`), for two regular
+points in different chambers some wall root of the first chamber separates them
+(`exists_isWallRoot_separating`), and the reflection in that wall strictly lowers the
+separating count (`mirrorSeparating_reflectIn_ncard_lt`). The separation layer underneath:
+only finitely many mirrors separate two points of the sheet (`mirrorSeparating_finite`), and
+two regular points lie in the same chamber exactly when no mirror separates them
 (`chamberOf_eq_iff_mirrorSeparating_eq_empty`). The half-space layer is here as well: the
 sheet is open (`isOpen_positiveCone_upper`), the side of a mirror in the sheet is convex and
 is the connected component of the sheet minus the mirror
 (`connectedComponentIn_mirrorComplement`), a mirror meeting the sheet has points of the sheet
 on both of its sides (`mirror_two_sides_nonempty`), and `pairing_reflectIn` is the identity on
-the real-form pairing that replaces the Euclidean distance step of Lemma 2 (i).
+the real-form pairing that replaces the Euclidean distance step of Lemma 2 (i). The simple
+transitivity (uniqueness of the carrying element, Bourbaki V §3 no. 2, Th. 1 (ii)) is not
+proved here.
 
 ## References
 
@@ -65,6 +69,10 @@ the real-form pairing that replaces the Euclidean distance step of Lemma 2 (i).
   (pp. 76–84), Springer, 2002.
 * E. B. Vinberg, *The groups of units of certain quadratic forms*, Mat. Sb. 87 (1972), §1:
   the chambers of the reflection group of a lattice in the positive cone.
+* M. W. Davis, *The Geometry and Topology of Coxeter Groups*, Princeton, 2008, Theorem
+  10.1.5 (a), p. 179, with Lemmas 6.6.4, 6.6.5, 6.6.7 (i), pp. 89–90, and §3.2, Lemmas
+  3.2.2, 3.2.5, pp. 30–34: the wall reflections of a chamber generate the reflection group
+  and carry it transitively over the chambers.
 -/
 
 @[expose] public section
