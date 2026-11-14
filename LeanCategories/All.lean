@@ -253,6 +253,9 @@ public import LeanCategories.Homological.TorStages
 public import LeanCategories.Homological.TorFreeResolution
 public import LeanCategories.Homological.TorFGTorsion
 public import LeanCategories.Homological.TorTorsionClass
+public import LeanCategories.Homological.TorBridge
+public import LeanCategories.Homological.CyclicTor
+public import LeanCategories.Homological.TorExercise3A6
 public import LeanCategories.Homological.SimplexChains
 public import LeanCategories.Homological.ChainLevelSteps
 public import LeanCategories.Homological.SkeletonHomology
