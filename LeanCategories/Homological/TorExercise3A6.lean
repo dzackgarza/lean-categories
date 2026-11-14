@@ -792,7 +792,7 @@ theorem nsmul_eq_zero_of_nsmul_map_eq_zero {M N1 : Type*} [AddCommGroup M] [AddC
 in bijection with the kernel of the right-tensored syzygy inclusion: the injective map of
 `torOne_exists_torKernel`, now with the reverse chain of isomorphisms supplied, so that orders
 transfer in both directions and an element of the kernel is the image of an element of `Tor1`. -/
-noncomputable def torOne_torKernel_addEquiv {F A : Type} [AddCommGroup F] [AddCommGroup A]
+noncomputable def torOneTorKernelAddEquiv {F A : Type} [AddCommGroup F] [AddCommGroup A]
     [Module.Free ℤ F] (π : F →ₗ[ℤ] A)
     (hπ : Function.Surjective π) (B : Type) [AddCommGroup B] :
     ↥(TorBridge.torOne (ModuleCat.of ℤ A) (ModuleCat.of ℤ B)) ≃+
@@ -941,17 +941,17 @@ noncomputable def torOne_torKernel_addEquiv {F A : Type} [AddCommGroup F] [AddCo
 /-- **Step 1 (the presentation bridge).**  For a surjection `π : F →ₗ A` from a free module,
 every element of `Tor1(A, B)` is carried by an injective additive map into the kernel of the
 right-tensored syzygy inclusion `(ker π) ⊗ B → F ⊗ B`: the additive form of
-`torOne_torKernel_addEquiv`. -/
+`torOneTorKernelAddEquiv`. -/
 theorem torOne_exists_torKernel {F A : Type} [AddCommGroup F] [AddCommGroup A]
     [Module.Free ℤ F] (π : F →ₗ[ℤ] A)
     (hπ : Function.Surjective π) (B : Type) [AddCommGroup B] :
     ∃ (φ : ↥(TorBridge.torOne (ModuleCat.of ℤ A) (ModuleCat.of ℤ B)) →+
         ↥(LinearMap.ker (((LinearMap.ker π).subtype).rTensor B))),
       Function.Injective φ := by
-  refine ⟨{ toFun := (torOne_torKernel_addEquiv (B := B) π hπ).toFun
-            map_zero' := (torOne_torKernel_addEquiv (B := B) π hπ).map_zero
-            map_add' := fun x y => (torOne_torKernel_addEquiv (B := B) π hπ).map_add x y }, ?_⟩
-  exact (torOne_torKernel_addEquiv (B := B) π hπ).injective
+  refine ⟨{ toFun := (torOneTorKernelAddEquiv (B := B) π hπ).toFun
+            map_zero' := (torOneTorKernelAddEquiv (B := B) π hπ).map_zero
+            map_add' := fun x y => (torOneTorKernelAddEquiv (B := B) π hπ).map_add x y }, ?_⟩
+  exact (torOneTorKernelAddEquiv (B := B) π hπ).injective
 
 /-- **Step 2 (the stage descent).**  For an injective relation map `i : K →ₗ F` into a free
 module with basis `b`, every element of `ker (i ⊗ B)` comes from an element of the kernel of
@@ -1236,7 +1236,7 @@ core `torOne_prime_pow_iff` is proved by the two halves below.
   (they lie in the tensored syzygy kernel by `kerTmul_mem_ker`).  `ℤ z` is *pure* in the
   syzygy, so the quotient is torsion-free, hence flat, and `ℤ z ⊗ B → ker (pres A) ⊗ B` is
   injective: `z ⊗ b` is nonzero of order exactly `p ^ k`, and the order transports to `Tor1`
-  along the bijection `torOne_torKernel_addEquiv`.
+  along the bijection `torOneTorKernelAddEquiv`.
 * The `→` half (`exists_addOrderOf_of_torOne`) descends an element of `Tor1` to a finitely
   generated stage of the universal presentation (`TorStages.exists_stage_of_free`), puts the
   stage's relation map in Smith normal form, and reads the order off the coordinates: a
@@ -1640,7 +1640,7 @@ theorem exists_torOne_of_addOrderOf {p k : ℕ} (hp : p.Prime) (_hk : 0 < k)
       (((LinearMap.ker (pres A)).subtype).rTensor B)) e).symm.trans ?_
     rw [heq]
     exact heordval
-  refine ⟨(torOne_torKernel_addEquiv (B := B) (pres A) (pres_surjective A)).symm e, ?_⟩
+  refine ⟨(torOneTorKernelAddEquiv (B := B) (pres A) (pres_surjective A)).symm e, ?_⟩
   rw [AddEquiv.addOrderOf_eq]
   exact heord
 
@@ -1680,7 +1680,7 @@ theorem exists_addOrderOf_of_torOne {p k : ℕ} (hp : p.Prime) (hk : 0 < k)
     rw [h0, addOrderOf_zero] at hx
     exact hpk1.ne' hx.symm
   -- the kernel element of the universal presentation
-  set φ := torOne_torKernel_addEquiv (B := B) (pres A) (pres_surjective A) with hφ
+  set φ := torOneTorKernelAddEquiv (B := B) (pres A) (pres_surjective A) with hφ
   set e := φ x with he
   have heord : addOrderOf e = p ^ k := by rw [he, AddEquiv.addOrderOf_eq, hx]
   have hene : e ≠ 0 := by
