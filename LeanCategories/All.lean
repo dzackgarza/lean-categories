@@ -135,6 +135,7 @@ public import LeanCategories.Algebra.MatrixFamilies
 public import LeanCategories.Algebra.MatrixIndecomposable
 public import LeanCategories.Algebra.QuadraticGaussSum
 public import LeanCategories.AlgebraicGeometry.HessianSingular
+public import LeanCategories.AlgebraicGeometry.TenNodalStratumClosure
 public import LeanCategories.Analytic.LocalModel
 public import LeanCategories.Algebra.MonoidAlgebra
 public import LeanCategories.Algebra.PureSubmodule
