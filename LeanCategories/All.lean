@@ -480,4 +480,27 @@ public import LeanCategories.CategoryTheory.Sites.Limits
 public import LeanCategories.CategoryTheory.Sites.Whiskering
 public import LeanCategories.LinearAlgebra.DirectSum.Finsupp
 
+-- The ported tree of relative `Proj` (lean-categories#22); see
+-- `LeanCategories/AlgebraicGeometry/RelativeProj/Basic.lean` for provenance.
+public import LeanCategories.Algebra.Category.ModuleCat.Monoidal.GradedRing
+public import LeanCategories.Algebra.DirectSum.Internal
+public import LeanCategories.Algebra.Module.LocalizedModule.DirectSum
+public import LeanCategories.AlgebraicGeometry.AffineScheme
+public import LeanCategories.AlgebraicGeometry.Modules.AffineGlobalSections
+public import LeanCategories.AlgebraicGeometry.Modules.GradedAlgebra.Localization
+public import LeanCategories.AlgebraicGeometry.Modules.GradedAlgebra.Sections
+public import LeanCategories.AlgebraicGeometry.Modules.Quasicoherent.Colimits
+public import LeanCategories.AlgebraicGeometry.ProjectiveSpectrum.BaseChange
+public import LeanCategories.AlgebraicGeometry.ProjectiveSpectrum.Basic
+public import LeanCategories.AlgebraicGeometry.RelativeProj.Affine
+public import LeanCategories.AlgebraicGeometry.RelativeProj.Basic
+public import LeanCategories.CategoryTheory.EqToHom
+public import LeanCategories.CategoryTheory.GradedObject.MonObj
+public import LeanCategories.RingTheory.GradedAlgebra.DirectSum
+public import LeanCategories.RingTheory.GradedAlgebra.Homogeneous.Maps
+public import LeanCategories.RingTheory.GradedAlgebra.HomogeneousLocalization.BaseChange
+public import LeanCategories.RingTheory.GradedAlgebra.HomogeneousLocalization.Basic
+public import LeanCategories.RingTheory.Localization.TensorProduct
+public import LeanCategories.RingTheory.Localization.Tower
+
 @[expose] public section
