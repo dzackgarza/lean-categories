@@ -1849,6 +1849,33 @@ theorem torOne_prime_pow_iff {A B : Type} [AddCommGroup A] [AddCommGroup B]
   ⟨exists_addOrderOf_of_torOne hp hk,
     fun ⟨⟨_, ha⟩, ⟨_, hb⟩⟩ => exists_torOne_of_addOrderOf hp hk ha hb⟩
 
+/-- **Hatcher, *Algebraic Topology* (2002), §3.A Exercise 6, printed p. 267, second
+statement (#155).**  For all abelian groups `A` and `B` and every positive `n`,
+`Tor1(A, B)` has an element of order `n` if and only if both `A` and `B` have one:
+both directions assemble from the prime-power core `torOne_prime_pow_iff` through the coprime
+order law `addOrderOf_add_eq_mul_addOrderOf_of_coprime` and the scaling law `addOrderOf_nsmul'`. -/
+theorem torOne_exists_addOrderOf_iff {A B : Type} [AddCommGroup A] [AddCommGroup B] {n : ℕ}
+    (hn : 0 < n) :
+    (∃ x : TorBridge.torOne (ModuleCat.of ℤ A) (ModuleCat.of ℤ B), addOrderOf x = n) ↔
+    (∃ a : A, addOrderOf a = n) ∧ (∃ b : B, addOrderOf b = n) := by
+  constructor
+  · intro h
+    have hpp : ∀ p : ℕ, p.Prime → ∀ k : ℕ, 0 < k → p ^ k ∣ n →
+        (∃ a : A, addOrderOf a = p ^ k) ∧ (∃ b : B, addOrderOf b = p ^ k) := by
+      intro p hp' k hk hdvd
+      obtain ⟨y, hy⟩ := h
+      obtain ⟨y', hy'⟩ := exists_addOrderOf_of_dvd_addOrderOf hn hdvd y hy
+      exact (torOne_prime_pow_iff hp' hk).mp ⟨y', hy'⟩
+    exact ⟨exists_addOrderOf_of_forall_prime_pow hn fun p hp' k hk hdvd =>
+      (hpp p hp' k hk hdvd).1,
+      exists_addOrderOf_of_forall_prime_pow hn fun p hp' k hk hdvd =>
+      (hpp p hp' k hk hdvd).2⟩
+  · rintro ⟨⟨a, ha⟩, b, hb⟩
+    refine exists_addOrderOf_of_forall_prime_pow hn fun p hp' k hk hdvd => ?_
+    obtain ⟨a', ha'⟩ := exists_addOrderOf_of_dvd_addOrderOf hn hdvd a ha
+    obtain ⟨b', hb'⟩ := exists_addOrderOf_of_dvd_addOrderOf hn hdvd b hb
+    exact (torOne_prime_pow_iff hp' hk).mpr ⟨⟨a', ha'⟩, b', hb'⟩
+
 end Hatcher3A6Order
 end Hatcher3A6Torsion
 end LeanCategories.Homological.TorExercise3A6
