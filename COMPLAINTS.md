@@ -2569,3 +2569,35 @@ downstream assertions, computational observations, or downstream diagnostics.
   provenance. The hand-authored `IsRationalPolyhedral` formulation that could not close
   the gap is deleted and replaced by the ported `IsLatticeRational`; the Finsupp-to-
   Fintype sum bridge this entry had sought is not needed by the reference proof.
+
+### `faceBarycenterCoordinates` is `Fin (n + 1)`-indexed, so the subdivision recursion restates it at general `N` (2026-11-14, #141)
+
+- **Need:** the barycentre of a face of the standard simplex as a weight vector, for a face
+  `F : Finset (Fin N)` at a *general* `N`. The ported certificate of card `E-HAT-2.1-25`
+  (`LeanCategories/Topology/BarySubdiv.lean`) states Hatcher's recursion `subdiv`, its full
+  coefficient formula and the sign identity on chains of faces of the standard `(N - 1)`-simplex
+  at an arbitrary `N`, `N = 0` included.
+- **Evidence:** the repository's owner of exactly this formula is
+  `LeanCategories.Topology.faceBarycenterCoordinates`
+  (`LeanCategories/Topology/BarycentricSubdivision.lean`),
+  `def faceBarycenterCoordinates {n : ℕ} (F : Finset (Fin (n + 1))) : Fin (n + 1) → ℝ`, with the
+  two facts `faceBarycenterCoordinates_nonneg` and `sum_faceBarycenterCoordinates_eq_one`
+  (`LeanCategories/Topology/BarycentricSubdivisionChainData.lean`). Its index type is
+  `Fin (n + 1)`, so its use at a general `N` needs `N` syntactically of the form `n + 1`; the
+  recursion does not have that form. Mathlib owns no barycentric coordinates on a face of the
+  standard simplex: the LC-09 queries are recorded in the ported module's docstring.
+- **Gap and impact:** the recursion and its coefficients cannot use the existing owner, and the
+  affected consumers are exactly the ported statements of card `E-HAT-2.1-25` that mention a
+  barycentre. Worked around, not repaired: `BarySubdiv.baryWeight : Finset (Fin N) → Fin N → ℝ`
+  restates the formula at general `N`, and `baryWeight_mem` restates the owner's two facts as the
+  single membership in `stdSimplex ℝ (Fin N)`.
+- **Coverage:** read `LeanCategories/Topology/BarycentricSubdivision.lean` and
+  `LeanCategories/Topology/BarycentricSubdivisionChainData.lean` in full; searched Mathlib for
+  barycentric coordinates of a simplex face (`element barycentric`, `stdSimplex`,
+  `Face/Basic` for cones) — nothing. Confidence high; what remains uninspected is whether a
+  second consumer at general `N` appears, which would make the generalization urgent.
+- **Repair link:** the optimal repair is the general-`N` form at the owner,
+  `def faceBarycenterCoordinates {N : ℕ} (F : Finset (Fin N)) : Fin N → ℝ`, its `Fin (n + 1)`
+  statements obtained by specialization; when it exists, `BarySubdiv.baryWeight` and
+  `baryWeight_mem` are deleted and `BarySubdiv` uses the owner. Tracked as
+  `-- TODO(LC-12)` at `baryWeight`.

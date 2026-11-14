@@ -40,6 +40,8 @@ public import LeanCategories.CategoryTheory.PointSetDerived
 public import LeanCategories.CategoryTheory.GrothendieckTopos
 public import LeanCategories.CategoryTheory.FreeModuleMonadAlgebra
 public import LeanCategories.Topology.BipointedTop
+public import LeanCategories.Topology.BarySign
+public import LeanCategories.Topology.BarySubdiv
 public import LeanCategories.Topology.MooreSpaceExactness
 public import LeanCategories.Topology.IntervalWedge
 public import LeanCategories.Topology.SingularRealization
@@ -95,6 +97,7 @@ public import LeanCategories.Algebra.SubgroupFiniteness
 public import LeanCategories.Analysis.NormExtension
 public import LeanCategories.Analysis.SecondNormEquivalence
 public import LeanCategories.Algebra.FieldHomework1
+public import LeanCategories.Algebra.CH8DirectProduct
 public import LeanCategories.Algebra.FamilyQuotient
 public import LeanCategories.Algebra.LensDegree
 public import LeanCategories.Algebra.GroupGeneration
