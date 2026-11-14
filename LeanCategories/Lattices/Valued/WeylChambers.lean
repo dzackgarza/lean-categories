@@ -2066,4 +2066,141 @@ theorem reflectIn_smul {V : Type u} [AddCommGroup V] [Module ℝ V] (Q : Quadrat
   rw [← hcoef, ← smul_assoc, smul_eq_mul]
 end MirrorSides
 
+/-! ## The wall layer of Bourbaki V §1 nos. 1–4 for the open sheet (md 2387–2421)
+
+The nondegeneracy transfer from the lattice to its real form, and the consequences that the
+wall theory of the reflection group needs: a negative reflective root is determined up to a
+real scalar by its mirror, two roots with the same mirror have the same lattice reflection
+(the uniqueness of the reflection with a given wall, the hypothesis under which Bourbaki V
+§3 no. 1, md 2738–2740, indexes the displacements `s_H` by the hyperplanes `H`), and every
+mirror of a negative reflective root meets the open sheet `M` (Bourbaki V §1 no. 4, Prop. 8,
+md 2406–2408, needs each wall to carry points of the space; in the sheet, the witness is the
+component of the chosen point `t` off the root, `spatialPart`).
+
+**LC-09 search record** (this section; queries on `scripts/formalization_corpus.py` and
+Mathlib): `Gram matrix invertible nondegenerate lattice`, `Module.Basis.baseChange Gram det
+ne zero` (0 hits), `BilinForm tensor base change nondegenerate separating`,
+`nondegenerate base change real form` (nearest neighbour TauCeti
+`LinearAlgebra/BilinearForm/BaseChange.lean`, header only, no matching declaration shown),
+`rootMirror eq rootMirror reflection eq` (0 hits), `spatialPart orthogonal complement
+positive cone` (0 hits), `mirror meets positive cone sheet` (nearest neighbour atlas-lean
+statistical mechanics, different mathematics). The Mathlib-style identifier queries
+`Matrix.eq_zero_of_mulVec_eq_zero`, `Matrix.exists_mulVec_eq_zero_iff`,
+`Matrix.separatingRight_iff_det_ne_zero` are the imported hits
+(`Mathlib.LinearAlgebra.Matrix.Nondegenerate`, `Mathlib.LinearAlgebra.Matrix.ToLinearEquiv`);
+the rest of the layer is this repository's own. -/
+
+section WallLayer
+
+/-- **The Gram determinant of a nondegenerate lattice is nonzero**: over the domain `ℤ`, a
+zero determinant gives a nonzero integer coordinate vector in the kernel of the Gram matrix
+(`Matrix.exists_mulVec_eq_zero_iff`), hence a nonzero lattice vector pairing to zero with
+every basis vector, hence with every vector (`pairing_eq_zero_of_basis`), contradicting
+nondegeneracy through the injectivity of the adjoint. This is the input that carries
+nondegeneracy from the lattice to its real form: the real Gram determinant is the image of
+the integral one (`determinant_baseChangeIntegral`). -/
+theorem lattice_determinant_ne_zero (hL : L.obj.obj.IsNondegenerate)
+    {I : Type} [Fintype I] [DecidableEq I] (b : Module.Basis I ℤ L.obj.obj.carrier) :
+    determinant L.obj b ≠ 0 := by
+  intro hdet
+  unfold determinant at hdet
+  obtain ⟨v, hv0, hv⟩ :=
+    (Matrix.exists_mulVec_eq_zero_iff (M := gramMatrix L.obj b)).mpr hdet
+  set u : L.obj.obj.carrier := b.equivFun.symm v with hu
+  have hpu : ∀ j, L.obj.obj.bilinMap (b j) u
+      = (gramMatrix L.obj b).mulVec v j := by
+    intro j
+    have hexp : L.obj.obj.bilinMap (b j) (b.equivFun.symm v)
+        = ∑ i, v i * L.obj.obj.pairing (b j) (b i) := by
+      rw [Module.Basis.equivFun_symm_apply, map_sum]
+      refine Finset.sum_congr rfl fun i _ => ?_
+      rw [BilinModuleCat.bilinMap_apply, BilinModuleCat.pairing_smul_right]
+      simp
+    rw [hu, hexp, Matrix.mulVec_apply_eq_sum]
+    refine Finset.sum_congr rfl fun i _ => ?_
+    rw [gramMatrix, LinearMap.BilinForm.toMatrix_apply, BilinModuleCat.bilinMap_apply,
+      mul_comm]
+  have hzero : ∀ y, L.obj.obj.pairing u y = 0 := by
+    refine pairing_eq_zero_of_basis L b fun j => ?_
+    have hsymm : L.obj.obj.pairing u (b j) = L.obj.obj.pairing (b j) u :=
+      L.obj.property.2 u (b j)
+    rw [hsymm, ← BilinModuleCat.bilinMap_apply, hpu j, hv]
+    rfl
+  have hbadj : L.obj.obj.adjoint u = 0 := by
+    ext y
+    exact hzero y
+  have hu0 : u = 0 :=
+    (BilinModuleCat.isNondegenerate_iff_adjoint_injective_of_isSymmetric
+      L.obj.obj L.obj.property.2).mp hL (by rw [hbadj, map_zero])
+  apply hv0
+  have hv1 : v = b.equivFun u := by
+    rw [hu]
+    exact (b.equivFun.apply_symm_apply v).symm
+  rw [hv1, hu0, map_zero]
+
+/-- **The real form of a nondegenerate lattice is right-nondegenerate**: a vector of the real
+form pairing to zero with every vector of the real form is zero. The coordinates of the
+vector in the base-changed basis lie in the kernel of the real Gram matrix, whose
+determinant is the image of the nonzero integral determinant
+(`determinant_baseChangeIntegral`), hence nonzero, and a matrix of nonzero determinant over
+`ℝ` has no nonzero kernel vector (`Matrix.eq_zero_of_mulVec_eq_zero`). This transfer of
+nondegeneracy along `ℤ → ℝ` is what makes the mirror of a root determine the root's line,
+the uniqueness half of the wall-reflection dictionary of Bourbaki V §3 no. 1 (md 2738–2740,
+the displacements `s_H` indexed by the hyperplanes). -/
+theorem realFormPairing_eq_zero_of_forall (hL : L.obj.obj.IsNondegenerate)
+    {w : (realForm L).obj.carrier}
+    (hw : ∀ x : (realForm L).obj.carrier,
+      ((baseChangeIntegral ℤ ℝ).obj L.obj).obj.pairing x w = 0) :
+    w = 0 := by
+  classical
+  set d := (baseChangeBasis ℝ L.obj (carrierFinBasis L)).equivFun w with hd
+  have hdet : (gramMatrix ((baseChangeIntegral ℤ ℝ).obj L.obj)
+      (baseChangeBasis ℝ L.obj (carrierFinBasis L))).det ≠ 0 := by
+    rw [show (gramMatrix ((baseChangeIntegral ℤ ℝ).obj L.obj)
+        (baseChangeBasis ℝ L.obj (carrierFinBasis L))).det
+        = determinant ((baseChangeIntegral ℤ ℝ).obj L.obj)
+          (baseChangeBasis ℝ L.obj (carrierFinBasis L)) from rfl,
+      determinant_baseChangeIntegral ℝ L.obj (carrierFinBasis L)]
+    exact fun hc => lattice_determinant_ne_zero L hL (carrierFinBasis L) (by
+      rw [algebraMap_int_eq] at hc
+      exact Int.cast_eq_zero.mp hc)
+  have hexp : ∀ j, ((baseChangeIntegral ℤ ℝ).obj L.obj).obj.bilinMap
+        (baseChangeBasis ℝ L.obj (carrierFinBasis L) j) w
+      = ∑ i, d i * ((baseChangeIntegral ℤ ℝ).obj L.obj).obj.pairing
+          (baseChangeBasis ℝ L.obj (carrierFinBasis L) j)
+          (baseChangeBasis ℝ L.obj (carrierFinBasis L) i) := by
+    intro j
+    rw [← Module.Basis.sum_equivFun (baseChangeBasis ℝ L.obj (carrierFinBasis L)) w,
+      ← hd, map_sum]
+    refine Finset.sum_congr rfl fun i _ => ?_
+    rw [BilinModuleCat.bilinMap_apply, BilinModuleCat.pairing_smul_right]
+    simp
+  have hker : ∀ j, (gramMatrix ((baseChangeIntegral ℤ ℝ).obj L.obj)
+      (baseChangeBasis ℝ L.obj (carrierFinBasis L))).mulVec d j = 0 := by
+    intro j
+    calc (gramMatrix ((baseChangeIntegral ℤ ℝ).obj L.obj)
+          (baseChangeBasis ℝ L.obj (carrierFinBasis L))).mulVec d j
+        = ∑ i, (gramMatrix ((baseChangeIntegral ℤ ℝ).obj L.obj)
+            (baseChangeBasis ℝ L.obj (carrierFinBasis L))) j i * d i :=
+          Matrix.mulVec_apply_eq_sum _ d j
+      _ = ∑ i, d i * ((baseChangeIntegral ℤ ℝ).obj L.obj).obj.pairing
+            (baseChangeBasis ℝ L.obj (carrierFinBasis L) j)
+            (baseChangeBasis ℝ L.obj (carrierFinBasis L) i) := by
+          refine Finset.sum_congr rfl fun i _ => ?_
+          rw [gramMatrix, LinearMap.BilinForm.toMatrix_apply,
+            BilinModuleCat.bilinMap_apply, mul_comm]
+      _ = ((baseChangeIntegral ℤ ℝ).obj L.obj).obj.bilinMap
+            (baseChangeBasis ℝ L.obj (carrierFinBasis L) j) w :=
+          (hexp j).symm
+      _ = 0 := hw (baseChangeBasis ℝ L.obj (carrierFinBasis L) j)
+  have hd0 : d = 0 :=
+    Matrix.eq_zero_of_mulVec_eq_zero hdet (funext fun j => hker j)
+  rw [← Module.Basis.sum_equivFun (baseChangeBasis ℝ L.obj (carrierFinBasis L)) w,
+    ← hd, hd0]
+  exact Finset.sum_eq_zero fun x _ => by
+    rw [Pi.zero_apply, zero_smul]
+    rfl
+
+end WallLayer
+
 end LeanCategories.Lattices.Valued
