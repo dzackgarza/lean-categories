@@ -891,7 +891,44 @@ theorem exists_fg_stage {F K B : Type} [AddCommGroup F] [AddCommGroup K] [AddCom
       (t : ↥(LinearMap.ker (((LinearMap.range i ⊓ F').subtype).rTensor B))),
       (((LinearEquiv.ofInjective i hi).symm.toLinearMap.comp
         (Submodule.inclusion inf_le_left)).rTensor B) t.1 = w := by
-  sorry
+  classical
+  obtain ⟨F', hF', ρ, hρ, t₀, hta, htb⟩ :=
+    TorStages.exists_stage_of_free (K := K) b i hw
+  -- the repackage map: `comap i F' → range i ⊓ F'`, `k ↦ i k`
+  set g : ↥(Submodule.comap i F') →ₗ[ℤ] ↥(LinearMap.range i ⊓ F') :=
+    LinearMap.codRestrict (LinearMap.range i ⊓ F') (i.comp (Submodule.comap i F').subtype)
+      (fun k => Submodule.mem_inf.mpr ⟨⟨k.1, rfl⟩, k.2⟩) with hg
+  -- it commutes with the submodules' inclusions into `F`
+  have hsub : ((LinearMap.range i ⊓ F').subtype).comp g
+      = i.comp (Submodule.comap i F').subtype := by
+    ext k
+    rfl
+  -- and the stage inclusion followed by the range splitting is the identity on `comap i F'`
+  have hge : ((LinearEquiv.ofInjective i hi).symm.toLinearMap.comp
+      (Submodule.inclusion inf_le_left)).comp g
+      = (Submodule.comap i F').subtype := by
+    ext k
+    simp only [LinearMap.comp_apply]
+    have h1 : (Submodule.inclusion inf_le_left) (g k)
+        = (LinearEquiv.ofInjective i hi) k.1 := by
+      apply Subtype.ext
+      rfl
+    rw [h1]
+    exact LinearEquiv.symm_apply_apply _ _
+  refine ⟨F', hF', ⟨(LinearMap.rTensor B g) t₀, ?_⟩, ?_⟩
+  · refine LinearMap.mem_ker.mpr ?_
+    have hcomp : (LinearMap.rTensor B ((LinearMap.range i ⊓ F').subtype)).comp
+        (LinearMap.rTensor B g)
+        = (LinearMap.rTensor B i).comp
+          (LinearMap.rTensor B (Submodule.comap i F').subtype) := by
+      rw [← LinearMap.rTensor_comp, ← LinearMap.rTensor_comp, hsub]
+    rw [← LinearMap.comp_apply, hcomp, LinearMap.comp_apply, hta, hw]
+  · have hcomp2 : (LinearMap.rTensor B ((LinearEquiv.ofInjective i hi).symm.toLinearMap.comp
+        (Submodule.inclusion inf_le_left))).comp (LinearMap.rTensor B g)
+        = LinearMap.rTensor B (Submodule.comap i F').subtype := by
+      rw [← LinearMap.rTensor_comp, hge]
+    rw [← LinearMap.comp_apply, hcomp2]
+    exact hta
 
 /-- **Step 3 (the finitely generated stage).**  For a finitely generated submodule `F'` of a
 free module and any relation submodule `R`, every element of
