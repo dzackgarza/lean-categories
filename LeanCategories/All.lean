@@ -374,6 +374,7 @@ public import LeanCategories.Lattices.Valued.IsotropicQuotientSignature
 public import LeanCategories.Lattices.Valued.WeylCone
 public import LeanCategories.Lattices.Valued.WeylChambers
 public import LeanCategories.Lattices.Valued.VinbergE10Roots
+public import LeanCategories.Lattices.Valued.VinbergE10Chamber
 public import LeanCategories.Lattices.Valued.CobleCuspLattice
 
 @[expose] public section
