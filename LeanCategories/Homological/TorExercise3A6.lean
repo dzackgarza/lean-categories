@@ -1149,5 +1149,77 @@ theorem isAddTorsion_torOne {A B : Type} [AddCommGroup A] [AddCommGroup B] :
   refine hφinj ?_
   rw [map_zsmul φ, h3, map_zero]
 
+/-! ## Hatcher §3.A Exercise 6, second statement (#155): elements of order `n`
+
+`Tor1(A, B)` has an element of order `n` if and only if both `A` and `B` have one.  Both
+directions reduce to prime powers `p ^ k` (the assembling direction by
+`exists_addOrderOf_of_forall_prime_pow`, the extracting direction by
+`exists_addOrderOf_of_dvd_addOrderOf`, as in the `PrimePow` section above); the
+prime-power core `torOne_prime_pow_iff` is the remaining obligation.  Its `←` half starts
+from the two construction lemmas below: for `a : A` and `b : B` of order `p ^ k`, the
+element `(p ^ k • Finsupp.single a 1) ⊗ b` lies in the kernel of the right-tensed syzygy
+inclusion (it exchanges to `Finsupp.single a 1 ⊗ (p ^ k • b) = 0`), and is killed by
+`p ^ k`; the exactness `p ^ (k - 1) • ((p ^ k • ã) ⊗ b) ≠ 0` and the transport along the
+Step 1 bridge are what remains. -/
+
+section Hatcher3A6Order
+
+/-- **The lift's multiple lies in the kernel (#155, `←` half).**  If `n • a = 0` then
+`n • Finsupp.single a 1` lies in `ker (pres A)`, since `pres` is linear and sends the
+singleton to `a`. -/
+theorem smul_single_mem_ker {A : Type} [AddCommGroup A] {n : ℤ} {a : A} (ha : n • a = 0) :
+    n • Finsupp.single a 1 ∈ LinearMap.ker (pres A) := by
+  rw [LinearMap.mem_ker, map_zsmul]
+  show n • (presHom A) (Finsupp.single a 1) = 0
+  rw [presHom_single]
+  exact ha
+
+/-- **The tensor kernel element (#155, `←` half).**  If `n • a = 0` and `n • b = 0` then
+`(n • Finsupp.single a 1) ⊗ b` lies in the kernel of the right-tensed syzygy inclusion:
+its image exchanges to `Finsupp.single a 1 ⊗ (n • b) = 0`. -/
+theorem kerTmul_mem_ker {A B : Type} [AddCommGroup A] [AddCommGroup B] {n : ℤ}
+    {a : A} (ha : n • a = 0) {b : B} (hb : n • b = 0) :
+    ((⟨n • Finsupp.single a 1, smul_single_mem_ker ha⟩ :
+        ↥(LinearMap.ker (pres A))) ⊗ₜ[ℤ] b)
+      ∈ LinearMap.ker (((LinearMap.ker (pres A)).subtype).rTensor B) := by
+  rw [LinearMap.mem_ker, LinearMap.rTensor_tmul]
+  show (n • Finsupp.single a 1) ⊗ₜ[ℤ] b = 0
+  rw [TensorProduct.smul_tmul, hb, TensorProduct.tmul_zero]
+
+/-- **The prime-power core of the order statement (#155).**  `Tor1(A, B)` has an element
+of order `p ^ k` if and only if both `A` and `B` have one. -/
+theorem torOne_prime_pow_iff {A B : Type} [AddCommGroup A] [AddCommGroup B]
+    {p k : ℕ} (hp : p.Prime) (hk : 0 < k) :
+    (∃ x : TorBridge.torOne (ModuleCat.of ℤ A) (ModuleCat.of ℤ B), addOrderOf x = p ^ k) ↔
+    (∃ a : A, addOrderOf a = p ^ k) ∧ (∃ b : B, addOrderOf b = p ^ k) := by
+  sorry
+
+/-- **Hatcher, *Algebraic Topology* (2002), §3.A Exercise 6, printed p. 267, second
+statement (#155).**  For all abelian groups `A` and `B` and every positive `n`,
+`Tor1(A, B)` has an element of order `n` if and only if both `A` and `B` have one:
+both directions assemble from the prime-power core through the coprime order law. -/
+theorem torOne_exists_addOrderOf_iff {A B : Type} [AddCommGroup A] [AddCommGroup B] {n : ℕ}
+    (hn : 0 < n) :
+    (∃ x : TorBridge.torOne (ModuleCat.of ℤ A) (ModuleCat.of ℤ B), addOrderOf x = n) ↔
+    (∃ a : A, addOrderOf a = n) ∧ (∃ b : B, addOrderOf b = n) := by
+  constructor
+  · intro h
+    have hpp : ∀ p : ℕ, p.Prime → ∀ k : ℕ, 0 < k → p ^ k ∣ n →
+        (∃ a : A, addOrderOf a = p ^ k) ∧ (∃ b : B, addOrderOf b = p ^ k) := by
+      intro p hp' k hk hdvd
+      obtain ⟨y, hy⟩ := h
+      obtain ⟨y', hy'⟩ := exists_addOrderOf_of_dvd_addOrderOf hn hdvd y hy
+      exact (torOne_prime_pow_iff hp' hk).mp ⟨y', hy'⟩
+    exact ⟨exists_addOrderOf_of_forall_prime_pow hn fun p hp' k hk hdvd =>
+      (hpp p hp' k hk hdvd).1,
+      exists_addOrderOf_of_forall_prime_pow hn fun p hp' k hk hdvd =>
+      (hpp p hp' k hk hdvd).2⟩
+  · rintro ⟨⟨a, ha⟩, b, hb⟩
+    refine exists_addOrderOf_of_forall_prime_pow hn fun p hp' k hk hdvd => ?_
+    obtain ⟨a', ha'⟩ := exists_addOrderOf_of_dvd_addOrderOf hn hdvd a ha
+    obtain ⟨b', hb'⟩ := exists_addOrderOf_of_dvd_addOrderOf hn hdvd b hb
+    exact (torOne_prime_pow_iff hp' hk).mpr ⟨⟨a', ha'⟩, b', hb'⟩
+
+end Hatcher3A6Order
 end Hatcher3A6Torsion
 end LeanCategories.Homological.TorExercise3A6
