@@ -1,0 +1,61 @@
+/-
+Copyright (c) 2026 The Tau Ceti contributors. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: The Tau Ceti contributors
+-/
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Generator
+public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Monoidal
+public import Mathlib.CategoryTheory.Abelian.Subobject
+public import Mathlib.CategoryTheory.Adjunction.AdjointFunctorTheorems
+
+/-!
+# The closed monoidal category of presheaves of modules
+
+## Provenance (lean-categories#22)
+
+Ported from `TauCeti/Algebra/Category/ModuleCat/Presheaf/MonoidalClosed.lean` (The Tau Ceti contributors, Apache 2.0), commit
+`ca32605ff53921fa0689dd312618b7cfaafa7e43`, namespaces renamed `TauCeti` →
+`LeanCategories`. The unit's provenance and search record is in
+`LeanCategories/AlgebraicGeometry/RelativeSpec/Basic.lean`.
+
+
+Let `R₀` be a presheaf of commutative rings on a small category. This file makes presheaves of
+`R₀`-modules into a closed monoidal category. Tensoring presheaves of modules preserves small
+colimits, and the free modules on representables form a small separating family, so the special
+adjoint functor theorem gives a right adjoint to tensoring by each presheaf of modules.
+
+## Main declarations
+
+* `LeanCategories.PresheafOfModules.monoidalClosed` gives the closed structure on presheaves of modules
+  over a presheaf of commutative rings.
+-/
+
+public section
+
+open CategoryTheory Limits MonoidalCategory
+
+namespace LeanCategories
+
+universe u
+
+noncomputable section
+
+namespace PresheafOfModules
+
+variable {C : Type u} [SmallCategory C] (R₀ : Cᵒᵖ ⥤ CommRingCat.{u})
+
+/-- The closed monoidal structure on presheaves of modules over a presheaf of commutative rings.
+Its internal Hom is the right adjoint supplied by the special adjoint functor theorem. -/
+instance monoidalClosed : MonoidalClosed (PresheafOfModulesOfCommRing.{u} R₀) where
+  closed M :=
+    haveI := isLeftAdjoint_of_preservesColimits_of_isSeparating.{u}
+      (_root_.PresheafOfModules.freeYoneda.isSeparating (R₀ ⋙ forget₂ _ RingCat)) (tensorLeft M)
+    .mk _ (Adjunction.ofIsLeftAdjoint (tensorLeft M))
+
+end PresheafOfModules
+
+end
+
+end LeanCategories

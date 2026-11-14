@@ -1,0 +1,125 @@
+/-
+Copyright (c) 2026 The Tau Ceti contributors. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: The Tau Ceti contributors
+-/
+module
+
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
+public import Mathlib.CategoryTheory.Monoidal.Closed.Braided
+
+/-!
+# Precomposing an internal Hom with an isomorphism, an epimorphism, an equality or zero
+
+## Provenance (lean-categories#22)
+
+Ported from `TauCeti/CategoryTheory/Monoidal/Closed/Basic.lean` (The Tau Ceti contributors, Apache 2.0), commit
+`ca32605ff53921fa0689dd312618b7cfaafa7e43`, namespaces renamed `TauCeti` →
+`LeanCategories`. The unit's provenance and search record is in
+`LeanCategories/AlgebraicGeometry/RelativeSpec/Basic.lean`.
+
+
+`MonoidalClosed.pre_isIso` states that precomposition by an isomorphism of objects is an
+isomorphism of internal Hom functors, and `MonoidalClosed.mono_pre_app` that, in a braided
+closed monoidal category, precomposition by an epimorphism is a monomorphism of internal
+Homs: `[-, X]` is contravariant and turns epimorphisms into monomorphisms.
+
+Use `MonoidalClosed.pre_isIso` when an isomorphism of source objects identifies the two internal
+Hom functors appearing in a comparison, so that invertibility, or any other isomorphism-level
+property, can be read across that identification.  For instance it is how
+the invertibility of one internal-Hom comparison is transported to an isomorphic source object
+in `CategoryTheory.Functor.ihomComparison_isIso_of_iso`.  It is Mathlib's isomorphism instance
+`CategoryTheory.conjugateEquiv_iso` specialized to `MonoidalClosed.pre`.
+
+## Main declarations
+
+* `MonoidalClosed.pre_isIso`;
+* `MonoidalClosed.mono_pre_app`;
+* `MonoidalClosed.pre_eqToHom_app`: precomposition with the transport along an equality of
+  objects is the transport along the induced equality of internal Homs.
+* `MonoidalClosed.pre_app_zero`: in a braided closed monoidal category with zero morphisms,
+  precomposition with a zero morphism is zero, so internal Hom into a fixed object preserves zero
+  morphisms in its first variable (`MonoidalClosed.preservesZeroMorphisms_internalHom_flip_obj`).
+  No zero object is needed.
+-/
+
+public section
+
+namespace CategoryTheory
+
+open Category Limits MonoidalCategory
+
+universe v u
+
+variable {C : Type u} [Category.{v} C] [MonoidalCategory C]
+
+/-- Precomposition with an isomorphism, as a natural transformation between internal Hom
+functors, is an isomorphism. -/
+theorem MonoidalClosed.pre_isIso {A B : C} (e : A ≅ B) [Closed A] [Closed B] :
+    IsIso (MonoidalClosed.pre e.hom) := by
+  -- `pre` is the mate of the left tensoring along `e.hom` under the two tensor--Hom
+  -- adjunctions, and tensoring on the left takes an isomorphism of objects to an isomorphism
+  -- of functors, so the mate is invertible.
+  have hα : IsIso ((tensoringLeft C).map e.hom) := by
+    rw [NatTrans.isIso_iff_isIso_app]
+    intro Z
+    exact MonoidalCategory.whiskerRight_isIso e.hom Z
+  unfold MonoidalClosed.pre
+  exact @conjugateEquiv_iso _ _ _ _ _ _ _ _ (ihom.adjunction _) (ihom.adjunction _)
+    ((tensoringLeft C).map e.hom) hα
+
+/-- In a braided closed monoidal category, precomposition of internal Homs with an epimorphism
+`f : B ⟶ A` is a monomorphism `(A ⟶[C] X) ⟶ (B ⟶[C] X)`. -/
+instance MonoidalClosed.mono_pre_app [BraidedCategory C] [MonoidalClosed C] {A B : C}
+    (f : B ⟶ A) [Epi f] (X : C) : Mono ((MonoidalClosed.pre f).app X) where
+  right_cancellation {Z} g h hgh := by
+    -- Uncurrying turns precomposition with `f` into whiskering by `f`, which is an epimorphism:
+    -- it is conjugate under the braiding to `Z ◁ f`, and tensoring on the left preserves
+    -- colimits in a closed monoidal category.
+    have hf : Epi (f ▷ Z) := by
+      rw [(Iso.eq_comp_inv _).mpr (BraidedCategory.braiding_naturality_left f Z)]
+      have : Epi (Z ◁ f) := (tensorLeft Z).map_epi f
+      infer_instance
+    apply MonoidalClosed.uncurry_injective
+    have e := congrArg MonoidalClosed.uncurry hgh
+    rw [MonoidalClosed.uncurry_pre_app, MonoidalClosed.uncurry_pre_app] at e
+    exact (cancel_epi _).1 e
+
+/-- Precomposition with the morphism `eqToHom h` induced by an equality of objects `h : A = B` is,
+at each object `X`, the transport along the induced equality of internal Homs into `X`. -/
+@[simp]
+theorem MonoidalClosed.pre_eqToHom_app [MonoidalClosed C] {A B : C} (h : A = B) (X : C) :
+    (MonoidalClosed.pre (eqToHom h)).app X =
+      eqToHom (congrArg (fun A : C ↦ (ihom A).obj X) h.symm) := by
+  subst h
+  simp only [eqToHom_refl, MonoidalClosed.pre_id, NatTrans.id_app]
+
+section Zero
+
+variable [HasZeroMorphisms C] [BraidedCategory C] [MonoidalClosed C]
+
+/-- In a braided closed monoidal category with zero morphisms, precomposition of internal Homs
+with a zero morphism is zero. -/
+@[simp]
+theorem MonoidalClosed.pre_app_zero {A B : C} (X : C) :
+    (MonoidalClosed.pre (0 : B ⟶ A)).app X = 0 := by
+  -- Uncurrying turns precomposition with `0` into whiskering by `0` followed by evaluation.
+  -- Tensoring on either side is a left adjoint in a braided closed category, so it preserves
+  -- zero morphisms and both whiskerings by `0` vanish.
+  apply MonoidalClosed.uncurry_injective
+  have hr : (0 : B ⟶ A) ▷ (A ⟶[C] X) = 0 := by
+    simpa using (tensorRight (A ⟶[C] X)).map_zero B A
+  have hl : B ◁ (0 : (A ⟶[C] X) ⟶ (B ⟶[C] X)) = 0 := by
+    simpa using (tensorLeft B).map_zero (A ⟶[C] X) (B ⟶[C] X)
+  rw [MonoidalClosed.uncurry_pre, MonoidalClosed.uncurry_eq, hr, hl, zero_comp, zero_comp]
+
+/-- Internal Hom into a fixed object preserves zero morphisms in its first variable. -/
+instance MonoidalClosed.preservesZeroMorphisms_internalHom_flip_obj (X : C) :
+    (MonoidalClosed.internalHom.flip.obj X).PreservesZeroMorphisms where
+  map_zero A B := by
+    rw [Functor.flip_obj_map, MonoidalClosed.internalHom_map, unop_zero]
+    exact MonoidalClosed.pre_app_zero X
+
+end Zero
+
+end CategoryTheory

@@ -38,6 +38,46 @@ does not justify weakening a dependent theorem or starting unrelated work.
 
 ## Mathematical issues
 
+### Mathlib has no symmetric monoidal structure on `SheafOfModules` and no `O_X`-algebra layer
+
+- **Need:** lean-categories#22 needs the category of quasi-coherent commutative `O_X`-algebras on an
+  arbitrary scheme `X`, whose objects are commutative monoid objects in `Scheme.Modules` whose
+  underlying sheaf of modules is quasi-coherent, and relative Spec as an anti-equivalence from that
+  category to affine schemes over `X` (Definition 36.5; Stacks 01LL, 01LQ; Hartshorne II.5 and II
+  Ex. 5.17).
+- **Evidence:** Mathlib at `7692d7fbbf9cad52d465b18742a9838e5d0c84c5` provides
+  `SheafOfModules` (`Mathlib/Algebra/Category/ModuleCat/Sheaf.lean`), `Scheme.Modules`
+  (`Mathlib/AlgebraicGeometry/Modules/Sheaf.lean`), `SheafOfModules.IsQuasicoherent`
+  (`Mathlib/Algebra/Category/ModuleCat/Sheaf/Quasicoherent.lean`), the tilde model and
+  `tildeEquiv` (`Mathlib/AlgebraicGeometry/Modules/Tilde.lean`), `IsAffineHom`
+  (`Mathlib/AlgebraicGeometry/Morphisms/Affine.lean`) and — decisively — the relative gluing of
+  schemes over the small affine Zariski site
+  (`Mathlib/AlgebraicGeometry/Sites/SmallAffineZariski.lean`: `AffineZariskiSite`,
+  `relativeGluingData`, `Scheme.Cover.RelativeGluingData`, `directedCover`, `Coquifibered`).
+  It does not provide a monoidal structure on `SheafOfModules` (its monoidal structure stops at
+  presheaves of modules, `Mathlib/Algebra/Category/ModuleCat/Presheaf/Monoidal.lean`), nor the
+  algebra-of-sections functor, nor the localization of algebra sections over basic opens, nor any
+  `relativeSpec`.
+- **Gap and impact:** without a symmetric monoidal structure on `Scheme.Modules`, "sheaf of
+  `O_X`-algebras" cannot be written as a monoid object at all, so neither the relative-Spec
+  universal property nor the affine/absolute comparison theorems can be typed. Everything in
+  lean-categories#22, #18's general-base relative Spec and #17's toric gluing is downstream.
+- **Coverage:** Searched the formalization corpus (queries and hits recorded in
+  `LeanCategories/AlgebraicGeometry/RelativeSpec/Basic.lean`); Found Tau Ceti's
+  `AlgebraicGeometry/RelativeSpec/*` and its `Algebra/Category/ModuleCat/Sheaf/TensorProduct/*`
+  (commit `ca32605ff53921fa0689dd312618b7cfaafa7e43`, Apache 2.0) and CBirkbeck/AINTLIB's
+  independent `Scheme.Modules.monoidalCategory`; Conclusion: the layer is a Mathlib candidate,
+  not a research problem; Confidence: high for the named modules, which were read in full;
+  Gaps: Mathlib's own plans for a sheaf-of-modules tensor product were not inspected.
+- **Repair link:** ported here, every module marked `## Provenance (lean-categories#22)` and
+  registered in `LeanCategories/All.lean`: the monoidal structure
+  (`LeanCategories.Algebra.Category.ModuleCat.Sheaf.TensorProduct.Monoidal`), the algebra layer
+  (`LeanCategories.AlgebraicGeometry.Modules.Algebra.Sections`,
+  `LeanCategories.AlgebraicGeometry.Modules.Localization`) and relative Spec
+  (`LeanCategories.AlgebraicGeometry.RelativeSpec.{Basic,Functor,AffineFunctions,Unit,Counit,
+  Equivalence,MorphismProperties,Affine}`). These stay upstream candidates until Mathlib owns them;
+  relative Proj (`TauCeti/AlgebraicGeometry/RelativeProj/*`) is not ported yet.
+
 ### V1 mathematical source reconciliation with the later main branch (2026-10-28)
 
 - **Need:** preserve the independently authored source in PRs #93 and #94 together
