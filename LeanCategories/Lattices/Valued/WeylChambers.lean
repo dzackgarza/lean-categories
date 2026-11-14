@@ -59,9 +59,18 @@ sheet is open (`isOpen_positiveCone_upper`), the side of a mirror in the sheet i
 is the connected component of the sheet minus the mirror
 (`connectedComponentIn_mirrorComplement`), a mirror meeting the sheet has points of the sheet
 on both of its sides (`mirror_two_sides_nonempty`), and `pairing_reflectIn` is the identity on
-the real-form pairing that replaces the Euclidean distance step of Lemma 2 (i). The simple
-transitivity (uniqueness of the carrying element, Bourbaki V §3 no. 2, Th. 1 (ii)) is not
-proved here.
+the real-form pairing that replaces the Euclidean distance step of Lemma 2 (i).
+
+The simple transitivity closes the picture: `eq_one_of_chamberOf_image_eq` is the uniqueness of
+the carrying element — an element of `W(L)` that carries the chamber of a regular point into
+itself is the identity — and `existsUnique_weylSubgroup_chamberOf_eq` assembles it with the
+transitivity above into `∃!` (Bourbaki V §3 no. 2, Th. 1 (iii), p. 78; Davis 2008, Theorem
+10.1.5 (b) with Lemma 3.2.12, p. 33). The proof is the deletion argument on a shortest word: a
+closed gallery whose first step crosses a wall must cross that same wall again later
+(`exists_later_crossing`, from the parity statement `noCrossing_pairing_pos`), and the two steps
+then cancel out of the word (`wordProd_erase_crossing`), contradicting minimality. No basis-datum
+hypothesis is needed for the uniqueness: the carrier of a finite projective `ℤ`-lattice has a
+chosen basis and a positive rank as soon as the real form carries a point of positive square.
 
 ## References
 
@@ -72,7 +81,9 @@ proved here.
 * M. W. Davis, *The Geometry and Topology of Coxeter Groups*, Princeton, 2008, Theorem
   10.1.5 (a), p. 179, with Lemmas 6.6.4, 6.6.5, 6.6.7 (i), pp. 89–90, and §3.2, Lemmas
   3.2.2, 3.2.5, pp. 30–34: the wall reflections of a chamber generate the reflection group
-  and carry it transitively over the chambers.
+  and carry it transitively over the chambers; Theorem 10.1.5 (b) with Lemma 3.2.12, p. 33:
+  the carrying element is unique (a simple transitivity, by the deletion of a crossing pair of
+  steps from a shortest word).
 -/
 
 @[expose] public section
@@ -1606,10 +1617,11 @@ signs put the segment between the points in the regular locus
 
 The two headline theorems of Bourbaki, Ch. V §3 no. 2 — the reflections in the walls of
 one chamber generate `W(M)`, and `W(M)` acts simply transitively on the chambers
-(Lemma 2 (iii) and Theorem 1, pp. 77–78) — are not proved here: the classical chain
-through the closest-point argument of Lemma 2 (i) and the exchange conditions of
-Ch. IV §1 no. 7 is future work. This section delivers the separation finiteness and the
-stabilization criterion that the chain rests on.
+(Lemma 2 (iii) and Theorem 1, pp. 77–78) — are proved by the induction on the separating
+mirrors, in the wall-generation section below and in the simple-transitivity section at the
+end of this file; the closest-point argument of Lemma 2 (i) and the exchange conditions of
+Ch. IV §1 no. 7 are not needed. This section delivers the separation finiteness and the
+stabilization criterion that the induction rests on.
 
 **LC-09 search record** (8 queries, `scripts/formalization_corpus.py`, no direct hit for
 the statements in the Lorentzian-lattice setting): `content:IsChamber`,
@@ -4060,6 +4072,736 @@ theorem weylSubgroup_eq_wallReflectionSubgroup (hL : L.obj.obj.IsNondegenerate)
     exact mul_mem (mul_mem hw
       (latticeReflection_mem_wallReflectionSubgroup L t hL h2 hw₀)) (inv_mem hw)
   exact (Subgroup.closure_le (wallReflectionSubgroup L t hL h2 x₀)).mpr hgen
+
+/-! ## Simple transitivity on the chambers (Bourbaki V §3 no. 2, Th. 1 (iii))
+
+The uniqueness half of the simple transitivity of `W(L)` on the chambers: an element of the
+reflection group that carries the chamber of a regular point into itself is the identity
+(`eq_one_of_chamberOf_image_eq`), so the carrying element of `exists_weylSubgroup_chamberOf_eq`
+is unique (`existsUnique_weylSubgroup_chamberOf_eq`). The proof follows Davis, *The Geometry and
+Topology of Coxeter Groups*, 2008, Lemma 3.2.12, p. 33: an element of `W(L)` is a word in the wall
+reflections of the chamber of `x₀` (the generation theorem above), and a shortest such word whose
+gallery returns to the starting chamber cannot exist — a closed gallery whose first step crosses a
+wall must cross that wall again later, and then the two steps delete from the word
+(`wordProd_erase_crossing`), shortening it. The intermediate layer is the parity statement
+`noCrossing_pairing_pos`: a gallery that never crosses the mirror of a root keeps the sign of the
+pairing with that root, because a step reflects only in its own wall
+(`wallRoot_reflectIn_pairing_pos`).
+
+**LC-09 search record** (this section; the reuse set is this repository's own
+`weylSubgroup_eq_wallReflectionSubgroup`, `exists_wordProd`, `exists_weylSubgroup_chamberOf_eq`,
+`wallRoot_reflectIn_pairing_pos`, `latticeReflection_eq_of_rootMirror_eq`,
+`conj_latticeReflection`, `pos_mul_of_mem_chamberOf`, `chamberOf_eq_iff_mirrorSeparating_eq_empty`).
+-/
+
+/-- The reflection in a wall root of the chamber of `x₀`, as an element of the orthogonal
+group. -/
+noncomputable def wallReflOf (hL : L.obj.obj.IsNondegenerate) (h2 : IsRegular (2 : ℤ))
+    (x₀ : (realForm L).obj.carrier)
+    (p : {r : L.obj.obj.carrier // IsWallRoot L t x₀ r}) : OrthogonalGroup L.obj :=
+  latticeReflection L hL h2 ((mem_negativeReflectiveRoots_iff L).mp p.2.1).1
+
+/-- The product of a list of wall reflections of the chamber of `x₀`. -/
+noncomputable def wordProd (hL : L.obj.obj.IsNondegenerate) (h2 : IsRegular (2 : ℤ))
+    (x₀ : (realForm L).obj.carrier)
+    (l : List {r : L.obj.obj.carrier // IsWallRoot L t x₀ r}) : OrthogonalGroup L.obj :=
+  (l.map (wallReflOf L t hL h2 x₀)).prod
+
+
+/-- **The lattice reflection is an involution**: applying `pairing_reflectIn` twice returns the
+original point, and the real form is nondegenerate. -/
+theorem latticeReflection_mul_self (hL : L.obj.obj.IsNondegenerate) (h2 : IsRegular (2 : ℤ))
+    {r : L.obj.obj.carrier} (hr : IsReflectiveRoot L.obj r)
+    (hrn : L.obj.obj.pairing r r < 0) :
+    latticeReflection L hL h2 hr * latticeReflection L hL h2 hr = 1 := by
+  apply realFormOrthogonalHom_injective L hL
+  rw [map_mul, map_one]
+  refine DFunLike.ext _ _ (fun z => ?_)
+  have h1 : ∀ a : (realForm L).obj.carrier,
+      (realForm L).obj.pairing a (realFormOrthogonalHom L (latticeReflection L hL h2 hr)
+        (realFormOrthogonalHom L (latticeReflection L hL h2 hr) z))
+        = (realForm L).obj.pairing a z := by
+    intro a
+    rw [pairing_reflectIn L hL h2 hr hrn a
+        (realFormOrthogonalHom L (latticeReflection L hL h2 hr) z),
+      pairing_reflectIn L hL h2 hr hrn a z,
+      (realForm L).property.2 (realFormOrthogonalHom L (latticeReflection L hL h2 hr) z)
+        (toRealForm L r),
+      pairing_reflectIn L hL h2 hr hrn (toRealForm L r) z,
+      (realForm L).property.2 (toRealForm L r) z,
+      (realForm L).property.2 (toRealForm L r) (toRealForm L r)]
+    have hne : (realForm L).obj.pairing (toRealForm L r) (toRealForm L r) ≠ 0 := by
+      rw [realFormPairing_toRealForm]; exact_mod_cast ne_of_lt hrn
+    field_simp
+    ring
+  have hz : realFormOrthogonalHom L (latticeReflection L hL h2 hr)
+      (realFormOrthogonalHom L (latticeReflection L hL h2 hr) z) - z = 0 := by
+    refine realFormPairing_eq_zero_of_forall L hL (fun a => ?_)
+    have hd : (realForm L).obj.pairing a
+        (realFormOrthogonalHom L (latticeReflection L hL h2 hr)
+            (realFormOrthogonalHom L (latticeReflection L hL h2 hr) z) - z)
+        = (realForm L).obj.pairing a (realFormOrthogonalHom L (latticeReflection L hL h2 hr)
+            (realFormOrthogonalHom L (latticeReflection L hL h2 hr) z))
+          - (realForm L).obj.pairing a z :=
+      LinearMap.map_sub ((realForm L).obj.bilinMap a) _ _
+    rw [hd, h1 a, sub_self]
+  exact sub_eq_zero.mp hz
+
+/-- The inverse of a product of wall reflections is the product of the reversed list. -/
+theorem wordProd_inv (hL : L.obj.obj.IsNondegenerate) (h2 : IsRegular (2 : ℤ))
+    (x₀ : (realForm L).obj.carrier)
+    (l : List {r : L.obj.obj.carrier // IsWallRoot L t x₀ r}) :
+    (wordProd L t hL h2 x₀ l)⁻¹ = wordProd L t hL h2 x₀ l.reverse := by
+  induction l with
+  | nil => simp [wordProd]
+  | cons p l ih =>
+    have hfp : (wallReflOf L t hL h2 x₀ p)⁻¹ = wallReflOf L t hL h2 x₀ p :=
+      inv_eq_of_mul_eq_one_right
+        (latticeReflection_mul_self L hL h2
+          ((mem_negativeReflectiveRoots_iff L).mp p.2.1).1
+          ((mem_negativeReflectiveRoots_iff L).mp p.2.1).2)
+    have ih' : ((List.map (wallReflOf L t hL h2 x₀) l).prod)⁻¹
+        = (List.map (wallReflOf L t hL h2 x₀) l.reverse).prod := ih
+    simp only [wordProd, List.map_cons, List.prod_cons, List.reverse_cons, List.map_append,
+      List.prod_append, List.map_nil, List.prod_nil]
+    rw [mul_inv_rev, hfp, ih', mul_one]
+
+/-- **Every element of the wall-reflection subgroup is a product of wall reflections** (Davis,
+*The Geometry and Topology of Coxeter Groups*, 2008, Lemma 3.2.5, §3.2, printed pp. 30–34: the
+fundamental reflections generate the reflection group, here read for an arbitrary generating set
+of wall reflections of the chamber). -/
+theorem exists_wordProd (hL : L.obj.obj.IsNondegenerate) (h2 : IsRegular (2 : ℤ))
+    {x₀ : (realForm L).obj.carrier} {w : OrthogonalGroup L.obj}
+    (hw : w ∈ wallReflectionSubgroup L t hL h2 x₀) :
+    ∃ l : List {r : L.obj.obj.carrier // IsWallRoot L t x₀ r},
+      wordProd L t hL h2 x₀ l = w := by
+  refine Subgroup.closure_induction
+    (p := fun g _ => ∃ l : List {r : L.obj.obj.carrier // IsWallRoot L t x₀ r},
+      wordProd L t hL h2 x₀ l = g)
+    (mem := ?_) (one := ?_) (mul := ?_) (inv := ?_) hw
+  · rintro g ⟨r, hr, rfl⟩
+    exact ⟨[⟨r, hr⟩], by simp [wordProd, wallReflOf]⟩
+  · exact ⟨[], by simp [wordProd]⟩
+  · rintro a b _ _ ⟨la, rfl⟩ ⟨lb, rfl⟩
+    exact ⟨la ++ lb, by simp [wordProd, List.map_append, List.prod_append]⟩
+  · rintro a _ ⟨l, rfl⟩
+    exact ⟨l.reverse, by rw [wordProd_inv]⟩
+
+/-- **Forward transport of a wall root**: an element of `W(M)` carries a wall root of the
+chamber of `x₀` to a wall root of the chamber of its image. This is `isWallRoot_preimage`
+applied at `w⁻¹`; it is the hypothesis the parity induction needs at each step of a gallery. -/
+theorem isWallRoot_map (hL : L.obj.obj.IsNondegenerate) (h2 : IsRegular (2 : ℤ))
+    (hpos : (integralSignature L).1 = 1) (ht : 0 < realFormQuadratic L t)
+    {x₀ : (realForm L).obj.carrier} {p : L.obj.obj.carrier} (hp : IsWallRoot L t x₀ p)
+    {w : OrthogonalGroup L.obj} (hw : w ∈ weylSubgroup L hL h2) :
+    IsWallRoot L t (realFormOrthogonalHom L w x₀)
+      ((w.1 : L.obj.obj.carrier → L.obj.obj.carrier) p) := by
+  have hux : realFormOrthogonalHom L (w⁻¹ : OrthogonalGroup L.obj)
+      (realFormOrthogonalHom L w x₀) = x₀ := by
+    have h2' : (realFormOrthogonalHom L
+        (w⁻¹ * w : OrthogonalGroup L.obj)) x₀ = x₀ := by
+      rw [inv_mul_cancel, map_one]
+      rfl
+    rwa [map_mul] at h2'
+  have key : IsWallRoot L t
+      (realFormOrthogonalHom L (w⁻¹ : OrthogonalGroup L.obj)
+        (realFormOrthogonalHom L w x₀)) p := by
+    rw [hux]
+    exact hp
+  have hres := isWallRoot_preimage L t hL h2 hpos ht
+    (w := w⁻¹) (inv_mem hw) (x := realFormOrthogonalHom L w x₀) (v := p) key
+  rwa [inv_inv] at hres
+
+/-- **(B) One mirror per step** (the route's step 2, single-step form): reflecting a point of a
+chamber in one of its wall roots preserves the sign of the pairing with every root whose mirror
+is a different one. This is exactly `wallRoot_reflectIn_pairing_pos`. -/
+theorem sign_step (hL : L.obj.obj.IsNondegenerate) (h2 : IsRegular (2 : ℤ))
+    {x : (realForm L).obj.carrier} {r : L.obj.obj.carrier} (hr : IsWallRoot L t x r)
+    {s : L.obj.obj.carrier} (hs : s ∈ negativeReflectiveRoots L)
+    (hne : rootMirror L s ≠ rootMirror L r) :
+    0 < (realForm L).obj.pairing x (toRealForm L s) *
+      (realForm L).obj.pairing
+        (realFormOrthogonalHom L (wallReflOf L t hL h2 x ⟨r, hr⟩) x) (toRealForm L s) :=
+  wallRoot_reflectIn_pairing_pos L t hL h2 hr hs hne
+
+/-- **(C) The crossed mirror flips its own sign**: reflecting in a wall root reverses the sign of
+the pairing with every root spanning that same mirror. -/
+theorem sign_flip (hL : L.obj.obj.IsNondegenerate) (h2 : IsRegular (2 : ℤ))
+    {x : (realForm L).obj.carrier} (hx : x ∈ weylRegularLocus L t)
+    {r : L.obj.obj.carrier} (hr : IsWallRoot L t x r)
+    {s : L.obj.obj.carrier} (hs : s ∈ negativeReflectiveRoots L)
+    (hmir : rootMirror L s = rootMirror L r) :
+    (realForm L).obj.pairing x (toRealForm L s) *
+      (realForm L).obj.pairing
+        (realFormOrthogonalHom L (wallReflOf L t hL h2 x ⟨r, hr⟩) x) (toRealForm L s) < 0 := by
+  obtain ⟨hrIsRef, hrn⟩ := (mem_negativeReflectiveRoots_iff L).mp hr.1
+  obtain ⟨hsIsRef, hsn⟩ := (mem_negativeReflectiveRoots_iff L).mp hs
+  have hxsne : (realForm L).obj.pairing x (toRealForm L s) ≠ 0 :=
+    ((mem_weylRegularLocus_iff L t).mp hx).2 s hs
+  obtain ⟨c, hc0, hcsmul⟩ :=
+    exists_ne_zero_smul_of_rootMirror_eq L hL hrn hsn hmir.symm
+  have hnn : (realForm L).obj.pairing (toRealForm L r) (toRealForm L r) < 0 := by
+    rw [realFormPairing_toRealForm]
+    exact_mod_cast hrn
+  have hnn0 : (realForm L).obj.pairing (toRealForm L r) (toRealForm L r) ≠ 0 := ne_of_lt hnn
+  have hsr : (realForm L).obj.pairing (toRealForm L s) (toRealForm L r)
+      = c * (realForm L).obj.pairing (toRealForm L r) (toRealForm L r) := by
+    rw [hcsmul, BilinModuleCat.pairing_smul_left, smul_eq_mul]
+  have hxr : (realForm L).obj.pairing x (toRealForm L s)
+      = c * (realForm L).obj.pairing x (toRealForm L r) := by
+    rw [hcsmul, BilinModuleCat.pairing_smul_right, smul_eq_mul]
+  have hkey : (realForm L).obj.pairing
+      (realFormOrthogonalHom L (wallReflOf L t hL h2 x ⟨r, hr⟩) x) (toRealForm L s)
+      = -((realForm L).obj.pairing x (toRealForm L s)) := by
+    show (realForm L).obj.pairing
+      (realFormOrthogonalHom L (latticeReflection L hL h2 hrIsRef) x) (toRealForm L s) = _
+    rw [(realForm L).property.2 ((realFormOrthogonalHom L
+      (latticeReflection L hL h2 hrIsRef)) x) (toRealForm L s),
+      pairing_reflectIn L hL h2 hrIsRef hrn (toRealForm L s) x,
+      (realForm L).property.2 (toRealForm L s) x, hsr, hxr]
+    field_simp
+    ring
+  rw [hkey]
+  have h2 : 0 < (realForm L).obj.pairing x (toRealForm L s) *
+      (realForm L).obj.pairing x (toRealForm L s) := mul_self_pos.mpr hxsne
+  nlinarith [h2]
+
+
+/-! ## The word calculus for the simple-transitivity proof -/
+
+/-- The mirror of the transported root: the wall crossed by the step at the letter `p` of a
+gallery whose accumulator is `u`. This is the sequence `(r₁, …, r_k)` of Davis, *The Geometry and
+Topology of Coxeter Groups*, 2008, formula (3.2), §3.2, printed pp. 30–34, which records the
+prereflection flipping each edge of the edge path of a word. -/
+def stepMirror {x₀ : (realForm L).obj.carrier} (u : OrthogonalGroup L.obj)
+    (p : {r : L.obj.obj.carrier // IsWallRoot L t x₀ r}) :
+    Set (realForm L).obj.carrier :=
+  rootMirror L ((u.1 : L.obj.obj.carrier → L.obj.obj.carrier) p.1)
+
+/-- **The no-crossing predicate of a gallery**: starting at the point `u x₀`, no step of the
+gallery along the letters `l` crosses the mirror of `t₀`. The step at the letter `p` crosses
+the wall of the transported root `u p`, so the recursion carries the accumulator `u` to
+`u * s_p`, the reflection in `p` read in the fundamental chamber. Davis, *The Geometry and
+Topology of Coxeter Groups*, 2008, §3.2, printed pp. 30–34: the wall `Ω^r` is crossed by the
+edge path of a word exactly when `r` occurs in the sequence `Φ` of (3.2). -/
+def NoCrossing (hL : L.obj.obj.IsNondegenerate) (h2 : IsRegular (2 : ℤ))
+    {x₀ : (realForm L).obj.carrier} (u : OrthogonalGroup L.obj) :
+    List {r : L.obj.obj.carrier // IsWallRoot L t x₀ r} →
+      L.obj.obj.carrier → Prop
+  | [], _ => True
+  | p :: l, t₀ =>
+      stepMirror L t u p ≠ rootMirror L t₀ ∧
+        NoCrossing hL h2 (u * wallReflOf L t hL h2 x₀ p) l t₀
+
+
+/-- **The reflection in the transported root is the conjugate of the wall reflection**: a
+gallery step at the letter `p` with accumulator `u ∈ W` crosses the wall whose reflection is
+`u * s_p * u⁻¹` (the lattice form of `conj_latticeReflection`, read as `s_{u p} * u = u * s_p`).
+-/
+theorem latticeReflection_transport_mul (hL : L.obj.obj.IsNondegenerate)
+    (h2 : IsRegular (2 : ℤ)) {u : OrthogonalGroup L.obj} {a : L.obj.obj.carrier}
+    (ha : IsReflectiveRoot L.obj a) (han : L.obj.obj.pairing a a < 0) :
+    latticeReflection L hL h2 (isReflectiveRoot_of_isometry L u ha) * u
+      = u * latticeReflection L hL h2 ha := by
+  have ha' : realFormQuadratic L (toRealForm L a) ≠ 0 := by
+    rw [realFormQuadratic_toRealForm L a]
+    exact_mod_cast ne_of_lt han
+  rw [← conj_latticeReflection L hL h2 u ha ha']
+  simp only [mul_assoc, inv_mul_cancel, mul_one]
+
+/-- **The step with an accumulator**: this is `wallRoot_reflectIn_pairing_pos` read in the
+fundamental chamber, for a step whose accumulator is an element `u` of the reflection group, so
+that the point stays the image of `x₀` under a product of wall reflections. It is Bourbaki V §3
+no. 2, Lemma 2 (ii) at the level of one gallery step: a step reflects in its own wall and leaves
+the sign of every other mirror alone. -/
+theorem head_step (hL : L.obj.obj.IsNondegenerate) (h2 : IsRegular (2 : ℤ))
+    (hpos : (integralSignature L).1 = 1) (ht : 0 < realFormQuadratic L t)
+    {x₀ : (realForm L).obj.carrier} {p : {r : L.obj.obj.carrier // IsWallRoot L t x₀ r}}
+    {u : OrthogonalGroup L.obj} (hu : u ∈ weylSubgroup L hL h2)
+    {t₀ : L.obj.obj.carrier} (ht₀ : t₀ ∈ negativeReflectiveRoots L)
+    (hne : stepMirror L t u p ≠ rootMirror L t₀) :
+    0 < (realForm L).obj.pairing (realFormOrthogonalHom L u x₀) (toRealForm L t₀) *
+      (realForm L).obj.pairing
+        (realFormOrthogonalHom L (u * wallReflOf L t hL h2 x₀ p) x₀)
+        (toRealForm L t₀) := by
+  have hwallmem : ((u.1 : L.obj.obj.carrier → L.obj.obj.carrier) p.1) ∈
+      negativeReflectiveRoots L :=
+    (image_negativeReflectiveRoots L u).subset ⟨p.1, p.2.1, rfl⟩
+  have hwall : IsWallRoot L t (realFormOrthogonalHom L u x₀)
+      ((u.1 : L.obj.obj.carrier → L.obj.obj.carrier) p.1) :=
+    isWallRoot_map L t hL h2 hpos ht p.2 hu
+  have hr := wallRoot_reflectIn_pairing_pos L t hL h2 hwall ht₀ (Ne.symm hne)
+  have ha' : realFormQuadratic L (toRealForm L p.1) ≠ 0 := by
+    rw [realFormQuadratic_toRealForm L p.1]
+    exact_mod_cast ne_of_lt p.2.1.2
+  have hg : latticeReflection L hL h2 ((mem_negativeReflectiveRoots_iff L).mp hwallmem).1 * u
+      = u * wallReflOf L t hL h2 x₀ p :=
+    latticeReflection_transport_mul L hL h2 (u := u)
+      ((mem_negativeReflectiveRoots_iff L).mp p.2.1).1
+      ((mem_negativeReflectiveRoots_iff L).mp p.2.1).2
+  have hmul : realFormOrthogonalHom L
+        (latticeReflection L hL h2 ((mem_negativeReflectiveRoots_iff L).mp hwallmem).1) *
+        realFormOrthogonalHom L u
+      = realFormOrthogonalHom L u *
+        realFormOrthogonalHom L (wallReflOf L t hL h2 x₀ p) := by
+    rw [← map_mul, ← map_mul, hg]
+  have hswap : ∀ z : (realForm L).obj.carrier,
+      realFormOrthogonalHom L
+          (latticeReflection L hL h2 ((mem_negativeReflectiveRoots_iff L).mp hwallmem).1)
+          (realFormOrthogonalHom L u z)
+        = realFormOrthogonalHom L (u * wallReflOf L t hL h2 x₀ p) z := by
+    intro z
+    show (realFormOrthogonalHom L
+        (latticeReflection L hL h2 ((mem_negativeReflectiveRoots_iff L).mp hwallmem).1) *
+          realFormOrthogonalHom L u) z = _
+    rw [hmul, map_mul]
+  rw [← hswap]
+  exact hr
+
+/-- The product of the wall reflections of a list, at the head letter. -/
+theorem wordProd_cons (hL : L.obj.obj.IsNondegenerate) (h2 : IsRegular (2 : ℤ))
+    (x₀ : (realForm L).obj.carrier) (p : {r : L.obj.obj.carrier // IsWallRoot L t x₀ r})
+    (l : List {r : L.obj.obj.carrier // IsWallRoot L t x₀ r}) :
+    wordProd L t hL h2 x₀ (p :: l)
+      = wallReflOf L t hL h2 x₀ p * wordProd L t hL h2 x₀ l := by
+  simp only [wordProd, List.map_cons, List.prod_cons]
+
+/-- The accumulator of the gallery after the head letter: multiplying the accumulator by the
+word of the head letter is the same as multiplying by the corresponding wall reflection. -/
+theorem wordProd_take_cons (hL : L.obj.obj.IsNondegenerate) (h2 : IsRegular (2 : ℤ))
+    (x₀ : (realForm L).obj.carrier) (u : OrthogonalGroup L.obj)
+    (p : {r : L.obj.obj.carrier // IsWallRoot L t x₀ r})
+    (l : List {r : L.obj.obj.carrier // IsWallRoot L t x₀ r}) :
+    u * wordProd L t hL h2 x₀ (p :: l)
+      = (u * wallReflOf L t hL h2 x₀ p) * wordProd L t hL h2 x₀ l := by
+  rw [wordProd_cons]
+  exact (mul_assoc u (wallReflOf L t hL h2 x₀ p) (wordProd L t hL h2 x₀ l)).symm
+
+/-- **No crossing means the same sign** (Davis, *The Geometry and Topology of Coxeter Groups*,
+2008, Lemma 3.2.9 (i) ⟹ (ii), §3.2, printed pp. 30–34: for a separating wall, the parity of the
+number of crossings depends only on the endpoint; Bourbaki V §3 no. 2, Lemma 2 (ii)): if no
+step of the gallery from `u x₀` along the letters `l` crosses the mirror of `t₀`, then the two
+endpoints pair with `t₀` with the same strict sign. Each step either crosses its own wall — no
+other mirror changes side, by `wallRoot_reflectIn_pairing_pos` — and the induction hypothesis
+finishes. -/
+theorem noCrossing_pairing_pos (hL : L.obj.obj.IsNondegenerate) (h2 : IsRegular (2 : ℤ))
+    (hpos : (integralSignature L).1 = 1) (ht : 0 < realFormQuadratic L t)
+    {x₀ : (realForm L).obj.carrier} (hx₀ : x₀ ∈ weylRegularLocus L t)
+    {u : OrthogonalGroup L.obj} (hu : u ∈ weylSubgroup L hL h2)
+    {t₀ : L.obj.obj.carrier} (ht₀ : t₀ ∈ negativeReflectiveRoots L)
+    (l : List {r : L.obj.obj.carrier // IsWallRoot L t x₀ r})
+    (h : NoCrossing L t hL h2 u l t₀) :
+    0 < (realForm L).obj.pairing
+          (realFormOrthogonalHom L (u * wordProd L t hL h2 x₀ l) x₀) (toRealForm L t₀) *
+        (realForm L).obj.pairing (realFormOrthogonalHom L u x₀) (toRealForm L t₀) := by
+  induction l generalizing u with
+  | nil =>
+    have hmem : realFormOrthogonalHom L u x₀ ∈ weylRegularLocus L t := by
+      have himg := weylSubgroup_weylRegularLocus_image L t hL h2 hpos ht
+        (w := u) hu
+      have hin : realFormOrthogonalHom L u x₀ ∈
+          (realFormOrthogonalHom L u) '' weylRegularLocus L t := ⟨x₀, hx₀, rfl⟩
+      rwa [himg] at hin
+    have hne : (realForm L).obj.pairing (realFormOrthogonalHom L u x₀) (toRealForm L t₀)
+        ≠ 0 := ((mem_weylRegularLocus_iff L t).mp hmem).2 t₀ ht₀
+    simpa only [NoCrossing, wordProd, List.map_nil, List.prod_nil, mul_one] using
+      mul_self_pos.mpr hne
+  | cons p l ih =>
+    obtain ⟨hstep, htail⟩ := h
+    have hsW : wallReflOf L t hL h2 x₀ p ∈ weylSubgroup L hL h2 :=
+      (wallReflectionSubgroup_le_weylSubgroup L t hL h2 x₀)
+        (latticeReflection_mem_wallReflectionSubgroup L t hL h2 p.2)
+    have hhead := head_step L t hL h2 hpos ht hu ht₀ hstep
+    have hIH := ih (u := u * wallReflOf L t hL h2 x₀ p) (mul_mem hu hsW) htail
+    rw [wordProd_take_cons]
+    nlinarith [hhead, hIH, sq_nonneg ((realForm L).obj.pairing
+      (realFormOrthogonalHom L (u * wallReflOf L t hL h2 x₀ p) x₀) (toRealForm L t₀))]
+
+/-- **A crossing exists exactly when the gallery is not crossing-free** (the list form of the
+sequence `Φ` of Davis, formula (3.2), §3.2, printed pp. 30–34): a list whose gallery
+from `u x₀` crosses the mirror of `t₀` somewhere splits at the first such crossing, and the
+accumulator at that crossing is the product of the letters before it. This is the combinatorial
+form of `NoCrossing`, used to name the crossing step for the deletion. -/
+theorem exists_crossing_iff (hL : L.obj.obj.IsNondegenerate) (h2 : IsRegular (2 : ℤ))
+    {x₀ : (realForm L).obj.carrier} (u : OrthogonalGroup L.obj) (t₀ : L.obj.obj.carrier)
+    (m : List {r : L.obj.obj.carrier // IsWallRoot L t x₀ r}) :
+    (∃ (l₁ : List {r : L.obj.obj.carrier // IsWallRoot L t x₀ r})
+        (q : {r : L.obj.obj.carrier // IsWallRoot L t x₀ r})
+        (l₂ : List {r : L.obj.obj.carrier // IsWallRoot L t x₀ r}),
+        m = l₁ ++ q :: l₂ ∧
+          stepMirror L t (u * wordProd L t hL h2 x₀ l₁) q = rootMirror L t₀) ↔
+      ¬ NoCrossing L t hL h2 u m t₀ := by
+  induction m generalizing u with
+  | nil =>
+    constructor
+    · rintro ⟨l₁, q, l₂, hsplit, -⟩
+      cases l₁ with
+      | nil => simp at hsplit
+      | cons a l₁' => simp at hsplit
+    · intro h
+      simp only [NoCrossing] at h
+      exact absurd trivial h
+  | cons p m ih =>
+    constructor
+    · rintro ⟨l₁, q, l₂, hsplit, hmir⟩
+      cases l₁ with
+      | nil =>
+        simp only [List.nil_append, List.cons.injEq] at hsplit
+        obtain ⟨rfl, rfl⟩ := hsplit
+        simp only [NoCrossing]
+        exact fun h => h.1 hmir
+      | cons p' l₁' =>
+        simp only [List.cons_append, List.cons.injEq] at hsplit
+        obtain ⟨rfl, hsplit'⟩ := hsplit
+        have htail : ¬ NoCrossing L t hL h2
+            (u * wallReflOf L t hL h2 x₀ p) m t₀ := by
+          refine (ih (u := u * wallReflOf L t hL h2 x₀ p)).mp ⟨l₁', q, l₂, hsplit', ?_⟩
+          rw [wordProd_take_cons] at hmir
+          exact hmir
+        simp only [NoCrossing]
+        exact fun h => htail h.2
+    · intro h
+      have h' := h
+      simp only [NoCrossing] at h'
+      rw [not_and_or, not_ne_iff] at h'
+      rcases h' with hhead | htail
+      · exact ⟨[], p, m, rfl, hhead⟩
+      · obtain ⟨l₁, q, l₂, hsplit, hmir⟩ :=
+          (ih (u := u * wallReflOf L t hL h2 x₀ p)).mpr htail
+        refine ⟨p :: l₁, q, l₂, by rw [hsplit, List.cons_append], ?_⟩
+        rw [wordProd_take_cons]
+        exact hmir
+
+/-- The word of a concatenation is the product of the words. -/
+theorem wordProd_append (hL : L.obj.obj.IsNondegenerate) (h2 : IsRegular (2 : ℤ))
+    (x₀ : (realForm L).obj.carrier)
+    (a b : List {r : L.obj.obj.carrier // IsWallRoot L t x₀ r}) :
+    wordProd L t hL h2 x₀ (a ++ b)
+      = wordProd L t hL h2 x₀ a * wordProd L t hL h2 x₀ b := by
+  simp only [wordProd, List.map_append, List.prod_append]
+
+/-- The word of a single letter is the wall reflection of that letter. -/
+theorem wordProd_singleton (hL : L.obj.obj.IsNondegenerate) (h2 : IsRegular (2 : ℤ))
+    (x₀ : (realForm L).obj.carrier) (p : {r : L.obj.obj.carrier // IsWallRoot L t x₀ r}) :
+    wordProd L t hL h2 x₀ [p] = wallReflOf L t hL h2 x₀ p := by
+  simp only [wordProd, List.map_cons, List.map_nil, List.prod_cons, List.prod_nil, mul_one]
+
+/-- A word in the wall roots of the chamber of `x₀` is an element of the wall-reflection
+subgroup, hence of the reflection group. -/
+theorem wordProd_mem_wallReflectionSubgroup (hL : L.obj.obj.IsNondegenerate)
+    (h2 : IsRegular (2 : ℤ)) (x₀ : (realForm L).obj.carrier)
+    (l : List {r : L.obj.obj.carrier // IsWallRoot L t x₀ r}) :
+    wordProd L t hL h2 x₀ l ∈ wallReflectionSubgroup L t hL h2 x₀ := by
+  induction l with
+  | nil => simp only [wordProd, List.map_nil, List.prod_nil]; exact one_mem _
+  | cons p l ih =>
+    rw [wordProd_cons]
+    exact mul_mem (latticeReflection_mem_wallReflectionSubgroup L t hL h2 p.2) ih
+
+/-- **The crossing corollary** (the parity step of Davis, *The Geometry and Topology of Coxeter
+Groups*, 2008, Lemma 3.2.12's proof, printed p. 33: "since all walls are crossed an even number of
+times, the path must cross this wall again"): a gallery that begins with a step crossing the wall
+of the first letter and ends in the chamber it started from has a later step crossing that same
+wall. If no
+later step crossed it, the two ends would pair with the first letter's root with the same sign
+(`noCrossing_pairing_pos`), while the ends lie in one chamber and the first step flips that
+sign — a contradiction. -/
+theorem exists_later_crossing (hL : L.obj.obj.IsNondegenerate) (h2 : IsRegular (2 : ℤ))
+    (hpos : (integralSignature L).1 = 1) (ht : 0 < realFormQuadratic L t)
+    {x₀ : (realForm L).obj.carrier} (hx₀ : x₀ ∈ weylRegularLocus L t)
+    (p : {r : L.obj.obj.carrier // IsWallRoot L t x₀ r})
+    (l' : List {r : L.obj.obj.carrier // IsWallRoot L t x₀ r})
+    (hcham : chamberOf L t
+        (realFormOrthogonalHom L (wordProd L t hL h2 x₀ (p :: l')) x₀) = chamberOf L t x₀) :
+    ∃ (l₁ : List {r : L.obj.obj.carrier // IsWallRoot L t x₀ r})
+      (q : {r : L.obj.obj.carrier // IsWallRoot L t x₀ r})
+      (l₂ : List {r : L.obj.obj.carrier // IsWallRoot L t x₀ r}),
+      l' = l₁ ++ q :: l₂ ∧
+        stepMirror L t (wordProd L t hL h2 x₀ (p :: l₁)) q = rootMirror L p.1 := by
+  by_contra hno
+  push Not at hno
+  have hNC : NoCrossing L t hL h2 (wordProd L t hL h2 x₀ [p]) l' p.1 := by
+    by_contra hc
+    obtain ⟨l₁, q, l₂, hsplit, hmir⟩ :=
+      (exists_crossing_iff L t hL h2 (wordProd L t hL h2 x₀ [p]) p.1 l').mpr hc
+    refine hno l₁ q l₂ hsplit ?_
+    rw [wordProd_singleton, ← wordProd_cons] at hmir
+    exact hmir
+  have hsingW : wordProd L t hL h2 x₀ [p] ∈ weylSubgroup L hL h2 := by
+    rw [wordProd_singleton]
+    exact (wallReflectionSubgroup_le_weylSubgroup L t hL h2 x₀)
+      (latticeReflection_mem_wallReflectionSubgroup L t hL h2 p.2)
+  have hP := noCrossing_pairing_pos L t hL h2 hpos ht hx₀ hsingW p.2.1 l' hNC
+  have e1 : wordProd L t hL h2 x₀ [p] * wordProd L t hL h2 x₀ l'
+      = wordProd L t hL h2 x₀ (p :: l') := by
+    rw [wordProd_singleton, ← wordProd_cons]
+  rw [e1, wordProd_singleton] at hP
+  have hwreg : realFormOrthogonalHom L (wordProd L t hL h2 x₀ (p :: l')) x₀
+      ∈ weylRegularLocus L t := by
+    have hW : wordProd L t hL h2 x₀ (p :: l') ∈ weylSubgroup L hL h2 :=
+      (wallReflectionSubgroup_le_weylSubgroup L t hL h2 x₀)
+        (wordProd_mem_wallReflectionSubgroup L t hL h2 x₀ (p :: l'))
+    have himg := weylSubgroup_weylRegularLocus_image L t hL h2 hpos ht hW
+    have hin : realFormOrthogonalHom L (wordProd L t hL h2 x₀ (p :: l')) x₀ ∈
+        (realFormOrthogonalHom L (wordProd L t hL h2 x₀ (p :: l'))) '' weylRegularLocus L t :=
+      ⟨x₀, hx₀, rfl⟩
+    rwa [himg] at hin
+  have hmem : realFormOrthogonalHom L (wordProd L t hL h2 x₀ (p :: l')) x₀
+      ∈ chamberOf L t x₀ := by
+    rw [← hcham]
+    exact mem_chamberOf L t hwreg
+  have hsame := pos_mul_of_mem_chamberOf L t hx₀ hmem (mem_chamberOf L t hx₀) p.2.1
+  have hflip := sign_flip L t hL h2 hx₀ p.2 (s := p.1) p.2.1 rfl
+  have hfour : 0 < ((realForm L).obj.pairing
+      (realFormOrthogonalHom L (wordProd L t hL h2 x₀ (p :: l')) x₀) (toRealForm L p.1) *
+      (realForm L).obj.pairing
+        (realFormOrthogonalHom L (wallReflOf L t hL h2 x₀ p) x₀) (toRealForm L p.1)) *
+      ((realForm L).obj.pairing
+        (realFormOrthogonalHom L (wordProd L t hL h2 x₀ (p :: l')) x₀) (toRealForm L p.1) *
+        (realForm L).obj.pairing x₀ (toRealForm L p.1)) := mul_pos hP hsame
+  nlinarith [hfour, sq_nonneg ((realForm L).obj.pairing
+    (realFormOrthogonalHom L (wordProd L t hL h2 x₀ (p :: l')) x₀) (toRealForm L p.1)), hflip]
+
+/-- **The group-theoretic cancellation of a crossing pair** (the algebra at the end of the proof
+of Davis, *The Geometry and Topology of Coxeter Groups*, 2008, Lemma 3.2.6, §3.2, printed pp.
+30–34): if `t` is an involution, `w = u * t` and `s * u = u * t`, then `s * (w * (t * z)) = w * z`.
+This is the algebra of deleting the two letters whose reflections agree from a word. -/
+theorem mul_erase_step {G : Type*} [Group G] {s u w t z : G}
+    (hw : w = u * t) (hst : s * u = u * t) (ht : t * t = 1) :
+    s * (w * (t * z)) = w * z := by
+  subst hw
+  simp only [mul_assoc]
+  rw [← mul_assoc t t z, ht, one_mul]
+  rw [← mul_assoc s u z, hst]
+  rw [mul_assoc u t z]
+
+/-- **The deletion identity** (Davis, *The Geometry and Topology of Coxeter Groups*, 2008, Lemma
+3.2.6, the Deletion Condition, §3.2, printed pp. 30–34: if `r_i = r_j` for `i < j`, deleting the
+two letters gives a word for the same element): if the step at the letter `q` of the gallery
+through the letters
+`p, l₁, q, l₂` crosses the wall of `p`, then the two letters `p` and `q` cancel out of the
+product: the word of the whole list equals the word of the list with both letters removed. The
+step reflection at the crossing is the conjugate of the wall reflection of `q`, and it equals
+the wall reflection of `p` because they share a mirror (`latticeReflection_eq_of_rootMirror_eq`),
+so the prefix identity `s_p * u = u * s_q` holds and the two factors cancel. -/
+theorem wordProd_erase_crossing (hL : L.obj.obj.IsNondegenerate) (h2 : IsRegular (2 : ℤ))
+    {x₀ : (realForm L).obj.carrier} (p : {r : L.obj.obj.carrier // IsWallRoot L t x₀ r})
+    (l₁ : List {r : L.obj.obj.carrier // IsWallRoot L t x₀ r})
+    (q : {r : L.obj.obj.carrier // IsWallRoot L t x₀ r})
+    (l₂ : List {r : L.obj.obj.carrier // IsWallRoot L t x₀ r})
+    (hcross : stepMirror L t (wordProd L t hL h2 x₀ (p :: l₁)) q = rootMirror L p.1) :
+    wordProd L t hL h2 x₀ (p :: (l₁ ++ q :: l₂))
+      = wordProd L t hL h2 x₀ (l₁ ++ l₂) := by
+  have hsp : wallReflOf L t hL h2 x₀ p * wallReflOf L t hL h2 x₀ p = 1 := by
+    have h := latticeReflection_mul_self L hL h2
+      ((mem_negativeReflectiveRoots_iff L).mp p.2.1).1
+      ((mem_negativeReflectiveRoots_iff L).mp p.2.1).2
+    exact h
+  have hsq : wallReflOf L t hL h2 x₀ q * wallReflOf L t hL h2 x₀ q = 1 := by
+    have h := latticeReflection_mul_self L hL h2
+      ((mem_negativeReflectiveRoots_iff L).mp q.2.1).1
+      ((mem_negativeReflectiveRoots_iff L).mp q.2.1).2
+    exact h
+  have hrn : L.obj.obj.pairing
+      (((wordProd L t hL h2 x₀ (p :: l₁)).1 : L.obj.obj.carrier → L.obj.obj.carrier) q.1)
+      (((wordProd L t hL h2 x₀ (p :: l₁)).1 : L.obj.obj.carrier → L.obj.obj.carrier) q.1) < 0 := by
+    rw [isometry_pairing L (wordProd L t hL h2 x₀ (p :: l₁)) q.1 q.1]
+    exact q.2.1.2
+  have hroot : latticeReflection L hL h2
+      (isReflectiveRoot_of_isometry L (wordProd L t hL h2 x₀ (p :: l₁)) q.2.1.1)
+      = wallReflOf L t hL h2 x₀ p :=
+    latticeReflection_eq_of_rootMirror_eq L hL h2
+      (isReflectiveRoot_of_isometry L (wordProd L t hL h2 x₀ (p :: l₁)) q.2.1.1) hrn
+      ((mem_negativeReflectiveRoots_iff L).mp p.2.1).1
+      ((mem_negativeReflectiveRoots_iff L).mp p.2.1).2 hcross
+  have hstep : wallReflOf L t hL h2 x₀ p * wordProd L t hL h2 x₀ (p :: l₁)
+      = wordProd L t hL h2 x₀ (p :: l₁) * wallReflOf L t hL h2 x₀ q := by
+    have h := latticeReflection_transport_mul L hL h2
+      (u := wordProd L t hL h2 x₀ (p :: l₁)) (a := q.1) q.2.1.1 q.2.1.2
+    rwa [hroot] at h
+  have hkey : wordProd L t hL h2 x₀ (p :: l₁) * wallReflOf L t hL h2 x₀ q
+      = wordProd L t hL h2 x₀ l₁ := by
+    calc wordProd L t hL h2 x₀ (p :: l₁) * wallReflOf L t hL h2 x₀ q
+        = wallReflOf L t hL h2 x₀ p * wordProd L t hL h2 x₀ (p :: l₁) := hstep.symm
+      _ = wallReflOf L t hL h2 x₀ p *
+            (wallReflOf L t hL h2 x₀ p * wordProd L t hL h2 x₀ l₁) := by
+            rw [wordProd_cons]
+      _ = (wallReflOf L t hL h2 x₀ p * wallReflOf L t hL h2 x₀ p) *
+            wordProd L t hL h2 x₀ l₁ := (mul_assoc _ _ _).symm
+      _ = wordProd L t hL h2 x₀ l₁ := by rw [hsp, one_mul]
+  rw [wordProd_cons, wordProd_append, wordProd_cons, wordProd_append]
+  exact mul_erase_step (s := wallReflOf L t hL h2 x₀ p)
+    (u := wordProd L t hL h2 x₀ (p :: l₁)) (w := wordProd L t hL h2 x₀ l₁)
+    (t := wallReflOf L t hL h2 x₀ q) (z := wordProd L t hL h2 x₀ l₂)
+    hkey.symm hstep hsq
+
+/-- **A word whose gallery is closed is trivial** (the minimal-length assembly of Davis, *The
+Geometry and Topology of Coxeter Groups*, 2008, Lemma 3.2.12's proof, printed p. 33): if the product
+of
+the wall reflections of a list of wall roots of the chamber of `x₀` carries `x₀` into its own
+chamber, then that word is the identity. A word of minimal length over a nonempty list would, by
+`exists_later_crossing`, have a second step crossing the first step's wall, and
+`wordProd_erase_crossing` would delete the two steps, contradicting minimality. -/
+theorem wordProd_eq_one_of_chamberOf_eq (hL : L.obj.obj.IsNondegenerate)
+    (h2 : IsRegular (2 : ℤ)) (hpos : (integralSignature L).1 = 1)
+    (ht : 0 < realFormQuadratic L t)
+    {x₀ : (realForm L).obj.carrier} (hx₀ : x₀ ∈ weylRegularLocus L t)
+    (l : List {r : L.obj.obj.carrier // IsWallRoot L t x₀ r})
+    (hcham : chamberOf L t (realFormOrthogonalHom L (wordProd L t hL h2 x₀ l) x₀)
+      = chamberOf L t x₀) :
+    wordProd L t hL h2 x₀ l = 1 := by
+  classical
+  set w₀ : OrthogonalGroup L.obj := wordProd L t hL h2 x₀ l with hw₀
+  by_contra hne1
+  have hex : ∃ m, ∃ l : List {r : L.obj.obj.carrier // IsWallRoot L t x₀ r},
+      l.length = m ∧ wordProd L t hL h2 x₀ l = w₀ := ⟨l.length, l, rfl, hw₀⟩
+  obtain ⟨l₀, hlen, hprod⟩ := Nat.find_spec hex
+  have hmin : ∀ l' : List {r : L.obj.obj.carrier // IsWallRoot L t x₀ r},
+      wordProd L t hL h2 x₀ l' = w₀ → Nat.find hex ≤ l'.length :=
+    fun l' hl' => Nat.find_min' hex ⟨l', rfl, hl'⟩
+  have hnil : l₀ ≠ [] := by
+    rintro rfl
+    simp only [wordProd, List.map_nil, List.prod_nil] at hprod
+    exact hne1 hprod.symm
+  obtain ⟨p, l', rfl⟩ : ∃ p l', l₀ = p :: l' := by
+    cases l₀ with
+    | nil => exact absurd rfl hnil
+    | cons p l' => exact ⟨p, l', rfl⟩
+  have hcham' : chamberOf L t
+      (realFormOrthogonalHom L (wordProd L t hL h2 x₀ (p :: l')) x₀) = chamberOf L t x₀ := by
+    rw [hprod]
+    exact hcham
+  obtain ⟨l₁, q, l₂, hsplit, hcross⟩ :=
+    exists_later_crossing L t hL h2 hpos ht hx₀ p l' hcham'
+  have hshort : wordProd L t hL h2 x₀ (l₁ ++ l₂) = w₀ := by
+    rw [← wordProd_erase_crossing L t hL h2 p l₁ q l₂ hcross, ← hsplit]
+    exact hprod
+  have hlt : (l₁ ++ l₂).length < (p :: l').length := by
+    rw [hsplit]
+    simp only [List.length_append, List.length_cons]
+    omega
+  have hge := hmin (l₁ ++ l₂) hshort
+  omega
+
+/-- **Uniqueness of the carrying element, with a chosen basis**: an element of the reflection group
+that carries the chamber of the regular point `x₀` into itself is the identity. The element is a
+word in the wall roots of that chamber (`weylSubgroup_eq_wallReflectionSubgroup` with
+`exists_wordProd`), and such a word is trivial by `wordProd_eq_one_of_chamberOf_eq`. -/
+theorem weylSubgroup_chamberOf_eq_one (hL : L.obj.obj.IsNondegenerate)
+    (h2 : IsRegular (2 : ℤ)) (hpos : (integralSignature L).1 = 1)
+    (ht : 0 < realFormQuadratic L t)
+    {I : Type} [Fintype I] [DecidableEq I] (i₀ : I)
+    (b : Module.Basis I ℤ L.obj.obj.carrier)
+    {x₀ : (realForm L).obj.carrier} (hx₀ : x₀ ∈ weylRegularLocus L t)
+    {w : OrthogonalGroup L.obj} (hw : w ∈ weylSubgroup L hL h2)
+    (hfix : chamberOf L t (realFormOrthogonalHom L w x₀) = chamberOf L t x₀) : w = 1 := by
+  have hwH : w ∈ wallReflectionSubgroup L t hL h2 x₀ := by
+    rw [weylSubgroup_eq_wallReflectionSubgroup L t hL h2 hpos ht i₀ b hx₀] at hw
+    exact hw
+  obtain ⟨l, hl⟩ := exists_wordProd L t hL h2 hwH
+  have hcham : chamberOf L t (realFormOrthogonalHom L (wordProd L t hL h2 x₀ l) x₀)
+      = chamberOf L t x₀ := by
+    rw [hl]
+    exact hfix
+  rw [← hl]
+  exact wordProd_eq_one_of_chamberOf_eq L t hL h2 hpos ht hx₀ l hcham
+
+/-- **Uniqueness of the carrying element** (Davis, *The Geometry and Topology of Coxeter Groups*,
+2008, Lemma 3.2.12, printed p. 33 — `W` acts freely on the chambers — with Theorem 10.1.5 (b),
+printed p. 179; Bourbaki V §3 no. 2, Th. 1 (iii), printed p. 78): an element of `W(M)`
+that carries the chamber of a regular point to itself is the identity. No basis datum is needed:
+the carrier of a finite projective lattice over `ℤ` has a chosen basis and a positive rank as soon
+as the real form carries a point of positive square, which `ht` supplies. -/
+theorem eq_one_of_chamberOf_image_eq (hL : L.obj.obj.IsNondegenerate)
+    (h2 : IsRegular (2 : ℤ)) (hpos : (integralSignature L).1 = 1)
+    (ht : 0 < realFormQuadratic L t)
+    {x₀ : (realForm L).obj.carrier} (hx₀ : x₀ ∈ weylRegularLocus L t)
+    {w : OrthogonalGroup L.obj} (hw : w ∈ weylSubgroup L hL h2)
+    (hfix : chamberOf L t (realFormOrthogonalHom L w x₀) = chamberOf L t x₀) : w = 1 := by
+  classical
+  have hnt : Nontrivial L.obj.obj.carrier := by
+    by_contra h
+    rw [not_nontrivial_iff_subsingleton] at h
+    have hsub : Subsingleton (realForm L).obj.carrier := by
+      have h' : Subsingleton L.obj.obj.carrier := h
+      show Subsingleton (TensorProduct ℤ ℝ L.obj.obj.carrier)
+      infer_instance
+    have ht0 : t = 0 := Subsingleton.elim t 0
+    rw [ht0] at ht
+    simp at ht
+  have hfin : Fintype (Module.Free.ChooseBasisIndex ℤ L.obj.obj.carrier) := inferInstance
+  have hdec : DecidableEq (Module.Free.ChooseBasisIndex ℤ L.obj.obj.carrier) := inferInstance
+  obtain ⟨i₀⟩ := (inferInstance :
+    Nonempty (Module.Free.ChooseBasisIndex ℤ L.obj.obj.carrier))
+  exact weylSubgroup_chamberOf_eq_one L t hL h2 hpos ht i₀
+    (Module.Free.chooseBasis ℤ L.obj.obj.carrier) hx₀ hw hfix
+
+/-- **Simple transitivity on the chambers** (Davis, *The Geometry and Topology of Coxeter Groups*,
+2008, Theorem 6.6.3 (ii), whose proof reads "by Corollary 6.6.6 and Lemma 3.2.12, `W` acts simply
+transitively on `C`", and Theorem 10.1.5 (b), printed p. 179; Bourbaki V §3 no. 2, Th. 1 (iii),
+printed p. 78):
+for regular points `x₀` and `y` of the chosen sheet there is exactly one element of `W(M)` carrying
+the chamber of `x₀` to the chamber of `y`. Existence is `exists_weylSubgroup_chamberOf_eq`;
+uniqueness reads two carriers `w`, `w'` through the difference `w'⁻¹ * w`, which carries the
+chamber of `x₀` to itself and is therefore trivial (`eq_one_of_chamberOf_image_eq`). -/
+theorem existsUnique_weylSubgroup_chamberOf_eq (hL : L.obj.obj.IsNondegenerate)
+    (h2 : IsRegular (2 : ℤ)) (hpos : (integralSignature L).1 = 1)
+    (ht : 0 < realFormQuadratic L t)
+    {I : Type} [Fintype I] [DecidableEq I] (i₀ : I)
+    (b : Module.Basis I ℤ L.obj.obj.carrier)
+    {x₀ y : (realForm L).obj.carrier} (hx₀ : x₀ ∈ weylRegularLocus L t)
+    (hy : y ∈ weylRegularLocus L t) :
+    ∃! w : {w : OrthogonalGroup L.obj // w ∈ weylSubgroup L hL h2},
+      chamberOf L t (realFormOrthogonalHom L (w : OrthogonalGroup L.obj) x₀)
+        = chamberOf L t y := by
+  obtain ⟨w, hw, hcham⟩ := exists_weylSubgroup_chamberOf_eq L t hL h2 hpos ht i₀ b hx₀ hy
+  refine ⟨⟨w, hw⟩, hcham, ?_⟩
+  rintro ⟨w', hw'⟩ hcham'
+  have hreg : ∀ g : OrthogonalGroup L.obj, g ∈ weylSubgroup L hL h2 →
+      realFormOrthogonalHom L g x₀ ∈ weylRegularLocus L t := by
+    intro g hg
+    have himg := weylSubgroup_weylRegularLocus_image L t hL h2 hpos ht hg
+    have hin : realFormOrthogonalHom L g x₀ ∈
+        (realFormOrthogonalHom L g) '' weylRegularLocus L t := ⟨x₀, hx₀, rfl⟩
+    rwa [himg] at hin
+  have hsingle : w'⁻¹ * w = 1 := by
+    refine eq_one_of_chamberOf_image_eq L t hL h2 hpos ht hx₀ (mul_mem (inv_mem hw') hw) ?_
+    have h1 : (realFormIsometryHomeomorph L (w'⁻¹ : OrthogonalGroup L.obj)) ''
+        chamberOf L t (realFormOrthogonalHom L w x₀)
+          = chamberOf L t (realFormOrthogonalHom L (w'⁻¹ : OrthogonalGroup L.obj)
+              (realFormOrthogonalHom L w x₀)) :=
+      weylSubgroup_chamberOf_image L t hL h2 hpos ht (inv_mem hw') (hreg w hw)
+    have h2' : (realFormIsometryHomeomorph L (w'⁻¹ : OrthogonalGroup L.obj)) ''
+        chamberOf L t (realFormOrthogonalHom L w' x₀)
+          = chamberOf L t (realFormOrthogonalHom L (w'⁻¹ : OrthogonalGroup L.obj)
+              (realFormOrthogonalHom L w' x₀)) :=
+      weylSubgroup_chamberOf_image L t hL h2 hpos ht (inv_mem hw') (hreg w' hw')
+    rw [hcham] at h1
+    rw [hcham'] at h2'
+    have hmid : chamberOf L t (realFormOrthogonalHom L (w'⁻¹ : OrthogonalGroup L.obj)
+          (realFormOrthogonalHom L w x₀))
+        = chamberOf L t (realFormOrthogonalHom L (w'⁻¹ : OrthogonalGroup L.obj)
+          (realFormOrthogonalHom L w' x₀)) := by
+      rw [← h1, ← h2']
+    have hone : realFormOrthogonalHom L (w'⁻¹ : OrthogonalGroup L.obj)
+        (realFormOrthogonalHom L w' x₀) = x₀ := by
+      calc realFormOrthogonalHom L (w'⁻¹ : OrthogonalGroup L.obj)
+            (realFormOrthogonalHom L w' x₀)
+          = realFormOrthogonalHom L (w'⁻¹ * w') x₀ := by rw [map_mul]; rfl
+        _ = x₀ := by rw [inv_mul_cancel, map_one (realFormOrthogonalHom L)]; rfl
+    rw [hone] at hmid
+    calc chamberOf L t (realFormOrthogonalHom L (w'⁻¹ * w) x₀)
+        = chamberOf L t (realFormOrthogonalHom L (w'⁻¹ : OrthogonalGroup L.obj)
+            (realFormOrthogonalHom L w x₀)) := by rw [map_mul]; rfl
+      _ = chamberOf L t x₀ := hmid
+  have hw_eq : w = w' := by
+    have h := congrArg (fun g : OrthogonalGroup L.obj => w' * g) hsingle
+    rw [mul_one] at h
+    have h' : w' * (w'⁻¹ * w) = w := by
+      rw [← mul_assoc, mul_inv_cancel, one_mul]
+    rw [← h']
+    exact h.symm ▸ rfl
+  exact Subtype.ext hw_eq.symm
 
 end Descent
 
