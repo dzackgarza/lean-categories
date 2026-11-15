@@ -45,6 +45,10 @@ an `ℝ`-vector space with no extra structure.
   (`rationalClosure_eq_hull`); locally rational cones; locally rational decompositions, with the
   restriction to a rational subcone a rational cone system (`restrictionTo`,
   `IsLocallyRationalDecomposition.restriction`); and the facial decomposition `Σ(bb)`.
+  Of the relation of `C` to its rational closure: `C ⊆ closure C₊` for an open `C`, from the
+  density of the rational points of `L(ℝ)` (`dense_range_rationalPoint`,
+  `subset_closure_rationalClosure`). That `C ⊆ C₊` itself — the cover hypothesis `C ⊆ ⋃ Σ` of the
+  theorems below — is *not* proved; see "What is not carried" under Lemma-Definition 4.5.
 * **The reading of "the restriction"** (the point on which this file takes a position): the
   restriction of `Σ` to a rational subcone `P` is the collection of *faces* of the traces
   `σ ⊓ P`, `σ ∈ Σ` (`faceClosure (restrictionTo Σ P)`), not the traces themselves. The two
@@ -406,6 +410,19 @@ Nothing to port. The argument carried is the clopen one:
 `LocallyFinite.finite_nonempty_inter_compact`
 (`Mathlib/Topology/Compactness/LocallyFinite.lean:30`), all in Mathlib and used as they are.
 
+### LC-09 record for the density of `L(ℚ)` in `L(ℝ)` (2026-11-17)
+
+`content:rational points dense base change` and `content:convex hull dense interior`: no file
+about the density of the rational points of a base change. Mathlib has the three ingredients and
+nothing assembled: `Rat.denseRange_cast` (density of `ℚ` in `ℝ`),
+`image_closure_subset_closure_image`
+(a continuous image of a closure lands in the closure of the image) and `Set.MapsTo.closure` (a map
+that carries `s` into a closed set carries `closure s` into it). Nothing to port: the proof of
+`dense_range_rationalPoint` is those three, plus `TensorProduct.inductionOn`.
+`content:IsExposed face polyhedral` and `content:PointedCone face exposed` belong to the exposure
+question of the pair of members, not to this one; their hits are recorded in the section
+"Lemma-Definition 4.5, the general case" as the nearest thing the corpus has to the cutting form.
+
 ### LC-09 record for discreteness and properness (2026-11-16)
 
 The five queries the unit names for the discreteness of an arithmetic subgroup and the properness
@@ -559,6 +576,48 @@ theorem rationalPoint_rat_smul (q : ℚ) (v : V) :
   rw [rationalPoint_apply, rationalPoint_apply, TensorProduct.smul_tmul', smul_eq_mul, mul_one]
   have h : (q : ℝ) = (q : ℚ) • (1 : ℝ) := by simp
   rw [h, TensorProduct.smul_tmul]
+
+/-- **The rational points of `L(ℝ) = L ⊗_ℚ ℝ` are dense in it.** A simple tensor `r ⊗ₜ v` is the
+limit of the rational points `q ⊗ₜ v` with `q → r` (`Rat.denseRange_cast`), because scalar
+multiplication is continuous and `q ⊗ₜ v = 1 ⊗ₜ (q v)` is a rational point; a general element of
+the tensor product is a finite sum of simple tensors, and a sum of limits of rational points is a
+limit of their sums, which are again rational points, since adding rational points adds the
+vectors. This is the density of `L(ℚ)` in `L(ℝ)`. -/
+theorem dense_range_rationalPoint : Dense (Set.range (rationalPoint (V := V))) := by
+  have hS : ∀ (r : ℝ) (v : V),
+      r • rationalPoint v ∈ closure (Set.range (rationalPoint (V := V))) := by
+    intro r v
+    have hcont : Continuous fun t : ℝ => t • rationalPoint (V := V) v := by
+      show Continuous ((fun t : ℝ => t) • fun _ : ℝ => rationalPoint (V := V) v)
+      exact continuous_id.smul continuous_const
+    have himg := image_closure_subset_closure_image hcont
+      (s := Set.range ((↑) : ℚ → ℝ))
+    rw [(Rat.denseRange_cast (𝕜 := ℝ)).closure_eq, Set.image_univ] at himg
+    have hmem : r • rationalPoint (V := V) v ∈
+        closure ((fun t : ℝ => t • rationalPoint (V := V) v) '' Set.range ((↑) : ℚ → ℝ)) :=
+      himg (Set.mem_range_self r)
+    refine closure_mono ?_ hmem
+    rintro _ ⟨q, ⟨qq, rfl⟩, rfl⟩
+    exact ⟨qq • v, by
+      rw [map_smul]
+      exact IsScalarTower.algebraMap_smul (A := ℝ) qq (rationalPoint (V := V) v)⟩
+  rw [dense_iff_closure_eq, Set.eq_univ_iff_forall]
+  intro x
+  induction x using TensorProduct.inductionOn with
+  | tmul r v =>
+      have h : r ⊗ₜ[ℚ] v = r • rationalPoint v := by
+        rw [rationalPoint_apply, TensorProduct.smul_tmul', smul_eq_mul, mul_one]
+      rw [h]
+      exact hS r v
+  | add y z hy hz =>
+      have hmaps : Set.MapsTo (fun p : realified V × realified V => p.1 + p.2)
+          (Set.range (rationalPoint (V := V)) ×ˢ Set.range (rationalPoint (V := V)))
+          (closure (Set.range (rationalPoint (V := V)))) := by
+        rintro ⟨a, b⟩ ⟨⟨va, rfl⟩, ⟨vb, rfl⟩⟩
+        exact subset_closure ⟨va + vb, by rw [map_add]⟩
+      have hcl := hmaps.closure (continuous_fst.add continuous_snd)
+      rw [closure_prod_eq, closure_closure] at hcl
+      exact hcl (x := (y, z)) ⟨hy, hz⟩
 
 /-! ## Definition 4.1: rational cones and rational cone systems -/
 
@@ -985,6 +1044,32 @@ theorem rationalClosure_eq_hull (C : PointedCone ℝ (realified V)) :
 theorem mem_rationalClosure {C : PointedCone ℝ (realified V)} {x : realified V} :
     x ∈ rationalClosure C ↔ x ∈ convexHull ℝ (rationalBoundary C) :=
   Iff.rfl
+
+/-- **The open cone `C` lies in the closure of `L(ℚ) ∩ C̄`.** A neighbourhood of `x ∈ C` meets the
+rational points (they are dense, `dense_range_rationalPoint`) and meets `C` (it is open), so it
+meets `L(ℚ) ∩ C`, which is contained in `L(ℚ) ∩ C̄`. -/
+theorem subset_closure_rationalBoundary (C : PointedCone ℝ (realified V))
+    (hC : IsOpen (C : Set (realified V))) :
+    (C : Set (realified V)) ⊆ closure (rationalBoundary C) := by
+  intro x hx
+  rw [mem_closure_iff_nhds]
+  intro T hT
+  obtain ⟨U, hUT, hU, hxU⟩ := mem_nhds_iff.1 hT
+  have hopen : IsOpen (U ∩ (C : Set (realified V))) := hU.inter hC
+  have hne : (U ∩ (C : Set (realified V))).Nonempty := ⟨x, hxU, hx⟩
+  obtain ⟨y, hyS, hy⟩ := dense_range_rationalPoint.exists_mem_open hopen hne
+  exact ⟨y, hUT hy.1, ⟨by simpa using hyS, subset_closure hy.2⟩⟩
+
+/-- **The open cone `C` lies in the closure of its rational closure `C₊`** (Looijenga, Definition
+4.2, p. 17). What this does *not* give is `C ⊆ C₊` itself: the convex hull of the rational points of
+`C̄` is not known to be closed, and the step from `C ⊆ closure C₊` to `C ⊆ C₊` is the one the
+support-space theorems below still take as their cover hypothesis (`hcover`). -/
+theorem subset_closure_rationalClosure (C : PointedCone ℝ (realified V))
+    (hC : IsOpen (C : Set (realified V))) :
+    (C : Set (realified V)) ⊆ closure (rationalClosure C) := by
+  refine (subset_closure_rationalBoundary C hC).trans (closure_mono ?_)
+  intro x hx
+  exact mem_rationalClosure.2 (subset_convexHull ℝ (rationalBoundary C) hx)
 
 /-- Looijenga, Definition 4.2, p. 17: a cone is *locally rational* in `C₊` when its
 intersection with every rational subcone of `C₊` is rational. -/
@@ -2811,7 +2896,30 @@ independence holds for every pair of members meeting `C` (`supportSpace_eq_of_lo
   hyperplanes orthogonal to the `ℚ`-isotropic lines (p. 19).
 * Also not carried: that the members of `Σ` cover `C` itself rather than only `C₊`, which the
   theorems above take as the hypothesis `hcover`. It is the one statement about the rational
-  closure, `C ⊆ C₊`, that this file does not prove.
+  closure, `C ⊆ C₊`, that this file does not prove. The source asserts it as part of the notation
+  — "denote by `C₊ ⊃ C` the convex hull of `L(ℚ) ∩ C̄`" (Definition 4.2, text version line 481) —
+  and it is true: `C` is open, so a point of it has a neighbourhood in `C`, and the rational
+  points of that neighbourhood surround it, which puts the point in the convex hull of
+  `L(ℚ) ∩ C̄`. What is carried is `C ⊆ closure C₊` (`subset_closure_rationalClosure`), from the
+  density of `L(ℚ)` in `L(ℝ)` (`dense_range_rationalPoint`). The gap between the two is the step
+  "a point of `C` is a convex combination of *finitely many* rational points of `C̄`", which needs
+  the simplex around the point, and Mathlib has the finite-dimensional simplex machinery
+  (`Convex.interior_closure_eq_interior_of_nonempty_interior`,
+  `interior_convexHull_nonempty_iff_affineSpan_eq_top`) only for normed spaces at this revision,
+  while `L(ℝ)` here carries the module topology.
+* Also not carried, and this is *not* a hypothesis of Definition 4.2 that could be discharged from
+  it: the cutting form `w` of `hexp`. Definition 4.2 (line 481) calls a cone *locally rational in
+  `C₊`* when "its intersection with every rational subcone of `C₊` is rational", and rational means
+  spanned by a **finite** subset of `L(ℚ)` (Definition 4.1, line 459); so the traces of a member on
+  rational subcones are finitely generated, and the members themselves are not. Every face of a
+  finitely generated cone is exposed, and the corpus has that (`Mathlib`'s
+  `Geometry/Convex/Cone/Face`, TauCeti `Geometry/Convex/Cone/Face/Exposed.lean`, and
+  `Analysis/Convex/Polyhedron/Face.lean` for polyhedra), so for a decomposition into finitely
+  generated cones the cutting form and, with `exists_add_smul_of_fg`, its domination would be
+  available; but the members of a decomposition of the round cone `C₊` of Example 4.3 are not
+  finitely generated, `C₊` itself is not, and `exists_add_smul_of_fg` does not apply to them. The
+  cutting form therefore comes, in the source, from the same affine model as the translation space
+  `U`; it is not a consequence of the decomposition axioms.
 -/
 
 section SupportSpaceIndependenceGeneral
