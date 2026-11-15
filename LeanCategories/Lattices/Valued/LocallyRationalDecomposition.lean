@@ -254,12 +254,19 @@ decomposition
   the `Σ`-support space of Lemma-Definition 4.5 as the value at any one member.
 * Not carried, and why: the domination hypothesis is not discharged for the members of a locally
   rational decomposition of `C₊` in the hyperbolic setting of Example 4.3, where `C₊` is the round
-  cone and its pieces are not finitely generated. The source's proof passes through the polyhedra
-  of `A_I(ℝ)` instead, and that passage is not available as stated: the images `π_I τ` of two
-  members above a fixed `σ` differ by a translation along `I`, so they overlap and do not
-  decompose `A_I(ℝ)`, and the polyhedron `{z | (1, z) ∈ π_I τ}` of a member can be bounded, so a
-  minimal member need not be an affine subspace. The incidence data the face step carries is
-  therefore named as a hypothesis rather than derived.
+  cone and its pieces are not finitely generated, so for those `Σ` the independence rests on the
+  incidence hypothesis of the face step. The source reaches it instead through the polyhedra
+  `{z | (1, z) ∈ π_I τ}` of its affine space `A_I(ℝ)`, a minimal member among those meeting `C`,
+  and the translation space of that member, from which it reads `L_σ`. That induction over the
+  affine decomposition is not reconstructed here; the face step is its content in the form and in
+  the cone, without the affine model. A check by hand of the shape, in a basis `e, f, w₁, w₂` of
+  signature `(1, 3)` with `e · f = 1` and `w_i · w_i = -1`: for the single `ℚ`-hyperplane
+  `{z₁ = 0}` through `σ = ℝ≥0 e`, the members above `σ` meeting `C` are the two cells and
+  `C₊ ∩ H`, their polyhedra are the two half-spaces `±z₁ ≥ 0` and the hyperplane between them, all
+  three have translation space `{z₁ = 0}`, and all three support spaces are
+  `span(e, w₂) = I^⊥ ∩ H`, which is the value the source's description gives. The minimal members
+  of the whole decomposition, the isotropic rays, do not meet `C`. Nothing here is proved beyond
+  those three computations of support spaces.
 * Also not carried: the identification of the support spaces of `Σ(bb)` as `V`, `{0}` and the
   hyperplanes orthogonal to the `ℚ`-isotropic lines (p. 19). What is proved here is the
   independence, not that description.
@@ -2726,16 +2733,15 @@ the form and the cone, for a general `Σ`:
 
 * Domination is not discharged for the members of a locally rational decomposition of `C₊` in the
   hyperbolic setting of Example 4.3, where `C₊` is the round cone and its pieces are not finitely
-  generated. The source's proof passes through the polyhedra of `A_I(ℝ)` instead, and that passage
-  is not available as stated: the images `π_I τ` of the members above a fixed `σ` do not decompose
-  `A_I(ℝ)` — two such members differ by a translation along `I`, so their images overlap — and a
-  minimal member of a decomposition of the half-space `{β ≥ 0}` into cones need not be an affine
-  subspace (its polyhedron `Q_τ = {z | (1, z) ∈ π_I τ}` can be bounded, as one hyperplane meeting
-  `C` and containing `σ` shows). `supportSpace_eq_of_face` is the part of the source's argument
-  that does not need that passage; the incidence hypothesis it carries is named, not hidden.
-* The identification of the support spaces of `Σ(bb)` as `V`, `{0}` and the hyperplanes
-  orthogonal to the `ℚ`-isotropic lines (p. 19). What is proved here is the independence, not that
-  description.
+  generated. The source's proof passes through the polyhedra `{z | (1, z) ∈ π_I τ}` of its affine
+  space `A_I(ℝ)`, a minimal member among those meeting `C`, and the translation space of that
+  member, from which it reads `L_σ`; reconstructing that induction is a separate unit, and the face
+  step proven here is its content in the form and the cone, without the affine model. The module
+  docstring records a check by hand of the shape, on the single `ℚ`-hyperplane through `σ` in
+  signature `(1, 3)`: there the polyhedra are two half-spaces and their boundary, the three members
+  above `σ` that meet `C` have one translation space and one support space, and it is the space the
+  source's description gives. Also not carried is the identification of the support spaces of
+  `Σ(bb)` as `V`, `{0}` and the hyperplanes orthogonal to the `ℚ`-isotropic lines (p. 19).
 -/
 
 section SupportSpaceIndependenceGeneral
