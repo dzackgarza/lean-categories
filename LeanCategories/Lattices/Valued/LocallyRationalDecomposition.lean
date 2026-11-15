@@ -2909,6 +2909,18 @@ theorem isClosed_of_moduleTopology {E : Type*} [AddCommGroup E] [Module ℝ E]
   exact isClosed_biInter fun f _ => isClosed_le continuous_const
     (IsModuleTopology.continuous_of_linearMap f)
 
+/-- Linear images preserve finite generation of cones. LC-09 (2026-11-19):
+`content:Submodule.map_span content:PointedCone` found the ray-level specialization; this is
+`Submodule.map_span` at `Nonneg ℝ`, with no rational-structure requirement on the target. -/
+theorem map {E F : Type*} [AddCommGroup E] [Module ℝ E] [AddCommGroup F] [Module ℝ F]
+    {C : PointedCone ℝ E} (hC : C.FG) (f : E →ₗ[ℝ] F) : (C.map f).FG := by
+  classical
+  obtain ⟨s, hs⟩ := hC
+  refine ⟨s.image f, ?_⟩
+  rw [← hs]
+  simp only [PointedCone.map, Finset.coe_image]
+  exact (Submodule.map_span (f : E →ₗ[Nonneg ℝ] F) (s : Set E)).symm
+
 end PointedCone.FG
 
 /-! ## Faces exposed by a nonnegative functional
