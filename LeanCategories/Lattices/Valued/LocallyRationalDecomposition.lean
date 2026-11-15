@@ -14,6 +14,8 @@ public import Mathlib.LinearAlgebra.TensorProduct.Defs
 public import Mathlib.Topology.Algebra.Module.ModuleTopology
 public import Mathlib.Topology.LocallyFinite
 public import Mathlib.LinearAlgebra.BilinearForm.Properties
+public import Mathlib.LinearAlgebra.FreeModule.PID
+public import Mathlib.Algebra.Module.Torsion.Free
 public import Mathlib.Algebra.Module.ZLattice.Basic
 public import Mathlib.LinearAlgebra.Basis.Defs
 public import Mathlib.LinearAlgebra.Dual.Lemmas
@@ -177,9 +179,11 @@ decomposition
   `abs_associated_mul_le_of_both_isotropic` and whose corollary would repeat the denominator
   argument with both denominators.
 
-  What remains, then, is step (i)'s orbit layer: this file has no `Λ`, no `Γ` and no
-  primitive-vector reduction, so the
-    hypothesis stays a hypothesis. The source's own ground for it
+  What remains, then, is the assembly for the corrected `H` (the orbit family of the last section,
+  not a finite family): step (i)'s norm layer is carried there, the per-value finiteness in the two
+  discharged cases is carried here, and what is missing is named in the section on the orbit layer.
+  This `CutsFinitelyOnRational` hypothesis therefore stays a hypothesis, and the source's own ground
+  for it
   ("this collection is locally finite on `C`", p. 18) does not supply it either: local finiteness on
   `C` is a statement about compact pieces of the open cone, while cutting is a statement about the
   sign pattern of a form on a whole rational cone, and a locally finite family can have infinitely
@@ -3665,32 +3669,42 @@ bound on the pairings `ℓ · a` and `ℓ · b`; what is carried here is the res
 * The case of two isotropic generators: `abs_associated_mul_le_of_both_isotropic` gives the product
   bound, and the same denominator argument with *both* denominators bounds both pairings; the
   corollary is not written here, only the bound it would use.
-* **The orbit layer of step (i).** Nothing here knows about `Γ`, its finite-index subgroup, the
-  primitive normal of a `ℚ`-line in `Λ`, or the finiteness of the values of `ℓ²` over a finite union
-  of `Γ`-orbits; `m` is a parameter, and that only finitely many `m` occur is exactly what the
-  arithmeticity of `Γ` supplies and this file does not carry. With it, the lemmas here give the
-  statement of #161 by taking the union over the finitely many values `m`.
+* **The orbit layer of step (i), now carried for the norms.** `H` is not a finite family: a finite
+  family cuts every cone finitely for a trivial reason, so the statement would say nothing about the
+  issue. It is the `Set` `orbitFamily H₀ Γ` — the union of the `Γ`-orbits of the finitely many
+  representatives `H₀`, Looijenga's "collection of `Q`-hyperplanes of `L` which meet `C`" (Example
+  4.3 (b), p. 18; `.tmp-sources/looijenga-math0201218v2.md:487`), infinite as soon as `Γ` is. What
+  the arithmeticity of `Γ` then gives, and what the last section of this file carries, is that *the
+  normals take finitely many values*: for a `ℚ`-line `ℓ` meeting `Λ` the `ℤ`-module `ℓ ∩ Λ` is free
+  of rank one (`exists_primitive_of_line`, from the freeness of submodules of a finitely generated
+  free `ℤ`-module), so `ℓ ∩ Λ = ℤ v_ℓ` with `v_ℓ` unique up to sign
+  (`eq_or_eq_neg_of_span_singleton_eq`); an isometry `e` with `e(Λ) = Λ` carries `ℓ ∩ Λ` onto
+  `e(ℓ) ∩ Λ` (`map_inf_restrictScalars`), so `e(v_ℓ) = ±v_{e(ℓ)}` and `q(v_{e(ℓ)}) = q(v_ℓ)`
+  (`form_eq_of_primitive_map`); hence `H` has no more norm values than `H₀` has members
+  (`finite_form_values_of_orbitFamily`). No coordinates and no gcd: the generator is the basis
+  vector of a free module of rank one.
 
-  The owed statement, as a Lean shape: for a `ℤ`-lattice `Λ ⊆ L(ℚ)` spanning `V` over `ℚ`, a
-  `Γ ⊆ V ≃ₗ[ℚ] V` of isometries with `Λ` `Γ`-stable and of finite index in `O(Λ)`, and `H` a finite
-  family of `ℚ`-lines whose members lie in finitely many `Γ`-orbits,
+  The owed statement, with `H` as it is: for a `ℤ`-lattice `Λ ⊆ L(ℚ)` spanning `V` over `ℚ`, a
+  `Γ ⊆ V ≃ₗ[ℚ] V` of isometries with `Λ` `Γ`-stable, and the orbit family of a finite `H₀`,
 
   ```
-  theorem cutsFinitelyOnRational_of_finiteOrbits [Module.Finite ℚ V]
-      (Λ : Submodule ℤ V) (hΛ : Submodule.span ℚ (Λ : Set V) = ⊤)
-      (Γ : Set (V ≃ₗ[ℚ] V)) (hΓΛ : ∀ e ∈ Γ, Λ.map (e : V →ₗ[ℚ] V) = Λ)
-      (H : Finset (Submodule ℚ V))
-      (hOrb : ∃ H₀ : Finset (Submodule ℚ V), ∀ ℓ ∈ H, ∃ ℓ₀ ∈ H₀, ∃ e ∈ Γ, ℓ = ℓ₀.map e) :
-      CutsFinitelyOnRational Cplus (fun ℓ : H => …)
+  theorem cutsFinitelyOnRational_of_finiteOrbits (Cplus : PointedCone ℝ (realified V))
+      (Λ : Submodule ℤ V) (Γ : Set (V ≃ₗ[ℚ] V)) (H₀ : Finset (Submodule ℚ V))
+      (hΓΛ : ∀ e ∈ Γ, Λ.map (e : V →ₗ[ℚ] V) = Λ)
+      (hΓiso : ∀ e ∈ Γ, ∀ x y, BQ (e x) (e y) = BQ x y)
+      (hH₀ : ∀ ℓ₀ ∈ H₀, ∃ v ≠ 0, Λ ⊓ ℓ₀.restrictScalars ℤ = ℤ ∙ v) :
+      CutsFinitelyOnRational Cplus (fun ℓ : orbitFamily H₀ Γ => …)
   ```
 
-  and it stops at the *first* of the two steps it needs: from the finite orbit representation `hOrb`
-  to the finiteness of `{ℓ² | ℓ ∈ H}`. That needs the primitive normal of a `ℚ`-line in `Λ` (the
-  generator divided by the gcd of its coordinates in a `ℤ`-basis — this file has no `ℤ`-basis), the
-  invariance of `ℓ²` under `Γ`, and the exclusion of the isotropic `ℓ` for a hyperplane meeting `C`
-  (`neg_quadratic_of_associated_eq_zero` gives the sign; the primitive normal is what makes `ℓ²`
-  depend only on the line). Everything past that point is on main:
-  `finite_cutters_of_pair_bounds` per value `m`, and the union over the finitely many values.
+  Its first step is carried (`finite_form_values_of_orbitFamily`: the norm values are a finite set
+  `M`), and so is the per-value finiteness in the two discharged cases. What is not written is the
+  assembly, at two points: the corollary for a pair of two isotropic generators (whose product bound
+  `abs_associated_mul_le_of_both_isotropic` is here) and the transport of "the line `ℓ` cuts the
+  rational cone" to "the form `x ↦ v_ℓ · x` cuts it" — `cutsOn_iff_generators` decides the latter on
+  the cone's rational generators, and the identification of the two cuts is the missing step. The
+  exclusion of an isotropic normal for a hyperplane meeting `C` is not part of it:
+  `neg_quadratic_of_associated_eq_zero` gives `Q ℓ < 0` for the normal of such a hyperplane, from
+  `sigPos Q = 1` and nondegeneracy alone.
 * **The `[Fintype ι] [DecidableEq ι]` binders of the four lattice lemmas, kept deliberately.**
   `linter.unusedFintypeInType` reports them for `finite_span_int_of_pairings_bounded`,
   `finite_cutting_of_pairing_bounds`, `finite_cutting_normals_of_both_timelike` and
@@ -3989,6 +4003,284 @@ theorem finite_cutters_of_pair_bounds {Q : QuadraticForm ℝ (realified V)}
   exact Set.mem_iUnion₂.mpr ⟨a, ha, Set.mem_iUnion₂.mpr ⟨b, hb, hv, hQ, hxa, hxb⟩⟩
 
 end CountingOverRat
+
+/-! ## The lattice and orbit layer: finitely many norms on a finite union of `Γ`-orbits
+
+The hypothesis of Example 4.3 (b), p. 18, for the arithmetic `H` (`CutsFinitelyOnRational` below the
+arrangement section), in the form the source gives it: `H` is a *finite union of `Γ`-orbits* of
+`ℚ`-hyperplanes (`orbitFamily`), not a finite family — a finite family cuts every cone finitely,
+for a trivial reason, and says nothing about the issue.
+
+The mathematical content of the layer, and the step at which the last turn stopped, is that the
+normals of `H` take **finitely many values** on the lattice. Not by coordinates: for a `ℚ`-line `ℓ`
+meeting the lattice `Λ`, the `ℤ`-module `ℓ ∩ Λ` is a submodule of the finitely generated free
+`ℤ`-module `Λ`, hence free (`Module.basisOfFiniteTypeTorsionFree'`,
+`Mathlib/LinearAlgebra/FreeModule/PID.lean:387`), and it is free of rank one because its elements
+are `ℚ`-multiples of one another — a `ℤ`-basis cannot contain two `ℚ`-collinear vectors. So
+`ℓ ∩ Λ = ℤ v_ℓ` for a generator unique up to sign (`eq_or_eq_neg_of_span_singleton_eq`). An isometry
+`e ∈ Γ` with `e(Λ) = Λ` carries `ℓ ∩ Λ` onto `e(ℓ) ∩ Λ` (`map_inf_restrictScalars`), so
+`e(v_ℓ) = ± v_{e(ℓ)}` and the norm of the generator is constant on the orbit
+(`form_eq_of_primitive_map`). Hence `H` has as many norms as `H₀` has members
+(`finite_form_values_of_orbitFamily`).
+
+### LC-09 record for the orbit layer (2026-11-15, #161, sixth unit)
+
+The four queries this unit names, with every hit, plus the two formulations added.
+`content:Submodule.IsPrincipal`: 77 files, 200 matches, 3 returned — atlas-lean `Ideals.lean`
+(`Submodule.IsPrincipal` of an ideal), CBirkbeck/AINTLIB `SmallNumbers/PID.lean` and
+`CaseII/AuxLemmas.lean` (principal ideals in rings of integers); ideals, not submodules of a
+lattice, so not the statement needed. `content:free_of_finite_type_torsion_free`: 34 files, 42
+matches, 3 returned — atlas-lean `NumberTheoryI/code/Cor2344.lean` and
+`MathlibExt/Algebra/Module/QuillenSuslin.lean`, Vilin97/lean-pool `BruhatTits/Lattice/Basic.lean`,
+all of them the same use of Mathlib's `Module.free_of_finite_type_torsion_free'` on a submodule
+`M ⊓ N` of a lattice; that is the recipe ported here (Mathlib's lemma, called, not re-derived).
+`content:Module.Free submodule PID`: 73 files, 1845 matches, no file returned.
+`content:finrank_eq_one_iff`: 148 files, 184 matches, none returned. `content:subgroup Rat cyclic
+finitely generated`: 26 files, 2893 matches, none returned — the subgroup-of-`ℚ` route to the
+generator is not formalized anywhere in the corpus. `content:lattice line primitive vector
+generator`: 85 files, 7662 matches, none returned. Follow-up `file:BruhatTits/Lattice content:inf`:
+chrisflav/bruhat-tits and Vilin97 `BruhatTits/Lattice/Basic.lean`, the nearest neighbour — they
+prove that an intersection of two lattices is a lattice (`IsLattice.isFG`, `Submodule.rank_sup_add_
+rank_inf_eq`) and get freeness of `M ⊓ N` from `Module.free_of_finite_type_torsion_free'`, but not
+that a line's intersection with a lattice is cyclic. Nothing to port beyond that recipe; the
+primitive-vector statement is residue and is proved here (`exists_primitive_of_line`), with the
+rank-one step taken from the `ℚ`-collinearity of two elements of the line rather than from a
+`finrank` computation.
+
+The exclusion of an isotropic normal for a hyperplane meeting `C` is on main and is not repeated:
+`neg_quadratic_of_associated_eq_zero` (below, the hyperbolic section) gives `Q ℓ < 0` for the normal
+of a hyperplane meeting `C`, from `sigPos Q = 1` and nondegeneracy alone.
+
+### What is not carried
+
+The counting lemma itself, for this `H`: per value `-m` the cutters are finite in the two cases that
+are discharged (`finite_cutting_normals_of_both_timelike`, `finite_cutting_normals_of_isotropic`),
+and `finite_form_values_of_orbitFamily` says there are finitely many values; what is not written is
+the assembly — for each value, the finiteness of the set of *lines* whose generator cuts a given
+rational cone, which needs (i) the corollary for a pair of two isotropic generators (the product
+bound `abs_associated_mul_le_of_both_isotropic` is on main, the corollary is not) and (ii) the
+transport of the cut of the line to the cut of the form `v ↦ v · x` on `L(ℝ)`
+(`cutsOn_iff_generators` decides the former, and the identification of the two is the step that is
+missing).
+-/
+
+section OrbitLayer
+
+variable {V : Type u} [AddCommGroup V] [Module ℚ V]
+
+/-- A `ℚ`-vector space is torsion free over `ℤ`, so that a finitely generated `ℤ`-submodule of it is
+free: the hypothesis of `Module.basisOfFiniteTypeTorsionFree'`, which is
+`Module.IsTorsionFree.comap` along `ℤ → ℚ`. -/
+instance instIsTorsionFreeIntOfRat : Module.IsTorsionFree ℤ V :=
+  Module.IsTorsionFree.comap (Int.cast : ℤ → ℚ) (fun r hr => by
+    rw [isRegular_iff_ne_zero] at hr ⊢
+    exact Int.cast_ne_zero.mpr hr) (fun r m => by rw [Int.cast_smul_eq_zsmul])
+
+/-- **A `ℚ`-line meeting a lattice is spanned over `ℤ` by one primitive lattice vector.** The
+`ℤ`-module `ℓ ∩ Λ` is a submodule of the finitely generated free `ℤ`-module `Λ`, hence free
+(`Module.basisOfFiniteTypeTorsionFree'`), and its basis has at most one vector: two basis vectors
+would be `ℤ`-independent, while two elements of a `ℚ`-line are `ℚ`-collinear, and clearing the
+denominator of the ratio turns collinearity into a nontrivial `ℤ`-relation. So `ℓ ∩ Λ = ℤ v`. -/
+theorem exists_primitive_of_line (Λ : Submodule ℤ V) [Module.Finite ℤ ↥Λ]
+    {ℓ : Submodule ℚ V} {v₀ : V} (hℓ : ℓ = Submodule.span ℚ {v₀})
+    (hne : ∃ v : V, v ∈ Λ ⊓ ℓ.restrictScalars ℤ ∧ v ≠ 0) :
+    ∃ v : V, v ∈ Λ ⊓ ℓ.restrictScalars ℤ ∧
+      Λ ⊓ ℓ.restrictScalars ℤ = Submodule.span ℤ {v} := by
+  classical
+  set S : Submodule ℤ V := Λ ⊓ ℓ.restrictScalars ℤ with hS
+  have hfin : Module.Finite ℤ ↥S :=
+    Module.Finite.of_injective (Submodule.inclusion inf_le_left)
+      (fun x y h => Subtype.ext (congrArg (Subtype.val : ↥Λ → V) h))
+  obtain ⟨n, bN⟩ := @Module.basisOfFiniteTypeTorsionFree' ℤ _ ↥S _ _ _ _ hfin _
+  have hnpos : 0 < n := by
+    rcases Nat.eq_zero_or_pos n with h0 | hpos
+    · exfalso
+      obtain ⟨v, hv, hv0⟩ := hne
+      subst h0
+      have hz : (⟨v, hv⟩ : ↥S) = 0 := by
+        rw [← bN.sum_repr (⟨v, hv⟩ : ↥S)]
+        simp
+      exact hv0 (congrArg Subtype.val hz)
+    · exact hpos
+  have hnle : n ≤ 1 := by
+    by_contra hcon
+    have hn2 : 2 ≤ n := by omega
+    let i0 : Fin n := ⟨0, by omega⟩
+    let i1 : Fin n := ⟨1, by omega⟩
+    have h01 : i0 ≠ i1 := by
+      intro h
+      have h2 : (i0 : ℕ) = (i1 : ℕ) := congrArg Fin.val h
+      simp only [i0, i1] at h2
+      omega
+    have hspan0 : ((bN i0 : ↥S) : V) ∈ Submodule.span ℚ {v₀} := by
+      rw [← hℓ]; exact (bN i0).2.2
+    have hspan1 : ((bN i1 : ↥S) : V) ∈ Submodule.span ℚ {v₀} := by
+      rw [← hℓ]; exact (bN i1).2.2
+    obtain ⟨c0, hc0⟩ := Submodule.mem_span_singleton.mp hspan0
+    obtain ⟨c1, hc1⟩ := Submodule.mem_span_singleton.mp hspan1
+    have hx0 : ((bN i0 : ↥S) : V) ≠ 0 := fun h => bN.ne_zero i0 (Subtype.ext h)
+    have hc0ne : c0 ≠ 0 := by
+      intro h
+      exact hx0 (by rw [← hc0, h, zero_smul])
+    set c : ℚ := c1 / c0 with hc
+    have hratio : ((bN i1 : ↥S) : V) = c • ((bN i0 : ↥S) : V) := by
+      rw [hc, ← hc0, ← hc1, smul_smul, div_mul_cancel₀ _ hc0ne]
+    have hden : ((c.den : ℚ)) * c = (c.num : ℚ) := by
+      rw [mul_comm, Rat.mul_den_eq_num]
+    have hrel : (-(c.num) : ℤ) • (bN i0) + (c.den : ℤ) • (bN i1) = 0 := by
+      apply Subtype.ext
+      show ((-(c.num) : ℤ) • ((bN i0 : ↥S) : V) + (c.den : ℤ) • ((bN i1 : ↥S) : V) : V) = 0
+      have hQ : (-(c.num) : ℚ) • ((bN i0 : ↥S) : V) + (c.den : ℚ) • ((bN i1 : ↥S) : V)
+          = 0 := by
+        rw [hratio, smul_smul, hden, neg_smul, neg_add_cancel]
+      rw [← Int.cast_smul_eq_zsmul (R := ℚ), ← Int.cast_smul_eq_zsmul (R := ℚ)]
+      push_cast
+      exact hQ
+    have hinj : Function.Injective (![i0, i1] : Fin 2 → Fin n) := by
+      intro j k hjk
+      fin_cases j <;> fin_cases k <;> simp_all
+    have hpair : LinearIndependent ℤ ![bN i0, bN i1] := by
+      have hfe : (![bN i0, bN i1] : Fin 2 → ↥S) = fun j => bN (![i0, i1] j) := by
+        funext j
+        fin_cases j <;> rfl
+      rw [hfe]
+      exact bN.linearIndependent.comp _ hinj
+    obtain ⟨-, hd⟩ := LinearIndependent.pair_iff.mp hpair _ _ hrel
+    have hdenne : (c.den : ℤ) ≠ 0 := by
+      have := c.den_nz
+      exact_mod_cast this
+    exact hdenne hd
+  have hn1 : n = 1 := by omega
+  obtain rfl : n = 1 := hn1
+  refine ⟨((bN 0 : ↥S) : V), (bN 0).2, ?_⟩
+  refine le_antisymm ?_ ?_
+  · intro z hz
+    have hzsum : (⟨z, hz⟩ : ↥S) = ∑ i : Fin 1, bN.repr ⟨z, hz⟩ i • bN i :=
+      (bN.sum_repr _).symm
+    rw [Fin.sum_univ_one] at hzsum
+    rw [Submodule.mem_span_singleton]
+    refine ⟨bN.repr ⟨z, hz⟩ 0, ?_⟩
+    have hval := congrArg (Subtype.val : ↥S → V) hzsum
+    simpa using hval.symm
+  · intro z hz
+    rw [Submodule.mem_span_singleton] at hz
+    obtain ⟨c, rfl⟩ := hz
+    exact Submodule.smul_mem _ c (bN 0).2
+
+/-- **An isometry of the lattice carries the line-lattice intersection along**: `e(ℓ ∩ Λ)` is
+`e(ℓ) ∩ Λ` when `e(Λ) = Λ`. This is the identity behind the `Γ`-invariance of the norm of the
+generator. -/
+theorem map_inf_restrictScalars (Λ : Submodule ℤ V) {e : V ≃ₗ[ℚ] V}
+    (hΛ : Submodule.map ((e : V →ₗ[ℚ] V).restrictScalars ℤ) Λ = Λ) (ℓ : Submodule ℚ V) :
+    Submodule.map ((e : V →ₗ[ℚ] V).restrictScalars ℤ) (Λ ⊓ ℓ.restrictScalars ℤ)
+      = Λ ⊓ (ℓ.map (e : V →ₗ[ℚ] V)).restrictScalars ℤ := by
+  have hinj : Function.Injective ((e : V →ₗ[ℚ] V).restrictScalars ℤ) :=
+    fun x y h => e.injective (by simpa using h)
+  rw [Submodule.map_inf ((e : V →ₗ[ℚ] V).restrictScalars ℤ) hinj, hΛ,
+    Submodule.restrictScalars_map]
+
+/-- **A generator of a line-lattice intersection is unique up to sign**: two nonzero vectors
+spanning the same `ℤ`-submodule of a torsion free module are `v` and `-v`. -/
+theorem eq_or_eq_neg_of_span_singleton_eq {v w : V}
+    (h : Submodule.span ℤ ({v} : Set V) = Submodule.span ℤ ({w} : Set V)) (hv : v ≠ 0) :
+    w = v ∨ w = -v := by
+  have hw : w ∈ Submodule.span ℤ ({v} : Set V) := by rw [h]; exact Submodule.subset_span rfl
+  have hv' : v ∈ Submodule.span ℤ ({w} : Set V) := by rw [← h]; exact Submodule.subset_span rfl
+  obtain ⟨b, hb⟩ := Submodule.mem_span_singleton.mp hv'
+  obtain ⟨a, ha⟩ := Submodule.mem_span_singleton.mp hw
+  have hba : (b * a) • v = v := by rw [mul_smul, ha, hb]
+  have hzero : ((b * a - 1 : ℤ) : ℚ) • v = 0 := by
+    rw [Int.cast_smul_eq_zsmul, sub_smul, hba, one_smul, sub_self]
+  have hq : ((b * a - 1 : ℤ) : ℚ) = 0 := by
+    rcases smul_eq_zero.mp hzero with h' | h'
+    · exact h'
+    · exact absurd h' hv
+  have hba1 : b * a = 1 := by
+    have h' : b * a - 1 = 0 := by exact_mod_cast hq
+    omega
+  rcases Int.eq_one_or_neg_one_of_mul_eq_one' hba1 with ⟨-, ha1⟩ | ⟨-, ha1⟩
+  · left
+    rw [← ha, ha1, one_smul]
+  · right
+    rw [← ha, ha1, neg_one_smul]
+
+/-- **The norm of the primitive vector is constant on a `Γ`-orbit of hyperplanes** (Looijenga,
+Example 4.3 (b), p. 18): an isometry `e` with `e(Λ) = Λ` carries `ℓ ∩ Λ = ℤ v` onto
+`e(ℓ) ∩ Λ = ℤ (e v)`, whose generator is `e v` up to sign, and `q(e v) = q(v)`: so `q(w) = q(v)` for
+a generator `w` of `e(ℓ) ∩ Λ`. This is the step that makes the normals of `H` take finitely many
+values without any coordinates. -/
+theorem form_eq_of_primitive_map (Λ : Submodule ℤ V) (BQ : LinearMap.BilinForm ℚ V)
+    {e : V ≃ₗ[ℚ] V} (hΛ : Submodule.map ((e : V →ₗ[ℚ] V).restrictScalars ℤ) Λ = Λ)
+    (he : ∀ x y, BQ (e x) (e y) = BQ x y)
+    {ℓ : Submodule ℚ V} {v w : V}
+    (hv : Λ ⊓ ℓ.restrictScalars ℤ = Submodule.span ℤ ({v} : Set V))
+    (hw : Λ ⊓ (ℓ.map (e : V →ₗ[ℚ] V)).restrictScalars ℤ = Submodule.span ℤ ({w} : Set V))
+    (hv0 : v ≠ 0) : BQ w w = BQ v v := by
+  have hspanA : Submodule.map ((e : V →ₗ[ℚ] V).restrictScalars ℤ)
+      (Submodule.span ℤ ({v} : Set V)) = Submodule.span ℤ ({e v} : Set V) := by
+    rw [Submodule.map_span]
+    simp
+  have hspan : Submodule.span ℤ ({w} : Set V) = Submodule.span ℤ ({e v} : Set V) := by
+    have h := map_inf_restrictScalars (Λ := Λ) (e := e) hΛ ℓ
+    rw [hv, hw, hspanA] at h
+    exact h.symm
+  have hev0 : e v ≠ 0 := fun h => hv0 (e.injective (by rw [h]; exact (map_zero e).symm))
+  have hw0 : w ≠ 0 := by
+    intro h0
+    have : e v ∈ Submodule.span ℤ ({w} : Set V) := by
+      rw [hspan]; exact Submodule.subset_span rfl
+    rw [h0, Submodule.mem_span_singleton] at this
+    obtain ⟨c, hc⟩ := this
+    rw [smul_zero] at hc
+    exact hev0 hc.symm
+  rcases eq_or_eq_neg_of_span_singleton_eq hspan.symm hev0 with h | h
+  · rw [h, he]
+  · rw [h]
+    simp only [map_neg, LinearMap.neg_apply, neg_neg]
+    exact he v v
+
+/-- **The family of `ℚ`-hyperplanes generated by a finite family under a set `Γ` of isometries**:
+Looijenga's `H` in Example 4.3 (b), p. 18, a finite union of `Γ`-orbits of `ℚ`-hyperplanes of `L`
+(`.tmp-sources/looijenga-math0201218v2.md:487`: "a collection of Q-hyperplanes of L which meet C").
+It is an infinite set whenever `Γ` is infinite; the finiteness argument of the counting lemma is
+about it, not about a finite family, which would cut every cone finitely for a trivial reason. -/
+def orbitFamily (H₀ : Finset (Submodule ℚ V)) (Γ : Set (V ≃ₗ[ℚ] V)) : Set (Submodule ℚ V) :=
+  ⋃ ℓ₀ ∈ (H₀ : Set (Submodule ℚ V)),
+    {ℓ : Submodule ℚ V | ∃ e ∈ Γ, ℓ = ℓ₀.map (e : V →ₗ[ℚ] V)}
+
+theorem mem_orbitFamily {H₀ : Finset (Submodule ℚ V)} {Γ : Set (V ≃ₗ[ℚ] V)}
+    {ℓ : Submodule ℚ V} :
+    ℓ ∈ orbitFamily H₀ Γ ↔ ∃ ℓ₀ ∈ H₀, ∃ e ∈ Γ, ℓ = ℓ₀.map (e : V →ₗ[ℚ] V) := by
+  rw [orbitFamily, Set.mem_iUnion₂]
+  exact ⟨fun ⟨ℓ₀, _, e, he, h⟩ => ⟨ℓ₀, ‹ℓ₀ ∈ H₀›, e, he, h⟩,
+    fun ⟨ℓ₀, h₀, e, he, h⟩ => ⟨ℓ₀, h₀, e, he, h⟩⟩
+
+/-- **The norms on a finite union of `Γ`-orbits take finitely many values** (Looijenga, Example 4.3
+(b), p. 18): with `Γ` preserving the lattice `Λ` and its form, the generator of `ℓ ∩ Λ` has the same
+norm as the generator of `ℓ₀ ∩ Λ` for the representative `ℓ₀` of its orbit
+(`form_eq_of_primitive_map`), so `H` has no more norm values than `H₀` has members. This is the
+stopping step of the previous turn, and it is what turns "finitely many normals of value `-m` cut
+`P` for each `m`" into the statement of #161. -/
+theorem finite_form_values_of_orbitFamily (Λ : Submodule ℤ V) (BQ : LinearMap.BilinForm ℚ V)
+    (H₀ : Finset (Submodule ℚ V)) (Γ : Set (V ≃ₗ[ℚ] V))
+    (hΓΛ : ∀ e ∈ Γ, Submodule.map ((e : V →ₗ[ℚ] V).restrictScalars ℤ) Λ = Λ)
+    (hΓiso : ∀ e ∈ Γ, ∀ x y, BQ (e x) (e y) = BQ x y)
+    (hH₀ : ∀ ℓ₀ ∈ H₀, ∃ v : V, v ≠ 0 ∧
+      Λ ⊓ ℓ₀.restrictScalars ℤ = Submodule.span ℤ ({v} : Set V)) :
+    ∃ M : Finset ℚ, ∀ ℓ ∈ orbitFamily H₀ Γ, ∀ v : V, v ≠ 0 →
+      Λ ⊓ ℓ.restrictScalars ℤ = Submodule.span ℤ ({v} : Set V) → BQ v v ∈ M := by
+  classical
+  choose g hg0 hgspan using hH₀
+  refine ⟨H₀.attach.image (fun ℓ₀ => BQ (g ℓ₀.1 ℓ₀.2) (g ℓ₀.1 ℓ₀.2)), ?_⟩
+  intro ℓ hℓ v hv0 hv
+  obtain ⟨ℓ₀, hℓ₀, e, he, rfl⟩ := mem_orbitFamily.mp hℓ
+  have hform := form_eq_of_primitive_map (Λ := Λ) (BQ := BQ) (e := e) (hΓΛ e he) (hΓiso e he)
+    (ℓ := ℓ₀) (v := g ℓ₀ hℓ₀) (w := v) (hgspan ℓ₀ hℓ₀) hv (hg0 ℓ₀ hℓ₀)
+  rw [hform]
+  refine Finset.mem_image.2 ⟨⟨ℓ₀, hℓ₀⟩, ?_, rfl⟩
+  exact Finset.mem_attach H₀ ⟨ℓ₀, hℓ₀⟩
+
+end OrbitLayer
 
 end LeanCategories.Lattices.Valued
 
