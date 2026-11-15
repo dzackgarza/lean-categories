@@ -3821,6 +3821,27 @@ theorem supportSpace_eq_of_rational_neighborhood {Cplus : PointedCone ℝ (reali
     exact supportSpace_inf_eq_of_mem_nhds hσb hxσ hK
   exact hlocalA.symm.trans (hAB.trans hlocalB)
 
+/-- **Lemma-Definition 4.5 where `σ` meets the open cone, without `hexp`.** A nonzero point
+`x ∈ σ ∩ C` supplies the rational neighbourhood of `exists_rationalCone_mem_nhds_subset_of_ne_zero`.
+The fact that an open nondegenerate cone cannot contain zero is carried as the explicit condition
+`hC0`; in the hyperbolic setting it follows directly from positivity of the quadratic form. -/
+theorem supportSpace_eq_of_mem_open_of_locallyRational {C : PointedCone ℝ (realified V)}
+    [Module.Finite ℚ V] (hCopen : IsOpen (C : Set (realified V)))
+    {S : Set (PointedCone ℝ (realified V))} (hS : IsLocallyRationalDecomposition (rationalClosure C) S)
+    (hC0 : (0 : realified V) ∉ (C : Set (realified V)))
+    {σ a b : PointedCone ℝ (realified V)} (ha : a ∈ S) (hb : b ∈ S)
+    (hσa : σ ≤ a) (hσb : σ ≤ b)
+    (hσC : ((σ : Set (realified V)) ∩ (C : Set (realified V))).Nonempty) :
+    supportSpace a σ = supportSpace b σ := by
+  obtain ⟨x, hxσ, hxC⟩ := hσC
+  have hx0 : x ≠ 0 := by
+    intro h
+    exact hC0 (h ▸ hxC)
+  obtain ⟨K, hKrat, hKn, hKleC⟩ :=
+    exists_rationalCone_mem_nhds_subset_of_ne_zero hCopen hxC hx0
+  have hKle : K ≤ rationalClosure C := hKleC.trans (subset_rationalClosure C hCopen)
+  exact supportSpace_eq_of_rational_neighborhood hS ha hb hσa hσb hKrat hKle hxσ hKn
+
 /-- **The `Σ`-support space of Lemma-Definition 4.5 is the common value**: if the support space of
 every member of `Σ` that lies above `σ` and meets `C` agrees with one of them, the intersection
 over them — the `sigmaSupportSpace` carried in this file — is that value. -/
