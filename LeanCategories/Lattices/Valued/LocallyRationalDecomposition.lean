@@ -19,6 +19,7 @@ public import Mathlib.Topology.Connected.Clopen
 public import Mathlib.Topology.LocallyFinite
 public import Mathlib.LinearAlgebra.BilinearForm.Orthogonal
 public import Mathlib.LinearAlgebra.BilinearForm.Properties
+public import Mathlib.LinearAlgebra.Matrix.BilinearForm
 public import Mathlib.LinearAlgebra.FreeModule.PID
 public import Mathlib.Algebra.Module.Torsion.Free
 public import Mathlib.Algebra.Module.ZLattice.Basic
@@ -2114,6 +2115,65 @@ theorem not_isLocallyRationalDecompositionTraces_facialDecomposition
 
 end Example43
 
+/-! ## Continuity of a quadratic form on a finite-dimensional module
+
+LC-09 (2026-11-19): `content:Continuous content:QuadraticMap` and
+`content:finite dimensional quadratic form continuous` found only specialized smooth Hessian
+material, not a module-topology statement. The proof uses the matrix of the associated bilinear
+form: basis coordinates are continuous by `IsModuleTopology.continuous_of_linearMap`, and after
+that expansion every summand is a product of continuous real-valued functions.
+-/
+
+namespace LinearMap
+
+/-- A bilinear form on a finite-dimensional real module is jointly continuous in the module
+topology. -/
+theorem continuous_bilin_of_moduleTopology {E : Type*} [AddCommGroup E] [Module ℝ E]
+    [TopologicalSpace E] [IsModuleTopology ℝ E] [Module.Finite ℝ E]
+    (B : E →ₗ[ℝ] E →ₗ[ℝ] ℝ) : Continuous (fun x : E × E => B x.1 x.2) := by
+  let b := Module.finBasis ℝ E
+  let A := LinearMap.BilinForm.toMatrix b B
+  have hb : Continuous b.equivFun := IsModuleTopology.continuous_of_linearMap b.equivFun.toLinearMap
+  have hdot : Continuous (fun p : (Fin (Module.finrank ℝ E) → ℝ) ×
+      (Fin (Module.finrank ℝ E) → ℝ) => dotProduct p.1 (Matrix.mulVec A p.2)) := by
+    unfold dotProduct Matrix.mulVec
+    fun_prop
+  have h := hdot.comp (hb.prodMap hb)
+  refine Continuous.congr h fun x => ?_
+  exact (LinearMap.BilinForm.apply_eq_dotProduct_toMatrix_mulVec b B x.1 x.2).symm
+
+end LinearMap
+
+namespace QuadraticMap
+
+/-- A quadratic form on a finite-dimensional real module is continuous in the module topology. -/
+theorem continuous_of_moduleTopology {E : Type*} [AddCommGroup E] [Module ℝ E]
+    [TopologicalSpace E] [IsModuleTopology ℝ E] [Module.Finite ℝ E]
+    (Q : QuadraticForm ℝ E) : Continuous Q := by
+  have h := (LinearMap.continuous_bilin_of_moduleTopology (associated Q)).comp
+    (continuous_id.prodMk continuous_id)
+  refine Continuous.congr h fun x => ?_
+  change (associated Q) x x = Q x
+  exact associated_self_apply (Q := Q) x
+
+end QuadraticMap
+
+set_option maxHeartbeats 600000 in
+-- The finite-basis expansion also elaborates the two preimage intersections.
+/-- The upper sheet of a quadratic form is open in the finite-dimensional module topology. -/
+theorem isOpen_positiveCone_upper_of_moduleTopology {E : Type*} [AddCommGroup E] [Module ℝ E]
+    [TopologicalSpace E] [IsModuleTopology ℝ E] [Module.Finite ℝ E]
+    (Q : QuadraticForm ℝ E) (t : E) : IsOpen (positiveCone.upper Q t) := by
+  have hQ : IsOpen (Q ⁻¹' Set.Ioi (0 : ℝ)) :=
+    isOpen_Ioi.preimage (QuadraticMap.continuous_of_moduleTopology Q)
+  have hpair : Continuous (fun x : E => (associated Q) x t) :=
+    (LinearMap.continuous_bilin_of_moduleTopology (associated Q)).comp
+      (continuous_id.prodMk continuous_const)
+  have hB : IsOpen ((fun x : E => (associated Q) x t) ⁻¹' Set.Ioi (0 : ℝ)) :=
+    isOpen_Ioi.preimage hpair
+  show IsOpen {x : E | 0 < Q x ∧ 0 < (associated Q) x t}
+  exact hQ.inter hB
+
 /-! ## The hyperbolic setting of Example 4.3, pp. 17-18
 
 Looijenga, Example 4.3, pp. 17-18 (`.tmp-sources/looijenga-math0201218v2.md:487`): `C` is a
@@ -2127,15 +2187,15 @@ subspace is positive definite. That salience is what makes `C₊` a nondegenerat
 hypothesis of `facialDecomposition_isLocallyRational`, in this setting
 (`salient_rationalClosure`).
 
-The one input that is not formalized here is the continuity of `Q` on the real form `L(ℝ)`:
-`C₊` is the hull of `L(ℚ) ∩ C̄`, so it lies on the sheet as soon as the rational points of
-`C̄` satisfy its two defining inequalities, and that is the hypothesis `hcl` of
-`salient_rationalClosure`, stated at the rational points where it is used. It holds because
-`Q` is continuous on the finite-dimensional real form (a sum of products of coordinate
-functionals in any basis); Mathlib at this revision has no `Continuous` statement for a
-quadratic form, and the module topology of `realified V` here carries no `IsTopologicalAddGroup`
-instance from which `FiniteDimensional` could supply `T2Space`, so the continuity enters as that
-hypothesis. -/
+The topological input is the continuity of `Q` on the real form `L(ℝ)`: `C₊` is the hull of
+`L(ℚ) ∩ C̄`, so it lies on the sheet as soon as the rational points of `C̄` satisfy its two
+defining inequalities. The earlier statements retain the hypothesis `hcl` of
+`salient_rationalClosure`, stated at the rational points where it is used. The section above now
+supplies that continuity by a finite-basis matrix expansion
+(`QuadraticMap.continuous_of_moduleTopology`), and
+`isOpen_positiveCone_upper_of_moduleTopology` packages the openness of the upper sheet. Earlier
+`hcl` signatures are left intact; the new theorem means no such hypothesis is needed in the final
+support-space theorem below. -/
 
 section Hyperbolic
 
