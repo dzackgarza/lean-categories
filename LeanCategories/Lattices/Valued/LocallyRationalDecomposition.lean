@@ -9208,6 +9208,59 @@ theorem supportSpace_eq_of_isotropicHalfLine_of_locallyRational
   rw [hN] at hleft hright
   rw [← hleft, ← hright, hlin]
 
+/-- **Hyperbolic dichotomy for a cone with no upper-sheet point.** Such a cone in the closed sheet
+is either zero or an isotropic half line. Any nonzero isotropic points are positively proportional;
+two independent ones would have a timelike sum. -/
+theorem eq_bot_or_isotropicHalfLine_of_not_mem_upper (hpos : sigPos Q = 1)
+    (hnd : Q.Nondegenerate) {ht : 0 < Q t} {σ : PointedCone ℝ (realified V)}
+    (hσle : σ ≤ closedSheet Q hpos ht)
+    (hnot : ¬((σ : Set (realified V)) ∩ (positiveCone.upper Q t : Set (realified V))).Nonempty) :
+    σ = ⊥ ∨ IsIsotropicHalfLine Q σ := by
+  classical
+  have hQ0 (z : realified V) (hz : z ∈ σ) : Q z = 0 := by
+    have hzs := hσle hz
+    by_contra hne
+    have hQpos : 0 < Q z := lt_of_le_of_ne hzs.1 (Ne.symm hne)
+    have htime := pos_associated_of_mem_closedSheet hpos ht hQpos hzs.2
+    exact hnot ⟨z, hz, hQpos, htime⟩
+  by_cases hbot : σ = ⊥
+  · exact Or.inl hbot
+  right
+  have hex : ∃ x ∈ σ, x ≠ 0 := by
+    by_contra h
+    push Not at h
+    exact hbot ((Submodule.eq_bot_iff σ).2 h)
+  obtain ⟨x, hx, hx0⟩ := hex
+  have hpair (z : realified V) (hz : z ∈ σ) (hz0 : z ≠ 0) :
+      0 < (associated Q) z t := by
+    have htUpper : t ∈ positiveCone.upper Q t :=
+      ⟨ht, by rw [associated_self_apply]; exact ht⟩
+    have h := associated_pos_of_mem_upper_of_mem_closedSheet Q hpos hnd ht htUpper
+      (hσle hz) hz0
+    rwa [associated_comm] at h
+  refine ⟨x, hx0, hQ0 x hx, ?_⟩
+  apply le_antisymm
+  · intro z hz
+    by_cases hz0 : z = 0
+    · simp [hz0]
+    obtain ⟨c, hc⟩ := exists_smul_of_associated_eq_zero_of_mem_closedSheet_self
+      hpos hnd ht (hσle hx) (hσle hz) (by
+        have hsum := hQ0 (x + z) (σ.add_mem hx hz)
+        rw [show x + z = (1 : ℝ) • x + (1 : ℝ) • z by simp, quadratic_expand,
+          hQ0 x hx, hQ0 z hz] at hsum
+        nlinarith) hx0
+    have hc' : (associated Q) z t = c * (associated Q) x t := by
+      rw [hc, map_smul, LinearMap.smul_apply, smul_eq_mul]
+    have hc0 : 0 < c := by
+      have hxpos := hpair x hx hx0
+      have hzpos := hpair z hz hz0
+      nlinarith
+    exact PointedCone.mem_hull_singleton.2 ⟨c, hc0.le, hc.symm⟩
+  · intro z hz
+    obtain ⟨c, hc0, hc⟩ := PointedCone.mem_hull_singleton.1 hz
+    rw [← hc]
+    exact σ.smul_mem hc0 hx
+
 end IsotropicRationalTraces
 
 end LeanCategories.Lattices.Valued
