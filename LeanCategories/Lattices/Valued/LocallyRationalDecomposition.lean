@@ -69,7 +69,9 @@ an `ℝ`-vector space with no extra structure.
   (`not_isLocallyRationalDecompositionTraces_facialDecomposition`, and the section "Example 4.3"
   below for the argument), so the literal reading cannot be the one the source's uses need.
   `IsLocallyRationalDecompositionTraces` keeps the literal reading, so that the counterexample
-  is a statement about a named predicate and not a remark about a discarded definition.
+  is a statement about a named predicate and not a remark about a discarded definition. Global
+  face-closure of the original collection is also explicit in `IsLocallyRationalDecomposition`:
+  line 483 excludes the otherwise admissible, strictly coarser singleton `{C₊}`.
 * **The setting of Example 4.3** (pp. 17-18), the hyperbolic one: the closed sheet
   `closedSheet` of a nondegenerate form of signature `(1, dim − 1)` at a positive vector `t`
   is exactly the closure of the open upper sheet (`closedSheet_eq_closure_upper`), so the
@@ -113,8 +115,7 @@ an `ℝ`-vector space with no extra structure.
   and a lifted common-face chain. In particular, the final theorem has no `Dominates`, `hexp`, or
   separate cover hypothesis. Those ingredients belong only to earlier general helper routes.
 
-## Example 4.3 (b): the cells of `Σ(H)` are rational cones, and `Σ(H)` is a locally rational
-decomposition
+## Example 4.3 (b): raw arrangement traces are rational, and `Σ(H)` is locally rational
 
 * The one step of Fourier–Motzkin elimination that the cells need, in the form the repository
   already has it: cutting a cone by a linear halfspace keeps the generators explicit
@@ -124,11 +125,12 @@ decomposition
   of the cut are the images of finitely many points of `L(ℚ)`
   (`image_sliceGens_eq_halfspaceGenerators`), so the cut of a rational cone is a rational cone
   (`isRationalCone_inf_halfspace`).
-* With that, a cell of `Σ(H)` — a rational cone cut by finitely many rational sign conditions —
-  is a rational cone (`isRationalCone_arrangementCone_inf`); a cell is a face of a cell whose
-  sign pattern refines it (`isFaceOf_arrangementCone_commonSignPattern`); and `Σ(H)` is a locally
-  rational decomposition of `C₊` (`arrangementDecomposition_isLocallyRational`), from the
-  hypothesis `CutsFinitelyOnRational` below. That is item (b) of Example 4.3, pp. 17-18.
+* With that, the trace of a raw cell of `Σ(H)` on a rational subcone — a rational cone cut by
+  finitely many rational sign conditions — is a rational cone
+  (`isRationalCone_arrangementCone_inf`); a raw cell is a face of a cell whose sign pattern refines
+  it (`isFaceOf_arrangementCone_commonSignPattern`); and the global face-closure `Σ(H)` of those
+  cells is a locally rational decomposition of `C₊` (`arrangementDecomposition_isLocallyRational`),
+  from the hypothesis `CutsFinitelyOnRational` below. That is item (b) of Example 4.3, pp. 17-18.
 * **The hypothesis, restated: `CutsFinitelyOnRational`.** A `ℚ`-hyperplane *meets* a cone, in the
   sense of Example 4.3 (b) (p. 18; text version `.tmp-sources/looijenga-math0201218v2.md:487`),
   when it cuts it: the form defining it takes both signs on the cone (`CutsOn`). The hypothesis is
@@ -1623,6 +1625,30 @@ theorem isFaceOf_mem_faceClosure {S : Set (PointedCone ℝ (realified V))}
   obtain ⟨σ, hσ, hGσ⟩ := mem_faceClosure.1 hG
   exact mem_faceClosure.2 ⟨σ, hσ, hFG.trans hGσ⟩
 
+/-- Face-closing a family does not change the face-closures of its traces. Both inclusions are
+just transitivity of the face relation. LC-09: `content:faceClosure content:restrictionTo`
+found no competing declaration. -/
+theorem faceClosure_restrictionTo_faceClosure (S : Set (PointedCone ℝ (realified V)))
+    (P : PointedCone ℝ (realified V)) :
+    faceClosure (restrictionTo (faceClosure S) P) = faceClosure (restrictionTo S P) := by
+  ext τ
+  constructor
+  · rintro ⟨a, ⟨σ, ⟨σ₀, hσ₀, hσσ₀⟩, rfl⟩, hτa⟩
+    exact mem_faceClosure.2 ⟨σ₀ ⊓ P, mem_restrictionTo.2 ⟨σ₀, hσ₀, rfl⟩,
+      hτa.trans (hσσ₀.inf (PointedCone.IsFaceOf.refl P))⟩
+  · rintro ⟨a, ⟨σ, hσ, rfl⟩, hτa⟩
+    have hσ' : σ ∈ faceClosure S := mem_faceClosure.2 ⟨σ, hσ, PointedCone.IsFaceOf.refl σ⟩
+    exact mem_faceClosure.2 ⟨σ ⊓ P, mem_restrictionTo.2 ⟨σ, hσ', rfl⟩, hτa⟩
+
+/-- A face of a locally rational cone is locally rational: on a rational `P`, it is a face of
+the original trace, and faces of rational cones are rational. LC-09:
+`content:IsLocallyRationalCone content:IsFaceOf` found no competing declaration. -/
+theorem IsLocallyRationalCone.of_isFaceOf {Cplus σ τ : PointedCone ℝ (realified V)}
+    (hσ : IsLocallyRationalCone Cplus σ) (hτ : τ.IsFaceOf σ) :
+    IsLocallyRationalCone Cplus τ := by
+  intro P hP hPle
+  exact (hσ P hP hPle).of_isFaceOf (hτ.inf (PointedCone.IsFaceOf.refl P))
+
 /-- Looijenga, Definition 4.2, p. 17: a *locally rational decomposition* of `C₊` is a collection
 of convex cones whose union is `C₊` and whose restriction to every rational subcone of `C₊` is
 a rational cone system (Definition 4.1, p. 16, so in particular a *finite* set of nondegenerate
@@ -1643,13 +1669,23 @@ the definition holds (`facialDecomposition_isLocallyRational`), and that is what
 sections use: the source cuts the semitoric extension of §4-5 along the cones of `Σ` and their
 faces. The finiteness in Definition 4.1 is not relaxed: a rational subcone `P` has finitely
 many faces, and every trace of `Σ` on `P` is one of them, so the face-closure of the traces is
-finite. `HasLocallyFiniteTraces` below records local finiteness separately. -/
+finite. `HasLocallyFiniteTraces` below records local finiteness separately.
+
+**Global face-closure.** The restriction clause alone would also hold for the singleton
+`{C₊}`, which would then be strictly coarser than the facial decomposition. That reading is
+incompatible with Looijenga's next assertion, "The coarsest locally rational decomposition of
+C is the collection of faces of `C₊`" (text line 483). Hence the completed definition includes
+the source's global face-closure: every face of a member is a member. The literal trace reading
+is still refuted independently by `not_isLocallyRationalDecompositionTraces_facialDecomposition`. -/
 structure IsLocallyRationalDecomposition (Cplus : PointedCone ℝ (realified V))
     (S : Set (PointedCone ℝ (realified V))) : Prop where
   /-- The union of the members is `C₊`. -/
   union_eq : (⋃ σ ∈ S, (σ : Set (realified V))) = (Cplus : Set (realified V))
   /-- Every member is a locally rational cone in `C₊`. -/
   isLocallyRational : ∀ σ ∈ S, IsLocallyRationalCone Cplus σ
+  /-- Every face of a member belongs to the decomposition (Definition 4.2, including the
+  coarsest-decomposition assertion at text line 483). -/
+  mem_of_isFaceOf : ∀ ⦃σ τ⦄, σ ∈ S → τ.IsFaceOf σ → τ ∈ S
   /-- The restriction to every rational subcone of `C₊` — the faces of the traces — is a
   rational cone system. -/
   restriction : ∀ P : PointedCone ℝ (realified V), IsRationalCone P → P ≤ Cplus →
@@ -1768,30 +1804,52 @@ theorem facialDecomposition_isLocallyRational (Cplus : PointedCone ℝ (realifie
     IsLocallyRationalDecomposition Cplus (facialDecomposition Cplus) where
   union_eq := union_facialDecomposition Cplus
   isLocallyRational := fun _ hσ => isLocallyRationalCone_facialDecomposition Cplus hσ
+  mem_of_isFaceOf _ _ hσ hτ := hτ.trans hσ
   restriction := fun _ hP hPle => isRationalConeSystem_faceClosure_restriction hsal hP hPle
 
 /-- **`Σ(bb)` is the coarsest locally rational decomposition of `C₊`** (Looijenga,
 Definition 4.2, p. 17, text line 483). The first conjunct says that `Σ(bb)` is itself a locally
-rational decomposition; the second is the universal refinement property: every member of every
-locally rational decomposition `S` of `C₊` lies in a member of `Σ(bb)`. In particular,
-`C₊` belongs to `Σ(bb)`, and the cover equation for `S` supplies the refinement inclusion.
+rational decomposition. The second is the subdivision property: for every locally rational
+decomposition `S` and every face `F` of `C₊`, the members of `S` contained in `F` cover `F`.
+Indeed, `S` covers `C₊`; if `σ ∈ S`, then `σ ⊓ F` is a face of `σ`, hence belongs to `S` by
+global face-closure and is contained in `F`.
 
-LC-09: `content:coarsest fan refinement`, `content:PointedCone IsFaceOf refinement`, and
-`content:fan refinement coarsest convex cone` found no competing formalization of this
-statement. -/
+LC-09: `content:coarsest fan refinement`, `content:PointedCone IsFaceOf refinement`,
+`content:fan refinement coarsest convex cone`, `content:locally rational decomposition
+content:coarsest`, and `content:PointedCone.IsFaceOf content:inf`. The last query found
+TauCeti's `PointedCone.IsFaceOf.inf_of_le`, the same face-intersection argument; no source
+formalizes Looijenga's subdivision statement. -/
 theorem facialDecomposition_coarsest (Cplus : PointedCone ℝ (realified V))
     (hsal : (Cplus : ConvexCone ℝ (realified V)).Salient) :
     IsLocallyRationalDecomposition Cplus (facialDecomposition Cplus) ∧
       ∀ S : Set (PointedCone ℝ (realified V)), IsLocallyRationalDecomposition Cplus S →
-        ∀ σ ∈ S, ∃ F ∈ facialDecomposition Cplus, σ ≤ F := by
+        ∀ F ∈ facialDecomposition Cplus, (F : Set (realified V)) =
+          ⋃ σ ∈ S, ⋃ (_ : σ ≤ F), (σ : Set (realified V)) := by
   refine ⟨facialDecomposition_isLocallyRational Cplus hsal, ?_⟩
-  intro S hS σ hσ
-  refine ⟨Cplus, PointedCone.IsFaceOf.refl Cplus, ?_⟩
-  intro x hx
-  have hx' : x ∈ (⋃ σ ∈ S, (σ : Set (realified V))) :=
-    Set.mem_iUnion.2 ⟨σ, Set.mem_iUnion.2 ⟨hσ, hx⟩⟩
-  rw [hS.union_eq] at hx'
-  exact hx'
+  intro S hS F hF
+  refine Set.eq_of_subset_of_subset ?_ ?_
+  · intro x hxF
+    have hxC : x ∈ Cplus := hF.le hxF
+    have hx' : x ∈ (⋃ σ ∈ S, (σ : Set (realified V))) := by
+      rw [hS.union_eq]
+      exact hxC
+    simp only [Set.mem_iUnion] at hx'
+    obtain ⟨σ, hσ, hxσ⟩ := hx'
+    have hσle : σ ≤ Cplus := by
+      intro y hy
+      have hy' : y ∈ (⋃ τ ∈ S, (τ : Set (realified V))) :=
+        Set.mem_iUnion.2 ⟨σ, Set.mem_iUnion.2 ⟨hσ, hy⟩⟩
+      rwa [hS.union_eq] at hy'
+    have hface : (σ ⊓ F).IsFaceOf σ := by
+      refine ⟨inf_le_left, ?_⟩
+      intro y z a hy hz ha hyz
+      exact ⟨hy, hF.mem_of_smul_add_mem (hσle hy) (hσle hz) ha hyz.2⟩
+    exact Set.mem_iUnion.2 ⟨σ ⊓ F, Set.mem_iUnion.2 ⟨hS.mem_of_isFaceOf hσ hface,
+      Set.mem_iUnion.2 ⟨inf_le_right, ⟨hxσ, hxF⟩⟩⟩⟩
+  · intro x hx
+    simp only [Set.mem_iUnion] at hx
+    obtain ⟨σ, -, hσF, hxσ⟩ := hx
+    exact hσF hxσ
 
 /-- **Two members of a locally rational decomposition meet along a common face.** For
 `x, y ∈ a` and `a • x + y ∈ a ⊓ b`, choose a rational subcone containing the three points.
@@ -2990,6 +3048,12 @@ theorem isLocallyRationalDecomposition_coneMap (he : IsRationalEquiv e)
       rw [coneMap_inf, coneMap_coneMap_symm]
     rw [hinf]
     exact he.isRationalCone_coneMap h
+  mem_of_isFaceOf σ τ hσ hτ := by
+    obtain ⟨σ₀, hσ₀, rfl⟩ := hσ
+    refine ⟨coneMap e.symm τ, hS.mem_of_isFaceOf hσ₀ ?_, coneMap_coneMap_symm τ⟩
+    refine (isFaceOf_coneMap_iff (e := e) (F := coneMap e.symm τ) (P := σ₀)).1 ?_
+    rw [coneMap_coneMap_symm]
+    exact hτ
   restriction P hP hPle := by
     have hP' : IsRationalCone (coneMap e.symm P) := he.symm.isRationalCone_coneMap hP
     have hPle' : coneMap e.symm P ≤ Cplus := coneMap_symm_le_of_eq hC hPle
@@ -5026,12 +5090,13 @@ end SupportSpaceDescriptions
 
 Looijenga, Example 4.3 (b), pp. 17-18: a collection `H` of hyperplanes through the origin
 that meet `C` cuts `C₊` into the closures of the components of `C₊` minus their union, the
-decomposition `Σ(H)`. The cones of `Σ(H)` are the *weak sign cells* of the linear forms
-defining the hyperplanes — not a construction of this file: it is the ported sign-cell machine
-of `LeanCategories.Analysis.Convex.SignCell` (the LC-09 hit TauCeti
-`Analysis/Convex/Polyhedron/SignCell/{Basic,Interior}.lean`, from Mei at `a79c5717`). What is
-written here is the glue: the cells of a family of linear forms, the sign pattern of a point,
-and the decomposition of `C₊`.
+decomposition `Σ(H)`. The raw cells (`arrangementCells`) are the *weak sign cells* of the linear
+forms defining the hyperplanes — not a construction of this file: it is the ported sign-cell
+machine of `LeanCategories.Analysis.Convex.SignCell` (the LC-09 hit TauCeti
+`Analysis/Convex/Polyhedron/SignCell/{Basic,Interior}.lean`, from Mei at `a79c5717`). The
+decomposition itself (`arrangementDecomposition`) is the global face-closure of those cells, as
+line 483 requires. What is written here is the glue: the cells of a family of linear forms, the
+sign pattern of a point, and the decomposition of `C₊`.
 
 The forms are taken as continuous linear forms: in Looijenga's setting `L` is finite
 dimensional, where every linear form is continuous, and the ported `weakSignCellCone` is stated
@@ -5074,22 +5139,35 @@ theorem mem_arrangementCone_signPattern (x : realified V) :
   | neg => simpa using le_of_lt (sign_eq_neg_one_iff.1 h)
   | pos => simpa using le_of_lt (sign_eq_one_iff.1 h)
 
-/-- **The decomposition `Σ(H)` of `C₊` attached to a family of forms**: the closed cells
-intersected with the rational closure (Looijenga, Example 4.3 (b), pp. 17-18). -/
-noncomputable def arrangementDecomposition (Cplus : PointedCone ℝ (realified V)) :
+/-- The closed sign cells cut out of `C₊` by a family of forms (Looijenga, Example 4.3 (b),
+pp. 17-18). -/
+noncomputable def arrangementCells (Cplus : PointedCone ℝ (realified V)) :
     Set (PointedCone ℝ (realified V)) :=
   {σ | ∃ s : ι → SignType, σ = arrangementCone φ s ⊓ Cplus}
+
+/-- **The decomposition `Σ(H)` of `C₊` attached to a family of forms**: all faces of the
+closed sign cells intersected with `C₊`. Global face-closure is required by Definition 4.2 as
+completed by the coarsest-decomposition assertion at text line 483; in particular, merely taking
+the cells would make `Σ(∅) = {C₊}` and exclude the proper faces of `C₊`. -/
+noncomputable def arrangementDecomposition (Cplus : PointedCone ℝ (realified V)) :
+    Set (PointedCone ℝ (realified V)) :=
+  faceClosure (arrangementCells φ Cplus)
 
 theorem union_arrangementDecomposition (Cplus : PointedCone ℝ (realified V)) :
     (⋃ σ ∈ arrangementDecomposition φ Cplus, (σ : Set (realified V)))
       = (Cplus : Set (realified V)) := by
   refine Set.eq_of_subset_of_subset ?_ ?_
   · refine Set.iUnion_subset fun σ => Set.iUnion_subset fun hσ => ?_
-    obtain ⟨s, rfl⟩ := hσ
-    exact inf_le_right
+    obtain ⟨τ, ⟨s, rfl⟩, hστ⟩ := hσ
+    exact hστ.le.trans inf_le_right
   · intro x hx
+    have hcell : arrangementCone φ (signPattern φ x) ⊓ Cplus ∈ arrangementCells φ Cplus :=
+      ⟨signPattern φ x, rfl⟩
+    have hmem : arrangementCone φ (signPattern φ x) ⊓ Cplus ∈
+        arrangementDecomposition φ Cplus :=
+      mem_faceClosure.2 ⟨_, hcell, PointedCone.IsFaceOf.refl _⟩
     refine Set.mem_iUnion.2 ⟨arrangementCone φ (signPattern φ x) ⊓ Cplus,
-      Set.mem_iUnion.2 ⟨⟨signPattern φ x, rfl⟩, ?_⟩⟩
+      Set.mem_iUnion.2 ⟨hmem, ?_⟩⟩
     exact ⟨mem_arrangementCone_signPattern φ x, hx⟩
 
 /-- Membership in a cell of `Σ(H)` is a specialization of the cell's sign pattern, so the cells
@@ -5121,8 +5199,9 @@ decomposition
 
 Looijenga, Example 4.3 (b), pp. 17-18: a `Γ`-finite collection `H` of `ℚ`-hyperplanes of `L`
 meeting `C` is locally finite on `C` and decomposes `C₊` into the locally rational decomposition
-`Σ(H)`. The cells are the weak sign cells of the linear forms (the ported sign-cell machine);
-what this section adds is that a cell cut out of a rational cone by finitely many *rational*
+`Σ(H)`. Its raw cells (`arrangementCells`) are the weak sign cells of the linear forms (the ported
+sign-cell machine), and the decomposition is their face-closure. What this section adds is that a
+cell cut out of a rational cone by finitely many *rational*
 sign conditions is a rational cone (`isRationalCone_arrangementCone_inf`, by Fourier–Motzkin
 elimination one form at a time, `isRationalCone_inf_halfspace`), that the cells are faces of one
 another along the common sign pattern (`isFaceOf_arrangementCone_commonSignPattern`), and hence
@@ -5516,7 +5595,8 @@ theorem isRationalCone_arrangementCone_inf {Cplus : PointedCone ℝ (realified V
     exact isRationalCone_inf_signConeInf hφ _ _ P hP
   exact hcell.of_isFaceOf hface
 
-/-- **The cells of `Σ(H)` are locally rational in `C₊`** (Looijenga, Example 4.3 (b), p. 18). -/
+/-- **The raw cells of `Σ(H)` are locally rational in `C₊`** (Looijenga, Example 4.3 (b),
+p. 18). -/
 theorem isLocallyRationalCone_arrangementCone (Cplus : PointedCone ℝ (realified V))
     (hφ : ∀ i, IsRationalForm (φ i).toLinearMap)
     (hcut : CutsFinitelyOnRational Cplus φ) (s : ι → SignType) :
@@ -5528,9 +5608,10 @@ theorem isLocallyRationalCone_arrangementCone (Cplus : PointedCone ℝ (realifie
 
 /-- **`Σ(H)` is a locally rational decomposition of `C₊`** (Looijenga, Example 4.3 (b),
 pp. 17-18), from the hypothesis that only finitely many of the hyperplanes cut any rational subcone
-of `C₊`:
-the cells of the arrangement of such a family `H` decompose `C₊`, each cell is locally rational, and
-the faces of the traces on a rational subcone form a rational cone system.
+of `C₊`: the raw cells cover `C₊`, every face of a raw cell is locally rational, and the faces of
+the traces on a rational subcone form a rational cone system. Taking the global face-closure
+`arrangementDecomposition` supplies the remaining clause of Definition 4.2 and leaves these traces
+unchanged (`faceClosure_restrictionTo_faceClosure`).
 
 The finiteness of that system is where the hypothesis is used: on a rational cone `P`, every cell
 trace is a face of the cell of its reduced pattern (`isFaceOf_inf_reducePattern`), whose pattern is
@@ -5545,9 +5626,11 @@ theorem arrangementDecomposition_isLocallyRational {Cplus : PointedCone ℝ (rea
     IsLocallyRationalDecomposition Cplus (arrangementDecomposition φ Cplus) where
   union_eq := union_arrangementDecomposition φ Cplus
   isLocallyRational σ hσ := by
-    obtain ⟨s, rfl⟩ := hσ
-    exact isLocallyRationalCone_arrangementCone Cplus hφ hcut s
+    obtain ⟨τ, ⟨s, rfl⟩, hστ⟩ := hσ
+    exact (isLocallyRationalCone_arrangementCone Cplus hφ hcut s).of_isFaceOf hστ
+  mem_of_isFaceOf _ _ hσ hτ := isFaceOf_mem_faceClosure hσ hτ
   restriction P hP hPle := by
+    rw [arrangementDecomposition, faceClosure_restrictionTo_faceClosure]
     classical
     have hPf := hcut P hP hPle
     set t := hPf.toFinset with ht
@@ -5555,7 +5638,7 @@ theorem arrangementDecomposition_isLocallyRational {Cplus : PointedCone ℝ (rea
       intro i hi hc
       rw [ht] at hi
       exact hi (by rw [Set.Finite.mem_toFinset]; exact hc)
-    have htrace' : ∀ τ, τ ∈ restrictionTo (arrangementDecomposition φ Cplus) P ↔
+    have htrace' : ∀ τ, τ ∈ restrictionTo (arrangementCells φ Cplus) P ↔
         ∃ s : ι → SignType, τ = arrangementCone φ s ⊓ P := by
       intro τ
       constructor
@@ -5573,7 +5656,7 @@ theorem arrangementDecomposition_isLocallyRational {Cplus : PointedCone ℝ (rea
           exact mem_signCone_weakPattern (hnt i hi) hx
       rw [hweq, inf_comm]
       exact isRationalCone_inf_signConeInf hφ w t P hP
-    have hsub : restrictionTo (arrangementDecomposition φ Cplus) P ⊆
+    have hsub : restrictionTo (arrangementCells φ Cplus) P ⊆
         ⋃ w ∈ Set.range (reducePattern φ P t),
           {τ : PointedCone ℝ (realified V) | τ.IsFaceOf (arrangementCone φ w ⊓ P)} := by
       intro τ hτ
@@ -7474,9 +7557,9 @@ decomposition to be `Γ`-invariant.
   rank-one free `ℤ`-submodule). The sign is real: `g` may reverse the chosen generator. With the
   isometry identity on `L(ℝ)` (`associated_realifiedEquiv`, transported from the rational points by
   `span_range_rationalPoint`) this makes `realifiedEquiv g` permute the forms `normalForm Q (gen ℓ)`
-  up to `±1`, and since the cells of `Σ(H)` are indexed by *all* sign patterns, a sign flip of one
-  form is absorbed by reindexing the patterns
-  (`arrangementDecomposition_coneMap_of_equivariant`).
+  up to `±1`, and since the raw cells of `Σ(H)` are indexed by *all* sign patterns, a sign flip of
+  one form is absorbed by reindexing the patterns. Face-closure then preserves the whole
+  decomposition (`arrangementDecomposition_coneMap_of_equivariant`).
 * `example43b_of_orbitFamily` is the two together: the setting of Example 4.3, `Σ(H)`, and the
   statement of (b) for a `Γ`-finite `H`.
 
@@ -7597,13 +7680,13 @@ theorem coneMap_arrangementCone_of_equivariant {ι : Type*} {φ : ι → (realif
   rwa [coneMap_coneMap_symm] at hmono
 
 omit [Module.Finite ℚ V] in
-/-- **An equivalence permuting the forms leaves the decomposition `Σ(H)` fixed.** -/
-theorem arrangementDecomposition_coneMap_of_equivariant {ι : Type*}
+/-- **An equivalence permuting the forms leaves the raw cells of `Σ(H)` fixed.** -/
+theorem arrangementCells_coneMap_of_equivariant {ι : Type*}
     {φ : ι → (realified V) →L[ℝ] ℝ} {e : (realified V) ≃ₗ[ℝ] (realified V)} {ρ : ι ≃ ι}
     {c : ι → ℝ} (hc : ∀ i, c i ≠ 0)
     (hφ : ∀ i (y : realified V), φ (ρ i) (e y) = c i * φ i y)
     {Cplus : PointedCone ℝ (realified V)} (hC : coneMap e Cplus = Cplus) :
-    coneMap e '' arrangementDecomposition φ Cplus = arrangementDecomposition φ Cplus := by
+    coneMap e '' arrangementCells φ Cplus = arrangementCells φ Cplus := by
   have hsq : ∀ a : SignType, a ≠ 0 → a * a = 1 := by
     rintro (_ | _ | _) h <;> simp_all
   refine Set.Subset.antisymm ?_ ?_
@@ -7620,6 +7703,18 @@ theorem arrangementDecomposition_coneMap_of_equivariant {ι : Type*}
       ⟨fun i => SignType.sign (c i) * u (ρ i), rfl⟩, ?_⟩
     rw [coneMap_inf, hC, coneMap_arrangementCone_of_equivariant hc hφ]
     rw [hpat]
+
+omit [Module.Finite ℚ V] in
+/-- **An equivalence permuting the forms leaves the face-closed decomposition `Σ(H)` fixed.** -/
+theorem arrangementDecomposition_coneMap_of_equivariant {ι : Type*}
+    {φ : ι → (realified V) →L[ℝ] ℝ} {e : (realified V) ≃ₗ[ℝ] (realified V)} {ρ : ι ≃ ι}
+    {c : ι → ℝ} (hc : ∀ i, c i ≠ 0)
+    (hφ : ∀ i (y : realified V), φ (ρ i) (e y) = c i * φ i y)
+    {Cplus : PointedCone ℝ (realified V)} (hC : coneMap e Cplus = Cplus) :
+    coneMap e '' arrangementDecomposition φ Cplus = arrangementDecomposition φ Cplus := by
+  change coneMap e '' faceClosure (arrangementCells φ Cplus) =
+    faceClosure (arrangementCells φ Cplus)
+  rw [← faceClosure_coneMap, arrangementCells_coneMap_of_equivariant hc hφ hC]
 
 omit [Module.Finite ℚ V] in
 /-- The image of a hyperplane of the family under a member of `Γ`, as a hyperplane of the family:
