@@ -3148,6 +3148,40 @@ theorem supportSpace_map_mkQ_bot_eq_topologicalClosure_lineal [Module.Finite ℚ
   change (PointedCone.lineal (τ.map N.mkQ).topologicalClosure).comap N.mkQ = supportSpace τ σ
   rw [← supportSpace_map_mkQ_bot, supportSpace_bot_eq_topologicalClosure_lineal]
 
+/-- **Quotienting by a line respects intersections of cones containing its generator.** If
+`e ∈ τ` and `e ∈ K`, then `(τ ⊓ K).map mkQ = τ.map mkQ ⊓ K.map mkQ`. One inclusion is
+functoriality. For the other, representatives `x ∈ τ` and `y ∈ K` of the same quotient point
+satisfy `y - x = λ • e`. If `0 ≤ λ`, replace the `K`-representative by `y + λ • e = x`; if `λ < 0`,
+replace the `τ`-representative by `x - λ • e = y`. -/
+theorem map_inf_eq_inf_map_of_span_singleton {E : Type*} [AddCommGroup E] [Module ℝ E]
+    {e : E} {τ K : PointedCone ℝ E} (heτ : e ∈ τ) (heK : e ∈ K) :
+    let N := Submodule.span ℝ ({e} : Set E)
+    (τ ⊓ K).map N.mkQ = τ.map N.mkQ ⊓ K.map N.mkQ := by
+  let N := Submodule.span ℝ ({e} : Set E)
+  change (τ ⊓ K).map N.mkQ = τ.map N.mkQ ⊓ K.map N.mkQ
+  apply le_antisymm
+  · intro z hz
+    obtain ⟨x, hx, rfl⟩ := hz
+    exact ⟨⟨x, hx.1, rfl⟩, ⟨x, hx.2, rfl⟩⟩
+  · intro z hz
+    obtain ⟨x, hx, rfl⟩ := hz.1
+    obtain ⟨y, hy, hq⟩ := hz.2
+    have hdiff' : x - y ∈ N := by
+      simpa only [sub_eq_add_neg, add_comm] using (Submodule.Quotient.eq' N).mp hq
+    have hdiff : y - x ∈ N := by simpa only [neg_sub] using N.neg_mem hdiff'
+    obtain ⟨r, hr⟩ := Submodule.mem_span_singleton.1 hdiff
+    rcases lt_or_ge (0 : ℝ) r with hr0 | hr0
+    · have hyτ : y ∈ τ := by
+        have hm : x + r • e ∈ τ := τ.add_mem hx (τ.smul_mem hr0.le heτ)
+        rw [hr] at hm
+        convert hm using 1; abel
+      exact ⟨y, ⟨hyτ, hy⟩, hq⟩
+    · have hxK : x ∈ K := by
+        have hm : y + (-r) • e ∈ K := K.add_mem hy (K.smul_mem (neg_nonneg.mpr hr0) heK)
+        rw [neg_smul, hr] at hm
+        convert hm using 1; abel
+      exact ⟨x, ⟨hx, hxK⟩, rfl⟩
+
 /-- **Locality of the supporting forms at a point of `σ`.** If `K` is a neighbourhood of
 `x ∈ σ`, then the cone `τ` and its trace `τ ⊓ K` have the same forms nonnegative on them and zero
 on `σ`. For `y ∈ τ`, the points `x + t • y` lie in `τ` for `t ≥ 0` and in `K` for sufficiently
