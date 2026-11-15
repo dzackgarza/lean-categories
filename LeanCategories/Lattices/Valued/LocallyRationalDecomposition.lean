@@ -4580,6 +4580,67 @@ theorem reflTransGen_inf_nonempty_of_convex {C : PointedCone ℝ (realified V)}
       ⟨Submodule.mem_inf.2 ⟨hta.2, htb.2⟩, segParam_mem_of_convex hconv hx hy htI⟩⟩⟩
   exact reflTransGen_map_of_step (fun i : ι => i.1.1) hstep hchain
 
+/-- Set-carrier form of `reflTransGen_inf_nonempty_of_convex`. Only convexity and closedness of
+`C` enter the chain argument; a pointed-cone witness is unnecessary. LC-09 (2026-11-19):
+`content:reflTransGen_inf_nonempty_of_convex` found no second owner, and
+`content:finite closed cover preconnected chain` found a finite closed-cover overlap graph with
+the same connectivity content. The implementation below reuses the proof immediately above. -/
+theorem reflTransGen_inf_nonempty_of_convex_set {C : Set (realified V)}
+    {S : Set (PointedCone ℝ (realified V))}
+    (hconv : Convex ℝ C)
+    (hclosed : ∀ τ ∈ S, IsClosed ((τ : PointedCone ℝ (realified V)) : Set (realified V)))
+    (hcover : ∀ z ∈ C, ∃ τ ∈ S, z ∈ τ)
+    (hloc : LocallyFinite fun τ : {τ : PointedCone ℝ (realified V) // τ ∈ S} =>
+      ((τ.1 : PointedCone ℝ (realified V)) : Set (realified V)))
+    {x y : realified V} (hx : x ∈ C) (hy : y ∈ C)
+    {τ τ' : PointedCone ℝ (realified V)} (hτ : τ ∈ S) (hτ' : τ' ∈ S)
+    (hxτ : x ∈ τ) (hyτ' : y ∈ τ') :
+    Relation.ReflTransGen (fun a b => a ∈ S ∧ b ∈ S ∧
+      (((a ⊓ b : PointedCone ℝ (realified V)) : Set (realified V)) ∩ C).Nonempty) τ τ' := by
+  classical
+  have hseg : ∀ t ∈ Set.Icc (0 : ℝ) 1, segParam x y t ∈ C := by
+    intro t ht
+    have h : segParam x y t = (1 - t) • x + t • y := by
+      rw [segParam, smul_sub, sub_smul, one_smul]
+      abel
+    rw [h]
+    exact hconv hx hy (by linarith [ht.2]) ht.1 (by ring)
+  set ι := {i : {τ : PointedCone ℝ (realified V) // τ ∈ S} //
+    (((i.1 : PointedCone ℝ (realified V)) : Set (realified V)) ∩ seg x y).Nonempty} with hιdef
+  have hιfin : Finite ι := (hloc.finite_nonempty_inter_compact (isCompact_seg x y)).to_subtype
+  let J : ι → Set ℝ := fun j => Set.Icc (0 : ℝ) 1 ∩ segParam x y ⁻¹'
+    ((j.1.1 : PointedCone ℝ (realified V)) : Set (realified V))
+  have hJclosed : ∀ j : ι, IsClosed (J j) := fun j =>
+    isClosed_Icc.inter ((hclosed j.1.1 j.1.2).preimage (continuous_segParam x y))
+  have hJcover : ∀ t ∈ Set.Icc (0 : ℝ) 1, ∃ j : ι, t ∈ J j := by
+    intro t ht
+    obtain ⟨τ₀, hτ₀S, hτ₀⟩ := hcover _ (hseg t ht)
+    exact ⟨⟨⟨τ₀, hτ₀S⟩, ⟨segParam x y t, hτ₀, ⟨t, ht, rfl⟩⟩⟩, ht, hτ₀⟩
+  have hxseg : x ∈ seg x y := ⟨0, ⟨le_refl 0, zero_le_one⟩, segParam_zero x y⟩
+  have hyseg : y ∈ seg x y := ⟨1, ⟨zero_le_one, le_refl 1⟩, segParam_one x y⟩
+  let i₀ : ι := ⟨⟨τ, hτ⟩, ⟨x, hxτ, hxseg⟩⟩
+  let i₁ : ι := ⟨⟨τ', hτ'⟩, ⟨y, hyτ', hyseg⟩⟩
+  have h0 : (J i₀ ∩ Set.Icc (0 : ℝ) 1).Nonempty :=
+    ⟨0, ⟨⟨⟨le_refl 0, zero_le_one⟩, by
+        change segParam x y 0 ∈ ((i₀.1.1 : PointedCone ℝ (realified V)) : Set (realified V))
+        rw [segParam_zero]
+        exact hxτ⟩, ⟨le_refl 0, zero_le_one⟩⟩⟩
+  have h1 : (J i₁ ∩ Set.Icc (0 : ℝ) 1).Nonempty :=
+    ⟨1, ⟨⟨⟨zero_le_one, le_refl 1⟩, by
+        change segParam x y 1 ∈ ((i₁.1.1 : PointedCone ℝ (realified V)) : Set (realified V))
+        rw [segParam_one]
+        exact hyτ'⟩, ⟨zero_le_one, le_refl 1⟩⟩⟩
+  have hchain := reflTransGen_inter_nonempty_of_isPreconnected J isPreconnected_Icc hJclosed
+    hJcover h0 h1
+  let rcone : PointedCone ℝ (realified V) → PointedCone ℝ (realified V) → Prop :=
+    fun a b => a ∈ S ∧ b ∈ S ∧
+      (((a ⊓ b : PointedCone ℝ (realified V)) : Set (realified V)) ∩ C).Nonempty
+  have hstep : ∀ a b : ι, (J a ∩ J b ∩ Set.Icc (0 : ℝ) 1).Nonempty → rcone a.1.1 b.1.1 := by
+    rintro a b ⟨t, ⟨hta, htb⟩, htI⟩
+    exact ⟨a.1.2, b.1.2, ⟨segParam x y t,
+      ⟨Submodule.mem_inf.2 ⟨hta.2, htb.2⟩, hseg t htI⟩⟩⟩
+  exact reflTransGen_map_of_step (fun i : ι => i.1.1) hstep hchain
+
 end ConeConnectivity
 
 section SupportSpaceIndependenceLocallyFinite
