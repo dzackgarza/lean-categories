@@ -8687,6 +8687,92 @@ theorem mem_map_of_mem_topologicalClosure_of_isotropicHalfspace (hpos : sigPos Q
   obtain ⟨w, hw, hq⟩ := hmem
   exact ⟨w, hw.1, hq⟩
 
+/-- **The projected star covers the open isotropic half-space.** A finite rational restriction
+has closed traces. On the intersection of the complements of the traces not containing `e`, every
+covered point belongs to a trace containing `e`. Apply this to `e + r • x`, project, and rescale.
+LC-09 (2026-11-19): `content:isotropic star cover neighbourhood` and
+`content:star cone cover relative interior` found no competing declaration. -/
+theorem exists_mem_map_star_of_isotropicHalfspace (hpos : sigPos Q = 1)
+    (hnd : Q.Nondegenerate) {ht : 0 < Q t}
+    {S : Set (PointedCone ℝ (realified V))}
+    (hS : IsLocallyRationalDecomposition (rationalClosure (closedSheet Q hpos ht)) S)
+    {e : realified V} (he0 : e ≠ 0) (heQ : Q e = 0)
+    {a₀ : PointedCone ℝ (realified V)}
+    (hea₀ : PointedCone.hull ℝ ({e} : Set (realified V)) ≤ a₀) (ha₀ : a₀ ∈ S) :
+    let N := Submodule.span ℝ ({e} : Set (realified V))
+    let _ : ContinuousAdd (realified V ⧸ N) := IsModuleTopology.toContinuousAdd ℝ _
+    ∀ {z : realified V ⧸ N}, 0 < isotropicHalfspaceForm Q heQ z →
+      ∃ a ∈ S, PointedCone.hull ℝ ({e} : Set (realified V)) ≤ a ∧ z ∈ a.map N.mkQ := by
+  classical
+  let N := Submodule.span ℝ ({e} : Set (realified V))
+  let _ : ContinuousAdd (realified V ⧸ N) := IsModuleTopology.toContinuousAdd ℝ _
+  change ∀ {z : realified V ⧸ N}, 0 < isotropicHalfspaceForm Q heQ z →
+    ∃ a ∈ S, PointedCone.hull ℝ ({e} : Set (realified V)) ≤ a ∧ z ∈ a.map N.mkQ
+  intro z hzβ
+  have hrayle : PointedCone.hull ℝ ({e} : Set (realified V)) ≤
+      rationalClosure (closedSheet Q hpos ht) := hea₀.trans (hS.le ha₀)
+  have heC : e ∈ rationalClosure (closedSheet Q hpos ht) :=
+    hrayle (PointedCone.subset_hull (Set.mem_singleton e))
+  have heSheet : e ∈ closedSheet Q hpos ht := rationalClosure_le_closedSheet hpos heC
+  have hrayrat : IsRationalCone (PointedCone.hull ℝ ({e} : Set (realified V))) :=
+    IsIsotropicHalfLine.isRationalCone_of_le_of_mem hpos hnd hS
+      ⟨e, he0, heQ, rfl⟩ ha₀ hea₀
+  have him : z ∈ N.mkQ '' (positiveCone.upper Q t) := by
+    rw [image_mkQ_upper_eq Q hpos hnd ht he0 heQ heSheet.2]
+    exact hzβ
+  obtain ⟨x, hxC, hxq⟩ := him
+  obtain ⟨K, hKrat, hKle, hrayK, hKx, -⟩ :=
+    exists_rationalCone_sup_mem_nhds_of_isotropic hpos hrayle hrayrat hxC hxC
+  have heK : e ∈ K := hrayK (PointedCone.subset_hull (Set.mem_singleton e))
+  have hxK : x ∈ K := mem_of_mem_nhds hKx
+  let RC := faceClosure (restrictionTo S K)
+  let R := hS.restriction K hKrat hKle
+  let ι := {B : PointedCone ℝ (realified V) // B ∈ RC}
+  let _ : Finite ι := R.finite.to_subtype
+  have hclosed (B : ι) : IsClosed ((B.1 : PointedCone ℝ (realified V)) :
+      Set (realified V)) := by
+    obtain ⟨sG, hsG⟩ := R.isRational B.1 B.2
+    let T := sG.image rationalPoint
+    have hBT : B.1 = PointedCone.hull ℝ (T : Set (realified V)) := by
+      simpa [T] using hsG
+    exact PointedCone.FG.isClosed_of_moduleTopology ⟨T, hBT.symm⟩
+  let U : Set (realified V) := ⋂ B : ι, ⋂ (_ : e ∉ (B.1 : Set (realified V))),
+    (B.1 : Set (realified V))ᶜ
+  have hU : U ∈ 𝓝 e := by
+    exact (locallyFinite_of_finite (fun B : ι => (B.1 : Set (realified V)))).iInter_compl_mem_nhds
+      hclosed e
+  have htend : Filter.Tendsto (fun r : ℝ => e + r • x) (𝓝 0) (𝓝 e) := by
+    have hc : Continuous (fun r : ℝ => e + r • x) :=
+      continuous_const.add (continuous_id.smul continuous_const)
+    simpa only [ContinuousAt, zero_smul, add_zero] using hc.continuousAt (x := 0)
+  obtain ⟨r, hr, hrU⟩ := (htend.eventually hU).exists_gt
+  have hyK : e + r • x ∈ K := K.add_mem heK (K.smul_mem hr.le hxK)
+  have hyUnion : e + r • x ∈ ⋃ b ∈ S, (b : Set (realified V)) := by
+    rw [hS.union_eq]
+    exact hKle hyK
+  obtain ⟨b, hb⟩ := Set.mem_iUnion.1 hyUnion
+  obtain ⟨hbS, hyb⟩ := Set.mem_iUnion.1 hb
+  have hBR : b ⊓ K ∈ RC := mem_faceClosure.2 ⟨b ⊓ K,
+    mem_restrictionTo.2 ⟨b, hbS, rfl⟩, PointedCone.IsFaceOf.refl (b ⊓ K)⟩
+  have hyB : e + r • x ∈ b ⊓ K := ⟨hyb, hyK⟩
+  have heB : e ∈ b ⊓ K := by
+    by_contra heB
+    have hyU : e + r • x ∈ U := hrU
+    exact (Set.mem_iInter.1 (Set.mem_iInter.1 hyU ⟨b ⊓ K, hBR⟩) heB) hyB
+  have hrayb : PointedCone.hull ℝ ({e} : Set (realified V)) ≤ b := by
+    intro w hw
+    obtain ⟨c, hc0, hc⟩ := PointedCone.mem_hull_singleton.1 hw
+    rw [← hc]
+    exact b.smul_mem hc0 heB.1
+  have heq0 : N.mkQ e = 0 := by
+    rw [Submodule.mkQ_apply, Submodule.Quotient.mk_eq_zero]
+    exact Submodule.subset_span (Set.mem_singleton e)
+  have hscale : (r⁻¹ : ℝ) • N.mkQ (e + r • x) = z := by
+    rw [map_add, map_smul, heq0, zero_add, smul_smul, inv_mul_cancel₀ hr.ne', one_smul, hxq]
+  refine ⟨b, hbS, hrayb, ?_⟩
+  rw [← hscale]
+  exact (b.map N.mkQ).smul_mem (inv_nonneg.2 hr.le) ⟨e + r • x, hyB.1, rfl⟩
+
 end IsotropicRationalTraces
 
 end LeanCategories.Lattices.Valued
