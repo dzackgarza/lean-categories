@@ -13,6 +13,7 @@ public import Mathlib.Analysis.Convex.Topology
 public import Mathlib.LinearAlgebra.TensorProduct.Defs
 public import Mathlib.Topology.Algebra.Module.ModuleTopology
 public import Mathlib.Topology.LocallyFinite
+public import Mathlib.LinearAlgebra.BilinearForm.Orthogonal
 public import Mathlib.LinearAlgebra.BilinearForm.Properties
 public import Mathlib.LinearAlgebra.FreeModule.PID
 public import Mathlib.Algebra.Module.Torsion.Free
@@ -3314,6 +3315,130 @@ theorem cutsOn_iff_generators (P : PointedCone ℝ (realified V)) {s : Finset V}
     · exact hP ▸ PointedCone.subset_hull (Set.mem_image_of_mem _ (by exact_mod_cast hv))
     · exact hP ▸ PointedCone.subset_hull (Set.mem_image_of_mem _ (by exact_mod_cast hw))
 
+/-! ## The cut of a `ℚ`-hyperplane: the hyperplane of a line, and the form of its generator
+
+`H` is carried by the `ℚ`-lines of its normals (`orbitFamily`); a member *cuts* a cone when the
+cone has points on both sides of the hyperplane that line cuts out (`HyperplaneCuts`). This section
+identifies the cut of the hyperplane with the cut of the form `x ↦ ⟨v, x⟩` of a generator `v` of the
+line (`hyperplaneCuts_iff_cutsOn`), so that the counting lemma over `ℚ` decides it on the rational
+generators of a rational cone (`hyperplaneCuts_iff_generators`, by `cutsOn_iff_generators`). -/
+
+/-- The real form of a rational covector as a continuous linear form: on the module topology every
+linear form is continuous (`IsModuleTopology.continuous_of_linearMap`), so no continuity hypothesis
+enters. -/
+noncomputable def normalForm (Q : QuadraticForm ℝ (realified V)) (v : V) :
+    (realified V) →L[ℝ] ℝ :=
+  ⟨(associated Q) (rationalPoint v), IsModuleTopology.continuous_of_linearMap _⟩
+
+@[simp] theorem normalForm_apply (Q : QuadraticForm ℝ (realified V)) (v : V)
+    (x : realified V) : normalForm Q v x = (associated Q) (rationalPoint v) x := rfl
+
+theorem normalForm_toLinearMap (Q : QuadraticForm ℝ (realified V)) (v : V) :
+    (normalForm Q v).toLinearMap = (associated Q) (rationalPoint v) := rfl
+
+
+/-- The `ℝ`-hyperplane of a `ℚ`-line of normals: the orthogonal complement in `L(ℝ)` of the real
+span of the rational points of the line. An element of `orbitFamily` carries a `ℚ`-hyperplane by
+its normal line, and this is the hyperplane itself. -/
+noncomputable def hyperplaneOf (Q : QuadraticForm ℝ (realified V)) (ℓ : Submodule ℚ V) :
+    Submodule ℝ (realified V) :=
+  LinearMap.BilinForm.orthogonal (associated Q)
+    (Submodule.span ℝ (rationalPoint '' (ℓ : Set V)))
+
+/-- **The hyperplane of a line is the kernel of the form of its generator.** -/
+theorem hyperplaneOf_span_singleton (Q : QuadraticForm ℝ (realified V)) {ℓ : Submodule ℚ V}
+    {v : V} (hℓ : ℓ = Submodule.span ℚ ({v} : Set V)) :
+    hyperplaneOf Q ℓ = LinearMap.ker ((associated Q) (rationalPoint v)) := by
+  have hcoe : (Submodule.map (rationalPoint (V := V)) ℓ : Set (realified V))
+      = rationalPoint (V := V) '' (ℓ : Set V) := rfl
+  have hmap : Submodule.map (rationalPoint (V := V)) ℓ
+      = Submodule.span ℚ ({rationalPoint v} : Set (realified V)) := by
+    rw [hℓ, Submodule.map_span, Set.image_singleton]
+  have hspan : Submodule.span ℝ (rationalPoint (V := V) '' (ℓ : Set V))
+      = Submodule.span ℝ ({rationalPoint v} : Set (realified V)) := by
+    rw [← hcoe, hmap, Submodule.span_span_of_tower]
+  rw [hyperplaneOf, hspan]
+  refine le_antisymm ?_ ?_
+  · intro x hx
+    rw [LinearMap.mem_ker]
+    exact (LinearMap.BilinForm.mem_orthogonal_iff.mp hx) (rationalPoint v)
+      (Submodule.subset_span rfl)
+  · intro x hx
+    rw [LinearMap.mem_ker] at hx
+    refine LinearMap.BilinForm.mem_orthogonal_iff.mpr ?_
+    intro y hy
+    obtain ⟨c, hc⟩ := Submodule.mem_span_singleton.mp hy
+    rw [← hc, map_smul, LinearMap.smul_apply, smul_eq_mul, hx, mul_zero]
+
+/-- Two points of `L(ℝ)` lie on *opposite sides* of a hyperplane when neither lies on it and the
+segment between them meets it. This is what "the hyperplane separates them" means below, and it
+names no linear form, only the hyperplane. -/
+def OppositeSides (H : Submodule ℝ (realified V)) (x y : realified V) : Prop :=
+  x ∉ H ∧ y ∉ H ∧ ∃ t : ℝ, 0 < t ∧ t < 1 ∧ t • x + (1 - t) • y ∈ H
+
+/-- **A `ℚ`-hyperplane cuts a cone**: the cone has two points on opposite sides of it. This is
+Looijenga's "meets" for the hyperplanes of `H` in Example 4.3 (b), p. 18
+(`.tmp-sources/looijenga-math0201218v2.md:487`), stated for the cone a hyperplane cuts — `CutsOn`
+for a form, of which `hyperplaneCuts_iff_cutsOn` below shows this is the form-free version. -/
+def HyperplaneCuts (Q : QuadraticForm ℝ (realified V)) (ℓ : Submodule ℚ V)
+    (P : PointedCone ℝ (realified V)) : Prop :=
+  ∃ x ∈ P, ∃ y ∈ P, OppositeSides (hyperplaneOf Q ℓ) x y
+
+/-- **A hyperplane cuts a cone exactly when the form of its normal does**: for `ℓ = ℚ v` the
+hyperplane is the kernel of `x ↦ ⟨v, x⟩` (`hyperplaneOf_span_singleton`), and both notions of
+cutting say that the form takes both signs on the cone. -/
+theorem hyperplaneCuts_iff_cutsOn (Q : QuadraticForm ℝ (realified V)) {ℓ : Submodule ℚ V}
+    {v : V} (hℓ : ℓ = Submodule.span ℚ ({v} : Set V)) (P : PointedCone ℝ (realified V)) :
+    HyperplaneCuts Q ℓ P ↔ CutsOn ((associated Q) (rationalPoint v)) P := by
+  unfold HyperplaneCuts OppositeSides
+  rw [hyperplaneOf_span_singleton Q hℓ]
+  constructor
+  · rintro ⟨x, hxP, y, hyP, hxH, hyH, t, ht0, ht1, hmem⟩
+    rw [LinearMap.mem_ker] at hmem
+    rw [map_add, map_smul, map_smul, smul_eq_mul, smul_eq_mul] at hmem
+    have hx0 : ((associated Q) (rationalPoint v)) x ≠ 0 := fun h => hxH (LinearMap.mem_ker.mpr h)
+    have hy0 : ((associated Q) (rationalPoint v)) y ≠ 0 := fun h => hyH (LinearMap.mem_ker.mpr h)
+    rcases lt_or_gt_of_ne hx0 with hxneg | hxpos
+    · refine ⟨⟨y, hyP, ?_⟩, ⟨x, hxP, hxneg⟩⟩
+      nlinarith
+    · refine ⟨⟨x, hxP, hxpos⟩, ⟨y, hyP, ?_⟩⟩
+      nlinarith
+  · rintro ⟨⟨x, hxP, hxpos⟩, ⟨y, hyP, hyneg⟩⟩
+    have hx0 : ((associated Q) (rationalPoint v)) x ≠ 0 := ne_of_gt hxpos
+    have hy0 : ((associated Q) (rationalPoint v)) y ≠ 0 := ne_of_lt hyneg
+    refine ⟨x, hxP, y, hyP, ?_, ?_, (-((associated Q) (rationalPoint v)) y) /
+      (((associated Q) (rationalPoint v)) x - ((associated Q) (rationalPoint v)) y),
+      ?_, ?_, ?_⟩
+    · exact fun h => hx0 (LinearMap.mem_ker.mp h)
+    · exact fun h => hy0 (LinearMap.mem_ker.mp h)
+    · have hpos : 0 < ((associated Q) (rationalPoint v)) x -
+          ((associated Q) (rationalPoint v)) y := by linarith
+      exact div_pos (by linarith) hpos
+    · have hpos : 0 < ((associated Q) (rationalPoint v)) x -
+          ((associated Q) (rationalPoint v)) y := by linarith
+      rw [div_lt_one hpos]
+      linarith
+    · rw [LinearMap.mem_ker, map_add, map_smul, map_smul, smul_eq_mul, smul_eq_mul]
+      have hne : ((associated Q) (rationalPoint v)) x
+          - ((associated Q) (rationalPoint v)) y ≠ 0 := by
+        intro h0
+        linarith
+      field_simp
+      ring
+
+/-- **Cutting is decided on the cone's rational generators**: for a rational cone
+`P = hull (rationalPoint '' s)` and the form of a normal `v`, the hyperplane of `ℓ = ℚ v` cuts `P`
+exactly when the ℚ-linear form `w ↦ ⟨v, w⟩` takes both signs on `s`. -/
+theorem hyperplaneCuts_iff_generators (Q : QuadraticForm ℝ (realified V)) {ℓ : Submodule ℚ V}
+    {v : V} (hℓ : ℓ = Submodule.span ℚ ({v} : Set V))
+    {P : PointedCone ℝ (realified V)} {s : Finset V}
+    (hP : P = PointedCone.hull ℝ (rationalPoint '' (s : Set V)))
+    {BQ : LinearMap.BilinForm ℚ V}
+    (hBQ : ∀ u w : V, (associated Q) (rationalPoint u) (rationalPoint w) = (BQ u w : ℝ)) :
+    HyperplaneCuts Q ℓ P ↔ (∃ a ∈ s, 0 < BQ v a) ∧ ∃ b ∈ s, BQ v b < 0 := by
+  rw [hyperplaneCuts_iff_cutsOn Q hℓ P]
+  exact cutsOn_iff_generators P hP (q := BQ v) (fun w => hBQ v w)
+
 /-! ## The bound per pair of generators: the three cases of the counting lemma
 
 The counting lemma's finiteness is not analytic: on a rational cone `P` of `C₊` a spacelike normal
@@ -3981,6 +4106,69 @@ theorem finite_cutting_normals_of_isotropic {ι : Type*} [Fintype ι] [Decidable
     exact hb1
   · rw [← hBQ v b]
     exact h.1
+
+/-- **The counting lemma at a pair of isotropic generators**: with `Q a = Q b = 0` the relation of
+`pairing_quadratic_bound` bounds only the product of the two pairings, so both are bounded away
+from `0` by integrality — the denominators `Da`, `Db` of the two generators — and
+`abs_le_of_abs_mul_le_of_one_div_le` turns the product bound into a bound on each. -/
+theorem finite_cutting_normals_of_both_isotropic {ι : Type*} [Fintype ι] [DecidableEq ι]
+    {bs : Module.Basis ι ℚ V} {Q : QuadraticForm ℝ (realified V)} (hpos : sigPos Q = 1)
+    {BQ : LinearMap.BilinForm ℚ V} (hBQsym : BQ.IsSymm) (hBQnd : BQ.Nondegenerate)
+    (hBQ : ∀ u w : V, (associated Q) (rationalPoint u) (rationalPoint w) = (BQ u w : ℝ))
+    {a b : V} {m : ℝ} (hm : 0 < m) (ha : Q (rationalPoint a) = 0) (hb : Q (rationalPoint b) = 0)
+    (hab : 0 < (associated Q) (rationalPoint a) (rationalPoint b))
+    {Da Db : ℕ} (hDa : 0 < Da) (hDb : 0 < Db)
+    (haDa : (Da : ℤ) • a ∈ Submodule.span ℤ (Set.range bs))
+    (hbDb : (Db : ℤ) • b ∈ Submodule.span ℤ (Set.range bs))
+    (hint : ∀ x ∈ Submodule.span ℤ (Set.range bs), ∀ y ∈ Submodule.span ℤ (Set.range bs),
+      ∃ n : ℤ, BQ x y = (n : ℚ)) :
+    {v : V | v ∈ Submodule.span ℤ (Set.range bs) ∧ Q (rationalPoint v) = -m ∧
+      0 < (BQ v a : ℝ) ∧ (BQ v b : ℝ) < 0}.Finite := by
+  have ht : 0 < Q (rationalPoint a + rationalPoint b) := by
+    rw [show rationalPoint a + rationalPoint b
+        = (1 : ℝ) • rationalPoint a + (1 : ℝ) • rationalPoint b by simp, quadratic_expand,
+      ha, hb]
+    linarith
+  refine finite_cutting_of_pairing_bounds (Q := Q) hpos hBQsym hBQnd hBQ (a := a) (b := b) ht
+    (Cx := m * (associated Q) (rationalPoint a) (rationalPoint b) / 2 * (Db : ℝ))
+    (Cy := m * (associated Q) (rationalPoint a) (rationalPoint b) / 2 * (Da : ℝ)) ?_
+  intro v hv hQ hx hy
+  have hx' : 0 < (associated Q) (rationalPoint v) (rationalPoint a) := by
+    rw [hBQ v a]; exact hx
+  have hy' : (associated Q) (rationalPoint v) (rationalPoint b) < 0 := by
+    rw [hBQ v b]; exact hy
+  have h := abs_associated_mul_le_of_both_isotropic (Q := Q) hpos ha hb hab hQ hx' hy'
+  have hxy : |(BQ v a : ℝ)| * |(BQ v b : ℝ)| ≤
+      m * (associated Q) (rationalPoint a) (rationalPoint b) / 2 := by
+    rw [← hBQ v a, ← hBQ v b]
+    exact h
+  have hC : 0 ≤ m * (associated Q) (rationalPoint a) (rationalPoint b) / 2 := by
+    nlinarith [hab, hm]
+  have hne_a : BQ v a ≠ 0 := by
+    intro h0
+    rw [h0] at hx
+    simp at hx
+  have hne_b : BQ v b ≠ 0 := by
+    intro h0
+    rw [h0] at hy
+    simp at hy
+  have hdena := one_div_le_abs_of_integral (BQ := BQ)
+    (Λ := Submodule.span ℤ (Set.range bs)) (D := Da) hDa (u := v) (w := a) hv haDa hint hne_a
+  have hdenb := one_div_le_abs_of_integral (BQ := BQ)
+    (Λ := Submodule.span ℤ (Set.range bs)) (D := Db) hDb (u := v) (w := b) hv hbDb hint hne_b
+  have hdena' : (1 : ℝ) / (Da : ℝ) ≤ |(BQ v a : ℝ)| := by
+    have h2 : ((1 : ℚ) / (Da : ℚ) : ℝ) ≤ ((|BQ v a| : ℚ) : ℝ) := by exact_mod_cast hdena
+    simpa using h2
+  have hdenb' : (1 : ℝ) / (Db : ℝ) ≤ |(BQ v b : ℝ)| := by
+    have h2 : ((1 : ℚ) / (Db : ℚ) : ℝ) ≤ ((|BQ v b| : ℚ) : ℝ) := by exact_mod_cast hdenb
+    simpa using h2
+  constructor
+  · exact abs_le_of_abs_mul_le_of_one_div_le (x := (BQ v a : ℝ)) (y := (BQ v b : ℝ)) hC
+      (by exact_mod_cast hDb) hdenb' hxy
+  · refine abs_le_of_abs_mul_le_of_one_div_le (x := (BQ v b : ℝ)) (y := (BQ v a : ℝ)) hC
+      (by exact_mod_cast hDa) hdena' ?_
+    rw [mul_comm]
+    exact hxy
 
 end CountingLemma
 
