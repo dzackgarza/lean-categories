@@ -3343,6 +3343,26 @@ theorem PointedCone.IsFaceOf.map_mkQ_span_singleton {E : Type*} [AddCommGroup E]
         _ = z' := by rw [hr]; abel
     exact ⟨x', hF.mem_of_smul_add_mem hx' hymem ha (hsum ▸ hz'), rfl⟩
 
+/-- A projected neighborhood localizes a closure point to the projected intersection. This is the
+`mem_closure_iff_nhds` form of `map_inf_eq_inf_map_of_span_singleton`; LC-09
+(2026-11-19) found no separate declaration for this consequence. -/
+theorem mem_topologicalClosure_map_inf_of_mem_nhds {E : Type*}
+    [AddCommGroup E] [Module ℝ E] [TopologicalSpace E]
+    (N : Submodule ℝ E) {e : E} {A K : PointedCone ℝ E}
+    (hN : N = Submodule.span ℝ ({e} : Set E))
+    (heA : e ∈ A) (heK : e ∈ K) {y : E ⧸ N}
+    (hyK : (K.map N.mkQ : Set (E ⧸ N)) ∈ 𝓝 y)
+    (hyA : y ∈ closure ((A.map N.mkQ : PointedCone ℝ (E ⧸ N)) : Set (E ⧸ N))) :
+    y ∈ closure (((A ⊓ K).map N.mkQ : PointedCone ℝ (E ⧸ N)) : Set (E ⧸ N)) := by
+  subst N
+  rw [mem_closure_iff_nhds] at hyA ⊢
+  intro U hU
+  obtain ⟨w, hw, hwA⟩ := hyA (U ∩ (K.map (Submodule.span ℝ ({e} : Set E)).mkQ :
+    Set (E ⧸ Submodule.span ℝ ({e} : Set E)))) (Filter.inter_mem hU hyK)
+  refine ⟨w, hw.1, ?_⟩
+  rw [map_inf_eq_inf_map_of_span_singleton heA heK]
+  exact ⟨hwA, hw.2⟩
+
 /-- **Locality of the supporting forms at a point of `σ`.** If `K` is a neighbourhood of
 `x ∈ σ`, then the cone `τ` and its trace `τ ⊓ K` have the same forms nonnegative on them and zero
 on `σ`. For `y ∈ τ`, the points `x + t • y` lie in `τ` for `t ≥ 0` and in `K` for sufficiently
