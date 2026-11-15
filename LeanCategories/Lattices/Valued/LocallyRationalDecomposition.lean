@@ -3758,6 +3758,69 @@ theorem supportSpace_eq_of_common_face_of_fg {σ τ τ' : PointedCone ℝ (reali
   · exact ⟨PointedCone.subset_hull (by simpa using hm), by simpa [LinearMap.mem_ker] using h⟩
   · exact ⟨PointedCone.subset_hull (by simpa using hm), by simpa [LinearMap.mem_ker] using h⟩
 
+/-- **Support-space independence on a rational neighbourhood, with no exposure hypothesis.**
+Definition 4.2 makes the traces `a ⊓ K`, `b ⊓ K` members of a finite rational cone system.
+Their common face is exposed in each trace by `exists_nonneg_linear_inf_ker`. The previous
+lemma lifts the exposing forms' zero condition back to all of `σ`; the domination half is free
+from finite generation. Locality then replaces the two traces by the original members. -/
+theorem supportSpace_eq_of_rational_neighborhood {Cplus : PointedCone ℝ (realified V)}
+    {S : Set (PointedCone ℝ (realified V))} (hS : IsLocallyRationalDecomposition Cplus S)
+    {σ a b K : PointedCone ℝ (realified V)} (ha : a ∈ S) (hb : b ∈ S)
+    (hσa : σ ≤ a) (hσb : σ ≤ b) (hKrat : IsRationalCone K) (hKle : K ≤ Cplus)
+    {x : realified V} (hxσ : x ∈ σ) (hK : (K : Set (realified V)) ∈ 𝓝 x) :
+    supportSpace a σ = supportSpace b σ := by
+  classical
+  let R := hS.restriction K hKrat hKle
+  let A := a ⊓ K
+  let B := b ⊓ K
+  have hA : A ∈ faceClosure (restrictionTo S K) :=
+    mem_faceClosure.2 ⟨A, mem_restrictionTo.2 ⟨a, ha, rfl⟩, PointedCone.IsFaceOf.refl A⟩
+  have hB : B ∈ faceClosure (restrictionTo S K) :=
+    mem_faceClosure.2 ⟨B, mem_restrictionTo.2 ⟨b, hb, rfl⟩, PointedCone.IsFaceOf.refl B⟩
+  obtain ⟨s, hs⟩ := R.isRational A hA
+  obtain ⟨t, ht⟩ := R.isRational B hB
+  let T := s.image rationalPoint
+  let T' := t.image rationalPoint
+  have hAT : A = PointedCone.hull ℝ ((T : Set (realified V))) := by
+    simpa [T] using hs
+  have hBT : B = PointedCone.hull ℝ ((T' : Set (realified V))) := by
+    simpa [T'] using ht
+  have hAFG : A.FG := ⟨T, hAT.symm⟩
+  have hBFG : B.FG := ⟨T', hBT.symm⟩
+  have hFA : (A ⊓ B).IsFaceOf A := R.inf_isFaceOf_left hA hB
+  have hFB : (A ⊓ B).IsFaceOf B := R.inf_isFaceOf_right hA hB
+  obtain ⟨w, hwA, hFw⟩ :=
+    PointedCone.IsFaceOf.exists_nonneg_linear_inf_ker hFA hAFG
+  obtain ⟨w', hwB, hFw'⟩ :=
+    PointedCone.IsFaceOf.exists_nonneg_linear_inf_ker hFB hBFG
+  have hcomm : (a ⊓ K) ⊓ (b ⊓ K) = a ⊓ b ⊓ K := by
+    ext z
+    change ((z ∈ a ∧ z ∈ K) ∧ z ∈ b ∧ z ∈ K) ↔ (z ∈ a ∧ z ∈ b) ∧ z ∈ K
+    aesop
+  have hwσ : ∀ y ∈ σ, w y = 0 := by
+    apply forall_mem_cone_eq_zero_of_zero_on_inf_of_mem_nhds hxσ hσa hσb hK
+    intro z hz
+    have hzker : z ∈ A ⊓ PointedCone.ofSubmodule (LinearMap.ker w) := by
+      rw [hFw]
+      exact hcomm.symm ▸ hz
+    exact hzker.2
+  have hwσ' : ∀ y ∈ σ, w' y = 0 := by
+    apply forall_mem_cone_eq_zero_of_zero_on_inf_of_mem_nhds hxσ hσa hσb hK
+    intro z hz
+    have hzker : z ∈ B ⊓ PointedCone.ofSubmodule (LinearMap.ker w') := by
+      rw [hFw']
+      exact hcomm.symm ▸ hz
+    exact hzker.2
+  have hAB : supportSpace A σ = supportSpace B σ :=
+    supportSpace_eq_of_common_face_of_fg T T' hAT hBT hwA hwσ hwB hwσ' hFw.symm hFw'.symm
+  have hlocalA : supportSpace A σ = supportSpace a σ := by
+    dsimp [A]
+    exact supportSpace_inf_eq_of_mem_nhds hσa hxσ hK
+  have hlocalB : supportSpace B σ = supportSpace b σ := by
+    dsimp [B]
+    exact supportSpace_inf_eq_of_mem_nhds hσb hxσ hK
+  exact hlocalA.symm.trans (hAB.trans hlocalB)
+
 /-- **The `Σ`-support space of Lemma-Definition 4.5 is the common value**: if the support space of
 every member of `Σ` that lies above `σ` and meets `C` agrees with one of them, the intersection
 over them — the `sigmaSupportSpace` carried in this file — is that value. -/
