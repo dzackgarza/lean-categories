@@ -2605,6 +2605,45 @@ theorem supportSpace_mono {σ τ τ' : PointedCone ℝ (realified V)} (hτ : τ 
   refine mem_supportSpace.2 fun φ hφ => ?_
   exact mem_supportSpace.1 hx φ ⟨fun y hy => hφ.1 y (hτ hy), hφ.2⟩
 
+/-- **Locality of the supporting forms at a point of `σ`.** If `K` is a neighbourhood of
+`x ∈ σ`, then the cone `τ` and its trace `τ ⊓ K` have the same forms nonnegative on them and zero
+on `σ`. For `y ∈ τ`, the points `x + t • y` lie in `τ` for `t ≥ 0` and in `K` for sufficiently
+small positive `t`; the linearity of `φ` and `φ x = 0` turn nonnegativity at those points into
+nonnegativity at `y`. -/
+theorem supportForms_inf_eq_of_mem_nhds {τ σ K : PointedCone ℝ (realified V)}
+    {x : realified V} (hστ : σ ≤ τ) (hxσ : x ∈ σ) (hK : (K : Set (realified V)) ∈ 𝓝 x) :
+    supportForms (τ ⊓ K) σ = supportForms τ σ := by
+  ext φ
+  constructor
+  · intro hφ
+    rw [mem_supportForms] at hφ ⊢
+    refine ⟨fun y hy => ?_, hφ.2⟩
+    have hτx : x ∈ τ := hστ hxσ
+    have htend : Filter.Tendsto (fun t : ℝ => x + t • y) (𝓝 0) (𝓝 x) := by
+      have hcont : Continuous (fun t : ℝ => x + t • y) :=
+        continuous_const.add (continuous_id.smul continuous_const)
+      simpa only [zero_smul, add_zero] using hcont.tendsto (0 : ℝ)
+    have hev : ∀ᶠ t in 𝓝[>] (0 : ℝ), x + t • y ∈ (K : Set (realified V)) :=
+      mem_nhdsWithin_of_mem_nhds (htend.eventually hK)
+    obtain ⟨t, htK, ht⟩ := (hev.and self_mem_nhdsWithin).exists
+    have hmem : x + t • y ∈ τ ⊓ K :=
+      ⟨τ.add_mem hτx (τ.smul_mem (Set.mem_Ioi.1 ht).le hy), htK⟩
+    have hnonneg := hφ.1 (x + t • y) hmem
+    rw [map_add, map_smul, hφ.2 x hxσ, smul_eq_mul, zero_add] at hnonneg
+    exact nonneg_of_mul_nonneg_right hnonneg (Set.mem_Ioi.1 ht)
+  · intro hφ
+    rw [mem_supportForms] at hφ ⊢
+    exact ⟨fun y hy => hφ.1 y hy.1, hφ.2⟩
+
+/-- **The support space is local at a point of `σ`** (Looijenga's proof of Lemma-Definition 4.5,
+p. 19): it does not change when `τ` is intersected with any cone that is a neighbourhood of a
+point of `σ`. This is what allows the finite rational traces of Definition 4.2 to be used despite
+the members themselves not being finitely generated. -/
+theorem supportSpace_inf_eq_of_mem_nhds {τ σ K : PointedCone ℝ (realified V)}
+    {x : realified V} (hστ : σ ≤ τ) (hxσ : x ∈ σ) (hK : (K : Set (realified V)) ∈ 𝓝 x) :
+    supportSpace (τ ⊓ K) σ = supportSpace τ σ := by
+  rw [supportSpace, supportSpace, supportForms_inf_eq_of_mem_nhds hστ hxσ hK]
+
 /-- The members of a decomposition that contain `σ` and meet the open cone `C`:
 the cones `τ` over which Looijenga, Lemma-Definition 4.5, p. 19, states the support space. -/
 def supportIndex (C : PointedCone ℝ (realified V)) (S : Set (PointedCone ℝ (realified V)))
