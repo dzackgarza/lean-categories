@@ -970,6 +970,43 @@ theorem isRationalCone_inf_halfspace {P : PointedCone ℝ (realified V)} (hP : I
     ← halfspaceCone_eq_dual] at hgen
   exact hgen.symm
 
+/-- **The whole real form is a rational cone.** A finite `ℚ`-basis and the negatives of its
+members generate it. The set is self-negating, so its pointed-cone hull agrees with the linear
+span, which is the whole space by `Module.Basis.baseChange`. -/
+theorem isRationalCone_top [Module.Finite ℚ V] :
+    IsRationalCone (⊤ : PointedCone ℝ (realified V)) := by
+  classical
+  let b := Module.finBasis ℚ V
+  let t : Finset V := Finset.univ.image fun p : Fin (Module.finrank ℚ V) × Bool =>
+    if p.2 then b p.1 else -b p.1
+  have hmem (i) : rationalPoint (b i) ∈ rationalPoint '' (t : Set V) := by
+    refine ⟨(b i), ?_, rfl⟩
+    exact Finset.mem_coe.2 (Finset.mem_image.2 ⟨(i, true), by simp⟩)
+  have htneg : ∀ v ∈ t, -v ∈ t := by
+    intro v hv
+    obtain ⟨p, -, rfl⟩ := Finset.mem_image.1 hv
+    refine Finset.mem_image.2 ⟨(p.1, !p.2), Finset.mem_univ _, ?_⟩
+    cases p.2 <;> simp_all
+  have hself : -(rationalPoint '' (t : Set V)) = rationalPoint '' (t : Set V) := by
+    rw [← Set.image_neg_eq_neg]
+    ext y
+    constructor
+    · rintro ⟨_, ⟨v, hv, rfl⟩, rfl⟩
+      exact ⟨-v, htneg v hv, by rw [map_neg]⟩
+    · rintro ⟨v, hv, rfl⟩
+      exact ⟨-rationalPoint v, ⟨-v, htneg v hv, by rw [map_neg]⟩, by simp⟩
+  have hspan : Submodule.span ℝ (rationalPoint '' (t : Set V)) = ⊤ := by
+    apply top_unique
+    rw [← (b.baseChange ℝ).span_eq]
+    refine Submodule.span_mono ?_
+    rintro y ⟨i, rfl⟩
+    simpa only [Module.Basis.baseChange_apply, rationalPoint_apply] using hmem i
+  refine ⟨t, ?_⟩
+  have hcone : PointedCone.hull ℝ (rationalPoint '' (t : Set V)) = ⊤ := by
+    rw [PointedCone.hull_eq_span_of_neg_eq (R := ℝ) hself, hspan]
+    rfl
+  exact hcone.symm
+
 /-- Looijenga, Definition 4.1, p. 16: a *rational cone system* in `L(ℝ)` is a finite
 collection of nondegenerate rational convex cones such that a face of a member is a member,
 and any two members meet along a common face. -/
