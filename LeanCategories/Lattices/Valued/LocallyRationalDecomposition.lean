@@ -1062,16 +1062,16 @@ theorem isRationalCone_normalizedConeOn {ι : Type*} [DecidableEq ι]
         (isRationalCone_inf_halfspace ih (hrlo i)) (hrup i)
       simpa [normalizedConeOn, Finset.inf_insert, inf_assoc, inf_left_comm, inf_comm] using h
 
-/-- **A nonzero point of an open cone has a rational cone neighbourhood contained in the
-cone** (the local input to Looijenga's Lemma-Definition 4.5). Choose a signed coordinate `ell`
+/-- **A nonzero point in the interior of a cone has a rational cone neighbourhood contained in
+the cone** (the local input to Looijenga's Lemma-Definition 4.5). Choose a signed coordinate `ell`
 positive at `x`, take a small closed coordinate ball around `x` inside `C`, and choose rational
 bounds around the ratios `rationalCoordinate b i x / ell x`. Their normalized cone is a
 neighbourhood of `x`. Conversely, if `y` satisfies the bounds, normalize it to `ell z = ell x`;
 the coordinate bounds put `z` in the closed ball inside `C`; and `y` is a nonnegative multiple
-of `z`. This handles arbitrary real `x`, not only rational points. -/
-theorem exists_rationalCone_mem_nhds_subset_of_ne_zero [Module.Finite ℚ V]
-    {C : PointedCone ℝ (realified V)} (hCopen : IsOpen (C : Set (realified V)))
-    {x : realified V} (hx : x ∈ C) (hx0 : x ≠ 0) :
+of `z`. This handles arbitrary real `x`, not only rational points. The open-cone statement is the
+wrapper `exists_rationalCone_mem_nhds_subset_of_ne_zero` immediately below. -/
+theorem exists_rationalCone_mem_nhds_subset_of_mem_interior [Module.Finite ℚ V]
+    {C : PointedCone ℝ (realified V)} {x : realified V} (hx : x ∈ interior C) (hx0 : x ≠ 0) :
     ∃ K : PointedCone ℝ (realified V), IsRationalCone K ∧
       (K : Set (realified V)) ∈ 𝓝 x ∧ K ≤ C := by
   classical
@@ -1102,11 +1102,11 @@ theorem exists_rationalCone_mem_nhds_subset_of_ne_zero [Module.Finite ℚ V]
   let ex : Fin (Module.finrank ℚ V) → ℝ := e x
   let r : Fin (Module.finrank ℚ V) → ℝ := fun i => ex i / ell x
   have hcont : Continuous e.symm := IsModuleTopology.continuous_of_linearMap e.symm.toLinearMap
-  have hx' : e.symm ex ∈ (C : Set (realified V)) := by
+  have hxint : e.symm ex ∈ interior (C : Set (realified V)) := by
     dsimp [ex]
     rw [LinearEquiv.symm_apply_apply]
     exact hx
-  have hpre : (C : Set (realified V)) ∈ 𝓝 (e.symm ex) := hCopen.mem_nhds hx'
+  have hpre : (C : Set (realified V)) ∈ 𝓝 (e.symm ex) := mem_interior_iff_mem_nhds.1 hxint
   have hnhood : e.symm ⁻¹' (C : Set (realified V)) ∈ 𝓝 ex :=
     hcont.continuousAt.preimage_mem_nhds hpre
   obtain ⟨ε, hε, hball⟩ := Metric.mem_nhds_iff.1 hnhood
@@ -1225,6 +1225,16 @@ theorem exists_rationalCone_mem_nhds_subset_of_ne_zero [Module.Finite ℚ V]
         simp
       rw [← hy_eq]
       exact C.smul_mem (div_nonneg helly.le hellx.le) hzC
+
+/-- A nonzero point of an open cone has a rational cone neighbourhood contained in the cone.
+This is the open-cone wrapper of `exists_rationalCone_mem_nhds_subset_of_mem_interior`. -/
+theorem exists_rationalCone_mem_nhds_subset_of_ne_zero [Module.Finite ℚ V]
+    {C : PointedCone ℝ (realified V)} (hCopen : IsOpen (C : Set (realified V)))
+    {x : realified V} (hx : x ∈ C) (hx0 : x ≠ 0) :
+    ∃ K : PointedCone ℝ (realified V), IsRationalCone K ∧
+      (K : Set (realified V)) ∈ 𝓝 x ∧ K ≤ C :=
+  exists_rationalCone_mem_nhds_subset_of_mem_interior
+    (mem_interior_iff_mem_nhds.2 (hCopen.mem_nhds hx)) hx0
 
 /-- Looijenga, Definition 4.1, p. 16: a *rational cone system* in `L(ℝ)` is a finite
 collection of nondegenerate rational convex cones such that a face of a member is a member,
@@ -8048,9 +8058,9 @@ end FacialDecompositionSupportSpace
 
 LC-09 (2026-11-19): `content:closedSheet isClosed quadratic`,
 `content:isotropic ray face quadratic cone`, `content:isotropic face closed cone quadratic form`,
-`content:common face recession lineal`, and `content:lineal topologicalClosure common face`
-found no competing declaration. The proof below uses this file's
-`QuadraticMap.continuous_of_moduleTopology` and
+`content:common face recession lineal`, `content:lineal topologicalClosure common face`,
+and `content:rational cone mem_nhds interior` found no competing declaration. The proofs below
+use this file's `QuadraticMap.continuous_of_moduleTopology` and
 `exists_smul_of_associated_eq_zero_of_mem_closedSheet_self` directly. -/
 
 section IsotropicRationalTraces
@@ -8126,6 +8136,105 @@ theorem IsIsotropicHalfLine.isFaceOf_rationalClosure (hpos : sigPos Q = 1)
         rw [← hc, map_smul, smul_eq_mul, associated_self_apply, heQ, mul_zero]
   rw [← hker]
   exact PointedCone.isFaceOf_inf_ker hnonneg
+
+/-- An isotropic half line is a face of every subcone of the rational closure containing it. -/
+theorem IsIsotropicHalfLine.isFaceOf_of_le (hpos : sigPos Q = 1) (hnd : Q.Nondegenerate)
+    {ht : 0 < Q t} {σ τ : PointedCone ℝ (realified V)} (hσ : IsIsotropicHalfLine Q σ)
+    (hστ : σ ≤ τ) (hτle : τ ≤ rationalClosure (closedSheet Q hpos ht)) : σ.IsFaceOf τ := by
+  refine ⟨hστ, ?_⟩
+  have hface := hσ.isFaceOf_rationalClosure hpos hnd (hστ.trans hτle)
+  intro x y a hx hy ha hxy
+  exact hface.mem_of_smul_add_mem (hτle hx) (hτle hy) ha hxy
+
+omit [Module.Finite ℚ V] in
+/-- Every member of a locally rational decomposition lies below its carrier. -/
+theorem IsLocallyRationalDecomposition.le {C : PointedCone ℝ (realified V)}
+    {S : Set (PointedCone ℝ (realified V))}
+    (hS : IsLocallyRationalDecomposition (rationalClosure C) S)
+    {τ : PointedCone ℝ (realified V)} (hτ : τ ∈ S) :
+    τ ≤ rationalClosure C := by
+  intro z hz
+  have hz' : z ∈ (⋃ d ∈ S, (d : Set (realified V))) :=
+    Set.mem_iUnion.2 ⟨τ, Set.mem_iUnion.2 ⟨hτ, hz⟩⟩
+  rwa [hS.union_eq] at hz'
+
+/-- An isotropic half line below a member of a locally rational decomposition is rational.
+Take a rational subcone containing its generator; the ray is a face of the corresponding trace,
+and Definition 4.2 makes every such face rational. -/
+theorem IsIsotropicHalfLine.isRationalCone_of_le_of_mem (hpos : sigPos Q = 1)
+    (hnd : Q.Nondegenerate) {ht : 0 < Q t}
+    {S : Set (PointedCone ℝ (realified V))}
+    (hS : IsLocallyRationalDecomposition (rationalClosure (closedSheet Q hpos ht)) S)
+    {σ τ : PointedCone ℝ (realified V)} (hσ : IsIsotropicHalfLine Q σ)
+    (hτ : τ ∈ S) (hστ : σ ≤ τ) : IsRationalCone σ := by
+  obtain ⟨e, he0, heQ, rfl⟩ := hσ
+  let Cplus := rationalClosure (closedSheet Q hpos ht)
+  let ray := PointedCone.hull ℝ ({e} : Set (realified V))
+  have hτle : τ ≤ Cplus := hS.le hτ
+  have heτ : e ∈ τ := hστ (PointedCone.subset_hull (Set.mem_singleton e))
+  have heC : e ∈ Cplus := hτle heτ
+  obtain ⟨K, hKrat, hKle, heK⟩ := exists_rationalCone_le_rationalClosure_and_mem heC
+  have hface : ray.IsFaceOf τ := IsIsotropicHalfLine.isFaceOf_of_le hpos hnd
+    ⟨e, he0, heQ, rfl⟩ hστ hτle
+  have hrayK : ray ≤ K := by
+    intro z hz
+    obtain ⟨c, hc0, hc⟩ := PointedCone.mem_hull_singleton.1 hz
+    rw [← hc]
+    exact K.smul_mem hc0 heK
+  have hfaceTrace : ray.IsFaceOf (τ ⊓ K) := by
+    refine ⟨le_inf hστ hrayK, ?_⟩
+    intro x y a hx hy ha hxy
+    exact hface.mem_of_smul_add_mem hx.1 hy.1 ha hxy
+  let R := hS.restriction K hKrat hKle
+  have hmem : ray ∈ faceClosure (restrictionTo S K) :=
+    mem_faceClosure.2 ⟨τ ⊓ K,
+      mem_restrictionTo.2 ⟨τ, hτ, rfl⟩, hfaceTrace⟩
+  exact R.isRational ray hmem
+
+/-- The pointed upper sheet lies in the rational closure of the closed sheet. -/
+theorem upperZero_le_rationalClosure_closedSheet (hpos : sigPos Q = 1) {ht : 0 < Q t} :
+    positiveCone.upperZero hpos ht ≤ rationalClosure (closedSheet Q hpos ht) := by
+  intro z hz
+  rcases hz with rfl | hz
+  · exact zero_mem _
+  · apply subset_rationalClosure_of_mem
+      ((upperZero_le_closedSheet hpos ht).trans (Submodule.le_topologicalClosure _))
+    exact upper_subset_interior_upperZero hpos ht hz
+
+/-- Two upper-sheet points admit a common rational cone neighbourhood below `C₊`, enlarged to
+contain a prescribed rational isotropic ray. The join preserves both neighbourhoods. -/
+theorem exists_rationalCone_sup_mem_nhds_of_isotropic (hpos : sigPos Q = 1)
+    {ht : 0 < Q t} {σ : PointedCone ℝ (realified V)} (hσle : σ ≤ rationalClosure
+      (closedSheet Q hpos ht)) (hσrat : IsRationalCone σ) {x y : realified V}
+    (hx : x ∈ positiveCone.upper Q t) (hy : y ∈ positiveCone.upper Q t) :
+    ∃ K : PointedCone ℝ (realified V), IsRationalCone K ∧
+      K ≤ rationalClosure (closedSheet Q hpos ht) ∧ σ ≤ K ∧
+      (K : Set (realified V)) ∈ 𝓝 x ∧ (K : Set (realified V)) ∈ 𝓝 y := by
+  have hx0 : x ≠ 0 := by
+    intro h
+    subst x
+    have h0 : (0 : ℝ) < 0 := by simpa using hx.1
+    exact lt_irrefl 0 h0
+  have hy0 : y ≠ 0 := by
+    intro h
+    subst y
+    have h0 : (0 : ℝ) < 0 := by simpa using hy.1
+    exact lt_irrefl 0 h0
+  obtain ⟨Kx, hKxrat, hKx, hKxle⟩ := exists_rationalCone_mem_nhds_subset_of_mem_interior
+    (upper_subset_interior_upperZero hpos ht hx) hx0
+  obtain ⟨Ky, hKyrat, hKy, hKyle⟩ := exists_rationalCone_mem_nhds_subset_of_mem_interior
+    (upper_subset_interior_upperZero hpos ht hy) hy0
+  have hKxC : Kx ≤ rationalClosure (closedSheet Q hpos ht) :=
+    hKxle.trans (upperZero_le_rationalClosure_closedSheet hpos)
+  have hKyC : Ky ≤ rationalClosure (closedSheet Q hpos ht) :=
+    hKyle.trans (upperZero_le_rationalClosure_closedSheet hpos)
+  let K := (Kx ⊔ Ky) ⊔ σ
+  refine ⟨K, (hKxrat.sup hKyrat).sup hσrat, sup_le (sup_le hKxC hKyC) hσle,
+    le_sup_right, ?_, ?_⟩
+  · exact Filter.mem_of_superset hKx
+      ((le_sup_left : Kx ≤ Kx ⊔ Ky).trans (le_sup_left : Kx ⊔ Ky ≤ K))
+  · exact Filter.mem_of_superset hKy
+      ((le_sup_right : Ky ≤ Kx ⊔ Ky).trans (le_sup_left : Kx ⊔ Ky ≤ K))
 
 end IsotropicRationalTraces
 
