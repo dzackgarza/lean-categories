@@ -53,7 +53,8 @@ an `ℝ`-vector space with no extra structure.
   (`convexHull_coneComb`) and that it is the cone that set generates
   (`rationalClosure_eq_hull`); locally rational cones; locally rational decompositions, with the
   restriction to a rational subcone a rational cone system (`restrictionTo`,
-  `IsLocallyRationalDecomposition.restriction`); and the facial decomposition `Σ(bb)`.
+  `IsLocallyRationalDecomposition.restriction`); and the facial decomposition `Σ(bb)`, including
+  both conjuncts of its coarsest-decomposition assertion (`facialDecomposition_coarsest`).
   Of the relation of `C` to its rational closure: `C ⊆ closure C₊` for an open `C`, from the
   density of the rational points of `L(ℝ)` (`dense_range_rationalPoint`,
   `subset_closure_rationalClosure`), and `C ⊆ C₊` itself for a finite-dimensional `L`
@@ -70,16 +71,16 @@ an `ℝ`-vector space with no extra structure.
   `IsLocallyRationalDecompositionTraces` keeps the literal reading, so that the counterexample
   is a statement about a named predicate and not a remark about a discarded definition.
 * **The setting of Example 4.3** (pp. 17-18), the hyperbolic one: the closed sheet
-  `closedSheet` of a nondegenerate form of signature `(1, dim − 1)` at a positive vector `t`,
-  which is a cone, is salient (`closedSheet_salient`), and a face of `C₊` containing a rational
-  point of the open sheet is `C₊` (`eq_of_isFaceOf_of_mem_pos_closedSheet`); so `C₊` is
+  `closedSheet` of a nondegenerate form of signature `(1, dim − 1)` at a positive vector `t`
+  is exactly the closure of the open upper sheet (`closedSheet_eq_closure_upper`), so the
+  `rationalClosure` of `closedSheet` is literally the source's hull of the rational points of
+  `closure C`. The sheet is salient (`closedSheet_salient`), and a face of `C₊` containing a
+  rational point of the open sheet is `C₊` (`eq_of_isFaceOf_of_mem_pos_closedSheet`); so `C₊` is
   nondegenerate in this setting (`salient_rationalClosure`) and `Σ(bb)` is a locally rational
-  decomposition there (`hyperbolicFacialDecomposition_isLocallyRational`). The one topological
-  input is carried as the hypothesis `hcl`: `Q` and `x ↦ x · t` are continuous on the
-  finite-dimensional real form, so they are nonnegative at the rational points of the closure of
-  the sheet, which is where the proofs use it. Mathlib at this revision has no `Continuous`
-  statement for a quadratic form, and the module topology of `realified V` here carries no
-  `IsTopologicalAddGroup` instance from which `FiniteDimensional` could supply `T2Space`.
+  decomposition there (`hyperbolicFacialDecomposition_isLocallyRational`). The topological input
+  is proved, not hypothesized: `QuadraticMap.continuous_of_moduleTopology` and continuity of the
+  pairing give `isClosed_closedSheet_of_moduleTopology`, which supplies the two defining
+  inequalities on the closure. None of these declarations has the former `hcl` hypothesis.
 * **The action of `Γ`** (Example 4.3, p. 17): a real linear equivalence of `L(ℝ)` defined over
   `ℚ` (`IsRationalEquiv`, the form an element of the arithmetic subgroup of `O(L(ℚ))` takes)
   carries rational cones to rational cones, rational cone systems to rational cone systems,
@@ -104,18 +105,13 @@ an `ℝ`-vector space with no extra structure.
   carried in the section "The two descriptions of `L_σ`"
   (`sigmaSupportSpace_le_ker_associated_of_isotropic`), and the reverse inclusion, which is what
   the affine model over `A_I(ℝ)` supplies, is not.
-* **Lemma-Definition 4.5 for every locally rational `Σ`** (p. 19, the proof at line 521): the
-  support space of `σ` is the same for every member `τ ≥ σ` meeting `C`. Proved in three steps:
-  the face step (`supportSpace_eq_of_face`), which turns the source's "translation space of the
-  adjacent members" into an algebraic domination hypothesis on the forms and is unconditional for
-  finitely generated cones (`supportSpace_eq_of_common_face_of_fg`); **the connectivity of `Σ`
-  through common faces**, which is the step from adjacent members to all members and is what
-  `reflTransGen_inf_nonempty_of_convex` supplies — the members meeting `C` are joined by a chain
-  in which consecutive members meet in a point of `C`, from the local finiteness of `Σ` and the
-  convexity of `C`; and with those, `supportSpace_eq_of_locallyFinite` and
-  `sigmaSupportSpace_eq_supportSpace_of_locallyFinite`. What that leaves as a hypothesis is the
-  cutting form at each pair of members meeting `C` — the incidence datum `Dominates`, free on the
-  domination side for polyhedral members (`dominates_of_fg`).
+* **Lemma-Definition 4.5 for every locally rational `Σ`** (p. 19, the proof at line 521):
+  `supportSpace_eq_of_locallyRational` proves that the support space of `σ` is the same for every
+  member `τ ≥ σ` meeting `C`, with no hypothesis beyond the source's. The upper-sheet case uses a
+  rational neighbourhood and exposed common faces; the zero case uses salience of the closed
+  sheet; the isotropic-ray case uses the projected half-space, its locally finite closed cover,
+  and a lifted common-face chain. In particular, the final theorem has no `Dominates`, `hexp`, or
+  separate cover hypothesis. Those ingredients belong only to earlier general helper routes.
 
 ## Example 4.3 (b): the cells of `Σ(H)` are rational cones, and `Σ(H)` is a locally rational
 decomposition
@@ -263,29 +259,18 @@ decomposition
   carries the open cone onto the open half-space `{u | 0 < β u}` of the quotient
   (`image_mkQ_upper_eq`). The half-space is the affine space `A_I(ℝ)` of the source's proof
   ("we prefer to think of this image as a cone over a real affine space", p. 19).
-* Carried of the rest of that proof, in the section "Lemma-Definition 4.5, the general case": the
-  independence from `τ` itself, as the face step `supportSpace_eq_of_face` plus the independence
-  `supportSpace_eq_of_common_face`, for a general `Σ` and a general `σ`; the domination hypothesis
-  of the face step is named, and discharged for finitely generated cones
-  (`exists_add_smul_of_fg`, `supportSpace_eq_of_face_of_fg`,
-  `supportSpace_eq_of_common_face_of_fg`). With it, `sigmaSupportSpace_eq_supportSpace` states
-  the `Σ`-support space of Lemma-Definition 4.5 as the value at any one member.
-* **The step from adjacent members to all members is carried**, in the section "The connectivity of
-  a locally finite decomposition through common faces": any two members of a locally finite
-  decomposition that meet a convex cone `C` are joined by a chain of members in which consecutive
-  members meet in a point of `C` (`reflTransGen_inf_nonempty_of_convex`), and along such a chain
-  the support space over `σ` does not change (`supportSpace_eq_of_reflTransGen`,
-  `supportSpace_eq_of_locallyFinite`). That is what the source's proof summarises as its
-  induction over the affine decomposition (`{z | (1, z) ∈ π_I τ}`, the polyhedra of `A_I(ℝ)`, a
-  minimal member and its translation space `U`), and what it means by "these assertions are
-  clear" for `σ` not an isotropic half line; the argument carried is the one in the form and in
-  the cone, with neither the projection `π_I` nor the affine model.
-* Carried, as a hypothesis and not as a theorem: that the common face `τ ⊓ τ'` of two members
-  meeting `C` is cut out of each by a form nonnegative on it and zero on `σ`, with domination
-  (`Dominates`). For a polyhedral member the domination half is free (`dominates_of_fg`); the
-  exposure half is the part of the source's affine argument that this section does not reconstruct,
-  and for the cells of `Σ(H)` of Example 4.3 (b) it is the form of the sign condition that
-  separates the two cells. Also a hypothesis: that the members cover `C`, not only `C₊`.
+* **The independence theorem is completed unconditionally** by
+  `supportSpace_eq_of_locallyRational`. The older route through `supportSpace_eq_of_face`,
+  `supportSpace_eq_of_common_face`, and `reflTransGen_inf_nonempty_of_convex` remains available
+  for finitely generated or explicitly exposed decompositions, but its `Dominates` and `hexp`
+  assumptions are not assumptions of the final theorem. Nor is a separate cover of `C`:
+  `subset_rationalClosure` and `exists_mem_of_mem_of_cover_rationalClosure` obtain it from the
+  defining cover of `C₊`.
+* The final three-case proof is the one documented below under "Completion of support-space
+  independence": rational neighbourhoods for a member meeting the upper sheet, salience for zero
+  support, and the lifted projected chain for an isotropic half line. It proves the full source
+  independence statement without reconstructing the source's affine polyhedra as an extra
+  hypothesis.
 * **Two descriptions of `L_σ` are carried instead, in the section "The two descriptions of `L_σ`"**,
   and neither of them goes through the cutting forms: for `σ` whose span is the kernel of a form
   nonnegative on the member (`supportSpace_eq_span_of_ker_eq`) the support space is `⟨σ⟩`, and
@@ -309,9 +294,11 @@ decomposition
   chain of the two cells runs through `C₊ ∩ H`, which is the connectivity the section above
   proves in general; the three support spaces are not proved to agree in Lean from that chain
   alone, since the forms cutting `C₊ ∩ H` out of the round cone are not supplied.
-* Also not carried: the identification of the support spaces of `Σ(bb)` as `V`, `{0}` and the
-  hyperplanes orthogonal to the `ℚ`-isotropic lines (p. 19). What is proved here is the
-  independence, not that description.
+* Of the explicit list following Lemma-Definition 4.5 (p. 19), zero support is proved by
+  `supportSpace_bot_eq_bot_of_mem`, and the isotropic hyperplane by
+  `supportSpace_closedSheet_hull_eq_ker`; the identification `V` for `C₊` itself and the
+  corresponding explicit description for a general `Σ` remain separate from the completed
+  independence theorem.
 
 ## The arrangement cells are a port
 
@@ -1783,21 +1770,28 @@ theorem facialDecomposition_isLocallyRational (Cplus : PointedCone ℝ (realifie
   isLocallyRational := fun _ hσ => isLocallyRationalCone_facialDecomposition Cplus hσ
   restriction := fun _ hP hPle => isRationalConeSystem_faceClosure_restriction hsal hP hPle
 
-/-- `Σ(bb)` is the coarsest locally rational decomposition: every cone of any locally
-rational decomposition of `C₊` lies in a member of `Σ(bb)` (Looijenga, Definition 4.2,
-p. 17). -/
+/-- **`Σ(bb)` is the coarsest locally rational decomposition of `C₊`** (Looijenga,
+Definition 4.2, p. 17, text line 483). The first conjunct says that `Σ(bb)` is itself a locally
+rational decomposition; the second is the universal refinement property: every member of every
+locally rational decomposition `S` of `C₊` lies in a member of `Σ(bb)`. In particular,
+`C₊` belongs to `Σ(bb)`, and the cover equation for `S` supplies the refinement inclusion.
+
+LC-09: `content:coarsest fan refinement`, `content:PointedCone IsFaceOf refinement`, and
+`content:fan refinement coarsest convex cone` found no competing formalization of this
+statement. -/
 theorem facialDecomposition_coarsest (Cplus : PointedCone ℝ (realified V))
-    {S : Set (PointedCone ℝ (realified V))} (hS : IsLocallyRationalDecomposition Cplus S) :
-    ∀ σ ∈ S, ∃ F ∈ facialDecomposition Cplus, σ ≤ F := by
-  intro σ hσ
+    (hsal : (Cplus : ConvexCone ℝ (realified V)).Salient) :
+    IsLocallyRationalDecomposition Cplus (facialDecomposition Cplus) ∧
+      ∀ S : Set (PointedCone ℝ (realified V)), IsLocallyRationalDecomposition Cplus S →
+        ∀ σ ∈ S, ∃ F ∈ facialDecomposition Cplus, σ ≤ F := by
+  refine ⟨facialDecomposition_isLocallyRational Cplus hsal, ?_⟩
+  intro S hS σ hσ
   refine ⟨Cplus, PointedCone.IsFaceOf.refl Cplus, ?_⟩
   intro x hx
-  have hunion : (⋃ σ ∈ S, (σ : Set (realified V))) = (Cplus : Set (realified V)) :=
-    hS.union_eq
   have hx' : x ∈ (⋃ σ ∈ S, (σ : Set (realified V))) :=
     Set.mem_iUnion.2 ⟨σ, Set.mem_iUnion.2 ⟨hσ, hx⟩⟩
-  rw [hunion] at hx'
-  simpa using hx'
+  rw [hS.union_eq] at hx'
+  exact hx'
 
 /-- **Two members of a locally rational decomposition meet along a common face.** For
 `x, y ∈ a` and `a • x + y ∈ a ⊓ b`, choose a rational subcone containing the three points.
@@ -2198,15 +2192,13 @@ subspace is positive definite. That salience is what makes `C₊` a nondegenerat
 hypothesis of `facialDecomposition_isLocallyRational`, in this setting
 (`salient_rationalClosure`).
 
-The topological input is the continuity of `Q` on the real form `L(ℝ)`: `C₊` is the hull of
-`L(ℚ) ∩ C̄`, so it lies on the sheet as soon as the rational points of `C̄` satisfy its two
-defining inequalities. The earlier statements retain the hypothesis `hcl` of
-`salient_rationalClosure`, stated at the rational points where it is used. The section above now
-supplies that continuity by a finite-basis matrix expansion
-(`QuadraticMap.continuous_of_moduleTopology`), and
-`isOpen_positiveCone_upper_of_moduleTopology` packages the openness of the upper sheet. Earlier
-`hcl` signatures are left intact; the new theorem means no such hypothesis is needed in the final
-support-space theorem below. -/
+The topological input is proved by the section above: continuity of `Q` and of the pairing by a
+finite-basis matrix expansion gives `isClosed_closedSheet_of_moduleTopology`, and
+`isOpen_positiveCone_upper_of_moduleTopology` packages openness of the upper sheet. Moreover,
+`closedSheet_eq_closure_upper` identifies the sheet with the closure of that upper sheet. Thus
+`C₊ = rationalClosure (closedSheet Q hpos ht)` has exactly the source's encoding as the hull of
+`L(ℚ) ∩ C̄`. The face, salience, and hyperbolic facial-decomposition theorems below use these
+facts directly; none retains an `hcl` hypothesis. -/
 
 section Hyperbolic
 
@@ -2406,6 +2398,20 @@ theorem mem_closedSheet {Q : QuadraticForm ℝ (realified V)} {t : realified V}
     x ∈ closedSheet Q hpos ht ↔ 0 ≤ Q x ∧ 0 ≤ (associated Q) x t :=
   Iff.rfl
 
+set_option maxHeartbeats 600000 in
+/-- The closed sheet is closed in the finite-dimensional module topology. -/
+theorem isClosed_closedSheet_of_moduleTopology (Q : QuadraticForm ℝ (realified V))
+    (hpos : sigPos Q = 1) {t : realified V} (ht : 0 < Q t) :
+    IsClosed (closedSheet Q hpos ht : Set (realified V)) := by
+  have hQ : IsClosed (Q ⁻¹' Set.Ici (0 : ℝ)) :=
+    isClosed_Ici.preimage (QuadraticMap.continuous_of_moduleTopology Q)
+  have hpair : Continuous (fun x : realified V => (associated Q) x t) :=
+    (LinearMap.continuous_bilin_of_moduleTopology (associated Q)).comp
+      (continuous_id.prodMk continuous_const)
+  have hB : IsClosed ((fun x : realified V => (associated Q) x t) ⁻¹' Set.Ici (0 : ℝ)) :=
+    isClosed_Ici.preimage hpair
+  exact hQ.inter hB
+
 /-- **A null form is one-signed on the closed sheet**: an isotropic `u` of the sheet takes a value
 of one sign on all of it, `0 ≤ (associated Q) u x`. This is the mechanism that bounds the counting
 lemma below at an isotropic generator `w` of a rational cone: a direction `u` with `Q u = 0` cannot
@@ -2421,6 +2427,35 @@ theorem subset_closedSheet {Q : QuadraticForm ℝ (realified V)} {t : realified 
     (hpos : sigPos Q = 1) (ht : 0 < Q t) :
     positiveCone.upper Q t ⊆ (closedSheet Q hpos ht : Set (realified V)) :=
   fun _ hx => ⟨hx.1.le, hx.2.le⟩
+
+/-- **The closed sheet is the closure of the open upper sheet.** One inclusion is closedness.
+For the other, `x + ε • t` lies in the upper sheet for every positive `ε` and tends to `x`.
+LC-09: `content:closure upper sheet quadratic cone`, `content:closure positiveCone quadratic`,
+and `content:closedSheet continuous` returned no competing declaration. -/
+theorem closedSheet_eq_closure_upper {Q : QuadraticForm ℝ (realified V)}
+    (hpos : sigPos Q = 1) {t : realified V} (ht : 0 < Q t) :
+    (closedSheet Q hpos ht : Set (realified V)) = closure (positiveCone.upper Q t) := by
+  apply Set.Subset.antisymm
+  · intro x hx
+    let c : ℕ → ℝ := fun n => ((n + 1 : ℕ) : ℝ)
+    let f : ℕ → realified V := fun n => x + (c n)⁻¹ • t
+    have hc : Filter.Tendsto c Filter.atTop Filter.atTop := by
+      apply Filter.tendsto_atTop.2
+      intro b
+      obtain ⟨n, hn⟩ := exists_nat_ge b
+      refine Filter.eventually_atTop.2 ⟨n, fun m hm => ?_⟩
+      have hnm : n ≤ m + 1 := hm.trans (Nat.le_succ m)
+      have hncast : (n : ℝ) ≤ ((m + 1 : ℕ) : ℝ) := by exact_mod_cast hnm
+      exact hn.trans hncast
+    have hinv : Filter.Tendsto (fun n => (c n)⁻¹) Filter.atTop (𝓝 0) :=
+      tendsto_inv_atTop_zero.comp hc
+    have hmem (n : ℕ) : f n ∈ positiveCone.upper Q t := by
+      exact mem_upper_add_smul (by dsimp [f, c]; positivity) hx.1 hx.2 ht
+    have htend : Filter.Tendsto f Filter.atTop (𝓝 x) := by
+      simpa [f] using (hinv.smul_const t).const_add x
+    exact mem_closure_of_tendsto htend (Filter.Eventually.of_forall hmem)
+  · exact closure_minimal (subset_closedSheet hpos ht)
+      (isClosed_closedSheet_of_moduleTopology Q hpos ht)
 
 /-- The open upper sheet with its cone apex adjoined. Positivity of pairings on the sheet proves
 the addition law; positive scaling preserves the two defining strict inequalities. LC-09:
@@ -2541,12 +2576,10 @@ theorem closedSheet_salient {Q : QuadraticForm ℝ (realified V)} (hpos : sigPos
 closed-sheet setting: for a large rational multiple `q • u` of the timelike point `u`, the point
 `q • u - v` is again a rational point of the open sheet, hence lies on `C₊`, and the face relation
 applied to `(q • u - v) + v = q • u` forces `v` into the face. This is
-`eq_of_isFaceOf_of_mem_pos` with the two hypotheses of `IsPositiveConeComponent` replaced by the
-continuity input `hcl` at the rational points where they are used. -/
+`eq_of_isFaceOf_of_mem_pos` specialized to the closed sheet; its two component hypotheses are
+discharged directly by `subset_closedSheet` and `isClosed_closedSheet_of_moduleTopology`. -/
 theorem eq_of_isFaceOf_of_mem_pos_closedSheet {Q : QuadraticForm ℝ (realified V)}
     (hpos : sigPos Q = 1) {t : realified V} (ht : 0 < Q t)
-    (hcl : ∀ v : V, rationalPoint v ∈ (closedSheet Q hpos ht).closure →
-      0 ≤ Q (rationalPoint v) ∧ 0 ≤ (associated Q) (rationalPoint v) t)
     {F : PointedCone ℝ (realified V)} {u : V}
     (hu : 0 < Q (rationalPoint u))
     (hut : 0 < (associated Q) (rationalPoint u) t)
@@ -2561,7 +2594,10 @@ theorem eq_of_isFaceOf_of_mem_pos_closedSheet {Q : QuadraticForm ℝ (realified 
   rw [rationalClosure_eq_hull]
   refine Submodule.span_le.2 ?_
   rintro p ⟨⟨v, -, rfl⟩, hvcl⟩
-  obtain ⟨hvQ, hvt⟩ := hcl v hvcl
+  have hclosed := isClosed_closedSheet_of_moduleTopology Q hpos ht
+  rw [show (closedSheet Q hpos ht).closure = closedSheet Q hpos ht from
+    hclosed.submodule_topologicalClosure_eq] at hvcl
+  obtain ⟨hvQ, hvt⟩ := hvcl
   set b : ℝ := (associated Q) (rationalPoint u) (rationalPoint v) with hb_def
   set c : ℝ := (associated Q) (rationalPoint v) t with hc_def
   set A : ℝ := 2 * |b| / Qu + 1 with hA_def
@@ -2631,17 +2667,17 @@ theorem eq_of_isFaceOf_of_mem_pos_closedSheet {Q : QuadraticForm ℝ (realified 
 
 /-- **`C₊` is a nondegenerate cone in the setting of Example 4.3** (Looijenga, p. 17: "this is a
 nondegenerate cone also"), for the closed sheet `C` of a nondegenerate form of signature
-`(1, dim − 1)`. The hypothesis `hcl` is the continuity of `Q` and of `x ↦ x · t` at the rational
-points of the closure of `C`, where they are used; see the section docstring. -/
+`(1, dim − 1)`. Closedness of the sheet makes its rational closure a subcone of the sheet. -/
 theorem salient_rationalClosure {Q : QuadraticForm ℝ (realified V)} (hpos : sigPos Q = 1)
-    (hnd : Q.Nondegenerate) {t : realified V} (ht : 0 < Q t)
-    (hcl : ∀ v : V, rationalPoint v ∈ (closedSheet Q hpos ht).closure →
-      0 ≤ Q (rationalPoint v) ∧ 0 ≤ (associated Q) (rationalPoint v) t) :
+    (hnd : Q.Nondegenerate) {t : realified V} (ht : 0 < Q t) :
     (rationalClosure (closedSheet Q hpos ht) : ConvexCone ℝ (realified V)).Salient := by
   have hsub : rationalBoundary (closedSheet Q hpos ht)
       ⊆ (closedSheet Q hpos ht : Set (realified V)) := by
     rintro x ⟨⟨v, -, rfl⟩, hvcl⟩
-    exact hcl v hvcl
+    have hclosed := isClosed_closedSheet_of_moduleTopology Q hpos ht
+    rw [show (closedSheet Q hpos ht).closure = closedSheet Q hpos ht from
+      hclosed.submodule_topologicalClosure_eq] at hvcl
+    exact hvcl
   have hle : rationalClosure (closedSheet Q hpos ht) ≤ closedSheet Q hpos ht := by
     rw [rationalClosure_eq_hull]
     exact Submodule.span_le.2 hsub
@@ -2651,12 +2687,10 @@ theorem salient_rationalClosure {Q : QuadraticForm ℝ (realified V)} (hpos : si
 (Looijenga, pp. 17-18, the assertion that the facial decomposition is a locally rational
 decomposition, with Definition 4.2 read as in `IsLocallyRationalDecomposition`). -/
 theorem hyperbolicFacialDecomposition_isLocallyRational {Q : QuadraticForm ℝ (realified V)}
-    (hpos : sigPos Q = 1) (hnd : Q.Nondegenerate) {t : realified V} (ht : 0 < Q t)
-    (hcl : ∀ v : V, rationalPoint v ∈ (closedSheet Q hpos ht).closure →
-      0 ≤ Q (rationalPoint v) ∧ 0 ≤ (associated Q) (rationalPoint v) t) :
+    (hpos : sigPos Q = 1) (hnd : Q.Nondegenerate) {t : realified V} (ht : 0 < Q t) :
     IsLocallyRationalDecomposition (rationalClosure (closedSheet Q hpos ht))
       (facialDecomposition (rationalClosure (closedSheet Q hpos ht))) :=
-  facialDecomposition_isLocallyRational _ (salient_rationalClosure hpos hnd ht hcl)
+  facialDecomposition_isLocallyRational _ (salient_rationalClosure hpos hnd ht)
 
 end Hyperbolic
 
@@ -3692,8 +3726,6 @@ that is timelike has a sub-combination that is timelike, and a face containing a
 the open sheet is all of `C₊` (`eq_of_isFaceOf_of_mem_pos_closedSheet`). -/
 theorem eq_of_isFaceOf_of_meets_open_sheet (hpos : sigPos Q = 1)
     {t : realified V} (ht : 0 < Q t)
-    (hcl : ∀ v : V, rationalPoint v ∈ (closedSheet Q hpos ht).closure →
-      0 ≤ Q (rationalPoint v) ∧ 0 ≤ (associated Q) (rationalPoint v) t)
     {F : PointedCone ℝ (realified V)}
     (hF : F.IsFaceOf (rationalClosure (closedSheet Q hpos ht)))
     (hne : ((F : Set (realified V)) ∩ (positiveCone.upper Q t : Set (realified V))).Nonempty) :
@@ -3713,7 +3745,10 @@ theorem eq_of_isFaceOf_of_meets_open_sheet (hpos : sigPos Q = 1)
     intro i
     have hclos : a i ∈ (closedSheet Q hpos ht).closure := (g i).2.1.2
     rw [hav i] at hclos ⊢
-    exact hcl (v i) hclos
+    have hclosed := isClosed_closedSheet_of_moduleTopology Q hpos ht
+    rw [show (closedSheet Q hpos ht).closure = closedSheet Q hpos ht from
+      hclosed.submodule_topologicalClosure_eq] at hclos
+    exact hclos
   have haF : ∀ i, a i ∈ F := fun i => (g i).2.2
   set c : Fin n → ℝ := fun i => ((f i : Nonneg ℝ) : ℝ) with hcdef
   have hc : ∀ i, 0 ≤ c i := fun i => (f i).2
@@ -3734,7 +3769,7 @@ theorem eq_of_isFaceOf_of_meets_open_sheet (hpos : sigPos Q = 1)
     ⟨i, -, hiQ⟩ | ⟨i, -, j, -, hij, hijB⟩
   · have hub : 0 < (associated Q) (a i) t :=
       pos_associated_of_mem_closedSheet hpos ht hiQ (hsheetClosed i).2
-    exact eq_of_isFaceOf_of_mem_pos_closedSheet (Q := Q) hpos ht hcl
+    exact eq_of_isFaceOf_of_mem_pos_closedSheet (Q := Q) hpos ht
       (u := v i) (by rw [← hav i]; exact hiQ) (by rw [← hav i]; exact hub) hF
       (by rw [← hav i]; exact haF i)
   · have hsummem : a i + a j ∈ F := F.add_mem (haF i) (haF j)
@@ -3750,7 +3785,7 @@ theorem eq_of_isFaceOf_of_meets_open_sheet (hpos : sigPos Q = 1)
       pos_associated_of_mem_closedSheet hpos ht hQsum hBsum
     have hrat : a i + a j = rationalPoint (v i + v j) := by
       rw [hav i, hav j, map_add]
-    exact eq_of_isFaceOf_of_mem_pos_closedSheet (Q := Q) hpos ht hcl
+    exact eq_of_isFaceOf_of_mem_pos_closedSheet (Q := Q) hpos ht
       (u := v i + v j) (by rw [← hrat]; exact hQsum) (by rw [← hrat]; exact hub) hF
       (by rw [← hrat]; exact hsummem)
 
@@ -3759,16 +3794,14 @@ the support space of `σ` is the same for every member `τ ≥ σ` of `Σ(bb)` t
 because such a `τ` is `C₊` itself. -/
 theorem supportSpace_eq_of_meets_openSheet (hpos : sigPos Q = 1)
     {t : realified V} (ht : 0 < Q t)
-    (hcl : ∀ v : V, rationalPoint v ∈ (closedSheet Q hpos ht).closure →
-      0 ≤ Q (rationalPoint v) ∧ 0 ≤ (associated Q) (rationalPoint v) t)
     {σ τ τ' : PointedCone ℝ (realified V)}
     (hτ : τ ∈ facialDecomposition (rationalClosure (closedSheet Q hpos ht)))
     (hτC : ((τ : Set (realified V)) ∩ (positiveCone.upper Q t : Set (realified V))).Nonempty)
     (hτ' : τ' ∈ facialDecomposition (rationalClosure (closedSheet Q hpos ht)))
     (hτ'C : ((τ' : Set (realified V)) ∩ (positiveCone.upper Q t : Set (realified V))).Nonempty) :
     supportSpace τ σ = supportSpace τ' σ := by
-  rw [eq_of_isFaceOf_of_meets_open_sheet (Q := Q) hpos ht hcl hτ hτC,
-    eq_of_isFaceOf_of_meets_open_sheet (Q := Q) hpos ht hcl hτ' hτ'C]
+  rw [eq_of_isFaceOf_of_meets_open_sheet (Q := Q) hpos ht hτ hτC,
+    eq_of_isFaceOf_of_meets_open_sheet (Q := Q) hpos ht hτ' hτ'C]
 
 
 end SupportSpaceIndependence
@@ -3970,8 +4003,9 @@ theorem image_mkQ_upper_eq (Q : QuadraticForm ℝ (realified V)) (hpos : sigPos 
 /-- **The image of `C₊` under `π_I` lies in the closed half-space**: the "plus the origin" of
 Looijenga's description (the proof of Lemma-Definition 4.5, p. 19). `C₊` is spanned by the
 rational points of the closure of `C`, where the pairing with `e` is nonnegative by the
-continuity input `hbe` — the counterpart, for this pairing, of the hypothesis `hcl` of the
-hyperbolic section. -/
+continuity input `hbe`, stated at the rational boundary points where the projection argument
+uses it. The salience and hyperbolic facial-decomposition results need no analogous hypothesis:
+they use `isClosed_closedSheet_of_moduleTopology` directly. -/
 theorem image_mkQ_rationalClosure_subset (Q : QuadraticForm ℝ (realified V)) (hpos : sigPos Q = 1)
     {t e : realified V} (ht : 0 < Q t) (he : Q e = 0)
     (hbe : ∀ v : V, rationalPoint v ∈ (closedSheet Q hpos ht).closure →
@@ -4078,33 +4112,19 @@ support space is constant along such a chain (`supportSpace_eq_of_reflTransGen`)
 independence holds for every pair of members meeting `C` (`supportSpace_eq_of_locallyFinite`,
 `sigmaSupportSpace_eq_supportSpace_of_locallyFinite`).
 
-## What is not carried, and why
+## Completed independence, and assertions that remain separate
 
-* The forms that cut the common face of two adjacent members out of each are not produced. They are
-  the hypothesis `hexp` of `supportSpace_eq_of_locallyFinite` and `Dominates` is the datum; the
-  domination half is free for a polyhedral member (`dominates_of_fg`), the exposure half is not.
-  The source's proof passes instead through the polyhedra `{z | (1, z) ∈ π_I τ}` of its affine
-  space `A_I(ℝ)`, a minimal member among those meeting `C`, and the translation space of that
-  member, from which it reads `L_σ`; that affine model is not reconstructed here, and the
-  connectivity it stands for is. What is reconstructed of the source's proof is the section "The
-  two descriptions of `L_σ`": its "clear" case, as the two theorems
-  `supportSpace_eq_span_of_ker_eq` and `sigmaSupportSpace_eq_span_of_forall_ker_eq` — for members
-  whose span is the kernel of a form nonnegative on them, the support space is `⟨σ⟩` and does not
-  depend on the member at all, with no cutting form `hexp` anywhere — and, in the isotropic case,
-  the projection step `L_σ ⊆ I^⊥` (`supportSpace_le_ker_associated_of_isotropic`,
-  `sigmaSupportSpace_le_ker_associated_of_isotropic`), which with `supportSpace_le_span` gives the
-  source's description `L_σ ⊆ I^⊥ ∩ ⋂_{τ > σ} ⟨τ⟩` as an upper bound. The reverse inclusion is
-  exactly what the affine model supplies — a minimal member of the induced decomposition of
-  `A_I(ℝ)` is an affine subspace, the decomposition is invariant under its translation space `U`,
-  and `L_σ` is the space over `U` — and that is the part of the isotropic case still not carried.
-  For the cells of `Σ(H)` of Example 4.3 (b) the cutting form of two adjacent cells is the form of
-  a sign condition separating them, which is where the hypothesis is met in the example the source
-  is about. The module docstring records two checks by hand of the shape: on the single
-  `ℚ`-hyperplane through `σ` in signature `(1, 3)`, where the polyhedra are two half-spaces and
-  their boundary, the three members above `σ` that meet `C` have one support space, and it is
-  `I^⊥ ∩ H`, the value the source's description gives; and on two `ℚ`-hyperplanes in signature
-  `(1, 3)`, where the four cells, the two walls and the corner cone all have support space
-  `I^⊥ ∩ H₁ ∩ H₂ = I`, again the source's value.
+* **The independence statement is carried in full** by `supportSpace_eq_of_locallyRational`,
+  with no `Dominates`, `hexp`, or additional cover hypothesis. The next section documents its
+  three cases. The earlier `supportSpace_eq_of_locallyFinite` route through cutting forms and
+  `Dominates` remains a reusable helper API for explicitly exposed or finitely generated
+  decompositions; its assumptions are not assumptions of the completed theorem.
+* What remains separate is the explicit description of `L_σ` as an intersection of hyperplanes
+  and member spans. The two general descriptions already proved are
+  `supportSpace_eq_span_of_ker_eq` and `supportSpace_le_ker_associated_of_isotropic`, with their
+  `sigmaSupportSpace` variants. Together with `supportSpace_le_span`, the latter gives the upper
+  bound `L_σ ⊆ I^⊥ ∩ ⋂_{τ > σ} ⟨τ⟩`; the reverse inclusion for a general `Σ` is not asserted by
+  the independence theorem and is not carried here.
 * **The isotropic item of the list after the proof of Lemma-Definition 4.5 is carried** — the
   source's "so the support spaces of `Σ(bb)` are `V`, `{0}` and the hyperplanes orthogonal to a
   `ℚ`-isotropic line" (p. 19). For `σ` the ray through an isotropic `e` of the
@@ -4133,19 +4153,11 @@ independence holds for every pair of members meeting `C` (`supportSpace_eq_of_lo
   (`Convex.interior_closure_eq_interior_of_nonempty_interior`, the third of them, is *not*
   restricted to normed spaces: its section assumes only `IsTopologicalAddGroup` and
   `ContinuousSMul`.)
-* Also not carried, and this is *not* a hypothesis of Definition 4.2 that could be discharged from
-  it: the cutting form `w` of `hexp`. Definition 4.2 (line 481) calls a cone *locally rational in
-  `C₊`* when "its intersection with every rational subcone of `C₊` is rational", and rational means
-  spanned by a **finite** subset of `L(ℚ)` (Definition 4.1, line 459); so the traces of a member on
-  rational subcones are finitely generated, and the members themselves are not. Every face of a
-  finitely generated cone is exposed, and the corpus has that (`Mathlib`'s
-  `Geometry/Convex/Cone/Face`, TauCeti `Geometry/Convex/Cone/Face/Exposed.lean`, and
-  `Analysis/Convex/Polyhedron/Face.lean` for polyhedra), so for a decomposition into finitely
-  generated cones the cutting form and, with `exists_add_smul_of_fg`, its domination would be
-  available; but the members of a decomposition of the round cone `C₊` of Example 4.3 are not
-  finitely generated, `C₊` itself is not, and `exists_add_smul_of_fg` does not apply to them. The
-  cutting form therefore comes, in the source, from the same affine model as the translation space
-  `U`; it is not a consequence of the decomposition axioms.
+* For `Σ(bb)`, `supportSpace_bot_eq_bot_of_mem` proves the zero-support statement, and
+  `supportSpace_closedSheet_hull_eq_ker` identifies the support space of an isotropic boundary ray
+  with `I^⊥`. The identification `V` for the member `C₊` itself and the corresponding explicit
+  description for a general `Σ` are separate assertions, not hypotheses of the independence
+  theorem.
 -/
 
 /-! ## Completion of support-space independence
@@ -4521,11 +4533,11 @@ This section proves that step, in the form and in the cone, with no coordinates.
   space `L_σ` of Lemma-Definition 4.5 as the value at any one member
   (`sigmaSupportSpace_eq_supportSpace_of_locallyFinite`).
 
-What this section still takes as a hypothesis is the existence of the cutting forms `w` and `w'`
-for a pair of members meeting `C` (the `hexp` of the last two theorems) — the source obtains them
-from the affine model, and for the cells of `Σ(H)` of Example 4.3 (b) they are the forms of the
-two sign conditions that separate the cells. Also a hypothesis is that the members cover `C`
-itself, not only `C₊`. -/
+The helper theorems of this section still take the cutting forms `w` and `w'` for a pair of
+members meeting `C` as their `hexp` hypothesis, together with a cover of `C` itself. These are
+not hypotheses of the final source theorem: `supportSpace_eq_of_locallyRational` below proves the
+independence in all three cases without `hexp`, and derives the required cover of `C` from the
+cover of `C₊`. -/
 
 section ConnectivityCore
 
@@ -6658,10 +6670,10 @@ CBirkbeck/LeanBridge `ShimuraCurve/EllipticPointStabilizer.lean`, unrelated; the
 this file's `finite_cutting_of_pairing_bounds`. The one Mathlib ingredient the unit needed is
 `IsModuleTopology.continuous_of_linearMap`
 (`Mathlib/Topology/Algebra/Module/ModuleTopology.lean:340`) for `normalForm` — every linear form on
-the module topology is continuous, so no continuity hypothesis enters the theorem. That is not in
-tension with the `hcl` hypothesis of `salient_rationalClosure`: that one asks for the continuity of
-the *quadratic* form `Q`, which Mathlib does not have, while a linear form is continuous by that
-lemma.
+the module topology is continuous, so no continuity hypothesis enters the theorem. The quadratic
+companion needed for the sheet is likewise proved in this file:
+`QuadraticMap.continuous_of_moduleTopology` gives `isClosed_closedSheet_of_moduleTopology`, and
+`salient_rationalClosure` no longer has an `hcl` hypothesis.
 
 The exclusion of an isotropic normal for a hyperplane meeting `C` is on main and is not repeated:
 `neg_quadratic_of_associated_eq_zero` (below, the hyperbolic section) gives `Q ℓ < 0` for the normal
@@ -8059,20 +8071,6 @@ theorem mem_topologicalClosure_of_forall_add_smul_mem {E : Type*} [AddCommGroup 
   exact mem_closure_of_tendsto ht (Filter.Eventually.of_forall hmem)
 
 variable [Module.Finite ℚ V] {Q : QuadraticForm ℝ (realified V)} {t : realified V}
-
-set_option maxHeartbeats 600000 in
-/-- The closed sheet is closed in the finite-dimensional module topology. -/
-theorem isClosed_closedSheet_of_moduleTopology (Q : QuadraticForm ℝ (realified V))
-    (hpos : sigPos Q = 1) {t : realified V} (ht : 0 < Q t) :
-    IsClosed (closedSheet Q hpos ht : Set (realified V)) := by
-  have hQ : IsClosed (Q ⁻¹' Set.Ici (0 : ℝ)) :=
-    isClosed_Ici.preimage (QuadraticMap.continuous_of_moduleTopology Q)
-  have hpair : Continuous (fun x : realified V => (associated Q) x t) :=
-    (LinearMap.continuous_bilin_of_moduleTopology (associated Q)).comp
-      (continuous_id.prodMk continuous_const)
-  have hB : IsClosed ((fun x : realified V => (associated Q) x t) ⁻¹' Set.Ici (0 : ℝ)) :=
-    isClosed_Ici.preimage hpair
-  exact hQ.inter hB
 
 /-- The rational closure of the closed sheet lies in the closed sheet. -/
 theorem rationalClosure_le_closedSheet (hpos : sigPos Q = 1) {ht : 0 < Q t} :
