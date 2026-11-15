@@ -4223,6 +4223,20 @@ can lie outside the `σ`-star, and the adjacency theorem intentionally requires 
 node. Once this chain is supplied, `supportSpace_map_mkQ_bot_eq_topologicalClosure_lineal`
 finishes the isotropic statement. No `hexp`, no `sorry` and no new axiom is to be introduced.
 
+The trace-injectivity part of the affine argument is now carried:
+`nonempty_intrinsicInterior_of_convex_moduleTopology` transports nonemptiness of the relative
+interior through `Module.finBasis`; `Convex.exists_mem_intrinsicInterior_inter_of_isOpen` puts
+such a point in the given open set; `face_eq_of_mem_intrinsicInterior` turns it into equality of a
+face and its carrier; and `eq_of_inf_eq_of_isLocallyRationalDecomposition` proves that two
+members with the same neighbourhood trace coincide. For the projected affine chain, the traces
+must be compared **after** applying `mkQ`: `map_inf_eq_inf_map_of_span_singleton` identifies these
+with intersections of projected cones, and `PointedCone.IsFaceOf.map_mkQ_span_singleton` supplies
+their common-face law. Still to be written from these inputs are the closedness, cover and local
+finiteness of the set of projected star members on the open quotient half-space, application of
+`reflTransGen_inf_nonempty_of_convex_set` to that set, and choice of lifts containing the ray for
+its nodes. No missing local-finiteness axiom is asserted: both its derivation and the subsequent
+chain lift remain proof obligations. The exact target statement above is unchanged.
+
 The earlier recession-cone draft remains unexported at
 `.scratch/wt159b-isotropic-draft/RecessionCone.lean`; it was read and does not elaborate. The
 `upperZero` wrapper and the pointwise bridge `subset_rationalClosure_of_mem` above supply the
