@@ -8884,6 +8884,105 @@ theorem locallyFinite_map_star_of_isotropicHalfspace (hpos : sigPos Q = 1)
   exact Set.Finite.of_injOn hmaps hinj (R.finite.image (fun B : PointedCone ℝ (realified V) =>
     B.map N.mkQ))
 
+/-- **Convex-set chains with closedness and local finiteness relative to the set.** This is the
+form needed on an open half-space: neither local finiteness at its boundary nor global closedness
+of its cells is available. Compactness extracts finitely many local neighbourhoods covering the
+segment; elsewhere the proof is the clopen argument of
+`reflTransGen_inf_nonempty_of_convex_set`. LC-09 (2026-11-19):
+`content:locally finite cover convex set chain relative` and
+`content:IsCompact content:LocallyFinite content:finite` found no competing declaration. -/
+theorem reflTransGen_inf_nonempty_of_convex_set_of_relative {E : Type*}
+    [AddCommGroup E] [Module ℝ E] [TopologicalSpace E] [ContinuousAdd E] [ContinuousSMul ℝ E]
+    {C : Set E} {S : Set (PointedCone ℝ E)} (hconv : Convex ℝ C)
+    (hclosed : ∀ τ ∈ S, ∀ z ∈ C, z ∈ closure (τ : Set E) → z ∈ τ)
+    (hcover : ∀ z ∈ C, ∃ τ ∈ S, z ∈ τ)
+    (hloc : ∀ z ∈ C, ∃ U ∈ 𝓝 z, {τ : {τ : PointedCone ℝ E // τ ∈ S} |
+      (((τ.1 : PointedCone ℝ E) : Set E) ∩ U).Nonempty}.Finite)
+    {x y : E} (hx : x ∈ C) (hy : y ∈ C)
+    {τ τ' : PointedCone ℝ E} (hτ : τ ∈ S) (hτ' : τ' ∈ S)
+    (hxτ : x ∈ τ) (hyτ' : y ∈ τ') :
+    Relation.ReflTransGen (fun a b => a ∈ S ∧ b ∈ S ∧
+      (((a ⊓ b : PointedCone ℝ E) : Set E) ∩ C).Nonempty) τ τ' := by
+  classical
+  let sp : ℝ → E := fun r => x + r • (y - x)
+  let sg : Set E := sp '' Set.Icc (0 : ℝ) 1
+  have hspcont : Continuous sp := continuous_const.add (continuous_id.smul continuous_const)
+  have hsgcompact : IsCompact sg := isCompact_Icc.image hspcont
+  have hseg : ∀ r ∈ Set.Icc (0 : ℝ) 1, sp r ∈ C := by
+    intro r hr
+    have h : sp r = (1 - r) • x + r • y := by
+      dsimp only [sp]
+      rw [smul_sub, sub_smul, one_smul]
+      abel
+    rw [h]
+    exact hconv hx hy (by linarith [hr.2]) hr.1 (by ring)
+  have hsgmem : ∀ z ∈ sg, z ∈ C := by
+    rintro _ ⟨r, hr, rfl⟩
+    exact hseg r hr
+  have hsp0 : sp 0 = x := by simp [sp]
+  have hsp1 : sp 1 = y := by simp [sp]
+  choose U hUn hUfin using fun z : sg => hloc z.1 (hsgmem z.1 z.2)
+  have hcoverU : sg ⊆ ⋃ z : sg, interior (U z) := by
+    intro z hz
+    exact Set.mem_iUnion.2 ⟨⟨z, hz⟩, mem_interior_iff_mem_nhds.2 (hUn ⟨z, hz⟩)⟩
+  obtain ⟨c, hc⟩ := hsgcompact.elim_finite_subcover (fun z : sg => interior (U z))
+    (fun _ => isOpen_interior) hcoverU
+  let A : sg → Set {τ : PointedCone ℝ E // τ ∈ S} := fun z =>
+    {τ | (((τ.1 : PointedCone ℝ E) : Set E) ∩ interior (U z)).Nonempty}
+  have hAfin (z : sg) : (A z).Finite := (hUfin z).subset fun i hi =>
+    hi.mono (Set.inter_subset_inter_right _ interior_subset)
+  have hsub : {τ : {τ : PointedCone ℝ E // τ ∈ S} |
+      (((τ.1 : PointedCone ℝ E) : Set E) ∩ sg).Nonempty} ⊆ ⋃ z ∈ (c : Set sg), A z := by
+    rintro i ⟨w, hwi, hwsg⟩
+    obtain ⟨z, hzc, hwU⟩ := Set.mem_iUnion₂.1 (hc hwsg)
+    exact Set.mem_iUnion₂.2 ⟨z, hzc, w, hwi, hwU⟩
+  have hbasefin : {τ : {τ : PointedCone ℝ E // τ ∈ S} |
+      (((τ.1 : PointedCone ℝ E) : Set E) ∩ sg).Nonempty}.Finite :=
+    ((c.finite_toSet).biUnion fun z _ => hAfin z).subset hsub
+  let ι := {i : {τ : PointedCone ℝ E // τ ∈ S} //
+    (((i.1 : PointedCone ℝ E) : Set E) ∩ sg).Nonempty}
+  let _ : Finite ι := hbasefin.to_subtype
+  let J : ι → Set ℝ := fun j => Set.Icc (0 : ℝ) 1 ∩ sp ⁻¹'
+    ((j.1.1 : PointedCone ℝ E) : Set E)
+  have hJclosed : ∀ j : ι, IsClosed (J j) := by
+    intro j
+    have heq : J j = Set.Icc (0 : ℝ) 1 ∩ sp ⁻¹'
+        closure ((j.1.1 : PointedCone ℝ E) : Set E) := by
+      ext r
+      simp only [J, Set.mem_inter_iff, Set.mem_preimage]
+      constructor
+      · exact fun hr => ⟨hr.1, subset_closure hr.2⟩
+      · exact fun hr => ⟨hr.1, hclosed j.1.1 j.1.2 (sp r) (hseg r hr.1) hr.2⟩
+    rw [heq]
+    exact isClosed_Icc.inter (isClosed_closure.preimage hspcont)
+  have hJcover : ∀ r ∈ Set.Icc (0 : ℝ) 1, ∃ j : ι, r ∈ J j := by
+    intro r hr
+    obtain ⟨τ₀, hτ₀S, hτ₀⟩ := hcover _ (hseg r hr)
+    exact ⟨⟨⟨τ₀, hτ₀S⟩, ⟨sp r, hτ₀, ⟨r, hr, rfl⟩⟩⟩, hr, hτ₀⟩
+  have hxsg : x ∈ sg := ⟨0, ⟨le_refl 0, zero_le_one⟩, hsp0⟩
+  have hysg : y ∈ sg := ⟨1, ⟨zero_le_one, le_refl 1⟩, hsp1⟩
+  let i₀ : ι := ⟨⟨τ, hτ⟩, ⟨x, hxτ, hxsg⟩⟩
+  let i₁ : ι := ⟨⟨τ', hτ'⟩, ⟨y, hyτ', hysg⟩⟩
+  have h0 : (J i₀ ∩ Set.Icc (0 : ℝ) 1).Nonempty :=
+    ⟨0, ⟨⟨⟨le_refl 0, zero_le_one⟩, by
+        change sp 0 ∈ ((i₀.1.1 : PointedCone ℝ E) : Set E)
+        rw [hsp0]
+        exact hxτ⟩, ⟨le_refl 0, zero_le_one⟩⟩⟩
+  have h1 : (J i₁ ∩ Set.Icc (0 : ℝ) 1).Nonempty :=
+    ⟨1, ⟨⟨⟨zero_le_one, le_refl 1⟩, by
+        change sp 1 ∈ ((i₁.1.1 : PointedCone ℝ E) : Set E)
+        rw [hsp1]
+        exact hyτ'⟩, ⟨zero_le_one, le_refl 1⟩⟩⟩
+  have hchain := reflTransGen_inter_nonempty_of_isPreconnected J isPreconnected_Icc hJclosed
+    hJcover h0 h1
+  let rcone : PointedCone ℝ E → PointedCone ℝ E → Prop :=
+    fun a b => a ∈ S ∧ b ∈ S ∧ (((a ⊓ b : PointedCone ℝ E) : Set E) ∩ C).Nonempty
+  have hstep : ∀ a b : ι, (J a ∩ J b ∩ Set.Icc (0 : ℝ) 1).Nonempty →
+      rcone a.1.1 b.1.1 := by
+    rintro a b ⟨r, ⟨hra, hrb⟩, hrI⟩
+    exact ⟨a.1.2, b.1.2, ⟨sp r, ⟨Submodule.mem_inf.2 ⟨hra.2, hrb.2⟩, hseg r hrI⟩⟩⟩
+  exact reflTransGen_map_of_step (fun i : ι => i.1.1) hstep hchain
+
 end IsotropicRationalTraces
 
 end LeanCategories.Lattices.Valued
