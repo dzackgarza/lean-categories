@@ -13,6 +13,7 @@ public import Mathlib.Analysis.Convex.Topology
 public import Mathlib.LinearAlgebra.TensorProduct.Defs
 public import Mathlib.Topology.Algebra.Module.ModuleTopology
 public import Mathlib.Topology.LocallyFinite
+public import Mathlib.LinearAlgebra.BilinearForm.Properties
 public import Mathlib.Algebra.Module.ZLattice.Basic
 public import Mathlib.LinearAlgebra.Basis.Defs
 public import Mathlib.LinearAlgebra.Dual.Lemmas
@@ -141,7 +142,8 @@ decomposition
   `P = hull (rationalPoint '' s)` and a form that is the extension of a `ℚ`-linear `q`, the form
   cuts `P` exactly when `q` takes both signs on `s`, so `L(ℝ)` leaves the statement.
   `finite_span_int_of_pairings_bounded`: on the `ℤ`-span of a `ℚ`-basis a vector's coordinate
-  against `b j` is its pairing with the dual vector `z j` (`exists_dual_family`), so bounded
+  against `b j` is its pairing with the dual vector `B.dualBasis hB b j` (Mathlib's
+  `LinearMap.BilinForm.dualBasis`), so bounded
   pairings leave
   finitely many lattice points — finiteness from integrality, where `ZSpan.setFinite_inter` would
   need a `ProperSpace` instance that `realified V` has not. What is owed is the bound itself, per
@@ -340,6 +342,28 @@ one returned — LionSR/TNLean `PEPS/AreaLaw/Geometry/TemplatePolygonFiniteInteg
 again; nothing to port. What the two lemmas proved here use is Mathlib's
 `Module.Basis.sum_repr` and `Module.Basis.mem_span_iff_repr_mem`
 (`Mathlib/Algebra/Module/ZLattice/Basic.lean:148`), `Set.Finite.pi` and `Set.finite_Icc`.
+
+### LC-09 record for the dual family (2026-11-15, #161, third unit: `exists_dual_family` retired)
+
+The four queries of this unit, with every hit. `content:dualBasis`: 139 files, 3 returned —
+TauCeti `Algebra/Lie/Dual.lean` and `Algebra/Lie/Sl2/Killing.lean` (the `B`-dual basis of Mathlib,
+`sum_apply_smul_dualBasis`), mrdouglasny/jacobian-challenge `Periods.lean` (`Basis.dualBasis` of
+the *linear* dual); none of them a dual family for a nondegenerate bilinear form.
+`content:BilinForm dual basis nondegenerate`: 134 files, 9031 matches, none returned as a file.
+`content:apply_dualBasis_left`: 16 files, 3 returned — facebookresearch/atlas-lean
+`MathlibExt/Algebra/Lie/LeviDecomposition.lean` and `v1/Atlas/NumberTheoryI/code/PairingsTheorems.lean`,
+whose `prop_5_7_existence` is exactly the statement the retired declaration carried
+(`∃ b' : Basis ι K V, ∀ i j, B (b' i) (b j) = if j = i then 1 else 0`, with
+`fun i j => BilinForm.apply_dualBasis_left hB b i j` as its proof — i.e. already a two-line
+corollary of Mathlib, and the same entries for `prop_5_7_uniqueness` and `cor_5_14`), and TauCeti
+`LinearAlgebra/BilinearForm/Basic.lean` (the same rewrite). `content:Gram matrix inverse dual basis
+delta`: 22 files, 5699 matches, no file returned. Nothing to port: Mathlib owns the statement, at
+`LinearMap.BilinForm.dualBasis` / `apply_dualBasis_left` / `apply_dualBasis_right` /
+`dualBasis_repr_apply` / `dualBasis_dualBasis` (`Mathlib/LinearAlgebra/BilinearForm/Properties.lean`,
+the `DualBasis` section), and the hand-rolled injective-implies-surjective derivation that stood in
+this file was that lemma with more work. The retired declaration is gone; `apply_dualBasis_right`
+supplies the `δ` pairings and `dualBasis_repr_apply` read through `dualBasis_dualBasis` supplies the
+coordinate identity, which replaces twenty lines of `Finset.sum_eq_single`.
 
 ## References
 
@@ -3281,56 +3305,19 @@ section Lattice
 
 variable {ι : Type*} [Fintype ι] [DecidableEq ι]
 
-/-- **A nondegenerate form has a dual family to a basis**, `B (b j) (z k) = δ j k`. The map
-`x ↦ (k ↦ B x (b k))` is injective because `B` is nondegenerate, and between `ℚ`-spaces of equal
-finite dimension an injective linear map is surjective, which produces the `z k`. -/
-theorem exists_dual_family [Module.Finite ℚ V] {b : Module.Basis ι ℚ V}
-    {B : V →ₗ[ℚ] V →ₗ[ℚ] ℚ}
-    (hBsym : ∀ x y, B x y = B y x) (hB : ∀ x, (∀ y, B x y = 0) → x = 0) :
-    ∃ z : ι → V, ∀ j k, B (b j) (z k) = if j = k then 1 else 0 := by
-  classical
-  set F : V →ₗ[ℚ] (ι → ℚ) :=
-    { toFun := fun x k => B x (b k)
-      map_add' := fun x y => by
-        funext k
-        show B (x + y) (b k) = B x (b k) + B y (b k)
-        rw [map_add, LinearMap.add_apply]
-      map_smul' := fun c x => by
-        funext k
-        show B (c • x) (b k) = c • B x (b k)
-        rw [map_smul, LinearMap.smul_apply] } with hF
-  have hker : ∀ x, F x = 0 → x = 0 := by
-    intro x hx
-    refine hB x fun y => ?_
-    conv_lhs => rw [← b.sum_repr y]
-    simp only [map_sum, map_smul, smul_eq_mul]
-    refine Finset.sum_eq_zero fun k _ => ?_
-    have hk : B x (b k) = 0 := by
-      have h1 := congrFun hx k
-      simpa [hF] using h1
-    rw [hk, mul_zero]
-  have hinj : Function.Injective F := by
-    intro x y hxy
-    have h0 : F (x - y) = 0 := by rw [map_sub, hxy, sub_self]
-    exact sub_eq_zero.mp (hker (x - y) h0)
-  have hdim : Module.finrank ℚ V = Module.finrank ℚ (ι → ℚ) := by
-    rw [Module.finrank_eq_card_basis b, Module.finrank_fintype_fun_eq_card]
-  have hsurj : Function.Surjective F :=
-    (LinearMap.injective_iff_surjective_of_finrank_eq_finrank (f := F) hdim).mp hinj
-  choose z hz using fun k => hsurj (Pi.single k 1)
-  refine ⟨z, fun j k => ?_⟩
-  have h1 := congrFun (hz k) j
-  simp only [hF, LinearMap.coe_mk, AddHom.coe_mk, Pi.single_apply] at h1
-  rw [hBsym (b j) (z k)]
-  exact h1
-
-/-- **Finitely many lattice points with bounded pairings.** On the `ℤ`-span of a `ℚ`-basis the
-coordinate of a vector against `b j` is its pairing with the dual vector `z j` (`hz`), so bounded
-pairings bound the integer coordinates, and a box of integer coordinates is finite. This is where
-the counting lemma's finiteness comes from: no topology, only integrality. -/
-theorem finite_span_int_of_pairings_bounded {b : Module.Basis ι ℚ V} {B : V →ₗ[ℚ] V →ₗ[ℚ] ℚ}
-    (z : ι → V) (hz : ∀ j k, B (b j) (z k) = if j = k then 1 else 0) (C : ι → ℕ) :
-    {v : V | v ∈ Submodule.span ℤ (Set.range b) ∧ ∀ k, |B v (z k)| ≤ C k}.Finite := by
+/-- **Finitely many lattice points with bounded pairings.** The dual family of a basis is
+*Mathlib's* `LinearMap.BilinForm.dualBasis`, not a restatement of it: it is the image of the dual
+basis under `B.toDual` (`Mathlib/LinearAlgebra/BilinearForm/Properties.lean:376`), it pairs as
+`B (b j) (B.dualBasis hB b k) = δ j k` (`apply_dualBasis_left` `:390` composed with symmetry,
+`apply_dualBasis_right` `:396`), and the coordinate of a vector against it is the pairing
+(`dualBasis_repr_apply` `:384` read through `dualBasis_dualBasis` `:413`). With that, bounded
+pairings bound the integer coordinates of the `ℤ`-span of the basis, and a box of integer
+coordinates is finite. This is where the counting lemma's finiteness comes from: no topology, only
+integrality. -/
+theorem finite_span_int_of_pairings_bounded {b : Module.Basis ι ℚ V}
+    {B : LinearMap.BilinForm ℚ V} (hB : B.Nondegenerate) (hBsym : B.IsSymm) (C : ι → ℕ) :
+    {v : V | v ∈ Submodule.span ℤ (Set.range b) ∧
+      ∀ k, |B v (B.dualBasis hB b k)| ≤ C k}.Finite := by
   classical
   have hbox : {n : ι → ℤ | ∀ k, |n k| ≤ (C k : ℤ)}.Finite := by
     have hsub : {n : ι → ℤ | ∀ k, |n k| ≤ (C k : ℤ)}
@@ -3349,29 +3336,11 @@ theorem finite_span_int_of_pairings_bounded {b : Module.Basis ι ℚ V} {B : V �
     exact Finset.sum_congr rfl fun k _ => by rw [hn k]
   refine ⟨n, ?_, hsum⟩
   intro k
-  have hpair : B v (z k) = (n k : ℚ) := by
-    have hsplit : B v (z k) = ∑ j, (b.repr v j) * B (b j) (z k) := by
-      conv_lhs => rw [← b.sum_repr v]
-      rw [map_sum]
-      have hsa : (∑ c, B ((b.repr v) c • b c)) (z k)
-          = ∑ c, B ((b.repr v) c • b c) (z k) :=
-        LinearMap.sum_apply Finset.univ (fun c => B ((b.repr v) c • b c)) (z k)
-      rw [hsa]
-      exact Finset.sum_congr rfl fun j _ => by
-        rw [map_smul, LinearMap.smul_apply, smul_eq_mul]
-    have hsingle : ∑ j, (b.repr v j) * B (b j) (z k) = b.repr v k := by
-      have hone : ∑ j, (b.repr v j) * (if j = k then (1 : ℚ) else 0) = b.repr v k := by
-        rw [Finset.sum_eq_single k]
-        · simp
-        · intro j _ hjk
-          simp [hjk]
-        · intro hk
-          exact absurd (Finset.mem_univ k) hk
-      calc ∑ j, (b.repr v j) * B (b j) (z k)
-          = ∑ j, (b.repr v j) * (if j = k then (1 : ℚ) else 0) :=
-            Finset.sum_congr rfl fun j _ => by rw [hz j k]
-        _ = b.repr v k := hone
-    rw [hsplit, hsingle]
+  have hpair : B v (B.dualBasis hB b k) = (n k : ℚ) := by
+    have hrepr : B v (B.dualBasis hB b k) = b.repr v k := by
+      rw [← LinearMap.BilinForm.dualBasis_repr_apply hB (B.dualBasis hB b) v k,
+        LinearMap.BilinForm.dualBasis_dualBasis hB hBsym b]
+    rw [hrepr]
     exact (hn k).symm
   have hbound := hb k
   rw [hpair] at hbound
