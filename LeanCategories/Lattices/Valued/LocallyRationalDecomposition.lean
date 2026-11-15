@@ -163,14 +163,23 @@ decomposition
   denominator, hence bounded away from `0`, and `abs_le_of_abs_mul_le_of_one_div_le` turns the
   product bound into a bound on the other pairing.
 
-  What remains of (ii) is then the assembly, in two steps, and step (i)'s orbit layer. The `Λ`-layer
-  has to supply those denominators and the primitive normal; and the bound established is on the
-  pairings with the pair, while `finite_span_int_of_pairings_bounded` consumes bounds on the
-  pairings with a fixed dual basis — the component of `ℓ` in the orthogonal complement of the
-  plane of the pair is bounded by `Q ℓ = -m` together with the negative definiteness there, and
-  turning that bound into bounds on the pairings with a fixed family spanning `L(ℚ)` is the
-  missing step. For (i): this file has no `Λ`, no `Γ` and no primitive-vector reduction, so the
-  hypothesis stays a hypothesis. The source's own ground for it
+  The assembly is carried too, in the section "The counting lemma over `ℚ`": from the pair bound,
+  `abs_associated_le_of_pairing_bound` bounds *every* pairing of `ℓ` — projecting off the line
+  `ℝ (a + b)`, whose pairing with `ℓ` is the sum of the two, and applying the reverse
+  Cauchy–Schwarz inequality on its orthogonal complement (`associated_spatialPart_sq_le`) — and
+  `finite_cutting_of_pairing_bounds` turns bounds on the pairings with Mathlib's dual basis into
+  finiteness by `finite_span_int_of_pairings_bounded`. The denominators that the isotropic case
+  needs are `one_div_le_abs_of_integral`, and `finite_cutters_of_pair_bounds` unions over the
+  finitely many ordered pairs of generators, which is the cutting condition
+  (`cutsOn_iff_generators`). Discharged as corollaries: the pair of timelike generators
+  (`finite_cutting_normals_of_both_timelike`) and the timelike-isotropic one
+  (`finite_cutting_normals_of_isotropic`). Not discharged: the both-isotropic pair, whose bound is
+  `abs_associated_mul_le_of_both_isotropic` and whose corollary would repeat the denominator
+  argument with both denominators.
+
+  What remains, then, is step (i)'s orbit layer: this file has no `Λ`, no `Γ` and no
+  primitive-vector reduction, so the
+    hypothesis stays a hypothesis. The source's own ground for it
   ("this collection is locally finite on `C`", p. 18) does not supply it either: local finiteness on
   `C` is a statement about compact pieces of the open cone, while cutting is a statement about the
   sign pattern of a form on a whole rational cone, and a locally finite family can have infinitely
@@ -3618,6 +3627,333 @@ theorem finite_span_int_of_pairings_bounded {b : Module.Basis ι ℚ V}
   exact hbound
 
 end Lattice
+
+/-! ## The counting lemma over `ℚ`: from the pair bounds to finitely many normals
+
+The last step of the finiteness argument of Example 4.3 (b), pp. 17-18. The section above reduced a
+normal `ℓ` of value `Q ℓ = -m` that takes both signs on a pair `a`, `b` of generators of `C₊` to a
+bound on the pairings `ℓ · a` and `ℓ · b`; what is carried here is the rest: those bounds bound `ℓ`
+*itself*, and a lattice has finitely many points in a bounded set.
+
+* `abs_associated_le_of_pairing_bound`: **a bound on one pairing bounds every pairing.** With `t` of
+  positive value and `w = spatialPart Q t ℓ` the projection off the line `ℝ t`,
+  `ℓ = ((ℓ·t)/Q t) • t + w` and `Q w = Q ℓ - (ℓ·t)²/Q t ≥ -m - L²/Q t` for `|ℓ·t| ≤ L`, and the
+  reverse Cauchy–Schwarz inequality on `t^⊥` (`associated_spatialPart_sq_le`) gives
+  `|w·z| ≤ sqrt((-Q w)(-Q (spatialPart Q t z)))`. So every pairing of `ℓ` is bounded by an explicit
+  constant depending on `z`, on `m` and on `L`. The bound `L` comes from the pair: at `t = a + b`
+  the pairing `ℓ·t = ℓ·a + ℓ·b` is bounded by the two pair bounds of the section above.
+* `finite_cutting_of_pairing_bounds`: **bounded pairings leave finitely many lattice vectors.** For
+  a `ℚ`-basis `bs` of `L(ℚ)` and the rational form `BQ` of `associated Q`, the bound of the previous
+  item applied to each vector of Mathlib's `BQ.dualBasis hBQnd bs` is a bound on the pairings with a
+  family spanning `L(ℚ)`, and `finite_span_int_of_pairings_bounded` makes the set finite: no
+  `ProperSpace`, no compactness, only integrality and the `ℤ`-span.
+* `finite_cutting_normals_of_both_timelike` and `finite_cutting_normals_of_isotropic`: the two
+  discharged cases, where the pair bounds of `abs_associated_le_of_both_timelike` (both generators
+  timelike) and of `abs_associated_le_of_isotropic` (one isotropic) become the `Cx`, `Cy` of the
+  finiteness lemma. The isotropic case needs one thing more, supplied by
+  `one_div_le_abs_of_integral`: a nonzero value of the form on the lattice is at least `1/D` in
+  absolute value, `D` the denominator of the generator, so
+  `abs_le_of_abs_mul_le_of_one_div_le` bounds the *other* pairing by the product bound. That is the
+  step that fails over `ℝ`, where the same estimates leave the family `ℓ_N = (N, N + 1/N, 0)`
+  cutting for every `N`.
+* `finite_cutters_of_pair_bounds`: **and finitely many of them cut.** The cutting condition is the
+  disjunction, over the finitely many ordered pairs of generators, of the two sign conditions
+  (`cutsOn_iff_generators`), so finiteness for every ordered pair gives finiteness for the cutters.
+
+### What is not carried
+
+* The case of two isotropic generators: `abs_associated_mul_le_of_both_isotropic` gives the product
+  bound, and the same denominator argument with *both* denominators bounds both pairings; the
+  corollary is not written here, only the bound it would use.
+* **The orbit layer of step (i).** Nothing here knows about `Γ`, its finite-index subgroup, the
+  primitive normal of a `ℚ`-line in `Λ`, or the finiteness of the values of `ℓ²` over a finite union
+  of `Γ`-orbits; `m` is a parameter, and that only finitely many `m` occur is exactly what the
+  arithmeticity of `Γ` supplies and this file does not carry. With it, the lemmas here give the
+  statement of #161 by taking the union over the finitely many values `m`.
+* The negative definiteness of the complement of the pair's plane, which the projection onto
+  `ℝ (a + b)` above makes unnecessary, has a port target should it be wanted: TauCeti
+  `LowDimTopology/Plumbing/NegativeDefinite.lean`,
+  `IsNegativeDefinite.finite_setOfPred_le_intersectionForm_self` (a `ℤ`-sublevel set of a negative
+  definite integral form is finite, by the injectivity of its Gram matrix); not ported, because the
+  route through `associated_spatialPart_sq_le` discharges the same step in this repository.
+
+### LC-09 record for the counting lemma (2026-11-15, #161, fifth unit)
+
+The five queries of this unit, with every hit. `content:ZLattice finite`: 319 files, 8617 matches,
+the import lists and the `ZLattice` developments recorded above; nothing new. `content:Finite inter
+ZSpan`: 18 files, 1341 matches, 1 returned — atlas-lean
+`v1/Atlas/NumberTheoryI/code/Adeles.lean` (finite residue fields), unrelated. `content:PointedCone
+hull`: 8 files, 301 matches, 1 returned — TauCeti `Geometry/Convex/Cone/Basis.lean`
+(`mem_pointedCone_hull_range_iff`: a vector is in the cone on a basis iff all its coordinates are
+nonnegative), the cone-side counterpart of `forall_nonneg_of_forall_nonneg_generators`, not needed
+here (this file's cone carries its rational generators, and `cutsOn_iff_generators` decides the
+signs on those). `content:integral pairing denominator bounded`: 44 files, 4043 matches, no file
+returned. `content:lattice points bounded pairings finite`: 10 files, 1162 matches, 1 returned —
+TauCeti `LowDimTopology/Plumbing/NegativeDefinite.lean`, the port target named above; nothing
+ported. What the lemmas here use is Mathlib's `abs_add_le`, `Real.sqrt_sq_eq_abs`,
+`Real.sqrt_le_sqrt` and `LinearMap.BilinForm.dualBasis` / `dualBasis_repr_apply`, none re-derived.
+
+-/
+
+section CountingLemma
+
+/-- **A nonzero integral pairing is at least `1/D`.** If `ℓ` and `D • v` are lattice vectors of a
+form integral on the lattice, `ℓ · v = n/D` for an integer `n ≠ 0`, so `|ℓ · v| ≥ 1/D`. This is the
+"bounded denominator" of the isotropic case of the counting lemma: the one quantity that the
+estimate `abs_associated_le_of_isotropic` leaves free, and the reason the counting lemma is about a
+lattice and not about `L(ℝ)`. -/
+theorem one_div_le_abs_of_integral {BQ : LinearMap.BilinForm ℚ V}
+    {Λ : Submodule ℤ V} {D : ℕ} (hD : 0 < D) {u w : V}
+    (hu : u ∈ Λ) (hw : (D : ℤ) • w ∈ Λ)
+    (hint : ∀ x ∈ Λ, ∀ y ∈ Λ, ∃ n : ℤ, BQ x y = (n : ℚ))
+    (hne : BQ u w ≠ 0) : (1 : ℚ) / D ≤ |BQ u w| := by
+  obtain ⟨n, hn⟩ := hint u hu ((D : ℤ) • w) hw
+  have h1 : BQ u ((D : ℤ) • w) = (D : ℚ) * BQ u w := by
+    rw [map_zsmul, zsmul_eq_mul]
+    push_cast
+    ring
+  rw [h1] at hn
+  have hn0 : n ≠ 0 := by
+    rintro rfl
+    simp only [Int.cast_zero] at hn
+    have hDq : (D : ℚ) ≠ 0 := by exact_mod_cast hD.ne'
+    exact hne (by
+      rcases mul_eq_zero.1 hn with h | h
+      · exact absurd h hDq
+      · exact h)
+  have habs : (1 : ℚ) ≤ |(n : ℚ)| := by
+    have h2 : (1 : ℤ) ≤ |n| := Int.one_le_abs hn0
+    exact_mod_cast h2
+  have hkey : |(n : ℚ)| = (D : ℚ) * |BQ u w| := by
+    rw [← hn, abs_mul]
+    have : |(D : ℚ)| = (D : ℚ) := abs_of_nonneg (by positivity)
+    rw [this]
+  rw [hkey] at habs
+  rw [div_le_iff₀ (by exact_mod_cast hD), mul_comm]
+  exact habs
+
+variable [Module.Finite ℚ V] {ι : Type*} [Fintype ι] [DecidableEq ι]
+
+theorem abs_associated_le_of_pairing_bound {Q : QuadraticForm ℝ (realified V)}
+    (hpos : sigPos Q = 1) {t l z : realified V} (ht : 0 < Q t) {L m : ℝ}
+    (hL : |(associated Q) l t| ≤ L) (hQl : Q l = -m) :
+    |(associated Q) l z| ≤ Real.sqrt ((m + L ^ 2 / Q t) * (-(Q (spatialPart Q t z)))) +
+      L / Q t * |(associated Q) t z| := by
+  set c : ℝ := (associated Q) l t / Q t with hc
+  have htne : Q t ≠ 0 := ht.ne'
+  have hl : l = c • t + spatialPart Q t l := by
+    rw [hc, spatialPart]
+    module
+  have hwt : (associated Q) (spatialPart Q t l) t = 0 := associated_spatialPart_right Q htne l
+  have hwz : (associated Q) (spatialPart Q t l) z
+      = (associated Q) (spatialPart Q t l) (spatialPart Q t z) := by
+    have hzsplit : z = ((associated Q) z t / Q t) • t + spatialPart Q t z := by
+      rw [spatialPart]
+      module
+    conv_lhs => rw [hzsplit]
+    simp only [map_add, map_smul, smul_eq_mul, hwt, mul_zero, zero_add]
+  have hsplit : (associated Q) l z
+      = c * ((associated Q) t z) + (associated Q) (spatialPart Q t l) (spatialPart Q t z) := by
+    conv_lhs => rw [hl]
+    rw [map_add, map_smul, LinearMap.add_apply, LinearMap.smul_apply, smul_eq_mul, hwz]
+  have hcs := associated_spatialPart_sq_le (Q := Q) hpos ht l z
+  have hQw : Q (spatialPart Q t l) = -m - (associated Q) l t ^ 2 / Q t := by
+    rw [quadratic_spatialPart Q htne l, hQl]
+  have hsqt : (associated Q) l t ^ 2 ≤ L ^ 2 := by
+    nlinarith [abs_le.mp hL, abs_nonneg ((associated Q) l t)]
+  have hb : -(Q (spatialPart Q t l)) ≤ m + L ^ 2 / Q t := by
+    rw [hQw]
+    have : 0 < Q t := ht
+    field_simp
+    nlinarith [hsqt, ht]
+  have hb2 : 0 ≤ -(Q (spatialPart Q t z)) := by
+    have := quadratic_spatialPart_nonpos (Q := Q) hpos ht z
+    linarith
+  have hcs' : (associated Q) (spatialPart Q t l) (spatialPart Q t z) ^ 2
+      ≤ (m + L ^ 2 / Q t) * (-(Q (spatialPart Q t z))) := by
+    have h1 : -(Q (spatialPart Q t l)) * (-(Q (spatialPart Q t z))) ≤
+        (m + L ^ 2 / Q t) * (-(Q (spatialPart Q t z))) := by
+      have h2 : 0 ≤ -(Q (spatialPart Q t z)) := hb2
+      have h3 : -(Q (spatialPart Q t l)) ≤ m + L ^ 2 / Q t := hb
+      nlinarith [h2, h3]
+    linarith [hcs, h1]
+  have hwbound : |(associated Q) (spatialPart Q t l) (spatialPart Q t z)|
+      ≤ Real.sqrt ((m + L ^ 2 / Q t) * (-(Q (spatialPart Q t z)))) := by
+    rw [← Real.sqrt_sq_eq_abs]
+    exact Real.sqrt_le_sqrt hcs'
+  have hcbound : |c| ≤ L / Q t := by
+    rw [hc, abs_div, abs_of_pos ht]
+    exact div_le_div_of_nonneg_right hL ht.le
+  rw [hsplit]
+  have ht1 : |c * ((associated Q) t z)| ≤ L / Q t * |(associated Q) t z| := by
+    rw [abs_mul]
+    exact mul_le_mul_of_nonneg_right hcbound (abs_nonneg _)
+  calc |c * ((associated Q) t z) + (associated Q) (spatialPart Q t l) (spatialPart Q t z)|
+      ≤ |c * ((associated Q) t z)| +
+        |(associated Q) (spatialPart Q t l) (spatialPart Q t z)| := abs_add_le _ _
+    _ ≤ L / Q t * |(associated Q) t z| +
+        Real.sqrt ((m + L ^ 2 / Q t) * (-(Q (spatialPart Q t z)))) := by
+        have := hwbound
+        linarith [ht1]
+    _ = _ := by ring
+
+/-- **Bounded pairings leave finitely many lattice vectors.** The bounds on the pairings of `ℓ` with
+the pair (`hbnd`) bound, through `abs_associated_le_of_pairing_bound` at `t = a + b`, the pairing of
+`ℓ` with every vector, in particular with each vector of Mathlib's dual basis `BQ.dualBasis`; the
+pairings with that family are the coordinates of `ℓ` against the `ℤ`-span of the basis, where
+`finite_span_int_of_pairings_bounded` leaves finitely many vectors. -/
+theorem finite_cutting_of_pairing_bounds {ι : Type*} [Fintype ι] [DecidableEq ι]
+    {bs : Module.Basis ι ℚ V} {Q : QuadraticForm ℝ (realified V)} (hpos : sigPos Q = 1)
+    {BQ : LinearMap.BilinForm ℚ V} (hBQsym : BQ.IsSymm) (hBQnd : BQ.Nondegenerate)
+    (hBQ : ∀ u w : V, (associated Q) (rationalPoint u) (rationalPoint w) = (BQ u w : ℝ))
+    {a b : V} {m : ℝ} (ht : 0 < Q (rationalPoint a + rationalPoint b)) {Cx Cy : ℝ}
+    (hbnd : ∀ v : V, v ∈ Submodule.span ℤ (Set.range bs) → Q (rationalPoint v) = -m →
+      0 < (BQ v a : ℝ) → (BQ v b : ℝ) < 0 →
+      |(BQ v a : ℝ)| ≤ Cx ∧ |(BQ v b : ℝ)| ≤ Cy) :
+    {v : V | v ∈ Submodule.span ℤ (Set.range bs) ∧ Q (rationalPoint v) = -m ∧
+      0 < (BQ v a : ℝ) ∧ (BQ v b : ℝ) < 0}.Finite := by
+  classical
+  have key : ∀ k : ι, ∃ C : ℕ, ∀ v : V, v ∈ Submodule.span ℤ (Set.range bs) →
+      Q (rationalPoint v) = -m → 0 < (BQ v a : ℝ) → (BQ v b : ℝ) < 0 →
+      |BQ v (BQ.dualBasis hBQnd bs k)| ≤ (C : ℚ) := by
+    intro k
+    obtain ⟨C, hC⟩ := exists_nat_ge (Real.sqrt
+      ((m + (Cx + Cy) ^ 2 / Q (rationalPoint a + rationalPoint b)) *
+        (-(Q (spatialPart Q (rationalPoint a + rationalPoint b)
+          (rationalPoint (BQ.dualBasis hBQnd bs k)))))) +
+      (Cx + Cy) / Q (rationalPoint a + rationalPoint b) *
+        |(associated Q) (rationalPoint a + rationalPoint b)
+          (rationalPoint (BQ.dualBasis hBQnd bs k))|)
+    refine ⟨C, fun v hv hQ hx hy => ?_⟩
+    obtain ⟨h1, h2⟩ := hbnd v hv hQ hx hy
+    have hsum : (associated Q) (rationalPoint v) (rationalPoint a + rationalPoint b)
+        = (BQ v a : ℝ) + (BQ v b : ℝ) := by
+      simp only [map_add, hBQ v a, hBQ v b]
+    have hL : |(associated Q) (rationalPoint v) (rationalPoint a + rationalPoint b)| ≤ Cx + Cy := by
+      rw [hsum]
+      refine le_trans (abs_add_le _ _) ?_
+      linarith
+    have hgt := abs_associated_le_of_pairing_bound (Q := Q) hpos ht (l := rationalPoint v)
+      (z := rationalPoint (BQ.dualBasis hBQnd bs k)) (L := Cx + Cy) (m := m) hL hQ
+    have hreal : |((BQ v (BQ.dualBasis hBQnd bs k) : ℚ) : ℝ)| ≤ (C : ℝ) := by
+      rw [← hBQ v (BQ.dualBasis hBQnd bs k)]
+      exact le_trans hgt hC
+    exact_mod_cast hreal
+  choose C hC using key
+  refine Set.Finite.subset (finite_span_int_of_pairings_bounded (b := bs) hBQnd hBQsym C) ?_
+  rintro v ⟨hv, hQ, hx, hy⟩
+  exact ⟨hv, fun k => hC k v hv hQ hx hy⟩
+
+/-- **The counting lemma at a pair of timelike generators**: the bounds
+`abs_associated_le_of_both_timelike` turn the sign conditions on the pair into the bounded pairings
+of `finite_cutting_of_pairing_bounds`. Both constants are explicit — the Gram data of the pair and
+`m`. -/
+theorem finite_cutting_normals_of_both_timelike {ι : Type*} [Fintype ι] [DecidableEq ι]
+    {bs : Module.Basis ι ℚ V} {Q : QuadraticForm ℝ (realified V)} (hpos : sigPos Q = 1)
+    {BQ : LinearMap.BilinForm ℚ V} (hBQsym : BQ.IsSymm) (hBQnd : BQ.Nondegenerate)
+    (hBQ : ∀ u w : V, (associated Q) (rationalPoint u) (rationalPoint w) = (BQ u w : ℝ))
+    {a b : V} {m : ℝ}
+    (ha : 0 < Q (rationalPoint a)) (hb : 0 < Q (rationalPoint b))
+    (hab : 0 < (associated Q) (rationalPoint a) (rationalPoint b))
+    (hK : 0 < (associated Q) (rationalPoint a) (rationalPoint b) ^ 2 -
+      Q (rationalPoint a) * Q (rationalPoint b)) :
+    {v : V | v ∈ Submodule.span ℤ (Set.range bs) ∧ Q (rationalPoint v) = -m ∧
+      0 < (BQ v a : ℝ) ∧ (BQ v b : ℝ) < 0}.Finite := by
+  have ht : 0 < Q (rationalPoint a + rationalPoint b) := by
+    rw [show rationalPoint a + rationalPoint b
+        = (1 : ℝ) • rationalPoint a + (1 : ℝ) • rationalPoint b by simp, quadratic_expand]
+    nlinarith [ha, hb, hab]
+  set K := (associated Q) (rationalPoint a) (rationalPoint b) ^ 2 -
+    Q (rationalPoint a) * Q (rationalPoint b) with hKdef
+  have hKpos : 0 < K := hKdef ▸ hK
+  refine finite_cutting_of_pairing_bounds (Q := Q) hpos hBQsym hBQnd hBQ (a := a) (b := b) ht
+    (Cx := Real.sqrt (m * K / Q (rationalPoint b)))
+    (Cy := Real.sqrt (m * K / Q (rationalPoint a))) ?_
+  intro v hv hQ hx hy
+  have hx' : 0 < (associated Q) (rationalPoint v) (rationalPoint a) := by
+    rw [hBQ v a]; exact hx
+  have hy' : (associated Q) (rationalPoint v) (rationalPoint b) < 0 := by
+    rw [hBQ v b]; exact hy
+  have h := abs_associated_le_of_both_timelike (Q := Q) hpos ha hb hab hKpos hQ hx' hy'
+  constructor
+  · rw [← hBQ v a]
+    exact h.1
+  · rw [← hBQ v b]
+    exact h.2
+
+/-- **The counting lemma at a timelike and an isotropic generator**: the hyperbola of
+`abs_associated_le_of_isotropic` bounds `ℓ · b` and the product of the two pairings, and the
+denominator of `b` in the lattice (`one_div_le_abs_of_integral`) turns the product bound into a
+bound on `ℓ · a`. -/
+theorem finite_cutting_normals_of_isotropic {ι : Type*} [Fintype ι] [DecidableEq ι]
+    {bs : Module.Basis ι ℚ V} {Q : QuadraticForm ℝ (realified V)} (hpos : sigPos Q = 1)
+    {BQ : LinearMap.BilinForm ℚ V} (hBQsym : BQ.IsSymm) (hBQnd : BQ.Nondegenerate)
+    (hBQ : ∀ u w : V, (associated Q) (rationalPoint u) (rationalPoint w) = (BQ u w : ℝ))
+    {a b : V} {m : ℝ} (hm : 0 < m) (ha : 0 < Q (rationalPoint a)) (hb : Q (rationalPoint b) = 0)
+    (hab : 0 < (associated Q) (rationalPoint a) (rationalPoint b))
+    {D : ℕ} (hD : 0 < D)
+    (hbD : (D : ℤ) • b ∈ Submodule.span ℤ (Set.range bs))
+    (hint : ∀ x ∈ Submodule.span ℤ (Set.range bs), ∀ y ∈ Submodule.span ℤ (Set.range bs),
+      ∃ n : ℤ, BQ x y = (n : ℚ)) :
+    {v : V | v ∈ Submodule.span ℤ (Set.range bs) ∧ Q (rationalPoint v) = -m ∧
+      0 < (BQ v a : ℝ) ∧ (BQ v b : ℝ) < 0}.Finite := by
+  have ht : 0 < Q (rationalPoint a + rationalPoint b) := by
+    rw [show rationalPoint a + rationalPoint b
+        = (1 : ℝ) • rationalPoint a + (1 : ℝ) • rationalPoint b by simp, quadratic_expand, hb]
+    nlinarith [ha, hab]
+  refine finite_cutting_of_pairing_bounds (Q := Q) hpos hBQsym hBQnd hBQ (a := a) (b := b) ht
+    (Cx := m * (associated Q) (rationalPoint a) (rationalPoint b) / 2 * D)
+    (Cy := (associated Q) (rationalPoint a) (rationalPoint b) *
+      Real.sqrt (m / Q (rationalPoint a))) ?_
+  intro v hv hQ hx hy
+  have hx' : 0 < (associated Q) (rationalPoint v) (rationalPoint a) := by
+    rw [hBQ v a]; exact hx
+  have hy' : (associated Q) (rationalPoint v) (rationalPoint b) < 0 := by
+    rw [hBQ v b]; exact hy
+  have h := abs_associated_le_of_isotropic (Q := Q) hpos ha hb hab hQ hx' hy'
+  have hne : BQ v b ≠ 0 := by
+    intro h0
+    rw [h0] at hy
+    simp at hy
+  have hdenq := one_div_le_abs_of_integral (BQ := BQ)
+    (Λ := Submodule.span ℤ (Set.range bs)) (D := D) hD (u := v) (w := b) hv hbD hint hne
+  have hden : (1 : ℝ) / (D : ℝ) ≤ |(BQ v b : ℝ)| := by
+    have h2 : ((1 : ℚ) / (D : ℚ) : ℝ) ≤ ((|BQ v b| : ℚ) : ℝ) := by exact_mod_cast hdenq
+    simpa using h2
+  have hxy : |(BQ v a : ℝ)| * |(BQ v b : ℝ)| ≤
+      m * (associated Q) (rationalPoint a) (rationalPoint b) / 2 := by
+    rw [← hBQ v a, ← hBQ v b]
+    exact h.2
+  have hC : 0 ≤ m * (associated Q) (rationalPoint a) (rationalPoint b) / 2 := by
+    nlinarith [hab, hm]
+  constructor
+  · have hb1 : |(BQ v a : ℝ)| ≤
+        m * (associated Q) (rationalPoint a) (rationalPoint b) / 2 * (D : ℝ) :=
+      abs_le_of_abs_mul_le_of_one_div_le (x := (BQ v a : ℝ)) (y := (BQ v b : ℝ)) hC
+        (by exact_mod_cast hD) hden hxy
+    exact hb1
+  · rw [← hBQ v b]
+    exact h.1
+
+end CountingLemma
+
+/-- **Finitely many cutting normals.** The two sign conditions on a pair of generators, taken over
+the finitely many ordered pairs of a finite family `s`, is the cutting condition
+(`cutsOn_iff_generators`), so finiteness for each pair is finiteness for the cutters. -/
+theorem finite_cutters_of_pair_bounds {Q : QuadraticForm ℝ (realified V)}
+    {BQ : LinearMap.BilinForm ℚ V} {m : ℝ} (Λs : Submodule ℤ V) (s : Finset V)
+    (hpair : ∀ a ∈ s, ∀ b ∈ s,
+      {v : V | v ∈ Λs ∧ Q (rationalPoint v) = -m ∧ 0 < (BQ v a : ℝ) ∧ (BQ v b : ℝ) < 0}.Finite) :
+    {v : V | v ∈ Λs ∧ Q (rationalPoint v) = -m ∧
+      ∃ a ∈ s, ∃ b ∈ s, 0 < (BQ v a : ℝ) ∧ (BQ v b : ℝ) < 0}.Finite := by
+  have hunion : (⋃ a ∈ (s : Set V), ⋃ b ∈ (s : Set V),
+      {v : V | v ∈ Λs ∧ Q (rationalPoint v) = -m ∧
+        0 < (BQ v a : ℝ) ∧ (BQ v b : ℝ) < 0}).Finite :=
+    Set.Finite.biUnion s.finite_toSet (fun a _ =>
+      Set.Finite.biUnion s.finite_toSet (fun b _ => hpair a ‹a ∈ s› b ‹b ∈ s›))
+  refine hunion.subset ?_
+  rintro v ⟨hv, hQ, a, ha, b, hb, hxa, hxb⟩
+  exact Set.mem_iUnion₂.mpr ⟨a, ha, Set.mem_iUnion₂.mpr ⟨b, hb, hv, hQ, hxa, hxb⟩⟩
 
 end CountingOverRat
 
