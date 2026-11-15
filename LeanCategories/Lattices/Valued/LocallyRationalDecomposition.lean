@@ -3691,6 +3691,18 @@ bound on the pairings `ℓ · a` and `ℓ · b`; what is carried here is the res
   (`neg_quadratic_of_associated_eq_zero` gives the sign; the primitive normal is what makes `ℓ²`
   depend only on the line). Everything past that point is on main:
   `finite_cutters_of_pair_bounds` per value `m`, and the union over the finitely many values.
+* **The `[Fintype ι] [DecidableEq ι]` binders of the four lattice lemmas, kept deliberately.**
+  `linter.unusedFintypeInType` reports them for `finite_span_int_of_pairings_bounded`,
+  `finite_cutting_of_pairing_bounds`, `finite_cutting_normals_of_both_timelike` and
+  `finite_cutting_normals_of_isotropic`, because their types mention the basis but not its index
+  type. They are not removable: the conclusion is *false* for an infinite index type (the box of
+  integer coordinates is finite exactly when the index set is), so finiteness of `ι` is a
+  hypothesis of the theorem and not an artefact of the presentation. Dropping them and deriving
+  `Fintype ι` inside the proof from `Module.Finite.finite_basis` does work, but the `letI` that
+  requires is rejected by `linter.style.haveILetI`, which fires on any local instance in a proof of
+  a proposition (it fires on `haveI : Fintype (Fin 3) := inferInstance`); the two linters' remedies
+  are incompatible here, and the substantive reading — a hypothesis of the theorem — decides it. The
+  binders stay, the warnings with them.
 * The negative definiteness of the complement of the pair's plane, which the projection onto
   `ℝ (a + b)` above makes unnecessary, has a port target should it be wanted: TauCeti
   `LowDimTopology/Plumbing/NegativeDefinite.lean`,
