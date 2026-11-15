@@ -5,6 +5,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import LeanCategories.ForMathlib.PointedConeFiniteGeneration
+public import LeanCategories.ForMathlib.PointedConeMinkowskiWeyl
 public import LeanCategories.ForMathlib.PointedConeAlternative
 public import LeanCategories.Lattices.Valued.RationalPolyhedralCone
 public import LeanCategories.Lattices.Valued.PositiveCone
@@ -2798,6 +2799,35 @@ theorem isGammaInvariant_facialDecomposition (Γ : Set ((realified V) ≃ₗ[ℝ
     exact (isFaceOf_coneMap_iff (e := e) (F := coneMap e.symm F) (P := Cplus)).1 h1
 
 end GammaAction
+
+/-! ## Closedness of a finitely generated cone
+
+LC-09 (2026-11-19): `content:PointedCone.FG.isClosed` found LeanPool's norm-space proof in
+`FgConeClosed.lean`; `content:DualFG`, the repository's already-ported Minkowski–Weyl
+representation, avoids its longer conic-Carathéodory proof. The needed module-topology statement
+is the finite intersection of closed half-spaces supplied by `PointedCone.fg_iff_dualFG`, with
+`IsModuleTopology.continuous_of_linearMap` for the individual inequalities.
+-/
+
+namespace PointedCone.FG
+
+/-- A finitely generated cone in a finite-dimensional real module with the module topology is
+closed. Minkowski–Weyl writes it as the intersection of finitely many linear half-spaces. -/
+theorem isClosed_of_moduleTopology {E : Type*} [AddCommGroup E] [Module ℝ E]
+    [TopologicalSpace E] [IsModuleTopology ℝ E] [Module.Finite ℝ E]
+    {C : PointedCone ℝ E} (hC : C.FG) : IsClosed (C : Set E) := by
+  obtain ⟨s, hs⟩ := (PointedCone.fg_iff_dualFG (C := C)).1 hC
+  rw [← hs]
+  rw [show ((PointedCone.dual (LinearMap.id : Module.Dual ℝ E →ₗ[ℝ] Module.Dual ℝ E)
+      (s : Set (Module.Dual ℝ E)) : PointedCone ℝ E) : Set E) =
+      ⋂ f : Module.Dual ℝ E, ⋂ _ : f ∈ (s : Set (Module.Dual ℝ E)),
+        {x : E | 0 ≤ f x} by
+    ext x
+    simp]
+  exact isClosed_biInter fun f _ => isClosed_le continuous_const
+    (IsModuleTopology.continuous_of_linearMap f)
+
+end PointedCone.FG
 
 /-! ## Faces exposed by a nonnegative functional
 
