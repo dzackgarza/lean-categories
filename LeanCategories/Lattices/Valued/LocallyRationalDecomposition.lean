@@ -3212,6 +3212,43 @@ theorem map_inf_eq_inf_map_of_span_singleton {E : Type*} [AddCommGroup E] [Modul
         convert hm using 1; abel
       exact ⟨x, ⟨hx, hxK⟩, rfl⟩
 
+/-- **A face containing the quotienting ray projects to a face.**
+LC-09 (2026-11-19): `content:PointedCone.IsFaceOf content:surjective`,
+`content:face quotient convex cone nonnegative generator`, and
+`content:PointedCone.IsFaceOf content:map` found only injective-map and fan APIs. The proof is
+representative-level: a positive multiple of the quotienting ray repairs the two sides of a
+conical combination according to the sign of the quotient difference. -/
+theorem PointedCone.IsFaceOf.map_mkQ_span_singleton {E : Type*} [AddCommGroup E] [Module ℝ E]
+    {e : E} {F C : PointedCone ℝ E} (he : e ∈ F) (hF : F.IsFaceOf C) :
+    let N := Submodule.span ℝ ({e} : Set E)
+    (F.map N.mkQ).IsFaceOf (C.map N.mkQ) := by
+  let N := Submodule.span ℝ ({e} : Set E)
+  change (F.map N.mkQ).IsFaceOf (C.map N.mkQ)
+  refine ⟨Submodule.map_mono hF.le, ?_⟩
+  intro x y a hx hy ha hxy
+  obtain ⟨x', hx', rfl⟩ := hx
+  obtain ⟨y', hy', rfl⟩ := hy
+  obtain ⟨z', hz', hq⟩ := hxy
+  have hdiff : a • x' + y' - z' ∈ N := by
+    have hqN := (Submodule.Quotient.eq' N).mp hq
+    simpa only [sub_eq_add_neg, add_comm, add_left_comm, add_assoc] using hqN
+  obtain ⟨r, hr⟩ := Submodule.mem_span_singleton.1 hdiff
+  rcases lt_or_ge (0 : ℝ) r with hr0 | hr0
+  · have hzsum : z' + r • e = a • x' + y' := by
+      rw [hr]
+      abel
+    have hcomb : a • x' + y' ∈ F :=
+      hzsum ▸ F.add_mem hz' (F.smul_mem hr0.le he)
+    exact ⟨x', hF.mem_of_smul_add_mem hx' hy' ha hcomb, rfl⟩
+  · have hymem : y' + (-r) • e ∈ C :=
+      C.add_mem hy' (C.smul_mem (neg_nonneg.mpr hr0) (hF.le he))
+    have hsum : a • x' + (y' + (-r) • e) = z' := by
+      calc
+        a • x' + (y' + (-r) • e) = (a • x' + y') - r • e := by
+          simp only [neg_smul, sub_eq_add_neg, add_assoc]
+        _ = z' := by rw [hr]; abel
+    exact ⟨x', hF.mem_of_smul_add_mem hx' hymem ha (hsum ▸ hz'), rfl⟩
+
 /-- **Locality of the supporting forms at a point of `σ`.** If `K` is a neighbourhood of
 `x ∈ σ`, then the cone `τ` and its trace `τ ⊓ K` have the same forms nonnegative on them and zero
 on `σ`. For `y ∈ τ`, the points `x + t • y` lie in `τ` for `t ≥ 0` and in `K` for sufficiently
