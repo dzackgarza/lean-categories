@@ -2977,6 +2977,32 @@ theorem supportSpace_mono {σ τ τ' : PointedCone ℝ (realified V)} (hτ : τ 
   refine mem_supportSpace.2 fun φ hφ => ?_
   exact mem_supportSpace.1 hx φ ⟨fun y hy => hφ.1 y (hτ hy), hφ.2⟩
 
+/-- **A point outside a closed pointed cone is separated by a real nonnegative form.** Separation
+is run in normed coordinates and composed with the continuous linear equivalence. This is the
+form used by the closed-cone support-space lemmas below. -/
+theorem exists_dual_nonneg_lt_of_isClosed [Module.Finite ℚ V] {τ : PointedCone ℝ (realified V)}
+    (hclosed : IsClosed (τ : Set (realified V))) {x : realified V} (hx : x ∉ τ) :
+    ∃ f : (realified V) →ₗ[ℝ] ℝ, (∀ y ∈ τ, 0 ≤ f y) ∧ f x < 0 := by
+  let e : realified V ≃ₗ[ℝ] (Fin (Module.finrank ℝ (realified V)) → ℝ) :=
+    (Module.finBasis ℝ (realified V)).equivFun
+  have h1 : Continuous e := IsModuleTopology.continuous_of_linearMap e.toLinearMap
+  have h2 : Continuous e.symm := IsModuleTopology.continuous_of_linearMap e.symm.toLinearMap
+  let E' : realified V ≃L[ℝ] (Fin (Module.finrank ℝ (realified V)) → ℝ) :=
+    { e with continuous_toFun := h1, continuous_invFun := h2 }
+  let P : ProperCone ℝ (Fin (Module.finrank ℝ (realified V)) → ℝ) :=
+    { toSubmodule := τ.map E'.toLinearMap
+      isClosed' := by
+        change IsClosed (E' '' (τ : Set (realified V)))
+        exact E'.toHomeomorph.isClosedMap _ hclosed }
+  have hxmap : E' x ∉ E' '' (τ : Set (realified V)) := by
+    intro himage
+    obtain ⟨y, hy, hyx⟩ := himage
+    exact hx (E'.injective hyx ▸ hy)
+  obtain ⟨f, hfP, hfx⟩ := P.hyperplane_separation_point (x₀ := E' x) hxmap
+  refine ⟨(f.comp E'.toContinuousLinearMap).toLinearMap, ?_, hfx⟩
+  intro y hy
+  exact hfP (E' y) ⟨y, hy, rfl⟩
+
 /-- **A closed pointed cone has zero support space over the zero cone.** If `x ∈ τ` is nonzero,
 salience gives `-x ∉ τ`; if `x ∉ τ`, use `x` itself. In either case
 `ProperCone.hyperplane_separation_point` supplies a continuous form nonnegative on `τ` and
@@ -3018,6 +3044,42 @@ theorem supportSpace_bot_of_isClosed_of_salient [Module.Finite ℚ V]
   · obtain ⟨f, hfτ, hfx⟩ := hseparate x hxτ
     have hz : f x = 0 := mem_supportSpace.1 hx f ⟨fun y hy => hfτ y hy, by simp⟩
     exact hfx (by simp only [hz])
+
+/-- **The support space over zero is the lineality of the closure.** A point lies in it exactly
+when both it and its negative lie in the closure. This is the double-dual statement over `ℝ`,
+proved directly from `ProperCone.hyperplane_separation_point`; no salience is assumed. -/
+theorem supportSpace_bot_eq_topologicalClosure_lineal [Module.Finite ℚ V]
+    (D : PointedCone ℝ (realified V)) :
+    supportSpace D ⊥ = PointedCone.lineal D.topologicalClosure := by
+  have hclosed : IsClosed (D.topologicalClosure : Set (realified V)) :=
+    Submodule.isClosed_topologicalClosure D
+  have next {f : (realified V) →ₗ[ℝ] ℝ} (hf : ∀ y ∈ D, 0 ≤ f y) {x : realified V}
+      (hx : x ∈ D.topologicalClosure) : 0 ≤ f x := by
+    exact closure_minimal (t := {y | 0 ≤ f y}) (fun y hy => hf y hy)
+      (isClosed_le continuous_const (IsModuleTopology.continuous_of_linearMap f)) hx
+  apply le_antisymm
+  · intro x hx
+    rw [PointedCone.mem_lineal]
+    constructor
+    · by_contra hnot
+      obtain ⟨f, hf, hneg⟩ := exists_dual_nonneg_lt_of_isClosed hclosed hnot
+      have hz : f x = 0 := mem_supportSpace.1 hx f
+        ⟨fun y hy => hf y (Submodule.le_topologicalClosure D hy), by simp⟩
+      exact hneg.ne hz
+    · by_contra hnot
+      obtain ⟨f, hf, hneg⟩ := exists_dual_nonneg_lt_of_isClosed hclosed hnot
+      have hz : f x = 0 := mem_supportSpace.1 hx f
+        ⟨fun y hy => hf y (Submodule.le_topologicalClosure D hy), by simp⟩
+      rw [map_neg] at hneg
+      linarith
+  · intro x hx
+    rw [PointedCone.mem_lineal] at hx
+    apply mem_supportSpace.2
+    intro f hf
+    have hpos := next hf.1 hx.1
+    have hneg := next hf.1 hx.2
+    rw [map_neg] at hneg
+    linarith
 
 /-- **Locality of the supporting forms at a point of `σ`.** If `K` is a neighbourhood of
 `x ∈ σ`, then the cone `τ` and its trace `τ ⊓ K` have the same forms nonnegative on them and zero
