@@ -13,6 +13,8 @@ public import Mathlib.Analysis.Convex.Topology
 public import Mathlib.LinearAlgebra.TensorProduct.Defs
 public import Mathlib.Topology.Algebra.Module.ModuleTopology
 public import Mathlib.Topology.LocallyFinite
+public import Mathlib.Algebra.Module.ZLattice.Basic
+public import Mathlib.LinearAlgebra.Basis.Defs
 public import Mathlib.LinearAlgebra.Dual.Lemmas
 
 /-!
@@ -134,8 +136,23 @@ decomposition
 
   (ii) *The counting lemma.* For a rational cone `P ≤ C₊` and a negative integer `-m`, only finitely
   many primitive `ℓ ∈ Λ` with `ℓ² = -m` cut `P`. This is linear algebra over `ℚ` with integrality —
-  no reduction theory and no proper discontinuity: a form cuts `P = hull` of its rational generators
-  exactly when its values on those generators take both signs, and the route is a case analysis on
+  no reduction theory and no proper discontinuity — and the section "The counting lemma over `ℚ`" at
+  the end of this file carries its two foundations. `cutsOn_iff_generators`: for
+  `P = hull (rationalPoint '' s)` and a form that is the extension of a `ℚ`-linear `q`, the form
+  cuts `P` exactly when `q` takes both signs on `s`, so `L(ℝ)` leaves the statement.
+  `finite_span_int_of_pairings_bounded`: on the `ℤ`-span of a `ℚ`-basis a vector's coordinate
+  against `b j` is its pairing with the dual vector `z j` (`exists_dual_family`), so bounded
+  pairings leave
+  finitely many lattice points — finiteness from integrality, where `ZSpan.setFinite_inter` would
+  need a `ProperSpace` instance that `realified V` has not. What is owed is the bound itself, per
+  pair of generators of `P`, with `sigPos Q = 1` and nondegeneracy: both generators timelike (the
+  form on their span is hyperbolic there, its orthogonal complement negative definite, and the
+  cutting functional's representative in that plane is spacelike with `Q u = Q ℓ - Q w' ≥ -m`, which
+  bounds both pairings through the Gram data of the pair); one generator isotropic (the pairing with
+  it is a nonzero rational of bounded denominator — the step that fails over `ℝ`, where
+  `ℓ = (N, N + 1/N, 0)` keeps the norm and cuts for every `N`); or both isotropic (their pairing is
+  nonnegative, being in the same sheet, and `2ab` times it is `-m - Q w' ≤ 0`).
+  The route is a case analysis on
   the pair of generators witnessing the two signs. Two timelike generators span a hyperbolic plane
   `W`, on which the cutting functional is spacelike and its value is bounded below by `-m`; the
   orthogonal complement of `W` is negative definite, where `ℓ² = -m` bounds the rest. An isotropic
@@ -151,8 +168,9 @@ decomposition
   instance (see the hyperbolic section's note), which is why the counting lemma is owed and not
   carried.
 
-  Neither step is carried here: there is no lattice, no primitive-vector reduction and no counting
-  lemma in this file yet, so the hypothesis stays a hypothesis. The source's own ground for it
+  What is not carried is the bound of (ii)'s three cases, and step (i)'s lattice and orbit layer:
+  this file has no `Λ`, no `Γ` and no primitive-vector reduction, so the hypothesis stays a
+  hypothesis. The source's own ground for it
   ("this collection is locally finite on `C`", p. 18) does not supply it either: local finiteness on
   `C` is a statement about compact pieces of the open cone, while cutting is a statement about the
   sign pattern of a form on a whole rational cone, and a locally finite family can have infinitely
@@ -306,6 +324,22 @@ signature `(1, n)`) and `eq_zero_of_perp_of_quadratic_eq_zero` (above) give
 `neg_quadratic_of_associated_eq_zero`, and `sigPos_isotropicQuotientForm` /
 `sigNeg_isotropicQuotientForm` (`IsotropicQuotientSignature.lean:513`, `:520`, the `e^⊥/e`
 signature on main) carry the negative definiteness of `w^⊥/w` that (ii) quotes.
+
+### LC-09 record for integrality over `ℚ` (2026-11-15, #161, second unit)
+
+The four queries this unit names, with every hit. `content:ZLattice`: 124 files, one returned —
+CBirkbeck/LeanBridge's import list, whose `ForMathlib/Algebra/Module/ZLattice/MinimalVectors.lean`
+has `finite_inter_closedBall`, a two-line corollary of Mathlib's
+`Metric.finite_isBounded_inter_isClosed`; nothing is ported for it, on the same ground as the record
+above. `content:Submodule.span ℤ finite`: 71 files, one returned — carlok/leanfrontier
+`Topology/FurstenbergFiniteIndex.lean`, finite-index subgroups of `ℤ`, unrelated.
+`content:Rat.den bounded`: 51 files, one returned — leanprover-community/physlib
+`Units/Exponent.lean`, rational exponents, unrelated. `content:Set.Finite integer points`: 52 files,
+one returned — LionSR/TNLean `PEPS/AreaLaw/Geometry/TemplatePolygonFiniteIntegerPoints.lean`, whose
+`finite_integerPoints` is a subset of `Set.finite_Icc ... .prod`, i.e. Mathlib's `Set.finite_Icc`
+again; nothing to port. What the two lemmas proved here use is Mathlib's
+`Module.Basis.sum_repr` and `Module.Basis.mem_span_iff_repr_mem`
+(`Mathlib/Algebra/Module/ZLattice/Basic.lean:148`), `Set.Finite.pi` and `Set.finite_Icc`.
 
 ## References
 
@@ -3172,6 +3206,181 @@ theorem arrangementDecomposition_isLocallyRational {Cplus : PointedCone ℝ (rea
       rw [hFG]
       exact (inf_isFaceOf_of_isFaceOf hFH hGH).trans hFH'
 end ArrangementRational
+
+/-! ## The counting lemma over `ℚ`: integrality in place of compactness
+
+The finiteness step of Example 4.3 (b), in the form the module docstring's (ii) describes.
+`realified V` carries no `ProperSpace` instance, so `ZSpan.setFinite_inter` is not available at it,
+but nothing in the counting lemma is analytic: a rational form cuts a rational cone exactly when its
+values on the cone's *rational generators* take both signs (`cutsOn_iff_generators`), so it is
+linear algebra over `ℚ`, and its finiteness comes from integrality. On the `ℤ`-span of a `ℚ`-basis a
+vector's coordinates are its pairings with a dual family, so bounding the pairings bounds the
+coordinates and leaves finitely many lattice points (`finite_span_int_of_pairings_bounded`). -/
+
+section CountingOverRat
+
+/-- **The sign of a rational form on a rational cone is decided by its values on the generators.**
+For a rational cone `P = hull (rationalPoint '' s)` and a linear form that is the extension of a
+`ℚ`-linear `q`, the form is nonnegative on `P` exactly when `q` is nonnegative on `s`: the cone hull
+is the least cone through `s`, and a halfspace cone is a cone. -/
+theorem forall_nonneg_of_forall_nonneg_generators (P : PointedCone ℝ (realified V)) {s : Finset V}
+    (hP : P = PointedCone.hull ℝ (rationalPoint '' (s : Set V)))
+    {φ : (realified V) →ₗ[ℝ] ℝ} {q : V →ₗ[ℚ] ℚ}
+    (hq : ∀ v : V, φ (rationalPoint v) = (q v : ℝ)) :
+    (∀ x ∈ P, 0 ≤ φ x) ↔ ∀ v ∈ s, 0 ≤ q v := by
+  constructor
+  · intro h v hv
+    have hmem : rationalPoint v ∈ P :=
+      hP ▸ PointedCone.subset_hull (Set.mem_image_of_mem _ (by exact_mod_cast hv))
+    have := h _ hmem
+    rw [hq v] at this
+    exact_mod_cast this
+  · intro h x hx
+    have hle : P ≤ halfspaceCone φ := by
+      rw [hP]
+      refine Submodule.span_le.mpr ?_
+      rintro _ ⟨v, hv, rfl⟩
+      rw [SetLike.mem_coe, mem_halfspaceCone, hq v]
+      exact_mod_cast h v hv
+    have := hle hx
+    rwa [mem_halfspaceCone] at this
+
+/-- **Cutting a rational cone is decided on its rational generators**: for a rational cone
+`P = hull (rationalPoint '' s)` and a form that is the extension of a `ℚ`-linear `q`, the form takes
+both signs on `P` exactly when `q` takes both signs on `s`. This is what makes the counting lemma
+linear algebra over `ℚ` rather than analysis on `L(ℝ)`. -/
+theorem cutsOn_iff_generators (P : PointedCone ℝ (realified V)) {s : Finset V}
+    (hP : P = PointedCone.hull ℝ (rationalPoint '' (s : Set V)))
+    {ψ : (realified V) →ₗ[ℝ] ℝ} {q : V →ₗ[ℚ] ℚ}
+    (hq : ∀ v : V, ψ (rationalPoint v) = (q v : ℝ)) :
+    CutsOn ψ P ↔ (∃ v ∈ s, 0 < q v) ∧ ∃ v ∈ s, q v < 0 := by
+  have hpos := forall_nonneg_of_forall_nonneg_generators (V := V) P hP (φ := ψ) (q := q) hq
+  have hneg := forall_nonneg_of_forall_nonneg_generators (V := V) P hP (φ := -ψ) (q := -q)
+    (fun v => by simp [hq v])
+  rw [CutsOn]
+  constructor
+  · rintro ⟨⟨x, hx, hxpos⟩, ⟨y, hy, hyneg⟩⟩
+    refine ⟨?_, ?_⟩
+    · by_contra hcon
+      push Not at hcon
+      have hle : ∀ z ∈ P, ψ z ≤ 0 := by
+        have := hneg.mpr (fun v hv => by simpa using hcon v hv)
+        simpa using this
+      linarith [hle x hx]
+    · by_contra hcon
+      push Not at hcon
+      have hle : ∀ z ∈ P, 0 ≤ ψ z := hpos.mpr hcon
+      linarith [hle y hy]
+  · rintro ⟨⟨v, hv, hvpos⟩, ⟨w, hw, hwneg⟩⟩
+    refine ⟨⟨rationalPoint v, ?_, by rw [hq v]; exact_mod_cast hvpos⟩,
+      ⟨rationalPoint w, ?_, by rw [hq w]; exact_mod_cast hwneg⟩⟩
+    · exact hP ▸ PointedCone.subset_hull (Set.mem_image_of_mem _ (by exact_mod_cast hv))
+    · exact hP ▸ PointedCone.subset_hull (Set.mem_image_of_mem _ (by exact_mod_cast hw))
+
+section Lattice
+
+variable {ι : Type*} [Fintype ι] [DecidableEq ι]
+
+/-- **A nondegenerate form has a dual family to a basis**, `B (b j) (z k) = δ j k`. The map
+`x ↦ (k ↦ B x (b k))` is injective because `B` is nondegenerate, and between `ℚ`-spaces of equal
+finite dimension an injective linear map is surjective, which produces the `z k`. -/
+theorem exists_dual_family [Module.Finite ℚ V] {b : Module.Basis ι ℚ V}
+    {B : V →ₗ[ℚ] V →ₗ[ℚ] ℚ}
+    (hBsym : ∀ x y, B x y = B y x) (hB : ∀ x, (∀ y, B x y = 0) → x = 0) :
+    ∃ z : ι → V, ∀ j k, B (b j) (z k) = if j = k then 1 else 0 := by
+  classical
+  set F : V →ₗ[ℚ] (ι → ℚ) :=
+    { toFun := fun x k => B x (b k)
+      map_add' := fun x y => by
+        funext k
+        show B (x + y) (b k) = B x (b k) + B y (b k)
+        rw [map_add, LinearMap.add_apply]
+      map_smul' := fun c x => by
+        funext k
+        show B (c • x) (b k) = c • B x (b k)
+        rw [map_smul, LinearMap.smul_apply] } with hF
+  have hker : ∀ x, F x = 0 → x = 0 := by
+    intro x hx
+    refine hB x fun y => ?_
+    conv_lhs => rw [← b.sum_repr y]
+    simp only [map_sum, map_smul, smul_eq_mul]
+    refine Finset.sum_eq_zero fun k _ => ?_
+    have hk : B x (b k) = 0 := by
+      have h1 := congrFun hx k
+      simpa [hF] using h1
+    rw [hk, mul_zero]
+  have hinj : Function.Injective F := by
+    intro x y hxy
+    have h0 : F (x - y) = 0 := by rw [map_sub, hxy, sub_self]
+    exact sub_eq_zero.mp (hker (x - y) h0)
+  have hdim : Module.finrank ℚ V = Module.finrank ℚ (ι → ℚ) := by
+    rw [Module.finrank_eq_card_basis b, Module.finrank_fintype_fun_eq_card]
+  have hsurj : Function.Surjective F :=
+    (LinearMap.injective_iff_surjective_of_finrank_eq_finrank (f := F) hdim).mp hinj
+  choose z hz using fun k => hsurj (Pi.single k 1)
+  refine ⟨z, fun j k => ?_⟩
+  have h1 := congrFun (hz k) j
+  simp only [hF, LinearMap.coe_mk, AddHom.coe_mk, Pi.single_apply] at h1
+  rw [hBsym (b j) (z k)]
+  exact h1
+
+/-- **Finitely many lattice points with bounded pairings.** On the `ℤ`-span of a `ℚ`-basis the
+coordinate of a vector against `b j` is its pairing with the dual vector `z j` (`hz`), so bounded
+pairings bound the integer coordinates, and a box of integer coordinates is finite. This is where
+the counting lemma's finiteness comes from: no topology, only integrality. -/
+theorem finite_span_int_of_pairings_bounded {b : Module.Basis ι ℚ V} {B : V →ₗ[ℚ] V →ₗ[ℚ] ℚ}
+    (z : ι → V) (hz : ∀ j k, B (b j) (z k) = if j = k then 1 else 0) (C : ι → ℕ) :
+    {v : V | v ∈ Submodule.span ℤ (Set.range b) ∧ ∀ k, |B v (z k)| ≤ C k}.Finite := by
+  classical
+  have hbox : {n : ι → ℤ | ∀ k, |n k| ≤ (C k : ℤ)}.Finite := by
+    have hsub : {n : ι → ℤ | ∀ k, |n k| ≤ (C k : ℤ)}
+        ⊆ Set.univ.pi fun k => Set.Icc (-(C k : ℤ)) (C k) := by
+      intro n hn
+      rw [Set.mem_pi]
+      intro k _
+      rw [Set.mem_Icc]
+      exact abs_le.mp (hn k)
+    exact (Set.Finite.pi fun k => Set.finite_Icc (α := ℤ) _ _).subset hsub
+  refine Set.Finite.subset (hbox.image fun n => ∑ k, algebraMap ℤ ℚ (n k) • b k) ?_
+  rintro v ⟨hv, hb⟩
+  choose n hn using fun k => (b.mem_span_iff_repr_mem ℤ v).mp hv k
+  have hsum : ∑ k, algebraMap ℤ ℚ (n k) • b k = v := by
+    rw [← b.sum_repr v]
+    exact Finset.sum_congr rfl fun k _ => by rw [hn k]
+  refine ⟨n, ?_, hsum⟩
+  intro k
+  have hpair : B v (z k) = (n k : ℚ) := by
+    have hsplit : B v (z k) = ∑ j, (b.repr v j) * B (b j) (z k) := by
+      conv_lhs => rw [← b.sum_repr v]
+      rw [map_sum]
+      have hsa : (∑ c, B ((b.repr v) c • b c)) (z k)
+          = ∑ c, B ((b.repr v) c • b c) (z k) :=
+        LinearMap.sum_apply Finset.univ (fun c => B ((b.repr v) c • b c)) (z k)
+      rw [hsa]
+      exact Finset.sum_congr rfl fun j _ => by
+        rw [map_smul, LinearMap.smul_apply, smul_eq_mul]
+    have hsingle : ∑ j, (b.repr v j) * B (b j) (z k) = b.repr v k := by
+      have hone : ∑ j, (b.repr v j) * (if j = k then (1 : ℚ) else 0) = b.repr v k := by
+        rw [Finset.sum_eq_single k]
+        · simp
+        · intro j _ hjk
+          simp [hjk]
+        · intro hk
+          exact absurd (Finset.mem_univ k) hk
+      calc ∑ j, (b.repr v j) * B (b j) (z k)
+          = ∑ j, (b.repr v j) * (if j = k then (1 : ℚ) else 0) :=
+            Finset.sum_congr rfl fun j _ => by rw [hz j k]
+        _ = b.repr v k := hone
+    rw [hsplit, hsingle]
+    exact (hn k).symm
+  have hbound := hb k
+  rw [hpair] at hbound
+  rw [← Int.cast_abs, ← Int.cast_natCast, Int.cast_le] at hbound
+  exact hbound
+
+end Lattice
+
+end CountingOverRat
 
 end LeanCategories.Lattices.Valued
 
