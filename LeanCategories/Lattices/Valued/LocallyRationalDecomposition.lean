@@ -1387,6 +1387,44 @@ theorem mem_rationalClosure {C : PointedCone ℝ (realified V)} {x : realified V
     x ∈ rationalClosure C ↔ x ∈ convexHull ℝ (rationalBoundary C) :=
   Iff.rfl
 
+/-- **Every point of `C₊` lies in a rational subcone of `C₊`.** Its finite nonnegative expansion in
+`rationalClosure` supplies the generators. This is the pointwise statement needed when face and
+intersection properties are lifted from rational traces to the original members. -/
+theorem exists_rationalCone_le_rationalClosure_and_mem {C : PointedCone ℝ (realified V)}
+    {x : realified V} (hx : x ∈ rationalClosure C) :
+    ∃ K : PointedCone ℝ (realified V), IsRationalCone K ∧ K ≤ rationalClosure C ∧ x ∈ K := by
+  classical
+  rw [rationalClosure_eq_hull] at hx
+  obtain ⟨n, f, g, hgsum⟩ := Submodule.mem_span_set'.1 hx
+  choose v hv using fun i => (g i).2.1
+  let a : Fin n → realified V := fun i => ((g i) : realified V)
+  have ha : ∀ i, a i = rationalPoint (v i) := fun i => (hv i).2.symm
+  let s := Finset.univ.image v
+  let K := PointedCone.hull ℝ (rationalPoint '' (s : Set V))
+  have hgen : ∀ i, rationalPoint (v i) ∈ rationalPoint '' (s : Set V) := by
+    intro i
+    have hvi : v i ∈ (s : Set V) := by
+      apply Finset.mem_coe.2
+      dsimp [s]
+      exact Finset.mem_image.2 ⟨i, Finset.mem_univ _, rfl⟩
+    exact Set.mem_image_of_mem rationalPoint hvi
+  have hsheet : ∀ i, rationalPoint (v i) ∈ rationalBoundary C := by
+    intro i
+    rw [← ha i]
+    exact (g i).2
+  refine ⟨K, ⟨s, rfl⟩, ?_, ?_⟩
+  · change Submodule.span (Nonneg ℝ) (rationalPoint '' (s : Set V)) ≤ rationalClosure C
+    rw [rationalClosure_eq_hull C]
+    refine Submodule.span_le.2 ?_
+    rintro _ ⟨w, hw, rfl⟩
+    obtain ⟨i, hi, rfl⟩ := Finset.mem_image.1 hw
+    exact PointedCone.subset_hull (hsheet i)
+  · rw [← hgsum]
+    exact Submodule.sum_mem _ fun i _ => PointedCone.smul_mem K (f i).2 (by
+      change a i ∈ K
+      rw [ha i]
+      exact PointedCone.subset_hull (hgen i))
+
 /-- **The open cone `C` lies in the closure of `L(ℚ) ∩ C̄`.** A neighbourhood of `x ∈ C` meets the
 rational points (they are dense, `dense_range_rationalPoint`) and meets `C` (it is open), so it
 meets `L(ℚ) ∩ C`, which is contained in `L(ℚ) ∩ C̄`. -/
