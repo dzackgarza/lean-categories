@@ -8439,6 +8439,35 @@ theorem lineal_topologicalClosure_map_le_of_hull_singleton (hpos : sigPos Q = 1)
   intro r
   simpa only [neg_smul, smul_neg] using htrans (-r)
 
+/-- **Projected closure lineality is constant along an isotropic common-face chain.** Every node
+contains the quotienting ray, and consecutive members meet along an upper-sheet point. The
+pairwise theorem applies in both directions at every step. -/
+theorem lineal_topologicalClosure_map_eq_of_reflTransGen_of_hull_singleton
+    (hpos : sigPos Q = 1) (hnd : Q.Nondegenerate) {ht : 0 < Q t}
+    {S : Set (PointedCone ℝ (realified V))}
+    (hS : IsLocallyRationalDecomposition (rationalClosure (closedSheet Q hpos ht)) S)
+    {e : realified V} (he0 : e ≠ 0) (heQ : Q e = 0)
+    {a b : PointedCone ℝ (realified V)}
+    (hchain : Relation.ReflTransGen (fun a b =>
+      a ∈ S ∧ b ∈ S ∧ PointedCone.hull ℝ ({e} : Set (realified V)) ≤ a ∧
+      PointedCone.hull ℝ ({e} : Set (realified V)) ≤ b ∧
+      (((a ⊓ b : PointedCone ℝ (realified V)) : Set (realified V)) ∩
+        (positiveCone.upper Q t : Set (realified V))).Nonempty) a b) :
+    let N := Submodule.span ℝ ({e} : Set (realified V))
+    let _ : ContinuousAdd (realified V ⧸ N) := IsModuleTopology.toContinuousAdd ℝ _
+    PointedCone.lineal (a.map N.mkQ).topologicalClosure =
+      PointedCone.lineal (b.map N.mkQ).topologicalClosure := by
+  induction hchain with
+  | refl => rfl
+  | tail _ hbc ih =>
+      apply ih.trans
+      apply le_antisymm
+      · exact lineal_topologicalClosure_map_le_of_hull_singleton hpos hnd hS he0 heQ
+          hbc.2.2.1 hbc.2.2.2.1 hbc.1 hbc.2.1 hbc.2.2.2.2
+      · apply lineal_topologicalClosure_map_le_of_hull_singleton hpos hnd hS he0 heQ
+          hbc.2.2.2.1 hbc.2.2.1 hbc.2.1 hbc.1
+        simpa only [inf_comm] using hbc.2.2.2.2
+
 end IsotropicRationalTraces
 
 end LeanCategories.Lattices.Valued
