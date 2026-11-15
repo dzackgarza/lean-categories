@@ -5,6 +5,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import LeanCategories.ForMathlib.PointedConeFiniteGeneration
+public import LeanCategories.ForMathlib.PointedConeAlternative
 public import LeanCategories.Lattices.Valued.RationalPolyhedralCone
 public import LeanCategories.Lattices.Valued.PositiveCone
 public import LeanCategories.Analysis.Convex.SignCell
@@ -23,6 +24,7 @@ public import Mathlib.LinearAlgebra.Basis.Defs
 public import Mathlib.LinearAlgebra.Dual.Lemmas
 public import Mathlib.RingTheory.TensorProduct.Finite
 public import Mathlib.Analysis.Normed.Affine.AddTorsorBases
+public import Mathlib.Data.Fintype.Sum
 public import Mathlib.Analysis.Normed.Module.FiniteDimension
 
 /-!
@@ -2483,6 +2485,59 @@ theorem PointedCone.inf_ker_eq_of_eq_hull {C F : PointedCone K E} {s : Set E}
     (Submodule.span_le.2 fun x hx ↦ (hφF x hx.1).1 hx.2.2)) ?_
   exact (hF.eq_hull_inter_of_eq_hull hC).le.trans <| Submodule.span_le.2 fun x hx ↦
     ⟨hC ▸ PointedCone.subset_hull hx.1, (hφF x hx.1).2 hx.2⟩
+
+/-- Every face of a finitely generated cone is cut out by a linear functional nonnegative on
+the cone. Ported from TauCeti `PointedCone.IsFaceOf.exists_nonneg_linear_inf_ker`, using the
+repository's already-ported Tucker alternative at `LeanCategories.ForMathlib` (Apache 2.0). -/
+theorem PointedCone.IsFaceOf.exists_nonneg_linear_inf_ker {C F : PointedCone K E}
+    (hF : F.IsFaceOf C) (hC : C.FG) :
+    ∃ f : Module.Dual K E, (∀ x ∈ C, 0 ≤ f x) ∧
+      C ⊓ PointedCone.ofSubmodule (LinearMap.ker f) = F := by
+  classical
+  obtain ⟨s, hs⟩ := hC
+  let J := {j : s // (j : E) ∈ F}
+  let a : s ⊕ J → E := Sum.elim Subtype.val (fun j => -(j.val : E))
+  obtain ⟨c, f, hc, hsum, hf, hpos⟩ :=
+    LeanCategories.ForMathlib.exists_nonneg_sum_smul_eq_zero_and_forall_coeff_add_dual_pos
+      (K := K) a
+  have hsC : (s : Set E) ⊆ C := by
+    rw [← hs]
+    exact Submodule.subset_span
+  have hsumF : (∑ j : s, c (.inl j) • (j : E)) ∈ F := by
+    have heq : (∑ j : s, c (.inl j) • (j : E)) =
+        ∑ j : J, c (.inr j) • (j.val : E) := by
+      have h := hsum
+      simp only [Fintype.sum_sum_type, a, Sum.elim_inl, Sum.elim_inr, smul_neg,
+        Finset.sum_neg_distrib] at h
+      exact sub_eq_zero.mp (by simpa only [sub_eq_add_neg] using h)
+    rw [heq]
+    exact F.sum_mem fun j _ => PointedCone.smul_mem F (hc (.inr j)) j.property
+  have houtside (j : s) (hj : (j : E) ∉ F) : c (.inl j) = 0 := by
+    by_contra hne
+    have hp : 0 < c (.inl j) := lt_of_le_of_ne (hc (.inl j)) (Ne.symm hne)
+    exact hj (hF.mem_of_sum_smul_mem
+      (fun k : s => hsC k.property) (fun k => hc (.inl k)) hsumF j hp)
+  have hfacezero (j : s) (hj : (j : E) ∈ F) : f (j : E) = 0 := by
+    have hp : 0 ≤ f (j : E) := hf (.inl j)
+    have hn : 0 ≤ -f (j : E) := by
+      simpa only [a, Sum.elim_inr, map_neg] using hf (.inr ⟨j, hj⟩)
+    exact le_antisymm (neg_nonneg.mp hn) hp
+  have hfgen : ∀ x ∈ s, 0 ≤ f x := fun x hx => hf (.inl ⟨x, hx⟩)
+  have hzgen : ∀ x ∈ s, f x = 0 ↔ x ∈ F := by
+    intro x hx
+    constructor
+    · intro hzero
+      by_contra hxF
+      have hp := hpos (.inl ⟨x, hx⟩)
+      have hc0 := houtside ⟨x, hx⟩ hxF
+      simp only [hc0, zero_add, a, Sum.elim_inl, hzero, lt_self_iff_false] at hp
+    · exact hfacezero ⟨x, hx⟩
+  have hfC : ∀ x ∈ C, 0 ≤ f x := by
+    have hdual : f ∈ PointedCone.dual (Module.Dual.eval K E) (s : Set E) :=
+      fun _ hx => hfgen _ hx
+    rw [← PointedCone.dual_hull, PointedCone.hull, hs] at hdual
+    exact fun _ hx => hdual hx
+  exact ⟨f, hfC, PointedCone.inf_ker_eq_of_eq_hull hs.symm hF hfgen hzgen⟩
 
 end PointedConeExposure
 
