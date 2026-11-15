@@ -29,6 +29,7 @@ public import Mathlib.RingTheory.TensorProduct.Finite
 public import Mathlib.Analysis.Normed.Affine.AddTorsorBases
 public import Mathlib.Data.Fintype.Sum
 public import Mathlib.Analysis.Normed.Module.FiniteDimension
+public import Mathlib.Order.Filter.AtTopBot.Tendsto
 
 /-!
 # Locally rational decompositions of the rational closure of a cone
@@ -8065,6 +8066,37 @@ use this file's `QuadraticMap.continuous_of_moduleTopology` and
 
 section IsotropicRationalTraces
 
+/-- If every translate `z + r • x` belongs to a cone, then `x` belongs to its closure:
+scale the translate at the real parameter `n + 1` by its inverse and take the limit. -/
+theorem mem_topologicalClosure_of_forall_add_smul_mem {E : Type*} [AddCommGroup E] [Module ℝ E]
+    [TopologicalSpace E] [ContinuousAdd E] [ContinuousSMul ℝ E]
+    {D : PointedCone ℝ E} {z x : E} (h : ∀ r : ℝ, z + r • x ∈ D) :
+    x ∈ D.topologicalClosure := by
+  let c : ℕ → ℝ := fun n => ((n + 1 : ℕ) : ℝ)
+  let f : ℕ → E := fun n => (c n)⁻¹ • (z + c n • x)
+  have hc : Filter.Tendsto c Filter.atTop Filter.atTop := by
+    apply Filter.tendsto_atTop.2
+    intro b
+    obtain ⟨n, hn⟩ := exists_nat_ge b
+    refine Filter.eventually_atTop.2 ⟨n, fun m hm => ?_⟩
+    have hnm : n ≤ m + 1 := hm.trans (Nat.le_succ m)
+    have hncast : (n : ℝ) ≤ ((m + 1 : ℕ) : ℝ) := by exact_mod_cast hnm
+    exact hn.trans hncast
+  have hinv : Filter.Tendsto (fun n => (c n)⁻¹) Filter.atTop (𝓝 0) :=
+    tendsto_inv_atTop_zero.comp hc
+  have hmem (n : ℕ) : f n ∈ D := by
+    exact D.smul_mem (inv_nonneg.2 (by positivity : 0 ≤ c n)) (h (c n))
+  have heq (n : ℕ) : f n = (c n)⁻¹ • z + x := by
+    dsimp [f]
+    rw [smul_add, smul_smul]
+    have hn : c n ≠ 0 := by positivity
+    rw [inv_mul_cancel₀ hn, one_smul]
+  have ht : Filter.Tendsto f Filter.atTop (𝓝 x) := by
+    have ht' := (hinv.smul_const z).add_const x
+    rw [zero_smul, zero_add] at ht'
+    exact ht'.congr' (Filter.Eventually.of_forall fun n => (heq n).symm)
+  exact mem_closure_of_tendsto ht (Filter.Eventually.of_forall hmem)
+
 variable [Module.Finite ℚ V] {Q : QuadraticForm ℝ (realified V)} {t : realified V}
 
 set_option maxHeartbeats 600000 in
@@ -8140,7 +8172,8 @@ theorem IsIsotropicHalfLine.isFaceOf_rationalClosure (hpos : sigPos Q = 1)
 /-- An isotropic half line is a face of every subcone of the rational closure containing it. -/
 theorem IsIsotropicHalfLine.isFaceOf_of_le (hpos : sigPos Q = 1) (hnd : Q.Nondegenerate)
     {ht : 0 < Q t} {σ τ : PointedCone ℝ (realified V)} (hσ : IsIsotropicHalfLine Q σ)
-    (hστ : σ ≤ τ) (hτle : τ ≤ rationalClosure (closedSheet Q hpos ht)) : σ.IsFaceOf τ := by
+    (hστ : σ ≤ τ) (hτle : τ ≤ rationalClosure (closedSheet Q hpos ht)) :
+    σ.IsFaceOf τ := by
   refine ⟨hστ, ?_⟩
   have hface := hσ.isFaceOf_rationalClosure hpos hnd (hστ.trans hτle)
   intro x y a hx hy ha hxy
@@ -8235,6 +8268,176 @@ theorem exists_rationalCone_sup_mem_nhds_of_isotropic (hpos : sigPos Q = 1)
       ((le_sup_left : Kx ≤ Kx ⊔ Ky).trans (le_sup_left : Kx ⊔ Ky ≤ K))
   · exact Filter.mem_of_superset hKy
       ((le_sup_right : Ky ≤ Kx ⊔ Ky).trans (le_sup_left : Kx ⊔ Ky ≤ K))
+
+/-- Three upper-sheet points admit a common rational cone neighbourhood containing a prescribed
+rational isotropic ray. This is the two-point construction applied twice and joined. -/
+theorem exists_rationalCone_sup_mem_nhds_of_isotropic_three (hpos : sigPos Q = 1)
+    {ht : 0 < Q t} {σ : PointedCone ℝ (realified V)} (hσle : σ ≤ rationalClosure
+      (closedSheet Q hpos ht)) (hσrat : IsRationalCone σ) {x y z : realified V}
+    (hx : x ∈ positiveCone.upper Q t) (hy : y ∈ positiveCone.upper Q t)
+    (hz : z ∈ positiveCone.upper Q t) :
+    ∃ K : PointedCone ℝ (realified V), IsRationalCone K ∧
+      K ≤ rationalClosure (closedSheet Q hpos ht) ∧ σ ≤ K ∧
+      (K : Set (realified V)) ∈ 𝓝 x ∧ (K : Set (realified V)) ∈ 𝓝 y ∧
+      (K : Set (realified V)) ∈ 𝓝 z := by
+  obtain ⟨K₁, hK₁rat, hK₁le, hσK₁, hK₁x, hK₁y⟩ :=
+    exists_rationalCone_sup_mem_nhds_of_isotropic hpos hσle hσrat hx hy
+  obtain ⟨K₂, hK₂rat, hK₂le, hσK₂, hK₂x, hK₂z⟩ :=
+    exists_rationalCone_sup_mem_nhds_of_isotropic hpos hσle hσrat hx hz
+  let K := K₁ ⊔ K₂
+  have hK₁ : K₁ ≤ K := le_sup_left
+  have hK₂ : K₂ ≤ K := le_sup_right
+  exact ⟨K, hK₁rat.sup hK₂rat, sup_le hK₁le hK₂le, hσK₁.trans hK₁,
+    Filter.mem_of_superset hK₁x hK₁, Filter.mem_of_superset hK₁y hK₁,
+    Filter.mem_of_superset hK₂z hK₂⟩
+
+/-- **Projected lineality passes to an adjacent member.** Let `a`, `b` contain the isotropic ray
+through `e` and meet along an upper-sheet point. Every direction in the lineality of the closure
+of `π_I a` belongs to the lineality of the closure of `π_I b`.
+
+For `z` in the common projected cell and `x` in the first lineality, rational cone neighbourhoods
+of upper-sheet lifts of `z`, `z + r x`, and `z - r x` reduce the two translates to one closed
+finitely generated trace. Its common face contains `z`; face-ness at the midpoint puts `z + r x`
+in the second projected trace. Taking `r → ∞` gives both signs of `x` in the second closure. -/
+theorem lineal_topologicalClosure_map_le_of_hull_singleton (hpos : sigPos Q = 1)
+    (hnd : Q.Nondegenerate) {ht : 0 < Q t}
+    {S : Set (PointedCone ℝ (realified V))}
+    (hS : IsLocallyRationalDecomposition (rationalClosure (closedSheet Q hpos ht)) S)
+    {e : realified V} (he0 : e ≠ 0) (heQ : Q e = 0)
+    {a b : PointedCone ℝ (realified V)}
+    (hea : PointedCone.hull ℝ ({e} : Set (realified V)) ≤ a)
+    (heb : PointedCone.hull ℝ ({e} : Set (realified V)) ≤ b)
+    (ha : a ∈ S) (hb : b ∈ S)
+    (habC : (((a ⊓ b : PointedCone ℝ (realified V)) : Set (realified V)) ∩
+      (positiveCone.upper Q t : Set (realified V))).Nonempty) :
+    let N := Submodule.span ℝ ({e} : Set (realified V))
+    let _ : ContinuousAdd (realified V ⧸ N) := IsModuleTopology.toContinuousAdd ℝ _
+    PointedCone.lineal (a.map N.mkQ).topologicalClosure ≤
+      PointedCone.lineal (b.map N.mkQ).topologicalClosure := by
+  classical
+  let N := Submodule.span ℝ ({e} : Set (realified V))
+  let A := a.map N.mkQ
+  let B := b.map N.mkQ
+  let _ : ContinuousAdd (realified V ⧸ N) := IsModuleTopology.toContinuousAdd ℝ _
+  change PointedCone.lineal A.topologicalClosure ≤ PointedCone.lineal B.topologicalClosure
+  obtain ⟨z, hzab, hzC⟩ := habC
+  let zq : realified V ⧸ N := N.mkQ z
+  have hea' : e ∈ a := hea (PointedCone.subset_hull (Set.mem_singleton e))
+  have heb' : e ∈ b := heb (PointedCone.subset_hull (Set.mem_singleton e))
+  have hrayle : PointedCone.hull ℝ ({e} : Set (realified V)) ≤
+      rationalClosure (closedSheet Q hpos ht) := hea.trans (hS.le ha)
+  have heC : e ∈ rationalClosure (closedSheet Q hpos ht) :=
+    hrayle (PointedCone.subset_hull (Set.mem_singleton e))
+  have heSheet : e ∈ closedSheet Q hpos ht := rationalClosure_le_closedSheet hpos heC
+  have hrayrat : IsRationalCone (PointedCone.hull ℝ ({e} : Set (realified V))) :=
+    IsIsotropicHalfLine.isRationalCone_of_le_of_mem hpos hnd hS
+      ⟨e, he0, heQ, rfl⟩ ha hea
+  have hbe : ∀ v : V, rationalPoint v ∈ (closedSheet Q hpos ht).closure →
+      0 ≤ (associated Q) e (rationalPoint v) := by
+    intro v hv
+    have hclosed := isClosed_closedSheet_of_moduleTopology Q hpos ht
+    have hvS : rationalPoint v ∈ closedSheet Q hpos ht := by
+      rw [← hclosed.submodule_topologicalClosure_eq]
+      exact hv
+    exact nonneg_associated_of_mem_closedSheet hpos ht heSheet.1 heSheet.2 hvS.1 hvS.2
+  let β := isotropicHalfspaceForm Q heQ
+  have hβcont : Continuous β := IsModuleTopology.continuous_of_linearMap β
+  have hclosure_nonneg {u : realified V ⧸ N} (hu : u ∈ A.topologicalClosure) : 0 ≤ β u := by
+    apply closure_minimal (t := {u | 0 ≤ β u}) ?_
+      (isClosed_le continuous_const hβcont) hu
+    exact image_mkQ_subset_of_le_rationalClosure Q hpos ht heQ hbe (hS.le ha)
+  have hzA : zq ∈ A := ⟨z, hzab.1, rfl⟩
+  have hzβ : 0 < β zq := by
+    have hzim : zq ∈ N.mkQ '' (positiveCone.upper Q t) := ⟨z, hzC, rfl⟩
+    rw [image_mkQ_upper_eq Q hpos hnd ht he0 heQ heSheet.2] at hzim
+    exact hzim
+  have hzclA : zq ∈ A.topologicalClosure := Submodule.le_topologicalClosure A hzA
+  intro x hx
+  rw [PointedCone.mem_lineal] at hx ⊢
+  have hβx : β x = 0 := by
+    have hp := hclosure_nonneg hx.1
+    have hn := hclosure_nonneg hx.2
+    rw [map_neg] at hn
+    linarith
+  have hclA (r : ℝ) : zq + r • x ∈ A.topologicalClosure := by
+    apply A.topologicalClosure.add_mem hzclA
+    rcases le_total 0 r with hr | hr
+    · exact PointedCone.smul_mem _ hr hx.1
+    · have hm := PointedCone.smul_mem _ (neg_nonneg.2 hr) hx.2
+      simpa only [neg_smul, smul_neg, neg_neg] using hm
+  have hlift (r : ℝ) : ∃ y : realified V,
+      y ∈ positiveCone.upper Q t ∧ N.mkQ y = zq + r • x := by
+    have hrpos : 0 < β (zq + r • x) := by
+      rw [map_add, map_smul, hβx, smul_zero, add_zero]
+      exact hzβ
+    have him : zq + r • x ∈ N.mkQ '' (positiveCone.upper Q t) := by
+      rw [image_mkQ_upper_eq Q hpos hnd ht he0 heQ heSheet.2]
+      exact hrpos
+    exact him
+  have htrans : ∀ r : ℝ, zq + r • x ∈ B := by
+    intro r
+    obtain ⟨yp, hypC, hyp⟩ := hlift r
+    obtain ⟨ym, hymC, hym⟩ := hlift (-r)
+    obtain ⟨K, hKrat, hKle, hrayK, hKnz, hKnp, hKnm⟩ :=
+      exists_rationalCone_sup_mem_nhds_of_isotropic_three hpos hrayle hrayrat hzC hypC hymC
+    have heK : e ∈ K := hrayK (PointedCone.subset_hull (Set.mem_singleton e))
+    have hmapKn {y : realified V} (hy : (K : Set (realified V)) ∈ 𝓝 y) :
+        (K.map N.mkQ : Set (realified V ⧸ N)) ∈ 𝓝 (N.mkQ y) :=
+      N.isOpenMap_mkQ.image_mem_nhds hy
+    obtain ⟨sG, hsG⟩ := hS.isLocallyRational a ha K hKrat hKle
+    let T := sG.image rationalPoint
+    have hAT : a ⊓ K = PointedCone.hull ℝ (T : Set (realified V)) := by
+      simpa [T] using hsG
+    have hFG : (a ⊓ K).FG := ⟨T, hAT.symm⟩
+    have hclosedA : IsClosed (((a ⊓ K).map N.mkQ : PointedCone ℝ (realified V ⧸ N)) :
+        Set (realified V ⧸ N)) :=
+      PointedCone.FG.isClosed_of_moduleTopology (PointedCone.FG.map hFG N.mkQ)
+    have hlocal (r' : ℝ) {y : realified V} (hyq : N.mkQ y = zq + r' • x)
+        (hKny : (K : Set (realified V)) ∈ 𝓝 y) :
+        zq + r' • x ∈ (a ⊓ K).map N.mkQ := by
+      have hyK : (K.map N.mkQ : Set (realified V ⧸ N)) ∈ 𝓝 (zq + r' • x) := by
+        rw [← hyq]
+        exact hmapKn hKny
+      have hmem := mem_topologicalClosure_map_inf_of_mem_nhds N (e := e)
+        (A := a) (K := K) rfl hea' heK hyK (hclA r')
+      rw [hclosedA.closure_eq] at hmem
+      exact hmem
+    have hpA : zq + r • x ∈ (a ⊓ K).map N.mkQ := hlocal r hyp hKnp
+    have hmA : zq + (-r) • x ∈ (a ⊓ K).map N.mkQ := hlocal (-r) hym hKnm
+    have hzK : z ∈ K := mem_of_mem_nhds hKnz
+    have hzMA : zq ∈ (a ⊓ K).map N.mkQ := ⟨z, ⟨hzab.1, hzK⟩, rfl⟩
+    have hzMB : zq ∈ (b ⊓ K).map N.mkQ := ⟨z, ⟨hzab.2, hzK⟩, rfl⟩
+    let R := hS.restriction K hKrat hKle
+    have hRA : a ⊓ K ∈ faceClosure (restrictionTo S K) :=
+      mem_faceClosure.2 ⟨a ⊓ K, mem_restrictionTo.2 ⟨a, ha, rfl⟩,
+        PointedCone.IsFaceOf.refl (a ⊓ K)⟩
+    have hRB : b ⊓ K ∈ faceClosure (restrictionTo S K) :=
+      mem_faceClosure.2 ⟨b ⊓ K, mem_restrictionTo.2 ⟨b, hb, rfl⟩,
+        PointedCone.IsFaceOf.refl (b ⊓ K)⟩
+    have hface := PointedCone.IsFaceOf.map_mkQ_span_singleton (e := e)
+      (F := (a ⊓ K) ⊓ (b ⊓ K)) (C := a ⊓ K)
+      (he := ⟨⟨hea', heK⟩, ⟨heb', heK⟩⟩) (hF := R.inf_isFaceOf_left hRA hRB)
+    have hinfmap : ((a ⊓ K) ⊓ (b ⊓ K)).map N.mkQ =
+        (a ⊓ K).map N.mkQ ⊓ (b ⊓ K).map N.mkQ :=
+      map_inf_eq_inf_map_of_span_singleton ⟨hea', heK⟩ ⟨heb', heK⟩
+    dsimp only at hface
+    rw [hinfmap] at hface
+    have hmid : (1 / 2 : ℝ) • (zq + r • x) + (1 / 2 : ℝ) • (zq + (-r) • x) = zq := by
+      module
+    have hcommon : (1 / 2 : ℝ) • (zq + r • x) + (1 / 2 : ℝ) • (zq + (-r) • x) ∈
+        (a ⊓ K).map N.mkQ ⊓ (b ⊓ K).map N.mkQ := by
+      rw [hmid]
+      exact ⟨hzMA, hzMB⟩
+    have hmhalf : (1 / 2 : ℝ) • (zq + (-r) • x) ∈ (a ⊓ K).map N.mkQ :=
+      ((a ⊓ K).map N.mkQ).smul_mem (by norm_num) hmA
+    have hpcommon := hface.mem_of_smul_add_mem hpA hmhalf (by norm_num : (0 : ℝ) < 1 / 2)
+      hcommon
+    obtain ⟨w, hw, hq⟩ := hpcommon.2
+    exact ⟨w, hw.1, hq⟩
+  refine ⟨mem_topologicalClosure_of_forall_add_smul_mem htrans, ?_⟩
+  apply mem_topologicalClosure_of_forall_add_smul_mem (z := zq) (x := -x)
+  intro r
+  simpa only [neg_smul, smul_neg] using htrans (-r)
 
 end IsotropicRationalTraces
 
