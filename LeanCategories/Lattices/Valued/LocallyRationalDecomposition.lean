@@ -8983,6 +8983,27 @@ theorem reflTransGen_inf_nonempty_of_convex_set_of_relative {E : Type*}
     exact ⟨a.1.2, b.1.2, ⟨sp r, ⟨Submodule.mem_inf.2 ⟨hra.2, hrb.2⟩, hseg r hrI⟩⟩⟩
   exact reflTransGen_map_of_step (fun i : ι => i.1.1) hstep hchain
 
+/-- **The upper sheet is stable under adding a nonnegative multiple of a nonzero isotropic
+boundary vector.** LC-09: `content:positiveCone.upper content:isotropic content:add` found no
+competing declaration. -/
+theorem mem_upper_add_smul_of_mem_closedSheet (hpos : sigPos Q = 1)
+    (hnd : Q.Nondegenerate) {ht : 0 < Q t} {x e : realified V}
+    (hx : x ∈ positiveCone.upper Q t) (he : e ∈ closedSheet Q hpos ht)
+    (heQ : Q e = 0) (he0 : e ≠ 0) {r : ℝ} (hr : 0 ≤ r) : x + r • e ∈ positiveCone.upper Q t := by
+  have hxe : 0 < (associated Q) x e :=
+    associated_pos_of_mem_upper_of_mem_closedSheet Q hpos hnd ht hx he he0
+  have htUpper : t ∈ positiveCone.upper Q t :=
+    ⟨ht, by rw [associated_self_apply]; exact ht⟩
+  have hte : 0 < (associated Q) e t := by
+    have h := associated_pos_of_mem_upper_of_mem_closedSheet Q hpos hnd ht htUpper he he0
+    rwa [associated_comm] at h
+  constructor
+  · rw [show x + r • e = (1 : ℝ) • x + r • e by rw [one_smul], quadratic_expand, heQ]
+    nlinarith [mul_nonneg hr hxe.le, hx.1]
+  · rw [associated_comm (Q := Q) (x + r • e) t, map_add, map_smul, smul_eq_mul,
+      associated_comm (Q := Q) t x, associated_comm (Q := Q) t e]
+    nlinarith [mul_nonneg hr hte.le, hx.2]
+
 end IsotropicRationalTraces
 
 end LeanCategories.Lattices.Valued
