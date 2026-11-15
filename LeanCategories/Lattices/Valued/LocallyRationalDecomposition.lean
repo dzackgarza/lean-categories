@@ -121,11 +121,18 @@ decomposition
   why the finiteness of the traces now runs through the faces of the cells of the *finitely many*
   forms that cut (`range_reducePattern_finite`, `finite_faces_of_isRationalCone`) instead of
   through a finite set of nonvanishing forms.
-* **What is owed: the hypothesis for the `H` of Example 4.3 (b) (#161).** Definition 4.2's
-  restriction clause asks for a *finite* family — a rational cone system, Definition 4.1, p. 16 —
-  on every rational subcone, and `arrangementDecomposition_isLocallyRational` proves it only from
-  `CutsFinitelyOnRational`. The source asserts it of the arithmetic `H`; this file does not derive
-  it, and the two steps it takes are these.
+* **The hypothesis for the `H` of Example 4.3 (b) (#161), carried.** Definition 4.2's restriction
+  clause asks for a *finite* family — a rational cone system, Definition 4.1, p. 16 — on every
+  rational subcone, and `arrangementDecomposition_isLocallyRational` proves it only from
+  `CutsFinitelyOnRational`. The source asserts it of the arithmetic `H`;
+  `cutsFinitelyOnRational_orbitFamily` (the last section of this file) derives it, from the two
+  steps below and the two cone-side hypotheses of the hyperbolic setting. What is *not* formalized
+  is the arithmeticity of `Γ` itself — the finite-index subgroup of `O(L(ℚ))` preserving a lattice
+  on which the form is integral: the lattice `Λ`, the integrality of the form on it and the
+  `Γ`-stability of `Λ` are hypotheses of the theorem, and `Λ` is taken as the `ℤ`-span of a
+  `ℚ`-basis (every lattice that spans `L` over `ℚ` has such a basis, and its `ℤ`-basis is one; the
+  normal form avoids a local `Fintype` instance inside a proposition, which the repository's
+  `haveILetI` linter refuses).
 
   (i) *Finitely many norms.* `Γ` arithmetic means that a finite-index subgroup preserves a lattice
   `Λ ⊆ L(ℚ)` on which the form is integral. A `ℚ`-hyperplane that meets `C` has a spacelike normal:
@@ -135,8 +142,7 @@ decomposition
   `ℓ² = 0` because `eq_zero_of_perp_of_quadratic_eq_zero` then makes `ℓ` vanish). The primitive
   normal of a `ℚ`-line in `Λ` is unique up to sign, so its value `ℓ²` is constant on a `Γ`-orbit;
   a finite union of orbits therefore has its primitive normals taking finitely many *negative*
-  values. (The lattice and the finite-index passage are not formalized here: this file has no
-  lattice of `L(ℚ)`.)
+  values. This is `finite_form_values_of_orbitFamily` below.
 
   (ii) *The counting lemma.* For a rational cone `P ≤ C₊` and a negative integer `-m`, only finitely
   many primitive `ℓ ∈ Λ` with `ℓ² = -m` cut `P`. This is linear algebra over `ℚ` with integrality —
@@ -175,16 +181,21 @@ decomposition
   needs are `one_div_le_abs_of_integral`, and `finite_cutters_of_pair_bounds` unions over the
   finitely many ordered pairs of generators, which is the cutting condition
   (`cutsOn_iff_generators`). Discharged as corollaries: the pair of timelike generators
-  (`finite_cutting_normals_of_both_timelike`) and the timelike-isotropic one
-  (`finite_cutting_normals_of_isotropic`). Not discharged: the both-isotropic pair, whose bound is
-  `abs_associated_mul_le_of_both_isotropic` and whose corollary would repeat the denominator
-  argument with both denominators.
+  (`finite_cutting_normals_of_both_timelike`), the timelike-isotropic one
+  (`finite_cutting_normals_of_isotropic`) and the both-isotropic one
+  (`finite_cutting_normals_of_both_isotropic`: the product bound of
+  `abs_associated_mul_le_of_both_isotropic`, with *both* denominators). The transport of the cut of
+  a hyperplane to the cut of the form of its normal is a section of its own
+  (`hyperplaneCuts_iff_cutsOn`, `hyperplaneCuts_iff_generators`).
 
-  What remains, then, is the assembly for the corrected `H` (the orbit family of the last section,
-  not a finite family): step (i)'s norm layer is carried there, the per-value finiteness in the two
-  discharged cases is carried here, and what is missing is named in the section on the orbit layer.
-  This `CutsFinitelyOnRational` hypothesis therefore stays a hypothesis, and the source's own ground
-  for it
+  The assembly for the corrected `H` (the orbit family of the last section, not a finite family) is
+  carried there over these pieces, and it is where the two steps meet: the pair of generators on
+  which a normal of value `-m` takes both signs has positive pairing on the sheet, and a pair with
+  vanishing pairing is proportional (`exists_smul_of_associated_eq_zero_of_mem_closedSheet`) and
+  contributes no normal at all (`finite_pairSet_of_smul`) — which is what makes the disjunction over
+  the ordered pairs of generators a cover of the cutters. `CutsFinitelyOnRational` is therefore no
+  longer a hypothesis for the `H` of Example 4.3 (b); it remains the hypothesis of the general
+  arrangement section, whose `H` the caller supplies. The source's own ground for it
   ("this collection is locally finite on `C`", p. 18) does not supply it either: local finiteness on
   `C` is a statement about compact pieces of the open cone, while cutting is a statement about the
   sign pattern of a form on a whole rational cone, and a locally finite family can have infinitely
@@ -3789,11 +3800,13 @@ bound on the pairings `ℓ · a` and `ℓ · b`; what is carried here is the res
   disjunction, over the finitely many ordered pairs of generators, of the two sign conditions
   (`cutsOn_iff_generators`), so finiteness for every ordered pair gives finiteness for the cutters.
 
-### What is not carried
+### What the pieces are for
 
 * The case of two isotropic generators: `abs_associated_mul_le_of_both_isotropic` gives the product
-  bound, and the same denominator argument with *both* denominators bounds both pairings; the
-  corollary is not written here, only the bound it would use.
+  bound, and the same denominator argument with *both* denominators bounds both pairings —
+  `finite_cutting_normals_of_both_isotropic`, in this section.
+
+### What is not carried here
 * **The orbit layer of step (i), now carried for the norms.** `H` is not a finite family: a finite
   family cuts every cone finitely for a trivial reason, so the statement would say nothing about the
   issue. It is the `Set` `orbitFamily H₀ Γ` — the union of the `Γ`-orbits of the finitely many
@@ -3809,27 +3822,30 @@ bound on the pairings `ℓ · a` and `ℓ · b`; what is carried here is the res
   (`finite_form_values_of_orbitFamily`). No coordinates and no gcd: the generator is the basis
   vector of a free module of rank one.
 
-  The owed statement, with `H` as it is: for a `ℤ`-lattice `Λ ⊆ L(ℚ)` spanning `V` over `ℚ`, a
-  `Γ ⊆ V ≃ₗ[ℚ] V` of isometries with `Λ` `Γ`-stable, and the orbit family of a finite `H₀`,
+  The statement, with `H` as it is, is `cutsFinitelyOnRational_orbitFamily` in the last section:
 
   ```
-  theorem cutsFinitelyOnRational_of_finiteOrbits (Cplus : PointedCone ℝ (realified V))
-      (Λ : Submodule ℤ V) (Γ : Set (V ≃ₗ[ℚ] V)) (H₀ : Finset (Submodule ℚ V))
+  theorem cutsFinitelyOnRational_orbitFamily ... (Γ : Set (V ≃ₗ[ℚ] V))
+      (H₀ : Finset (Submodule ℚ V))
       (hΓΛ : ∀ e ∈ Γ, Λ.map (e : V →ₗ[ℚ] V) = Λ)
       (hΓiso : ∀ e ∈ Γ, ∀ x y, BQ (e x) (e y) = BQ x y)
       (hH₀ : ∀ ℓ₀ ∈ H₀, ∃ v ≠ 0, Λ ⊓ ℓ₀.restrictScalars ℤ = ℤ ∙ v) :
-      CutsFinitelyOnRational Cplus (fun ℓ : orbitFamily H₀ Γ => …)
+      CutsFinitelyOnRational Cplus (fun ℓ : orbitFamily H₀ Γ => normalForm Q (g ℓ))
   ```
 
-  Its first step is carried (`finite_form_values_of_orbitFamily`: the norm values are a finite set
-  `M`), and so is the per-value finiteness in the two discharged cases. What is not written is the
-  assembly, at two points: the corollary for a pair of two isotropic generators (whose product bound
-  `abs_associated_mul_le_of_both_isotropic` is here) and the transport of "the line `ℓ` cuts the
-  rational cone" to "the form `x ↦ v_ℓ · x` cuts it" — `cutsOn_iff_generators` decides the latter on
-  the cone's rational generators, and the identification of the two cuts is the missing step. The
-  exclusion of an isotropic normal for a hyperplane meeting `C` is not part of it:
-  `neg_quadratic_of_associated_eq_zero` gives `Q ℓ < 0` for the normal of such a hyperplane, from
-  `sigPos Q = 1` and nondegeneracy alone.
+  where `Λ` is the `ℤ`-span of a `ℚ`-basis `bs` and `g ℓ` is the primitive generator of `ℓ ⊓ Λ`
+  (`exists_generator_of_orbitFamily`; the general form of the theorem,
+  `cutsFinitelyOnRational_of_finiteOrbits`, takes `g` as a parameter). Its first step is
+  `finite_form_values_of_orbitFamily` (the norm values are a finite set `M`); the per-value
+  finiteness is `finite_pairSet_of_cutSigns` over the finitely many ordered pairs of generators of
+  the cone, that is `finite_cutters_of_pair_bounds` with the three cases of the counting lemma
+  discharged; the values that are not negative contribute nothing
+  (`one_signed_of_nonneg_quadratic`); and the transport of "the line `ℓ` cuts the rational cone" to
+  "the form `x ↦ v_ℓ · x` cuts it" is `hyperplaneCuts_iff_cutsOn` together with
+  `hyperplaneCuts_iff_generators`, which is what `cutsOn_iff_generators` decides on the cone's
+  rational generators. The exclusion of an isotropic normal for a hyperplane meeting `C` is not part
+  of it: `neg_quadratic_of_associated_eq_zero` gives `Q ℓ < 0` for the normal of such a hyperplane,
+  from `sigPos Q = 1` and nondegeneracy alone.
 * **The `[Fintype ι] [DecidableEq ι]` binders of the four lattice lemmas, kept deliberately.**
   `linter.unusedFintypeInType` reports them for `finite_span_int_of_pairings_bounded`,
   `finite_cutting_of_pairing_bounds`, `finite_cutting_normals_of_both_timelike` and
@@ -4235,21 +4251,53 @@ primitive-vector statement is residue and is proved here (`exists_primitive_of_l
 rank-one step taken from the `ℚ`-collinearity of two elements of the line rather than from a
 `finrank` computation.
 
+### LC-09 record for the cut identification (2026-11-16, #161, seventh unit)
+
+The five queries of this unit, with every hit. `content:orthogonal complement bilinear form
+submodule`: 3 files returned — facebookresearch/atlas-lean `CSLibExt/Coding/LinearCode.lean`
+(`dual_dual`, from `LinearMap.BilinForm.orthogonal_orthogonal`), atlas-lean
+`MathlibExt/Algebra/Lie/LeviDecomposition.lean` and TauCeti `Geometry/Hodge/Orthogonal.lean`, all of
+them *using* the orthogonal complement of a bilinear form. Mathlib owns the statement, at
+`LinearMap.BilinForm.orthogonal` / `mem_orthogonal_iff`
+(`Mathlib/LinearAlgebra/BilinearForm/Orthogonal.lean:145`, `:150`), and nothing is ported: the
+kernel identity of `hyperplaneOf_span_singleton` is proved from `mem_orthogonal_iff` rather than
+from Mathlib's `orthogonal_span_singleton_eq_toLin_ker` (`:175`), whose statement goes through
+`toLinHomAux₁`. `LinearMap.BilinForm.orthogonal` (the Mathlib-style identifier): the same three
+files. `content:isotropic vectors orthogonal proportional`: 3 files, 120 matches, one returned —
+TauCeti `LinearAlgebra/CliffordAlgebra/Vectors.lean`, unrelated — so the proportionality of two
+sheet vectors with vanishing pairing (`exists_smul_of_associated_eq_zero_of_mem_closedSheet`) is
+residue. `content:opposite sides hyperplane segment`: 7 files, 1560 matches, one returned —
+Vilin97/lean-pool `ClassificationOfSurfaces/Moise/LineSubdivision.lean`, whose affine functional
+changing sign at the ends of an edge is the planar analogue of the same picture; no statement about
+a cone cut by the two sides of a hyperplane, so `OppositeSides` and `HyperplaneCuts` are written
+here. `content:lattice points fixed norm quadratic form finite`: 31 files, one returned —
+CBirkbeck/LeanBridge `ShimuraCurve/EllipticPointStabilizer.lean`, unrelated; the finiteness used is
+this file's `finite_cutting_of_pairing_bounds`. The one Mathlib ingredient the unit needed is
+`IsModuleTopology.continuous_of_linearMap`
+(`Mathlib/Topology/Algebra/Module/ModuleTopology.lean:340`) for `normalForm` — every linear form on
+the module topology is continuous, so no continuity hypothesis enters the theorem. That is not in
+tension with the `hcl` hypothesis of `salient_rationalClosure`: that one asks for the continuity of
+the *quadratic* form `Q`, which Mathlib does not have, while a linear form is continuous by that
+lemma.
+
 The exclusion of an isotropic normal for a hyperplane meeting `C` is on main and is not repeated:
 `neg_quadratic_of_associated_eq_zero` (below, the hyperbolic section) gives `Q ℓ < 0` for the normal
 of a hyperplane meeting `C`, from `sigPos Q = 1` and nondegeneracy alone.
 
-### What is not carried
+### What is carried, and what is not
 
-The counting lemma itself, for this `H`: per value `-m` the cutters are finite in the two cases that
-are discharged (`finite_cutting_normals_of_both_timelike`, `finite_cutting_normals_of_isotropic`),
-and `finite_form_values_of_orbitFamily` says there are finitely many values; what is not written is
-the assembly — for each value, the finiteness of the set of *lines* whose generator cuts a given
-rational cone, which needs (i) the corollary for a pair of two isotropic generators (the product
-bound `abs_associated_mul_le_of_both_isotropic` is on main, the corollary is not) and (ii) the
-transport of the cut of the line to the cut of the form `v ↦ v · x` on `L(ℝ)`
-(`cutsOn_iff_generators` decides the former, and the identification of the two is the step that is
-missing).
+The counting lemma for this `H` is `cutsFinitelyOnRational_orbitFamily` in the next section: per
+value of the norm the cutters are finite (`finite_pairSet_of_cutSigns`, over the ordered pairs of
+rational generators of the cone), and `finite_form_values_of_orbitFamily` says there are finitely
+many values; the lines of `H` are recovered from their generators
+(`span_singleton_of_inf_span_eq`, `exists_generator_of_orbitFamily`), which makes the passage from
+normals to hyperplanes injective.
+
+Not carried: the arithmeticity of `Γ` (the finite-index subgroup of `O(L(ℚ))` preserving `Λ`), so
+`Λ`, the integrality of the form on it and its `Γ`-stability are hypotheses; the reduction of a
+general lattice to the `ℤ`-span of a `ℚ`-basis (recorded in the module docstring); and the passage
+in the other direction — that `H` consists of hyperplanes *meeting* `C` is not used, since a normal
+of nonnegative value does not cut a cone inside the sheet (`one_signed_of_nonneg_quadratic`).
 -/
 
 section OrbitLayer
@@ -4469,6 +4517,542 @@ theorem finite_form_values_of_orbitFamily (Λ : Submodule ℤ V) (BQ : LinearMap
   exact Finset.mem_attach H₀ ⟨ℓ₀, hℓ₀⟩
 
 end OrbitLayer
+
+/-! ## Example 4.3 (b): finitely many cutters per rational subcone, for the `H` of the source
+
+The hypothesis `CutsFinitelyOnRational` of the arrangement section, discharged for Looijenga's
+`H` — a finite union of `Γ`-orbits of `ℚ`-hyperplanes (`orbitFamily`), carried by the lines of
+their normals — from the two steps the module docstring names: the norm of the primitive generator
+of `ℓ ⊓ Λ` is constant on an orbit (`finite_form_values_of_orbitFamily`), so it takes finitely many
+values; per value the pair bounds of the counting lemma leave finitely many lattice normals, taken
+over the finitely many ordered pairs of rational generators of the cone
+(`finite_pairSet_of_cutSigns`, `finite_cutters_of_pair_bounds`); the values of one sign contribute
+nothing (`one_signed_of_nonneg_quadratic`); and a line of `H` is recovered from its generator
+(`span_singleton_of_inf_span_eq`), which makes `ℓ ↦ v_ℓ` injective. The result is
+`cutsFinitelyOnRational_orbitFamily`, the form the module docstring names as owed, and
+`cutsFinitelyOnRational_of_finiteOrbits` with a general choice of generator. -/
+
+section FiniteOrbits
+
+variable [Module.Finite ℚ V]
+
+/-- **A normal of nonnegative value is one-signed on a cone inside the closed sheet**: the pairing
+with a timelike or isotropic vector of the sheet does not change sign on the sheet
+(`nonneg_associated_of_mem_closedSheet`, applied to the normal or to its negative),
+in either of the two sheets. Such a normal therefore never cuts a cone inside `C₊`, which is why the
+count over the norm values of `H` runs only over the negative ones. -/
+theorem one_signed_of_nonneg_quadratic {Q : QuadraticForm ℝ (realified V)} (hpos : sigPos Q = 1)
+    {BQ : LinearMap.BilinForm ℚ V}
+    (hBQ : ∀ u w : V, (associated Q) (rationalPoint u) (rationalPoint w) = (BQ u w : ℝ))
+    {Cplus : PointedCone ℝ (realified V)} {t : realified V} (ht : 0 < Q t)
+    (hsheet : ∀ v : V, rationalPoint v ∈ Cplus →
+      0 ≤ Q (rationalPoint v) ∧ 0 ≤ (associated Q) (rationalPoint v) t)
+    {v : V} (hQv : 0 ≤ Q (rationalPoint v)) :
+    (∀ x : V, rationalPoint x ∈ Cplus → 0 ≤ (BQ v x : ℝ)) ∨
+      ∀ x : V, rationalPoint x ∈ Cplus → (BQ v x : ℝ) ≤ 0 := by
+  have key : ∀ w : V, 0 ≤ Q (rationalPoint w) → 0 ≤ (associated Q) (rationalPoint w) t →
+      ∀ x : V, rationalPoint x ∈ Cplus → 0 ≤ (BQ w x : ℝ) := by
+    intro w hQw hwt x hx
+    rw [← hBQ w x]
+    exact nonneg_associated_of_mem_closedSheet (Q := Q) hpos ht hQw hwt
+      (hsheet x hx).1 (hsheet x hx).2
+  rcases le_or_gt 0 ((associated Q) (rationalPoint v) t) with hvt | hvt
+  · exact Or.inl (key v hQv hvt)
+  · exact Or.inr fun x hx => by
+      have hQ := key (-v) (by simpa using hQv) (by simpa using hvt.le) x hx
+      simpa using hQ
+
+set_option maxHeartbeats 800000 in
+/-- **Two sheet vectors with vanishing pairing are ℝ-proportional** (for a form of signature
+`(1, dim − 1)`): a timelike one of the pair is orthogonal to a sheet vector, which is on the
+negative definite side of a timelike vector and hence zero; and for a pair of null ones, the
+combination `⟨a, t⟩ • b - ⟨b, t⟩ • a` is null and orthogonal to the timelike `t`, so it vanishes —
+the two are proportional along the boundary. This is what makes a pair of generators of a cone of
+the sheet, one taking each sign of a cutting normal, a pair with positive pairing, which is what
+the three bounds of the counting lemma need. -/
+theorem exists_smul_of_associated_eq_zero_of_mem_closedSheet
+    {Q : QuadraticForm ℝ (realified V)} (hpos : sigPos Q = 1) (hnd : Q.Nondegenerate)
+    {t : realified V} (ht : 0 < Q t) {a b : V}
+    (ha : rationalPoint a ∈ closedSheet Q hpos ht) (hb : rationalPoint b ∈ closedSheet Q hpos ht)
+    (hab : (associated Q) (rationalPoint a) (rationalPoint b) = 0)
+    (ha0 : rationalPoint a ≠ 0) :
+    ∃ c : ℝ, rationalPoint b = c • rationalPoint a := by
+  rcases eq_or_lt_of_le ha.1 with hQa | hQa
+  · rcases eq_or_lt_of_le hb.1 with hQb | hQb
+    · -- both null: `⟨a, t⟩ • b - ⟨b, t⟩ • a` is null and orthogonal to the timelike `t`
+      have hA : (associated Q) (rationalPoint a) t ≠ 0 := by
+        intro h0
+        exact ha0 (eq_zero_of_perp_of_quadratic_eq_zero (Q := Q) (t := t) (x := rationalPoint a)
+          hpos hnd ht h0 hQa.symm)
+      set A : ℝ := (associated Q) (rationalPoint a) t with hAdef
+      set B : ℝ := (associated Q) (rationalPoint b) t with hBdef
+      set z : realified V := A • rationalPoint b - B • rationalPoint a with hzdef
+      have hQz : Q z = 0 := by
+        rw [hzdef, sub_eq_add_neg, ← neg_smul, quadratic_expand]
+        rw [← hQa, ← hQb, associated_comm (Q := Q) (rationalPoint b) (rationalPoint a), hab]
+        ring
+      have hzt : (associated Q) z t = 0 := by
+        rw [hzdef, map_sub, map_smul, map_smul, LinearMap.sub_apply, LinearMap.smul_apply,
+          LinearMap.smul_apply, smul_eq_mul, smul_eq_mul, ← hAdef, ← hBdef]
+        ring
+      have hz0 : z = 0 :=
+        eq_zero_of_perp_of_quadratic_eq_zero (Q := Q) (t := t) (x := z) hpos hnd ht hzt hQz
+      have hAB : A • rationalPoint b = B • rationalPoint a := by
+        rw [hzdef, sub_eq_zero] at hz0
+        exact hz0
+      refine ⟨B / A, ?_⟩
+      rw [div_eq_inv_mul, mul_smul]
+      have hstep := congrArg (fun y : realified V => A⁻¹ • y) hAB
+      rw [smul_smul, inv_mul_cancel₀ hA, one_smul] at hstep
+      exact hstep
+    · -- `b` timelike: `a` is orthogonal to it and on the sheet, hence zero
+      exact absurd (eq_zero_of_perp_of_quadratic_eq_zero (Q := Q) (t := rationalPoint b)
+        (x := rationalPoint a) hpos hnd hQb hab hQa.symm) ha0
+  · -- `a` timelike: `b` is orthogonal to it and on the sheet, hence zero
+    have hle := quadratic_nonpos_of_associated_eq_zero (Q := Q) hpos (a := rationalPoint a) hQa
+      (by rw [associated_comm]; exact hab)
+    have hQb : Q (rationalPoint b) = 0 := le_antisymm hle hb.1
+    have hb0 : rationalPoint b = 0 :=
+      eq_zero_of_perp_of_quadratic_eq_zero (Q := Q) (t := rationalPoint a) (x := rationalPoint b)
+        hpos hnd hQa (by rw [associated_comm]; exact hab) hQb
+    exact ⟨0, by rw [hb0, zero_smul]⟩
+
+omit [Module.Finite ℚ V] in
+/-- **Every rational vector becomes a lattice vector after scaling by a positive integer**: on a
+`ℚ`-basis the coordinates of `a` are rationals, and the product of their denominators clears
+them. -/
+theorem exists_nat_smul_mem_span {ι : Type*} [Fintype ι] (bs : Module.Basis ι ℚ V) (a : V) :
+    ∃ D : ℕ, 0 < D ∧ (D : ℤ) • a ∈ Submodule.span ℤ (Set.range bs) := by
+  classical
+  refine ⟨∏ i, (bs.repr a i).den, Finset.prod_pos fun i _ => (bs.repr a i).den_pos, ?_⟩
+  rw [bs.mem_span_iff_repr_mem ℤ]
+  intro i
+  have hrepr : bs.repr ((↑(∏ i, (bs.repr a i).den) : ℤ) • a) i
+      = ((∏ i, (bs.repr a i).den : ℕ) : ℚ) * bs.repr a i := by
+    rw [← Int.cast_smul_eq_zsmul (R := ℚ) (↑(∏ i, (bs.repr a i).den) : ℤ), map_smul,
+      Finsupp.smul_apply, smul_eq_mul]
+    push_cast
+    ring
+  rw [hrepr]
+  obtain ⟨k, hk⟩ := Finset.dvd_prod_of_mem (f := fun i => (bs.repr a i).den) (Finset.mem_univ i)
+  refine ⟨(k : ℤ) * (bs.repr a i).num, ?_⟩
+  rw [hk]
+  rw [show (((bs.repr a i).den * k : ℕ) : ℚ) = ((bs.repr a i).den : ℚ) * (k : ℚ) by
+    push_cast; ring]
+  rw [show (algebraMap ℤ ℚ) ((k : ℤ) * (bs.repr a i).num)
+      = (k : ℚ) * ((bs.repr a i).num : ℚ) by push_cast; rfl]
+  rw [← Rat.mul_den_eq_num (bs.repr a i)]
+  ring
+
+omit [Module.Finite ℚ V] in
+/-- **A rational line with a rank-one intersection with the lattice is the line of its
+generator**: every vector of it becomes a lattice vector after scaling, so it is a rational
+multiple of the generator. -/
+theorem span_singleton_of_inf_span_eq {ι : Type*} [Fintype ι] (bs : Module.Basis ι ℚ V)
+    {ℓ : Submodule ℚ V}
+    {v : V} (h : Submodule.span ℤ (Set.range bs) ⊓ ℓ.restrictScalars ℤ
+      = Submodule.span ℤ ({v} : Set V)) :
+    ℓ = Submodule.span ℚ ({v} : Set V) := by
+  have hvℓ : v ∈ ℓ := by
+    have hv : v ∈ Submodule.span ℤ (Set.range bs) ⊓ ℓ.restrictScalars ℤ := by
+      rw [h]
+      exact Submodule.subset_span (Set.mem_singleton v)
+    exact hv.2
+  refine le_antisymm ?_ (Submodule.span_le.mpr fun x hx => by
+    rw [Set.mem_singleton_iff] at hx
+    exact hx ▸ hvℓ)
+  intro w hw
+  obtain ⟨D, hDpos, hDw⟩ := exists_nat_smul_mem_span bs w
+  have hmem : ((D : ℤ) • w : V) ∈ Submodule.span ℤ (Set.range bs) ⊓ ℓ.restrictScalars ℤ :=
+    ⟨hDw, Submodule.smul_mem _ _ hw⟩
+  rw [h] at hmem
+  obtain ⟨n, hn⟩ := Submodule.mem_span_singleton.mp hmem
+  rw [Submodule.mem_span_singleton]
+  refine ⟨(n : ℚ) / (D : ℚ), ?_⟩
+  have hcast : ((n : ℚ) • v : V) = (D : ℚ) • w := by
+    have h1 : ((n : ℚ) • v : V) = n • v := Int.cast_smul_eq_zsmul (R := ℚ) n v
+    have h2 : ((D : ℤ) • w : V) = (D : ℚ) • w := by
+      rw [← Int.cast_smul_eq_zsmul (R := ℚ) (D : ℤ) w]
+      push_cast
+      rfl
+    rw [h1, hn, h2]
+  have hDq : (D : ℚ) ≠ 0 := by exact_mod_cast hDpos.ne'
+  calc ((n : ℚ) / (D : ℚ)) • v = ((D : ℚ)⁻¹ * (n : ℚ)) • v := by rw [div_eq_inv_mul]
+    _ = (D : ℚ)⁻¹ • ((n : ℚ) • v) := by rw [mul_smul]
+    _ = (D : ℚ)⁻¹ • ((D : ℚ) • w) := by rw [hcast]
+    _ = w := by rw [smul_smul, inv_mul_cancel₀ hDq, one_smul]
+
+omit [Module.Finite ℚ V] in
+/-- **The two sign conditions of a pair are symmetric under `v ↦ -v`**: the set of lattice normals
+of a value `-m` taking a positive value on `a` and a negative one on `b` is finite exactly when the
+same set with the roles of `a` and `b` exchanged is. This is what lets the isotropic case of the
+counting lemma be applied in either order of the pair. -/
+theorem finite_pairSigns_iff_neg {Λs : Submodule ℤ V} {Q : QuadraticForm ℝ (realified V)}
+    {BQ : LinearMap.BilinForm ℚ V} {m : ℝ} {a b : V} :
+    {v : V | v ∈ Λs ∧ Q (rationalPoint v) = -m ∧ 0 < (BQ v a : ℝ) ∧ (BQ v b : ℝ) < 0}.Finite ↔
+      {v : V | v ∈ Λs ∧ Q (rationalPoint v) = -m ∧ 0 < (BQ v b : ℝ) ∧
+        (BQ v a : ℝ) < 0}.Finite := by
+  have hstep : ∀ (c d : V) (v : V), (v ∈ Λs ∧ Q (rationalPoint v) = -m ∧
+      0 < (BQ v c : ℝ) ∧ (BQ v d : ℝ) < 0) →
+      (-v ∈ Λs ∧ Q (rationalPoint (-v)) = -m ∧ 0 < (BQ (-v) d : ℝ) ∧ (BQ (-v) c : ℝ) < 0) := by
+    rintro c d v ⟨hv, hQ, hx, hy⟩
+    refine ⟨Submodule.neg_mem _ hv, ?_, ?_, ?_⟩
+    · rw [map_neg, QuadraticMap.map_neg]
+      exact hQ
+    · rw [map_neg, LinearMap.neg_apply]
+      push_cast
+      linarith
+    · rw [map_neg, LinearMap.neg_apply]
+      push_cast
+      linarith
+  constructor
+  · intro h
+    refine (h.image fun v => -v).subset ?_
+    rintro v hv
+    exact ⟨-v, hstep b a v hv, neg_neg v⟩
+  · intro h
+    refine (h.image fun v => -v).subset ?_
+    rintro v hv
+    exact ⟨-v, hstep a b v hv, neg_neg v⟩
+
+omit [Module.Finite ℚ V] in
+/-- **A pair of proportional generators contributes no cutting normal**: if `b` is a real multiple
+of `a`, either the two sign conditions are incompatible (a positive multiple) or the multiple is
+negative and the line of `a` lies in the cone, which salience forbids. -/
+theorem finite_pairSet_of_smul {Q : QuadraticForm ℝ (realified V)}
+    {BQ : LinearMap.BilinForm ℚ V}
+    (hBQ : ∀ u w : V, (associated Q) (rationalPoint u) (rationalPoint w) = (BQ u w : ℝ))
+    {Λs : Submodule ℤ V} {m : ℝ} {P : PointedCone ℝ (realified V)}
+    (hPsal : (P : ConvexCone ℝ (realified V)).Salient) {a b : V}
+    (haP : rationalPoint a ∈ P) (hbP : rationalPoint b ∈ P) {c : ℝ}
+    (hc : rationalPoint b = c • rationalPoint a) :
+    {v : V | v ∈ Λs ∧ Q (rationalPoint v) = -m ∧ 0 < (BQ v a : ℝ) ∧ (BQ v b : ℝ) < 0}.Finite := by
+  by_cases ha0 : rationalPoint a = 0
+  · refine Set.Finite.subset Set.finite_empty ?_
+    rintro v ⟨-, -, hx, -⟩
+    rw [← hBQ v a, ha0, map_zero] at hx
+    simp at hx
+  · refine Set.Finite.subset Set.finite_empty ?_
+    rintro v ⟨-, -, hx, hy⟩
+    have hbval : (BQ v b : ℝ) = c * (BQ v a : ℝ) := by
+      rw [← hBQ v b, hc, map_smul, smul_eq_mul, hBQ v a]
+    rcases lt_trichotomy c 0 with hc0 | hc0 | hc0
+    · exfalso
+      have hca : rationalPoint a = c⁻¹ • rationalPoint b := by
+        rw [hc, smul_smul, inv_mul_cancel₀ (ne_of_lt hc0), one_smul]
+      have hneg : -rationalPoint a ∈ P := by
+        have hcoef : (0 : ℝ) ≤ -c⁻¹ := by
+          have : c⁻¹ < 0 := inv_neg''.mpr hc0
+          linarith
+        have hrewrite : -rationalPoint a = (-c⁻¹) • rationalPoint b := by
+          rw [hca, neg_smul]
+        rw [hrewrite]
+        exact PointedCone.smul_mem _ hcoef hbP
+      exact hPsal (rationalPoint a) haP ha0 hneg
+    · rw [hc0, zero_mul] at hbval
+      rw [hbval] at hy
+      exact absurd hy (lt_irrefl 0)
+    · nlinarith [hx, hbval, hc0]
+
+set_option maxHeartbeats 1000000 in
+/-- **One ordered pair of generators bounds the cutting normals of a fixed value.** For a rational
+cone `P = hull (rationalPoint '' s)` inside `C₊` and two of its generators, only finitely many
+lattice normals of value `-m` take a positive value on the first and a negative one on the second.
+The three cases of the counting lemma (`finite_cutting_normals_of_both_timelike`,
+`finite_cutting_normals_of_isotropic`, `finite_cutting_normals_of_both_isotropic`) cover the pairs
+with positive pairing; a pair with vanishing pairing is proportional
+(`exists_smul_of_associated_eq_zero_of_mem_closedSheet`) and contributes nothing
+(`finite_pairSet_of_smul`); and a pair of two timelike generators with vanishing Gram determinant is
+proportional, since the difference `b - (a·b / Q a) • a` is null and orthogonal to a timelike
+vector. -/
+theorem finite_pairSet_of_cutSigns {ι : Type*} [Fintype ι] [DecidableEq ι]
+    {bs : Module.Basis ι ℚ V} {Q : QuadraticForm ℝ (realified V)} (hpos : sigPos Q = 1)
+    (hnd : Q.Nondegenerate) {BQ : LinearMap.BilinForm ℚ V} (hBQsym : BQ.IsSymm)
+    (hBQnd : BQ.Nondegenerate)
+    (hBQ : ∀ u w : V, (associated Q) (rationalPoint u) (rationalPoint w) = (BQ u w : ℝ))
+    {Cplus : PointedCone ℝ (realified V)} (hsal : (Cplus : ConvexCone ℝ (realified V)).Salient)
+    {t : realified V} (ht : 0 < Q t)
+    (hsheet : ∀ v : V, rationalPoint v ∈ Cplus →
+      0 ≤ Q (rationalPoint v) ∧ 0 ≤ (associated Q) (rationalPoint v) t)
+    {P : PointedCone ℝ (realified V)} (hPle : P ≤ Cplus)
+    {s : Finset V} (hP : P = PointedCone.hull ℝ (rationalPoint '' (s : Set V)))
+    {m : ℝ} (hm : 0 < m) {D : ℕ} (hD : 0 < D)
+    (hDs : ∀ a ∈ s, (D : ℤ) • a ∈ Submodule.span ℤ (Set.range bs))
+    (hint : ∀ x ∈ Submodule.span ℤ (Set.range bs), ∀ y ∈ Submodule.span ℤ (Set.range bs),
+      ∃ n : ℤ, BQ x y = (n : ℚ))
+    {a b : V} (ha : a ∈ s) (hb : b ∈ s) :
+    {v : V | v ∈ Submodule.span ℤ (Set.range bs) ∧ Q (rationalPoint v) = -m ∧
+      0 < (BQ v a : ℝ) ∧ (BQ v b : ℝ) < 0}.Finite := by
+  have hPsal : (P : ConvexCone ℝ (realified V)).Salient := hsal.anti hPle
+  have haP : rationalPoint a ∈ P := by
+    rw [hP]
+    exact PointedCone.subset_hull (Set.mem_image_of_mem _ (by exact_mod_cast ha))
+  have hbP : rationalPoint b ∈ P := by
+    rw [hP]
+    exact PointedCone.subset_hull (Set.mem_image_of_mem _ (by exact_mod_cast hb))
+  have hsa := hsheet a (hPle haP)
+  have hsb := hsheet b (hPle hbP)
+  have hnn : 0 ≤ (associated Q) (rationalPoint a) (rationalPoint b) :=
+    nonneg_associated_of_mem_closedSheet (Q := Q) hpos ht hsa.1 hsa.2 hsb.1 hsb.2
+  have hdeg : ∀ {c : ℝ}, rationalPoint b = c • rationalPoint a →
+      {v : V | v ∈ Submodule.span ℤ (Set.range bs) ∧ Q (rationalPoint v) = -m ∧
+        0 < (BQ v a : ℝ) ∧ (BQ v b : ℝ) < 0}.Finite := by
+    intro c hc
+    exact finite_pairSet_of_smul (Q := Q) hBQ hPsal haP hbP hc
+  rcases eq_or_lt_of_le hsa.1 with hQa | hQa <;> rcases eq_or_lt_of_le hsb.1 with hQb | hQb
+  · -- both isotropic
+    rcases eq_or_lt_of_le hnn with h0 | hpos'
+    · by_cases hra : rationalPoint a = 0
+      · refine Set.Finite.subset Set.finite_empty ?_
+        rintro v ⟨-, -, hx, -⟩
+        rw [← hBQ v a, hra, map_zero] at hx
+        simp at hx
+      · exact hdeg (exists_smul_of_associated_eq_zero_of_mem_closedSheet (Q := Q) hpos hnd ht
+          ⟨hQa.le, hsa.2⟩ ⟨hQb.le, hsb.2⟩ h0.symm hra).choose_spec
+    · exact finite_cutting_normals_of_both_isotropic (Q := Q) hpos hBQsym hBQnd hBQ (a := a)
+        (b := b) (m := m) hm hQa.symm hQb.symm hpos' hD hD (hDs a ha) (hDs b hb) hint
+  · -- `a` isotropic, `b` timelike
+    have hnn' : 0 ≤ (associated Q) (rationalPoint b) (rationalPoint a) := by
+      rw [associated_comm]; exact hnn
+    rcases eq_or_lt_of_le hnn' with h0 | hpos'
+    · by_cases hra : rationalPoint a = 0
+      · refine Set.Finite.subset Set.finite_empty ?_
+        rintro v ⟨-, -, hx, -⟩
+        rw [← hBQ v a, hra, map_zero] at hx
+        simp at hx
+      · exact hdeg (exists_smul_of_associated_eq_zero_of_mem_closedSheet (Q := Q) hpos hnd ht
+          ⟨hQa.le, hsa.2⟩ ⟨hQb.le, hsb.2⟩ (by rw [associated_comm]; exact h0.symm) hra).choose_spec
+    · rw [finite_pairSigns_iff_neg]
+      exact finite_cutting_normals_of_isotropic (Q := Q) hpos hBQsym hBQnd hBQ (a := b) (b := a)
+        (m := m) hm hQb hQa.symm hpos' hD (hDs a ha) hint
+  · -- `a` timelike, `b` isotropic
+    rcases eq_or_lt_of_le hnn with h0 | hpos'
+    · by_cases hra : rationalPoint a = 0
+      · refine Set.Finite.subset Set.finite_empty ?_
+        rintro v ⟨-, -, hx, -⟩
+        rw [← hBQ v a, hra, map_zero] at hx
+        simp at hx
+      · exact hdeg (exists_smul_of_associated_eq_zero_of_mem_closedSheet (Q := Q) hpos hnd ht
+          ⟨hQa.le, hsa.2⟩ ⟨hQb.le, hsb.2⟩ h0.symm hra).choose_spec
+    · exact finite_cutting_normals_of_isotropic (Q := Q) hpos hBQsym hBQnd hBQ (a := a) (b := b)
+        (m := m) hm hQa hQb.symm hpos' hD (hDs b hb) hint
+  · -- both timelike
+    rcases eq_or_lt_of_le hnn with h0 | hpos'
+    · by_cases hra : rationalPoint a = 0
+      · refine Set.Finite.subset Set.finite_empty ?_
+        rintro v ⟨-, -, hx, -⟩
+        rw [← hBQ v a, hra, map_zero] at hx
+        simp at hx
+      · exact hdeg (exists_smul_of_associated_eq_zero_of_mem_closedSheet (Q := Q) hpos hnd ht
+          ⟨hQa.le, hsa.2⟩ ⟨hQb.le, hsb.2⟩ h0.symm hra).choose_spec
+    · -- the Gram determinant is positive: `c ^ 2 - Q a * Q b ≥ 0` by the key inequality
+      set c : ℝ := (associated Q) (rationalPoint a) (rationalPoint b) with hcdef
+      set A : ℝ := Q (rationalPoint a) with hAdef
+      set B : ℝ := Q (rationalPoint b) with hBdef
+      have hle := mul_self_le_associated_sq (Q := Q) hpos hQa (rationalPoint b)
+      rw [associated_comm (Q := Q) (rationalPoint b) (rationalPoint a), ← hcdef, ← hAdef,
+        ← hBdef] at hle
+      rcases lt_or_eq_of_le (by nlinarith [hle] : (0:ℝ) ≤ c ^ 2 - A * B) with hK | hK
+      · exact finite_cutting_normals_of_both_timelike (Q := Q) hpos hBQsym hBQnd hBQ (a := a)
+          (b := b) (m := m) hQa hQb hpos' (by rw [← hcdef, ← hAdef, ← hBdef]; linarith)
+      · -- proportional: `b - (c / A) • a` is null and orthogonal to the timelike `a`
+        have hz : Q (rationalPoint b - (c / A) • rationalPoint a) = 0 := by
+          rw [sub_eq_add_neg, ← neg_smul]
+          have hexp := quadratic_expand (Q := Q) 1 (-(c / A)) (rationalPoint b) (rationalPoint a)
+          simp only [one_smul, one_pow, one_mul] at hexp
+          rw [hexp]
+          rw [← associated_comm (Q := Q) (rationalPoint a) (rationalPoint b), ← hBdef, ← hAdef,
+            ← hcdef]
+          field_simp
+          nlinarith [hK]
+        have hzt : (associated Q) (rationalPoint b - (c / A) • rationalPoint a)
+            (rationalPoint a) = 0 := by
+          rw [map_sub, map_smul, LinearMap.sub_apply, LinearMap.smul_apply, smul_eq_mul,
+            associated_self_apply, ← hAdef, ← associated_comm (Q := Q) (rationalPoint a)
+            (rationalPoint b), ← hcdef]
+          field_simp
+          ring
+        have hzero := eq_zero_of_perp_of_quadratic_eq_zero (Q := Q) (t := rationalPoint a)
+          (x := rationalPoint b - (c / A) • rationalPoint a) hpos hnd hQa hzt hz
+        refine hdeg (c := c / A) ?_
+        rw [sub_eq_zero] at hzero
+        exact hzero
+
+set_option maxHeartbeats 1000000 in
+/-- **Example 4.3 (b), the hypothesis: a finite union of `Γ`-orbits of `ℚ`-hyperplanes cuts each
+rational subcone of `C₊` finitely often** (Looijenga, pp. 17-18).
+
+`H` is the orbit family of a finite `H₀` under `Γ` (`orbitFamily`), carried by the `ℚ`-lines of its
+normals, and `g ℓ` is a generator of `ℓ ⊓ Λ` for each member. The two inputs the source supplies
+and this file states are the arithmeticity (`Λ` a lattice on which the form is integral, `Γ` acting
+on it by isometries, so that the norm of the generator is constant on an orbit —
+`finite_form_values_of_orbitFamily`) and the two cone-side hypotheses of the hyperbolic setting
+(`C₊` salient, and its rational points on the closed sheet, `hsheet`). The counting per value of the
+norm is `finite_pairSet_of_cutSigns` over the finitely many ordered pairs of generators of the
+rational cone, and the values of one sign (`m ≥ 0`) give nothing (`one_signed_of_nonneg_quadratic`).
+The identification of the cut of a hyperplane with the cut of the form of its generator is
+`hyperplaneCuts_iff_generators`, and `span_singleton_of_inf_span_eq` recovers the line from the
+generator, which makes `ℓ ↦ g ℓ` injective. -/
+theorem cutsFinitelyOnRational_of_finiteOrbits {Q : QuadraticForm ℝ (realified V)}
+    (hpos : sigPos Q = 1) (hnd : Q.Nondegenerate) {BQ : LinearMap.BilinForm ℚ V}
+    (hBQsym : BQ.IsSymm) (hBQnd : BQ.Nondegenerate)
+    (hBQ : ∀ u w : V, (associated Q) (rationalPoint u) (rationalPoint w) = (BQ u w : ℝ))
+    {Cplus : PointedCone ℝ (realified V)}
+    (hsal : (Cplus : ConvexCone ℝ (realified V)).Salient) {t : realified V} (ht : 0 < Q t)
+    (hsheet : ∀ v : V, rationalPoint v ∈ Cplus →
+      0 ≤ Q (rationalPoint v) ∧ 0 ≤ (associated Q) (rationalPoint v) t)
+    {ι : Type*} [Fintype ι] [DecidableEq ι] {bs : Module.Basis ι ℚ V}
+    (Γ : Set (V ≃ₗ[ℚ] V)) (H₀ : Finset (Submodule ℚ V))
+    (hΓΛ : ∀ e ∈ Γ, Submodule.map ((e : V →ₗ[ℚ] V).restrictScalars ℤ)
+      (Submodule.span ℤ (Set.range bs)) = Submodule.span ℤ (Set.range bs))
+    (hΓiso : ∀ e ∈ Γ, ∀ x y, BQ (e x) (e y) = BQ x y)
+    (hH₀ : ∀ ℓ₀ ∈ H₀, ∃ v : V, v ≠ 0 ∧
+      Submodule.span ℤ (Set.range bs) ⊓ ℓ₀.restrictScalars ℤ = Submodule.span ℤ ({v} : Set V))
+    (hint : ∀ x ∈ Submodule.span ℤ (Set.range bs), ∀ y ∈ Submodule.span ℤ (Set.range bs),
+      ∃ n : ℤ, BQ x y = (n : ℚ))
+    (g : ↥(orbitFamily H₀ Γ) → V)
+    (hg : ∀ ℓ : ↥(orbitFamily H₀ Γ), g ℓ ≠ 0 ∧
+      Submodule.span ℤ (Set.range bs) ⊓ ℓ.1.restrictScalars ℤ = Submodule.span ℤ ({g ℓ} : Set V)) :
+    CutsFinitelyOnRational Cplus (fun ℓ : ↥(orbitFamily H₀ Γ) => normalForm Q (g ℓ)) := by
+  classical
+  intro P hP hPle
+  obtain ⟨s, rfl⟩ := hP
+  -- a common denominator for the generators of the cone
+  choose Dg hDg using fun a : V => exists_nat_smul_mem_span bs a
+  set D : ℕ := ∏ a ∈ s, Dg a with hDdef
+  have hDpos : 0 < D := Finset.prod_pos fun a _ => (hDg a).1
+  have hDs : ∀ a ∈ s, (D : ℤ) • a ∈ Submodule.span ℤ (Set.range bs) := by
+    intro a ha
+    obtain ⟨k, hk⟩ := Finset.dvd_prod_of_mem (f := fun a => Dg a) ha
+    have hDcast : (D : ℤ) = (k : ℤ) * (Dg a : ℤ) := by
+      rw [hDdef, hk]
+      push_cast
+      ring
+    rw [hDcast, mul_zsmul]
+    exact Submodule.smul_mem _ _ (hDg a).2
+  -- the values of the norm on `H`
+  obtain ⟨M, hM⟩ := finite_form_values_of_orbitFamily (Λ := Submodule.span ℤ (Set.range bs))
+    BQ H₀ Γ hΓΛ hΓiso hH₀
+  -- per value of the norm
+  have hval : ∀ m ∈ M, {v : V | v ∈ Submodule.span ℤ (Set.range bs) ∧
+      Q (rationalPoint v) = (m : ℝ) ∧ ∃ a ∈ s, ∃ b ∈ s, 0 < (BQ v a : ℝ) ∧
+        (BQ v b : ℝ) < 0}.Finite := by
+    intro m hm
+    by_cases hmneg : m < 0
+    · have hmpos : 0 < -(m : ℝ) := by
+        have : (m : ℝ) < 0 := by exact_mod_cast hmneg
+        linarith
+      have hmain := finite_cutters_of_pair_bounds (Q := Q) (BQ := BQ) (m := -(m : ℝ))
+        (Submodule.span ℤ (Set.range bs)) s (fun a ha b hb =>
+          finite_pairSet_of_cutSigns (Q := Q) hpos hnd hBQsym hBQnd hBQ hsal ht hsheet hPle rfl
+            hmpos hDpos hDs hint ha hb)
+      simpa using hmain
+    · refine Set.Finite.subset Set.finite_empty ?_
+      rintro v ⟨hv, hQ, a, ha, b, hb, hx, hy⟩
+      have hQv : 0 ≤ Q (rationalPoint v) := by
+        rw [hQ]
+        exact_mod_cast (not_lt.mp hmneg : (0:ℚ) ≤ m)
+      have haP : rationalPoint a ∈ PointedCone.hull ℝ (rationalPoint '' (s : Set V)) :=
+        PointedCone.subset_hull (Set.mem_image_of_mem _ (by exact_mod_cast ha))
+      have hbP : rationalPoint b ∈ PointedCone.hull ℝ (rationalPoint '' (s : Set V)) :=
+        PointedCone.subset_hull (Set.mem_image_of_mem _ (by exact_mod_cast hb))
+      rcases one_signed_of_nonneg_quadratic (Q := Q) hpos hBQ ht hsheet hQv with hpos' | hneg'
+      · exact absurd (hpos' b (hPle hbP)) (not_le.mpr hy)
+      · exact absurd (hneg' a (hPle haP)) (not_le.mpr hx)
+  -- the cutters inject into the union of those sets
+  have hinj : Set.InjOn g
+      {ℓ : ↥(orbitFamily H₀ Γ) | CutsOn (normalForm Q (g ℓ)).toLinearMap
+        (PointedCone.hull ℝ (rationalPoint '' (s : Set V)))} := by
+    intro ℓ _ ℓ' _ h
+    have h1 : ℓ.1 = Submodule.span ℚ ({g ℓ} : Set V) :=
+      span_singleton_of_inf_span_eq bs (hg ℓ).2
+    have h2 : ℓ'.1 = Submodule.span ℚ ({g ℓ'} : Set V) :=
+      span_singleton_of_inf_span_eq bs (hg ℓ').2
+    exact Subtype.ext (by rw [h1, h2, h])
+  refine Set.Finite.of_finite_image ?_ hinj
+  refine (Set.Finite.biUnion M.finite_toSet fun m hm => hval m hm).subset ?_
+  rintro v ⟨ℓ, hℓ, rfl⟩
+  have hℓeq : ℓ.1 = Submodule.span ℚ ({g ℓ} : Set V) :=
+    span_singleton_of_inf_span_eq bs (hg ℓ).2
+  have hcuts : CutsOn ((associated Q) (rationalPoint (g ℓ)))
+      (PointedCone.hull ℝ (rationalPoint '' (s : Set V))) := by
+    rw [← normalForm_toLinearMap]
+    exact hℓ
+  have hpair := (hyperplaneCuts_iff_generators (Q := Q) hℓeq rfl hBQ).mp
+    ((hyperplaneCuts_iff_cutsOn (Q := Q) hℓeq _).mpr hcuts)
+  have hQv : Q (rationalPoint (g ℓ)) = ((BQ (g ℓ) (g ℓ) : ℚ) : ℝ) := by
+    rw [← associated_self_apply]
+    exact hBQ (g ℓ) (g ℓ)
+  have hmem : BQ (g ℓ) (g ℓ) ∈ M :=
+    hM ℓ.1 ℓ.2 (g ℓ) (hg ℓ).1 (hg ℓ).2
+  have hmemΛ : g ℓ ∈ Submodule.span ℤ (Set.range bs) := by
+    have h1 : g ℓ ∈ Submodule.span ℤ (Set.range bs) ⊓ ℓ.1.restrictScalars ℤ := by
+      rw [(hg ℓ).2]
+      exact Submodule.subset_span (Set.mem_singleton (g ℓ))
+    exact h1.1
+  obtain ⟨⟨a, ha, hx⟩, ⟨b, hb, hy⟩⟩ := hpair
+  exact Set.mem_iUnion₂.mpr ⟨_, hmem, hmemΛ, hQv, a, ha, b, hb, by exact_mod_cast hx,
+    by exact_mod_cast hy⟩
+
+omit [Module.Finite ℚ V] in
+/-- **Every member of the orbit family has a primitive generator**: the generator of an orbit
+representative's intersection with the lattice, carried by the isometry that puts it in its orbit
+(`map_inf_restrictScalars`). This is the `g` of `cutsFinitelyOnRational_of_finiteOrbits`; it is
+determined up to sign (`eq_or_eq_neg_of_span_singleton_eq`), and `CutsOn` is unchanged by the
+sign. -/
+theorem exists_generator_of_orbitFamily (Λ : Submodule ℤ V) (H₀ : Finset (Submodule ℚ V))
+    (Γ : Set (V ≃ₗ[ℚ] V))
+    (hΓΛ : ∀ e ∈ Γ, Submodule.map ((e : V →ₗ[ℚ] V).restrictScalars ℤ) Λ = Λ)
+    (hH₀ : ∀ ℓ₀ ∈ H₀, ∃ v : V, v ≠ 0 ∧
+      Λ ⊓ ℓ₀.restrictScalars ℤ = Submodule.span ℤ ({v} : Set V)) :
+    ∃ g : ↥(orbitFamily H₀ Γ) → V, ∀ ℓ : ↥(orbitFamily H₀ Γ), g ℓ ≠ 0 ∧
+      Λ ⊓ ℓ.1.restrictScalars ℤ = Submodule.span ℤ ({g ℓ} : Set V) := by
+  classical
+  have key : ∀ ℓ : ↥(orbitFamily H₀ Γ), ∃ v : V, v ≠ 0 ∧
+      Λ ⊓ ℓ.1.restrictScalars ℤ = Submodule.span ℤ ({v} : Set V) := by
+    intro ℓ
+    obtain ⟨ℓ₀, hℓ₀, e, he, hEq⟩ := mem_orbitFamily.mp ℓ.2
+    obtain ⟨v₀, hv₀, hspan₀⟩ := hH₀ ℓ₀ hℓ₀
+    refine ⟨e v₀, ?_, ?_⟩
+    · intro h
+      exact hv₀ (e.injective (by rw [h, map_zero]))
+    · rw [hEq, ← map_inf_restrictScalars (Λ := Λ) (e := e) (hΓΛ e he) ℓ₀, hspan₀,
+        Submodule.map_span, Set.image_singleton]
+      rfl
+  choose g hg using key
+  exact ⟨g, hg⟩
+
+set_option maxHeartbeats 1000000 in
+/-- **Example 4.3 (b): the hypothesis for the `H` of the source**, with `H` the union of the
+`Γ`-orbits of a finite `H₀` and its normals taken by `orbitGenerator`. This is
+`cutsFinitelyOnRational_of_finiteOrbits` at the canonical choice of generator. -/
+theorem cutsFinitelyOnRational_orbitFamily {Q : QuadraticForm ℝ (realified V)}
+    (hpos : sigPos Q = 1) (hnd : Q.Nondegenerate) {BQ : LinearMap.BilinForm ℚ V}
+    (hBQsym : BQ.IsSymm) (hBQnd : BQ.Nondegenerate)
+    (hBQ : ∀ u w : V, (associated Q) (rationalPoint u) (rationalPoint w) = (BQ u w : ℝ))
+    {Cplus : PointedCone ℝ (realified V)}
+    (hsal : (Cplus : ConvexCone ℝ (realified V)).Salient) {t : realified V} (ht : 0 < Q t)
+    (hsheet : ∀ v : V, rationalPoint v ∈ Cplus →
+      0 ≤ Q (rationalPoint v) ∧ 0 ≤ (associated Q) (rationalPoint v) t)
+    {ι : Type*} [Fintype ι] [DecidableEq ι] {bs : Module.Basis ι ℚ V}
+    (Γ : Set (V ≃ₗ[ℚ] V)) (H₀ : Finset (Submodule ℚ V))
+    (hΓΛ : ∀ e ∈ Γ, Submodule.map ((e : V →ₗ[ℚ] V).restrictScalars ℤ)
+      (Submodule.span ℤ (Set.range bs)) = Submodule.span ℤ (Set.range bs))
+    (hΓiso : ∀ e ∈ Γ, ∀ x y, BQ (e x) (e y) = BQ x y)
+    (hH₀ : ∀ ℓ₀ ∈ H₀, ∃ v : V, v ≠ 0 ∧
+      Submodule.span ℤ (Set.range bs) ⊓ ℓ₀.restrictScalars ℤ = Submodule.span ℤ ({v} : Set V))
+    (hint : ∀ x ∈ Submodule.span ℤ (Set.range bs), ∀ y ∈ Submodule.span ℤ (Set.range bs),
+      ∃ n : ℤ, BQ x y = (n : ℚ)) :
+    CutsFinitelyOnRational Cplus (fun ℓ : ↥(orbitFamily H₀ Γ) =>
+      normalForm Q (Classical.choose (exists_generator_of_orbitFamily
+        (Submodule.span ℤ (Set.range bs)) H₀ Γ hΓΛ hH₀) ℓ)) :=
+  cutsFinitelyOnRational_of_finiteOrbits (V := V) hpos hnd hBQsym hBQnd hBQ hsal ht hsheet Γ H₀
+    hΓΛ hΓiso hH₀ hint _
+    fun ℓ => Classical.choose_spec (exists_generator_of_orbitFamily
+      (Submodule.span ℤ (Set.range bs)) H₀ Γ hΓΛ hH₀) ℓ
+
+
+end FiniteOrbits
 
 end LeanCategories.Lattices.Valued
 
