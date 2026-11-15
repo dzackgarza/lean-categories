@@ -94,39 +94,55 @@ decomposition
 * With that, a cell of `Σ(H)` — a rational cone cut by finitely many rational sign conditions —
   is a rational cone (`isRationalCone_arrangementCone_inf`); a cell is a face of a cell whose
   sign pattern refines it (`isFaceOf_arrangementCone_commonSignPattern`); and `Σ(H)` is a locally
-  rational decomposition of `C₊` (`arrangementDecomposition_isLocallyRational`). That is item (b)
-  of Example 4.3, pp. 17-18.
-* **Carried as a hypothesis, and not the source's statement: `LocallyFiniteOnRational`.** The
-  source's ground for local finiteness is that `H` is a finite union of `Γ`-orbits and that the
-  action of `Γ` on `C` is proper (Setting 4.4, p. 19), which rests on the discreteness of the
-  arithmetic subgroup; that is a statement about *compact pieces of `C`* and about *hyperplanes*.
-  The declaration `LocallyFiniteOnRational` below says something else, and its body is the thing
-  to read: `{i : ι | ∃ x ∈ P, φ i x ≠ 0}.Finite` — for every rational cone `P`, all but finitely
-  many of the forms **vanish on all of `P`**. For an infinite `H` and a rational cone `P` whose
-  relative interior meets the open cone `C` that is false, by the source's own local finiteness:
-  finitely many members of `H` cannot cover `P ∩ C` (their traces are hyperplane sections, and a
-  finite union of hyperplanes meets `P ∩ C` in a set with empty interior), so infinitely many
-  `h = ker (φ i)` meet `P`, and such a `φ i` is nonzero at a point of `P` unless `P ⊆ ker (φ i)`,
-  which holds for finitely many members of `H` only (a form vanishing on `P` has `P` in its
-  kernel, and the normals of such members are bounded because `P` has a timelike point, so they
-  lie in a lattice intersected with a bounded set). So `LocallyFiniteOnRational` cannot be
-  discharged from discreteness and properness: what those give is local finiteness *on `C`*, which
-  admits infinitely many forms nonzero on a whole rational cone. The consequence for this section
-  is that the hypothesis of `arrangementDecomposition_isLocallyRational` is not satisfied in
-  Example 4.3's setting by any infinite `H`, so that theorem is vacuous there, and the finite
-  reading of the restriction clause of Definition 4.2 (p. 17) cannot hold for `Σ(H)` at all: the
-  traces of an infinite arrangement on a rational cone of positive dimension are infinite. What
-  local finiteness on `C` does give is the local finiteness of the traces on `C` — the property
-  the semitoric construction of §4-5 uses. The predicate `HasLocallyFiniteTraces` below is the
-  nearest declaration to it, and it is stronger than what local finiteness on `C` gives: it asks
-  for `LocallyFinite` in all of `L(ℝ)`, and on the boundary of `C₊` every neighbourhood of a point
-  meets infinitely many members of `Σ(bb)` (the isotropic rays) and of `Σ(H)`, so it fails there
-  even in the source's setting. It is stated, not used, and its boundary clause is a defect of
-  the same kind as the one above. Reading the
-  restriction clause as local finiteness rather than finiteness changes
-  `IsLocallyRationalDecomposition` and every statement resting on it, so it is recorded here and
-  left to the owner of the unit rather than made: this file proves nothing from
-  `LocallyFiniteOnRational` except conditionally.
+  rational decomposition of `C₊` (`arrangementDecomposition_isLocallyRational`), from the
+  hypothesis `CutsFinitelyOnRational` below. That is item (b) of Example 4.3, pp. 17-18.
+* **The hypothesis, restated: `CutsFinitelyOnRational`.** A `ℚ`-hyperplane *meets* a cone, in the
+  sense of Example 4.3 (b) (p. 18; text version `.tmp-sources/looijenga-math0201218v2.md:487`),
+  when it cuts it: the form defining it takes both signs on the cone (`CutsOn`). The hypothesis is
+  that only finitely many of the forms cut any rational cone. The reading this replaces said
+  instead that all but finitely many of the forms **vanish** on every rational cone, which no
+  infinite `H` has in the setting of Example 4.3 — an open piece of `C` lies in a rational cone,
+  and a form that meets `C` vanishes on no open set — so that version of the theorem was vacuous
+  there. The two readings differ exactly on the forms that are one-signed on the cone, and for
+  those the sign condition of a cell is a face condition of the cone
+  (`isFaceOf_inf_reducePattern`): that is what makes the corrected statement provable, and it is
+  why the finiteness of the traces now runs through the faces of the cells of the *finitely many*
+  forms that cut (`range_reducePattern_finite`, `finite_faces_of_isRationalCone`) instead of
+  through a finite set of nonvanishing forms.
+* **What is not settled here: the finiteness of the traces for an infinite `H` of Example 4.3.**
+  Definition 4.2's restriction clause asks for a *finite* family — a rational cone system,
+  Definition 4.1, p. 16 — on every rational subcone, and
+  `arrangementDecomposition_isLocallyRational` proves it only from `CutsFinitelyOnRational`.
+  Whether that hypothesis holds for the `H` of Example 4.3 (b), a finite union of `Γ`-orbits of
+  `ℚ`-hyperplanes meeting `C` with `Γ` arithmetic, is open, and the source's own ground for it
+  ("this collection is locally finite on `C`", p. 18) does not settle it: local finiteness on `C`
+  is a statement about compact pieces of the open cone, while cutting is a statement about the
+  sign pattern of a form on a whole rational cone, and a locally finite family can have infinitely
+  many members cutting one rational cone. The family `(x, y) ↦ x - (n+1)y`, `n ∈ ℕ`, on the
+  quadrant of the plane with the form `x·y` of signature `(1,1)` is such a family: every one of
+  its hyperplanes meets the open cone, all of them cut the quadrant, and the cells of the pattern
+  "`pos` up to `n`, `neg` above `n`" are the distinct wedges
+  `{(x, y) | 0 ≤ y, (n+1)y ≤ x ≤ (n+2)y}` (the point `(2n+3, 2)` lies in the `n`-th and in no
+  earlier one), so the restriction of `Σ(H)` to that rational cone is infinite. Both of these are
+  checks by hand: this file states and proves nothing about that family, and the sentence is
+  recorded here as the reason the hypothesis is left to the source's arithmetic setting rather
+  than derived. That family is not shown to be a finite union of `Γ`-orbits for an arithmetic
+  `Γ`, so it refutes the restriction clause for an arbitrary infinite `H`, not for the arithmetic
+  one; the
+  arithmetic case needs the parabolic analysis of the source's proof of Lemma-Definition 4.5 (the
+  horosphere at an isotropic ray, the boundedness of the cross-section of a rational cone there,
+  and the local finiteness of the hyperplanes through that ray), together with a formalization of
+  proper discontinuity of `Γ`. The repository has neither: `HasLocallyFiniteTraces` below is
+  stated and not used, and the LC-09 record in this file names the Mathlib lemmas such a
+  formalization would start from. Setting 4.4 (p. 18; text version line 495) supplies the
+  properness of the `Γ`-action on `C` and says nothing about sign patterns on rational cones; the
+  classical statement behind it — that an arithmetic subgroup of `O(L)(ℚ)` acts properly
+  discontinuously on the hyperbolic space `C`, hence with locally finite orbits of hyperplanes —
+  is A. Borel and Harish-Chandra, *Arithmetic subgroups of algebraic groups*, Ann. of Math. 75
+  (1962), 485-535, and Looijenga states the instance he uses at Setting 4.4 (p. 18) and, for the
+  Baily-Borel domain, at §1 (text version line 183: "Γ′ acts properly discretely on `D`"). No
+  derivation from that statement yields the finiteness of the traces on a rational cone, which is
+  why the hypothesis is not derived here.
 
 ## Lemma-Definition 4.5: the independence of `L_σ` from `τ`
 
@@ -231,7 +247,8 @@ use, should it be carried out, is: `Metric.finite_isBounded_inter_isClosed` toge
 meets a bounded set in a finite set) for the discreteness half, and for the properness half the
 boundedness of `{v | v · v = c, v ⊥ p}` for a fixed timelike `p`, which is the definiteness of the
 form on `p^⊥` and is not in the corpus. Note that what these give is local finiteness on `C`, not
-`LocallyFiniteOnRational`; see the section on Example 4.3 (b) above for why the two differ.
+the hypothesis of the theorem below (`CutsFinitelyOnRational`); see the section on Example 4.3 (b)
+above for why local finiteness on `C` does not give it.
 
 ## References
 
@@ -2539,13 +2556,12 @@ elimination one form at a time, `isRationalCone_inf_halfspace`), that the cells 
 another along the common sign pattern (`isFaceOf_arrangementCone_commonSignPattern`), and hence
 that `Σ(H)` is a locally rational decomposition (`arrangementDecomposition_isLocallyRational`).
 
-`Γ`-finiteness enters only through the hypothesis `LocallyFiniteOnRational`, which says that on
-every rational cone all but finitely many of the forms vanish. That is not the source's local
-finiteness of `H` on `C` (whose ground is the properness of the action of `Γ`, Setting 4.4,
-p. 19) and it is not satisfied by an infinite `H`; the module docstring's section on Example
-4.3 (b) shows why, and records the consequence: the finite reading of Definition 4.2's
-restriction clause cannot hold for `Σ(H)`, so `arrangementDecomposition_isLocallyRational` is
-conditional on a hypothesis that Example 4.3's setting does not satisfy. -/
+`Γ`-finiteness enters only through the hypothesis `CutsFinitelyOnRational`: of the hyperplanes
+of `H`, only finitely many cut any rational cone. That is not the source's local finiteness of
+`H` on `C` (whose ground is the properness of the action of `Γ`, Setting 4.4, p. 18), and the
+module docstring's section on Example 4.3 (b) records why the passage from the one to the other
+is not available here: the finiteness of the traces on a rational cone is proved below from
+`CutsFinitelyOnRational`, and whether Example 4.3's arithmetic `H` satisfies it is open. -/
 
 section ArrangementRational
 
@@ -2695,16 +2711,77 @@ theorem isFaceOf_inf_right {F C P : PointedCone ℝ (realified V)} (hF : F.IsFac
     intro x y a hx hy ha hxy
     exact ⟨hF.mem_of_smul_add_mem hx.1 hy.1 ha hxy.1, hx.2⟩
 
-/-- **All but finitely many of the forms vanish on every rational cone.** This is *not*
-Looijenga's local finiteness of `H` on `C` (Example 4.3 (b), p. 18), which is a statement about
-compact pieces of `C`; it is the property the finiteness argument of this section consumes, and
-the section and module docstrings record that an infinite `H` does not have it. It is kept under
-this name because the theorems below are stated with it, and it is not discharged anywhere. -/
-def LocallyFiniteOnRational (φ : ι → (realified V) →L[ℝ] ℝ) : Prop :=
-  ∀ P : PointedCone ℝ (realified V), IsRationalCone P → {i : ι | ∃ x ∈ P, φ i x ≠ 0}.Finite
+/-- A real linear form *cuts* a cone when it takes both signs on it: the hyperplane `ker ψ` passes
+through the cone and leaves points of it on both sides. This is what Looijenga's Example 4.3 (b),
+p. 18, means by a `ℚ`-hyperplane that *meets* `C` — `.tmp-sources/looijenga-math0201218v2.md:487`
+("a collection of Q-hyperplanes of L which meet C"). -/
+def CutsOn (ψ : (realified V) →ₗ[ℝ] ℝ) (P : PointedCone ℝ (realified V)) : Prop :=
+  (∃ x ∈ P, 0 < ψ x) ∧ ∃ y ∈ P, ψ y < 0
 
-theorem arrangementCone_inf_eq_signConeInf {P : PointedCone ℝ (realified V)} {s : ι → SignType}
-    {t : Finset ι} (hzero : ∀ i ∉ t, ∀ x ∈ P, φ i x = 0) :
+/-- **The hypothesis of Example 4.3 (b), as the finiteness argument of this section consumes it**:
+of the hyperplanes `H`, only finitely many cut any given rational cone of `L(ℝ)`.
+
+This replaces the earlier reading, which asked that all but finitely many of the forms *vanish* on
+every rational cone — a property no infinite `H` has in the setting of Example 4.3, since an open
+piece of `C` is contained in a rational cone and no form that meets `C` vanishes on an open set. A
+form that meets `C` is not one-signed on the cones it does not cut: it is nonnegative or nonpositive
+on them, and then its sign condition is a face condition (`isFaceOf_inf_reducePattern`). That is
+what makes the traces finite below. -/
+def CutsFinitelyOnRational (φ : ι → (realified V) →L[ℝ] ℝ) : Prop :=
+  ∀ P : PointedCone ℝ (realified V), IsRationalCone P → {i : ι | CutsOn (φ i).toLinearMap P}.Finite
+
+/-- A form that does not cut a cone is one-signed on it. -/
+theorem le_or_le_of_not_cutsOn {ψ : (realified V) →ₗ[ℝ] ℝ} {P : PointedCone ℝ (realified V)}
+    (h : ¬ CutsOn ψ P) : (∀ x ∈ P, ψ x ≤ 0) ∨ ∀ x ∈ P, 0 ≤ ψ x := by
+  rw [CutsOn, not_and_or, not_exists, not_exists] at h
+  rcases h with h | h
+  · refine Or.inl fun x hx => ?_
+    by_contra hlt
+    exact h x ⟨hx, not_le.1 hlt⟩
+  · refine Or.inr fun x hx => ?_
+    by_contra hlt
+    exact h x ⟨hx, not_le.1 hlt⟩
+
+/-- The sign of a form on `P` that imposes nothing on it: `pos` for a form that is nonnegative on
+`P`, `neg` for one that is nonpositive on it. -/
+noncomputable def weakPattern (φ : ι → (realified V) →L[ℝ] ℝ) (P : PointedCone ℝ (realified V)) :
+    ι → SignType :=
+  haveI := Classical.propDecidable
+  fun i => if ∀ x ∈ P, (0 : ℝ) ≤ φ i x then SignType.pos else SignType.neg
+
+theorem weakPattern_spec {P : PointedCone ℝ (realified V)} {i : ι}
+    (h : ¬ CutsOn (φ i).toLinearMap P) :
+    (weakPattern φ P i = SignType.pos ∧ ∀ x ∈ P, (0 : ℝ) ≤ φ i x) ∨
+      (weakPattern φ P i = SignType.neg ∧ ∀ x ∈ P, φ i x ≤ 0) := by
+  classical
+  by_cases hpos : ∀ x ∈ P, (0 : ℝ) ≤ φ i x
+  · exact Or.inl ⟨by rw [weakPattern, ite_eq_left hpos], hpos⟩
+  · rcases le_or_le_of_not_cutsOn h with hneg | hpos'
+    · exact Or.inr ⟨by rw [weakPattern, ite_eq_right hpos], hneg⟩
+    · exact absurd hpos' hpos
+
+/-- The weak sign of a form that does not cut `P` holds at every point of `P`. -/
+theorem mem_signCone_weakPattern {P : PointedCone ℝ (realified V)} {i : ι}
+    (h : ¬ CutsOn (φ i).toLinearMap P) {x : realified V} (hx : x ∈ P) :
+    x ∈ signCone (φ i).toLinearMap (weakPattern φ P i) := by
+  rcases weakPattern_spec (φ := φ) h with ⟨hw, hpos⟩ | ⟨hw, hneg⟩
+  · rw [hw]; exact mem_signCone.2 (hpos x hx)
+  · rw [hw]; exact mem_signCone.2 (hneg x hx)
+
+/-- The *reduced* pattern of `s` on `P` relative to a finite set `t` of forms: `s` on `t`, the weak
+sign elsewhere. A cell of the arrangement is a face of the cell of its reduced pattern
+(`isFaceOf_inf_reducePattern`), and the reduced patterns are finitely many
+(`range_reducePattern_finite`). -/
+noncomputable def reducePattern (φ : ι → (realified V) →L[ℝ] ℝ)
+    (P : PointedCone ℝ (realified V)) (t : Finset ι) (s : ι → SignType) : ι → SignType :=
+  haveI := Classical.propDecidable
+  fun i => if i ∈ t then s i else weakPattern φ P i
+
+/-- **A sign condition that holds on all of `P` can be dropped from the cell**: on `P`, the cell of
+`s` is the cell of the forms of `t` alone. -/
+theorem arrangementCone_inf_eq_signConeInf_of_mem {P : PointedCone ℝ (realified V)}
+    {s : ι → SignType} {t : Finset ι}
+    (h : ∀ i ∉ t, ∀ x ∈ P, x ∈ signCone (φ i).toLinearMap (s i)) :
     arrangementCone φ s ⊓ P = signConeInf (φ := φ) t s ⊓ P := by
   refine le_antisymm ?_ ?_
   · intro x hx
@@ -2719,155 +2796,219 @@ theorem arrangementCone_inf_eq_signConeInf {P : PointedCone ℝ (realified V)} {
     intro i
     by_cases hi : i ∈ t
     · exact mem_finsetInf.1 hx.1 i hi
-    · have h0 : ((φ i).toLinearMap) x = 0 := hzero i hi x hx.2
-      cases hs : s i
-      all_goals simp [mem_signCone, h0]
+    · exact h i hi x hx.2
 
-theorem arrangementCone_inf_eq_of_eq_on {P : PointedCone ℝ (realified V)} {s s' : ι → SignType}
-    {t : Finset ι} (hzero : ∀ i ∉ t, ∀ x ∈ P, φ i x = 0) (hst : ∀ i ∈ t, s' i = s i) :
-    arrangementCone φ s ⊓ P = arrangementCone φ s' ⊓ P := by
-  refine le_antisymm ?_ ?_
-  · intro x hx
-    rw [Submodule.mem_inf] at hx ⊢
-    refine ⟨?_, hx.2⟩
-    rw [mem_arrangementCone_iff_signCone] at hx ⊢
+/-- The special case in which the forms outside `t` vanish on `P`. -/
+theorem arrangementCone_inf_eq_signConeInf {P : PointedCone ℝ (realified V)}
+    {s : ι → SignType} {t : Finset ι} (hzero : ∀ i ∉ t, ∀ x ∈ P, φ i x = 0) :
+    arrangementCone φ s ⊓ P = signConeInf (φ := φ) t s ⊓ P :=
+  arrangementCone_inf_eq_signConeInf_of_mem fun i hi x hx => by
+    have h0 : φ i x = 0 := hzero i hi x hx
+    cases s i <;> simp [mem_signCone, h0]
+
+/-- In a cone on which a form is nonnegative, its sign cone is a face: a positive combination of
+points of the cone that lands in `signCone ψ s` has both terms in it. -/
+theorem mem_signCone_of_smul_add_mem {ψ : (realified V) →ₗ[ℝ] ℝ} {s : SignType}
+    {x y : realified V} {a : ℝ} (ha : 0 < a) (hx : 0 ≤ ψ x) (hy : 0 ≤ ψ y)
+    (h : a • x + y ∈ signCone ψ s) : x ∈ signCone ψ s := by
+  have hsum : ψ (a • x + y) = a * ψ x + ψ y := by
+    rw [map_add, map_smul, smul_eq_mul]
+  cases s with
+  | zero =>
+    simp only [mem_signCone] at h ⊢
+    rw [hsum] at h
+    nlinarith
+  | neg =>
+    simp only [mem_signCone] at h ⊢
+    rw [hsum] at h
+    nlinarith
+  | pos => simp only [mem_signCone] at h ⊢; exact hx
+
+/-- The same for a form that is nonpositive on the cone. -/
+theorem mem_signCone_of_smul_add_mem_of_nonpos {ψ : (realified V) →ₗ[ℝ] ℝ} {s : SignType}
+    {x y : realified V} {a : ℝ} (ha : 0 < a) (hx : ψ x ≤ 0) (hy : ψ y ≤ 0)
+    (h : a • x + y ∈ signCone ψ s) : x ∈ signCone ψ s := by
+  have hsum : ψ (a • x + y) = a * ψ x + ψ y := by
+    rw [map_add, map_smul, smul_eq_mul]
+  cases s with
+  | zero =>
+    simp only [mem_signCone] at h ⊢
+    rw [hsum] at h
+    nlinarith
+  | neg => simp only [mem_signCone] at h ⊢; exact hx
+  | pos =>
+    simp only [mem_signCone] at h ⊢
+    rw [hsum] at h
+    nlinarith
+
+/-- **A cell of `Σ(H)` is a face of the cell of its reduced pattern.** This is the step the earlier
+reading could not make: a form that does not cut `P` is one-signed on it, so its sign condition is
+the identity or the vanishing of that form, and the vanishing set of a nonnegative form is a face
+of `P` (`mem_signCone_of_smul_add_mem`). -/
+theorem isFaceOf_inf_reducePattern {P : PointedCone ℝ (realified V)} {t : Finset ι}
+    {s : ι → SignType} (h : ∀ i ∉ t, ¬ CutsOn (φ i).toLinearMap P) :
+    (arrangementCone φ s ⊓ P).IsFaceOf (arrangementCone φ (reducePattern φ P t s) ⊓ P) where
+  le := by
+    intro x hx
+    obtain ⟨hxc, hxP⟩ := Submodule.mem_inf.1 hx
+    refine Submodule.mem_inf.2 ⟨?_, hxP⟩
+    rw [mem_arrangementCone_iff_signCone] at hxc ⊢
     intro i
     by_cases hi : i ∈ t
-    · rw [hst i hi]
-      exact hx.1 i
-    · have h0 : ((φ i).toLinearMap) x = 0 := hzero i hi x hx.2
-      cases hs : s' i
-      all_goals simp [mem_signCone, h0]
-  · intro x hx
-    rw [Submodule.mem_inf] at hx ⊢
-    refine ⟨?_, hx.2⟩
-    rw [mem_arrangementCone_iff_signCone] at hx ⊢
+    · have hwit : reducePattern φ P t s i = s i := by simp [reducePattern, hi]
+      rw [hwit]
+      exact hxc i
+    · have hw : reducePattern φ P t s i = weakPattern φ P i := by simp [reducePattern, hi]
+      rw [hw]
+      exact mem_signCone_weakPattern (φ := φ) (h i hi) hxP
+  mem_of_smul_add_mem := by
+    intro x y a hx hy ha hxy
+    obtain ⟨hxc, hxP⟩ := Submodule.mem_inf.1 hx
+    obtain ⟨hyc, hyP⟩ := Submodule.mem_inf.1 hy
+    obtain ⟨hxyc, _⟩ := Submodule.mem_inf.1 hxy
+    refine Submodule.mem_inf.2 ⟨?_, hxP⟩
+    rw [mem_arrangementCone_iff_signCone] at hxc hyc hxyc ⊢
     intro i
-    have hxi := hx.1 i
+    have hxi := hxc i
+    have hyi := hyc i
+    have hxyi := hxyc i
     by_cases hi : i ∈ t
-    · rw [hst i hi] at hxi
+    · have hwit : reducePattern φ P t s i = s i := by simp [reducePattern, hi]
+      rw [hwit] at hxi
       exact hxi
-    · have h0 : ((φ i).toLinearMap) x = 0 := hzero i hi x hx.2
-      cases hs : s i
-      all_goals simp [mem_signCone, h0]
+    · have hw : reducePattern φ P t s i = weakPattern φ P i := by simp [reducePattern, hi]
+      rw [hw] at hxi hyi
+      rcases weakPattern_spec (φ := φ) (h i hi) with ⟨hpe, hpos⟩ | ⟨hpe, hneg⟩
+      · rw [hpe] at hxi hyi
+        exact mem_signCone_of_smul_add_mem (ψ := (φ i).toLinearMap) ha (hpos x hxP)
+          (hpos y hyP) hxyi
+      · rw [hpe] at hxi hyi
+        exact mem_signCone_of_smul_add_mem_of_nonpos (ψ := (φ i).toLinearMap) ha
+          (hneg x hxP) (hneg y hyP) hxyi
 
-/-- The set of factors of the forms that are nonzero somewhere on a rational cone. -/
-noncomputable def activeForms (P : PointedCone ℝ (realified V))
-    (hP : {i : ι | ∃ x ∈ P, φ i x ≠ 0}.Finite) : Finset ι :=
-  hP.toFinset
-
-theorem activeForms_zero {P : PointedCone ℝ (realified V)}
-    (hP : {i : ι | ∃ x ∈ P, φ i x ≠ 0}.Finite) {i : ι} (hi : i ∉ activeForms (φ := φ) P hP) :
-    ∀ x ∈ P, φ i x = 0 := by
-  intro x hx
-  by_contra hne
-  exact hi (by rw [activeForms, Set.Finite.mem_toFinset]; exact ⟨x, hx, hne⟩)
+/-- **Finitely many reduced patterns**: the reduced pattern of `s` depends only on `s` on `t`. -/
+theorem range_reducePattern_finite (P : PointedCone ℝ (realified V)) (t : Finset ι) :
+    (Set.range (reducePattern φ P t)).Finite := by
+  classical
+  refine Set.Finite.subset (Set.finite_range (fun f : (↥t) → SignType =>
+    fun i => if hi : i ∈ t then f ⟨i, hi⟩ else weakPattern φ P i)) ?_
+  rintro w ⟨s, rfl⟩
+  exact ⟨fun j => s j.1, by
+    funext i
+    by_cases hi : i ∈ t <;> simp [reducePattern, hi]⟩
 
 /-- **The trace of a cell of `Σ(H)` on a rational subcone is a rational cone** (Looijenga,
-Example 4.3 (b), p. 18): on a rational subcone only finitely many hyperplanes of `H` meet it, and
-cutting a rational cone by finitely many rational sign conditions stays rational. -/
+Example 4.3 (b), p. 18): the trace is a face of the cell of the finitely many forms that cut the
+cone, and that cell is a rational cone cut out by finitely many rational sign conditions. -/
 theorem isRationalCone_arrangementCone_inf (hφ : ∀ i, IsRationalForm (φ i).toLinearMap)
-    (hfin : LocallyFiniteOnRational φ) (s : ι → SignType)
+    (hcut : CutsFinitelyOnRational φ) (s : ι → SignType)
     (P : PointedCone ℝ (realified V)) (hP : IsRationalCone P) :
     IsRationalCone (arrangementCone φ s ⊓ P) := by
-  have hPf := hfin P hP
-  rw [arrangementCone_inf_eq_signConeInf (φ := φ) (t := activeForms (φ := φ) P hPf)
-    (fun i hi => activeForms_zero (φ := φ) hPf hi)]
-  rw [inf_comm]
-  exact isRationalCone_inf_signConeInf (φ := φ) hφ s _ P hP
+  classical
+  have hPf := hcut P hP
+  have hnt : ∀ i ∉ hPf.toFinset, ¬ CutsOn (φ i).toLinearMap P := by
+    intro i hi hc
+    exact hi (by rw [Set.Finite.mem_toFinset]; exact hc)
+  have hface := isFaceOf_inf_reducePattern (φ := φ) (P := P) (t := hPf.toFinset) (s := s) hnt
+  have hcell : IsRationalCone (arrangementCone φ (reducePattern φ P hPf.toFinset s) ⊓ P) := by
+    have hweq : arrangementCone φ (reducePattern φ P hPf.toFinset s) ⊓ P
+        = signConeInf (φ := φ) hPf.toFinset (reducePattern φ P hPf.toFinset s) ⊓ P :=
+      arrangementCone_inf_eq_signConeInf_of_mem fun i hi x hx => by
+        rw [show reducePattern φ P hPf.toFinset s i = weakPattern φ P i from by
+          simp [reducePattern, hi]]
+        exact mem_signCone_weakPattern (hnt i hi) hx
+    rw [hweq, inf_comm]
+    exact isRationalCone_inf_signConeInf hφ _ _ P hP
+  exact hcell.of_isFaceOf hface
 
 /-- **The cells of `Σ(H)` are locally rational in `C₊`** (Looijenga, Example 4.3 (b), p. 18). -/
 theorem isLocallyRationalCone_arrangementCone (hφ : ∀ i, IsRationalForm (φ i).toLinearMap)
-    (hfin : LocallyFiniteOnRational φ) (s : ι → SignType)
+    (hcut : CutsFinitelyOnRational φ) (s : ι → SignType)
     (Cplus : PointedCone ℝ (realified V)) :
     IsLocallyRationalCone Cplus (arrangementCone φ s ⊓ Cplus) := by
   intro P hP hPle
   rw [inf_assoc, inf_eq_right.2 hPle, inf_comm]
   rw [inf_comm]
-  exact isRationalCone_arrangementCone_inf hφ hfin s P hP
+  exact isRationalCone_arrangementCone_inf hφ hcut s P hP
 
 /-- **`Σ(H)` is a locally rational decomposition of `C₊`** (Looijenga, Example 4.3 (b),
-pp. 17-18): the cells of the arrangement of a `Γ`-finite family `H` of `ℚ`-hyperplanes meeting
-`C` decompose `C₊`, each cell is locally rational, and the faces of the traces on a rational
-subcone form a rational cone system. -/
+pp. 17-18), from the hypothesis that only finitely many of the hyperplanes cut any rational cone:
+the cells of the arrangement of such a family `H` decompose `C₊`, each cell is locally rational, and
+the faces of the traces on a rational subcone form a rational cone system.
+
+The finiteness of that system is where the hypothesis is used: on a rational cone `P`, every cell
+trace is a face of the cell of its reduced pattern (`isFaceOf_inf_reducePattern`), whose pattern is
+one of finitely many (`range_reducePattern_finite`), and a rational cone has finitely many faces
+(`finite_faces_of_isRationalCone`). With the *vanishing* reading of the earlier hypothesis the same
+conclusion followed from `activeForms`; the cost of the corrected reading is that the traces are no
+longer traces of the cells of finitely many forms but faces of them, which is why the finiteness
+runs through `faceClosure` twice. -/
 theorem arrangementDecomposition_isLocallyRational {Cplus : PointedCone ℝ (realified V)}
     (hsal : (Cplus : ConvexCone ℝ (realified V)).Salient)
-    (hφ : ∀ i, IsRationalForm (φ i).toLinearMap) (hfin : LocallyFiniteOnRational φ) :
+    (hφ : ∀ i, IsRationalForm (φ i).toLinearMap) (hcut : CutsFinitelyOnRational φ) :
     IsLocallyRationalDecomposition Cplus (arrangementDecomposition φ Cplus) where
   union_eq := union_arrangementDecomposition φ Cplus
   isLocallyRational σ hσ := by
     obtain ⟨s, rfl⟩ := hσ
-    exact isLocallyRationalCone_arrangementCone hφ hfin s Cplus
+    exact isLocallyRationalCone_arrangementCone hφ hcut s Cplus
   restriction P hP hPle := by
     classical
-    have hPf := hfin P hP
-    have hzero : ∀ i ∉ activeForms (φ := φ) P hPf, ∀ x ∈ P, φ i x = 0 :=
-      fun i hi => activeForms_zero (φ := φ) hPf hi
-    have htrace : restrictionTo (arrangementDecomposition φ Cplus) P
-        = Set.range (fun s : ι → SignType => arrangementCone φ s ⊓ P) := by
-      ext τ
+    have hPf := hcut P hP
+    set t := hPf.toFinset with ht
+    have hnt : ∀ i ∉ t, ¬ CutsOn (φ i).toLinearMap P := by
+      intro i hi hc
+      rw [ht] at hi
+      exact hi (by rw [Set.Finite.mem_toFinset]; exact hc)
+    have htrace' : ∀ τ, τ ∈ restrictionTo (arrangementDecomposition φ Cplus) P ↔
+        ∃ s : ι → SignType, τ = arrangementCone φ s ⊓ P := by
+      intro τ
       constructor
       · rintro ⟨σ, ⟨s, rfl⟩, rfl⟩
         exact ⟨s, by rw [inf_assoc, inf_eq_right.2 hPle]⟩
       · rintro ⟨s, rfl⟩
         exact ⟨arrangementCone φ s ⊓ Cplus, ⟨s, rfl⟩,
           by rw [inf_assoc, inf_eq_right.2 hPle]⟩
-    have htrace' : ∀ τ, τ ∈ restrictionTo (arrangementDecomposition φ Cplus) P ↔
-        ∃ s : ι → SignType, τ = arrangementCone φ s ⊓ P := by
-      intro τ
-      rw [htrace]
-      exact ⟨fun ⟨s, hs⟩ => ⟨s, hs.symm⟩, fun ⟨s, hs⟩ => ⟨s, hs.symm⟩⟩
+    have hcell : ∀ (w : ι → SignType), (∀ i ∉ t, w i = weakPattern φ P i) →
+        IsRationalCone (arrangementCone φ w ⊓ P) := by
+      intro w hw
+      have hweq : arrangementCone φ w ⊓ P = signConeInf (φ := φ) t w ⊓ P :=
+        arrangementCone_inf_eq_signConeInf_of_mem fun i hi x hx => by
+          rw [hw i hi]
+          exact mem_signCone_weakPattern (hnt i hi) hx
+      rw [hweq, inf_comm]
+      exact isRationalCone_inf_signConeInf hφ w t P hP
+    have hsub : restrictionTo (arrangementDecomposition φ Cplus) P ⊆
+        ⋃ w ∈ Set.range (reducePattern φ P t),
+          {τ : PointedCone ℝ (realified V) | τ.IsFaceOf (arrangementCone φ w ⊓ P)} := by
+      intro τ hτ
+      obtain ⟨s, rfl⟩ := (htrace' τ).1 hτ
+      exact Set.mem_iUnion.2 ⟨reducePattern φ P t s, Set.mem_iUnion.2 ⟨⟨s, rfl⟩,
+        isFaceOf_inf_reducePattern (φ := φ) (t := t) (s := s) hnt⟩⟩
     refine ⟨?_, ?_, ?_, ?_, ?_⟩
-    · -- finiteness: the traces depend only on the finitely many active forms
-      have htraces : (restrictionTo (arrangementDecomposition φ Cplus) P).Finite := by
-        have hT : ({s : ι → SignType | ∀ i, i ∉ activeForms (φ := φ) P hPf → s i = 0}).Finite := by
-          have himg : {s : ι → SignType | ∀ i, i ∉ activeForms (φ := φ) P hPf → s i = 0}
-              = Set.range (fun f : (activeForms (φ := φ) P hPf) → SignType =>
-                  fun i => if h : i ∈ activeForms (φ := φ) P hPf then f ⟨i, h⟩ else 0) := by
-            ext s
-            constructor
-            · intro hs
-              refine ⟨fun j => s j, ?_⟩
-              funext i
-              dsimp only
-              by_cases h : i ∈ activeForms (φ := φ) P hPf
-              · rw [dite_eq_left h]
-              · rw [dite_eq_right h]
-                exact (hs i h).symm
-            · rintro ⟨f, rfl⟩ i hi
-              dsimp only
-              rw [dite_eq_right hi]
-          rw [himg]
-          exact Set.finite_range _
-        refine (hT.image (fun s => arrangementCone φ s ⊓ P)).subset ?_
-        rw [htrace]
-        rintro τ ⟨s, rfl⟩
-        refine ⟨fun i => if i ∈ activeForms (φ := φ) P hPf then s i else 0, ?_, ?_⟩
-        · intro i hi
-          exact ite_eq_right hi
-        · exact (arrangementCone_inf_eq_of_eq_on (φ := φ) hzero
-            (fun i hi => ite_eq_left hi)).symm
-      have hfc : faceClosure (restrictionTo (arrangementDecomposition φ Cplus) P)
-          = ⋃ σ ∈ restrictionTo (arrangementDecomposition φ Cplus) P,
-              {F : PointedCone ℝ (realified V) | F.IsFaceOf σ} := by
-        ext F
-        rw [mem_faceClosure]
-        simp only [Set.mem_iUnion, exists_prop, Set.mem_ofPred_eq]
-      rw [hfc]
-      refine Set.Finite.biUnion htraces (fun σ hσ => ?_)
-      obtain ⟨s, rfl⟩ := (htrace' _).1 hσ
-      exact finite_faces_of_isRationalCone
-        (isRationalCone_arrangementCone_inf hφ hfin s P hP)
+    · -- finiteness: the faces of the cells of the finitely many reduced patterns
+      have hunion : (⋃ w ∈ Set.range (reducePattern φ P t),
+          {τ : PointedCone ℝ (realified V) | τ.IsFaceOf (arrangementCone φ w ⊓ P)}).Finite := by
+        refine Set.Finite.biUnion (range_reducePattern_finite (φ := φ) P t) ?_
+        intro w hw
+        obtain ⟨s, rfl⟩ := hw
+        exact finite_faces_of_isRationalCone
+          (hcell (reducePattern φ P t s) (fun i hi => by simp [reducePattern, hi]))
+      refine hunion.subset ?_
+      intro F hF
+      obtain ⟨τ, hτ, hFτ⟩ := mem_faceClosure.1 hF
+      obtain ⟨w, hw⟩ := Set.mem_iUnion.1 (hsub hτ)
+      obtain ⟨hwS, hτw⟩ := Set.mem_iUnion.1 hw
+      exact Set.mem_iUnion.2 ⟨w, Set.mem_iUnion.2 ⟨hwS, hFτ.trans hτw⟩⟩
     · -- the faces of the traces are salient
       rintro F ⟨τ, hτ, hFτ⟩
-      obtain ⟨s, rfl⟩ := (htrace' _).1 hτ
-      refine hsal.anti ?_
-      intro x hx
-      exact hPle (hFτ.le hx).2
+      obtain ⟨s, rfl⟩ := (htrace' τ).1 hτ
+      exact hsal.anti fun x hx => hPle (hFτ.le hx).2
     · -- the faces of the traces are rational
       rintro F ⟨τ, hτ, hFτ⟩
-      obtain ⟨s, rfl⟩ := (htrace' _).1 hτ
-      exact (isRationalCone_arrangementCone_inf hφ hfin s P hP).of_isFaceOf hFτ
+      obtain ⟨s, rfl⟩ := (htrace' τ).1 hτ
+      have hcellrat := hcell (reducePattern φ P t s) (fun i hi => by simp [reducePattern, hi])
+      have hface := isFaceOf_inf_reducePattern (φ := φ) (t := t) (s := s) hnt
+      exact (hcellrat.of_isFaceOf hface).of_isFaceOf hFτ
     · -- the faces of a trace are faces of the trace
       rintro F G ⟨τ, hτ, hFτ⟩ hGF
       exact mem_faceClosure.2 ⟨τ, hτ, hGF.trans hFτ⟩
@@ -2920,7 +3061,6 @@ theorem arrangementDecomposition_isLocallyRational {Cplus : PointedCone ℝ (rea
         · exact le_inf (inf_le_left.trans inf_le_left) (inf_le_right.trans inf_le_left)
       rw [hFG]
       exact (inf_isFaceOf_of_isFaceOf hFH hGH).trans hFH'
-
 end ArrangementRational
 
 end LeanCategories.Lattices.Valued
