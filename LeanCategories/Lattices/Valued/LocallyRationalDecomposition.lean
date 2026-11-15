@@ -8044,4 +8044,89 @@ theorem supportSpace_closedSheet_hull_eq_ker (hpos : sigPos Q = 1) (hnd : Q.Nond
 
 end FacialDecompositionSupportSpace
 
+/-! ## Rational traces along an isotropic boundary ray
+
+LC-09 (2026-11-19): `content:closedSheet isClosed quadratic`,
+`content:isotropic ray face quadratic cone`, `content:isotropic face closed cone quadratic form`,
+`content:common face recession lineal`, and `content:lineal topologicalClosure common face`
+found no competing declaration. The proof below uses this file's
+`QuadraticMap.continuous_of_moduleTopology` and
+`exists_smul_of_associated_eq_zero_of_mem_closedSheet_self` directly. -/
+
+section IsotropicRationalTraces
+
+variable [Module.Finite ℚ V] {Q : QuadraticForm ℝ (realified V)} {t : realified V}
+
+set_option maxHeartbeats 600000 in
+/-- The closed sheet is closed in the finite-dimensional module topology. -/
+theorem isClosed_closedSheet_of_moduleTopology (Q : QuadraticForm ℝ (realified V))
+    (hpos : sigPos Q = 1) {t : realified V} (ht : 0 < Q t) :
+    IsClosed (closedSheet Q hpos ht : Set (realified V)) := by
+  have hQ : IsClosed (Q ⁻¹' Set.Ici (0 : ℝ)) :=
+    isClosed_Ici.preimage (QuadraticMap.continuous_of_moduleTopology Q)
+  have hpair : Continuous (fun x : realified V => (associated Q) x t) :=
+    (LinearMap.continuous_bilin_of_moduleTopology (associated Q)).comp
+      (continuous_id.prodMk continuous_const)
+  have hB : IsClosed ((fun x : realified V => (associated Q) x t) ⁻¹' Set.Ici (0 : ℝ)) :=
+    isClosed_Ici.preimage hpair
+  exact hQ.inter hB
+
+/-- The rational closure of the closed sheet lies in the closed sheet. -/
+theorem rationalClosure_le_closedSheet (hpos : sigPos Q = 1) {ht : 0 < Q t} :
+    rationalClosure (closedSheet Q hpos ht) ≤ closedSheet Q hpos ht := by
+  rw [rationalClosure_eq_hull]
+  refine Submodule.span_le.2 ?_
+  rintro x ⟨⟨v, -, rfl⟩, hx⟩
+  have hclosed := isClosed_closedSheet_of_moduleTopology Q hpos ht
+  rw [show (closedSheet Q hpos ht).closure = closedSheet Q hpos ht from
+    hclosed.submodule_topologicalClosure_eq] at hx
+  exact hx
+
+/-- An isotropic half line contained in the rational closure of the closed sheet is a face of
+it. The pairing with its generator exposes the ray: two sheet vectors with zero pairing are
+proportional, and their common time orientation makes the coefficient nonnegative. -/
+theorem IsIsotropicHalfLine.isFaceOf_rationalClosure (hpos : sigPos Q = 1)
+    (hnd : Q.Nondegenerate) {ht : 0 < Q t} {σ : PointedCone ℝ (realified V)}
+    (hσ : IsIsotropicHalfLine Q σ)
+    (hσle : σ ≤ rationalClosure (closedSheet Q hpos ht)) :
+    σ.IsFaceOf (rationalClosure (closedSheet Q hpos ht)) := by
+  obtain ⟨e, he0, heQ, rfl⟩ := hσ
+  let Cplus := rationalClosure (closedSheet Q hpos ht)
+  have heC : e ∈ Cplus := hσle (PointedCone.subset_hull (Set.mem_singleton e))
+  have heSheet : e ∈ closedSheet Q hpos ht := rationalClosure_le_closedSheet hpos heC
+  have het : 0 < (associated Q) e t := by
+    rw [associated_comm]
+    exact associated_pos_of_mem_upper_of_mem_closedSheet Q hpos hnd ht
+      ⟨ht, by rw [associated_self_apply]; exact ht⟩ heSheet he0
+  have hnonneg : ∀ z ∈ Cplus, 0 ≤ (associated Q) e z := by
+    intro z hz
+    exact nonneg_associated_of_mem_closedSheet hpos ht heSheet.1 heSheet.2
+      (rationalClosure_le_closedSheet hpos hz).1 (rationalClosure_le_closedSheet hpos hz).2
+  have hker : Cplus ⊓ PointedCone.ofSubmodule (LinearMap.ker (associated Q e)) =
+      PointedCone.hull ℝ ({e} : Set (realified V)) := by
+    apply le_antisymm
+    · intro z hz
+      have hze : (associated Q) e z = 0 := by
+        exact hz.2
+      obtain ⟨c, hc⟩ := exists_smul_of_associated_eq_zero_of_mem_closedSheet_self hpos hnd ht
+        heSheet (rationalClosure_le_closedSheet hpos hz.1) hze he0
+      have hct : (associated Q) z t = c * (associated Q) e t := by
+        rw [hc, map_smul, LinearMap.smul_apply, smul_eq_mul]
+      have hc0 : 0 ≤ c := by
+        have hz0 := (rationalClosure_le_closedSheet hpos hz.1).2
+        rw [hct] at hz0
+        exact nonneg_of_mul_nonneg_left hz0 het
+      exact PointedCone.mem_hull_singleton.2 ⟨c, hc0, hc.symm⟩
+    · intro z hz
+      obtain ⟨c, hc0, hc⟩ := PointedCone.mem_hull_singleton.1 hz
+      refine ⟨?_, ?_⟩
+      · rw [← hc]
+        exact Cplus.smul_mem hc0 heC
+      · change (associated Q) e z = 0
+        rw [← hc, map_smul, smul_eq_mul, associated_self_apply, heQ, mul_zero]
+  rw [← hker]
+  exact PointedCone.isFaceOf_inf_ker hnonneg
+
+end IsotropicRationalTraces
+
 end LeanCategories.Lattices.Valued
