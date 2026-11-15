@@ -12,6 +12,7 @@ public import Mathlib.Analysis.Convex.Cone.Basic
 public import Mathlib.Analysis.Convex.Topology
 public import Mathlib.LinearAlgebra.TensorProduct.Defs
 public import Mathlib.Topology.Algebra.Module.ModuleTopology
+public import Mathlib.Topology.Connected.Clopen
 public import Mathlib.Topology.LocallyFinite
 public import Mathlib.LinearAlgebra.BilinearForm.Orthogonal
 public import Mathlib.LinearAlgebra.BilinearForm.Properties
@@ -87,12 +88,17 @@ an `ℝ`-vector space with no extra structure.
   "Lemma-Definition 4.5, the general case" below, whose docstring says which of its steps are
   carried and which are not.
 * **Lemma-Definition 4.5 for every locally rational `Σ`** (p. 19, the proof at line 521): the
-  support space of `σ` is the same for every member `τ ≥ σ` meeting `C`. Proved from the face
-  step (`supportSpace_eq_of_face`), which turns the source's "translation space of the adjacent
-  members" into an algebraic domination hypothesis on the forms, and with that hypothesis
-  discharged for finitely generated cones (`supportSpace_eq_of_common_face_of_fg`); the
-  incidence hypothesis it carries, and the reason the source's polyhedral route is not available
-  as stated, are in the docstring of that section.
+  support space of `σ` is the same for every member `τ ≥ σ` meeting `C`. Proved in three steps:
+  the face step (`supportSpace_eq_of_face`), which turns the source's "translation space of the
+  adjacent members" into an algebraic domination hypothesis on the forms and is unconditional for
+  finitely generated cones (`supportSpace_eq_of_common_face_of_fg`); **the connectivity of `Σ`
+  through common faces**, which is the step from adjacent members to all members and is what
+  `reflTransGen_inf_nonempty_of_convex` supplies — the members meeting `C` are joined by a chain
+  in which consecutive members meet in a point of `C`, from the local finiteness of `Σ` and the
+  convexity of `C`; and with those, `supportSpace_eq_of_locallyFinite` and
+  `sigmaSupportSpace_eq_supportSpace_of_locallyFinite`. What that leaves as a hypothesis is the
+  cutting form at each pair of members meeting `C` — the incidence datum `Dominates`, free on the
+  domination side for polyhedral members (`dominates_of_fg`).
 
 ## Example 4.3 (b): the cells of `Σ(H)` are rational cones, and `Σ(H)` is a locally rational
 decomposition
@@ -252,21 +258,31 @@ decomposition
   (`exists_add_smul_of_fg`, `supportSpace_eq_of_face_of_fg`,
   `supportSpace_eq_of_common_face_of_fg`). With it, `sigmaSupportSpace_eq_supportSpace` states
   the `Σ`-support space of Lemma-Definition 4.5 as the value at any one member.
-* Not carried, and why: the domination hypothesis is not discharged for the members of a locally
-  rational decomposition of `C₊` in the hyperbolic setting of Example 4.3, where `C₊` is the round
-  cone and its pieces are not finitely generated, so for those `Σ` the independence rests on the
-  incidence hypothesis of the face step. The source reaches it instead through the polyhedra
-  `{z | (1, z) ∈ π_I τ}` of its affine space `A_I(ℝ)`, a minimal member among those meeting `C`,
-  and the translation space of that member, from which it reads `L_σ`. That induction over the
-  affine decomposition is not reconstructed here; the face step is its content in the form and in
-  the cone, without the affine model. A check by hand of the shape, in a basis `e, f, w₁, w₂` of
-  signature `(1, 3)` with `e · f = 1` and `w_i · w_i = -1`: for the single `ℚ`-hyperplane
-  `{z₁ = 0}` through `σ = ℝ≥0 e`, the members above `σ` meeting `C` are the two cells and
-  `C₊ ∩ H`, their polyhedra are the two half-spaces `±z₁ ≥ 0` and the hyperplane between them, all
-  three have translation space `{z₁ = 0}`, and all three support spaces are
-  `span(e, w₂) = I^⊥ ∩ H`, which is the value the source's description gives. The minimal members
-  of the whole decomposition, the isotropic rays, do not meet `C`. Nothing here is proved beyond
-  those three computations of support spaces.
+* **The step from adjacent members to all members is carried**, in the section "The connectivity of
+  a locally finite decomposition through common faces": any two members of a locally finite
+  decomposition that meet a convex cone `C` are joined by a chain of members in which consecutive
+  members meet in a point of `C` (`reflTransGen_inf_nonempty_of_convex`), and along such a chain
+  the support space over `σ` does not change (`supportSpace_eq_of_reflTransGen`,
+  `supportSpace_eq_of_locallyFinite`). That is what the source's proof summarises as its
+  induction over the affine decomposition (`{z | (1, z) ∈ π_I τ}`, the polyhedra of `A_I(ℝ)`, a
+  minimal member and its translation space `U`), and what it means by "these assertions are
+  clear" for `σ` not an isotropic half line; the argument carried is the one in the form and in
+  the cone, with neither the projection `π_I` nor the affine model.
+* Carried, as a hypothesis and not as a theorem: that the common face `τ ⊓ τ'` of two members
+  meeting `C` is cut out of each by a form nonnegative on it and zero on `σ`, with domination
+  (`Dominates`). For a polyhedral member the domination half is free (`dominates_of_fg`); the
+  exposure half is the part of the source's affine argument that this section does not reconstruct,
+  and for the cells of `Σ(H)` of Example 4.3 (b) it is the form of the sign condition that
+  separates the two cells. Also a hypothesis: that the members cover `C`, not only `C₊`.
+* A check by hand of the shape, in a basis `e, f, w₁, w₂` of signature `(1, 3)` with `e · f = 1`
+  and `w_i · w_i = -1`: for the single `ℚ`-hyperplane `{z₁ = 0}` through `σ = ℝ≥0 e`, the members
+  above `σ` meeting `C` are the two cells and `C₊ ∩ H`, their polyhedra are the two half-spaces
+  `±z₁ ≥ 0` and the hyperplane between them, all three have translation space `{z₁ = 0}`, and all
+  three support spaces are `span(e, w₂) = I^⊥ ∩ H`, which is the value the source's description
+  gives. The minimal members of the whole decomposition, the isotropic rays, do not meet `C`. The
+  chain of the two cells runs through `C₊ ∩ H`, which is the connectivity the section above
+  proves in general; the three support spaces are not proved to agree in Lean from that chain
+  alone, since the forms cutting `C₊ ∩ H` out of the round cone are not supplied.
 * Also not carried: the identification of the support spaces of `Σ(bb)` as `V`, `{0}` and the
   hyperplanes orthogonal to the `ℚ`-isotropic lines (p. 19). What is proved here is the
   independence, not that description.
@@ -353,6 +369,42 @@ statement it uses is already in Mathlib (`PointedCone.dual (Module.Dual.eval ℝ
 own ported `halfspaceCone` (`ForMathlib/PointedConeMinkowskiWeyl.lean`). Nothing in Mathlib either,
 under the names searched on disk (`PointedCone.IsFaceOf` has no support-space or face-duality
 statement; `Mathlib/Analysis/Convex/Cone/Dual.lean` is `ProperCone.dual` and its double dual).
+
+### LC-09 record for the connectivity of a decomposition (2026-11-17)
+
+The formulations the unit names for the step from adjacent members to all members, run against
+the corpus API with every hit read:
+
+`content:PolyhedralComplex`: TauCeti `Geometry/Convex/PolyhedralComplex/{Basic,Map,
+CommonRefinement,Subcomplex,MinimalCell}.lean`, a `FinitePolyhedralComplex` on a real vector space
+with `IsExposed` faces and `MinimalCell` — a finite complex of *polyhedra* in an ambient space,
+where the connectivity here is about a locally finite family of cones covering a convex set and is
+used only through closedness. Not imported: its `MinimalCell` API is the unique-cell-through-a-point
+statement, not the chain along a segment, and its members are assumed polyhedral, which is the
+hypothesis this unit deliberately does not make. `content:Polyhedron face`: TauCeti
+`Analysis/Convex/Polyhedron/{Basic,Homogenization,Rational}.lean`, the cone of the inequality
+rows of a polyhedron — the `halfspaceCone` of
+`ForMathlib/PointedConeFiniteGeneration.lean`, already ported and used.
+`content:connected codimension one`: TauCeti `Order/Catenary.lean`
+(`IsCatenary.exists_covBy_series_of_lt`: in a catenary preorder any two comparable elements
+are joined by a saturated chain) — a chain through covers in an order, which is the shape of the
+conclusion and not its proof; the order here is not catenary and the chain is supplied by
+connectedness. `content:locally finite cover convex`: TauCeti `Analysis/Convex/Lipschitz.lean`
+("a common Lipschitz bound on the members of a finite closed cover of a convex set holds on the
+whole set"), which runs a *continuous induction along a segment* across a finite closed cover —
+the nearest thing in the corpus to the argument below, and not portable: its conclusion is a
+Lipschitz estimate and its induction is over a metric. `content:finite closed cover preconnected`
+and `content:preconnected iUnion closed`: no hit about a chain of members of a cover.
+`content:common face adjacent cell`: mccorvie `Schoenflies/MoiseBandCells.lean`, cells of a Moise
+band, unrelated. `content:translation space polyhedron`: TauCeti
+`Analysis/Convex/Polyhedron/Rational/Map.lean`, integral affine transport of rational-normal
+polyhedra, unrelated.
+
+Nothing to port. The argument carried is the clopen one:
+`isPreconnected_iff_subset_of_disjoint_closed` (`Mathlib/Topology/Connected/Clopen.lean:300`),
+`Set.Finite.isClosed_biUnion` (`Mathlib/Topology/Basic.lean:185`) and
+`LocallyFinite.finite_nonempty_inter_compact`
+(`Mathlib/Topology/Compactness/LocallyFinite.lean:30`), all in Mathlib and used as they are.
 
 ### LC-09 record for discreteness and properness (2026-11-16)
 
@@ -2729,19 +2781,34 @@ the form and the cone, for a general `Σ`:
 * `sigmaSupportSpace_eq_supportSpace`: hence the intersection `sigmaSupportSpace` carried in this
   file is the common value, which is the assertion of Lemma-Definition 4.5.
 
+The face step compares two members that are *adjacent*, meeting in a common face; Lemma-Definition
+4.5 compares any two members above `σ`. The step between the two is not a matter of forms but of
+incidence, and it is carried in the section "The connectivity of a locally finite decomposition
+through common faces" below: the members meeting a convex cone `C` are joined by a chain of members
+in which consecutive members meet in a point of `C` (`reflTransGen_inf_nonempty_of_convex`), the
+support space is constant along such a chain (`supportSpace_eq_of_reflTransGen`), and hence the
+independence holds for every pair of members meeting `C` (`supportSpace_eq_of_locallyFinite`,
+`sigmaSupportSpace_eq_supportSpace_of_locallyFinite`).
+
 ## What is not carried, and why
 
-* Domination is not discharged for the members of a locally rational decomposition of `C₊` in the
-  hyperbolic setting of Example 4.3, where `C₊` is the round cone and its pieces are not finitely
-  generated. The source's proof passes through the polyhedra `{z | (1, z) ∈ π_I τ}` of its affine
+* The forms that cut the common face of two adjacent members out of each are not produced. They are
+  the hypothesis `hexp` of `supportSpace_eq_of_locallyFinite` and `Dominates` is the datum; the
+  domination half is free for a polyhedral member (`dominates_of_fg`), the exposure half is not.
+  The source's proof passes instead through the polyhedra `{z | (1, z) ∈ π_I τ}` of its affine
   space `A_I(ℝ)`, a minimal member among those meeting `C`, and the translation space of that
-  member, from which it reads `L_σ`; reconstructing that induction is a separate unit, and the face
-  step proven here is its content in the form and the cone, without the affine model. The module
-  docstring records a check by hand of the shape, on the single `ℚ`-hyperplane through `σ` in
-  signature `(1, 3)`: there the polyhedra are two half-spaces and their boundary, the three members
-  above `σ` that meet `C` have one translation space and one support space, and it is the space the
-  source's description gives. Also not carried is the identification of the support spaces of
-  `Σ(bb)` as `V`, `{0}` and the hyperplanes orthogonal to the `ℚ`-isotropic lines (p. 19).
+  member, from which it reads `L_σ`; that affine model is not reconstructed here, and the
+  connectivity it stands for is. For the cells of `Σ(H)` of Example 4.3 (b) the cutting form of two
+  adjacent cells is the form of a sign condition separating them, which is where the hypothesis is
+  met in the example the source is about. The module docstring records a check by hand of the
+  shape, on the single `ℚ`-hyperplane through `σ` in signature `(1, 3)`: there the polyhedra are
+  two half-spaces and their boundary, the three members above `σ` that meet `C` have one
+  translation space and one support space, and it is the space the source's description gives.
+* Also not carried is the identification of the support spaces of `Σ(bb)` as `V`, `{0}` and the
+  hyperplanes orthogonal to the `ℚ`-isotropic lines (p. 19).
+* Also not carried: that the members of `Σ` cover `C` itself rather than only `C₊`, which the
+  theorems above take as the hypothesis `hcover`. It is the one statement about the rational
+  closure, `C ⊆ C₊`, that this file does not prove.
 -/
 
 section SupportSpaceIndependenceGeneral
@@ -2961,6 +3028,309 @@ theorem sigmaSupportSpace_eq_supportSpace {C : PointedCone ℝ (realified V)}
   sigmaSupportSpace_eq_of_forall_eq τ₀ h
 
 end SupportSpaceIndependenceGeneral
+
+
+/-! ## The connectivity of a locally finite decomposition through common faces
+
+Looijenga's proof of Lemma-Definition 4.5 (p. 19, text version
+`.tmp-sources/looijenga-math0201218v2.md:521`) does not compare two arbitrary members `τ, τ'`
+above `σ`. For `σ` spanning an isotropic line `I` it projects to the affine space `A_I(ℝ)`,
+decomposes that into the polyhedra `{z | (1, z) ∈ π_I τ}`, takes a minimal member of that
+decomposition and its translation space `U`, and reads `L_σ` off `U`; for every other `σ` it says
+the assertion is clear. Both routes consume the same step, and it is the one the face step
+`supportSpace_eq_of_face` above leaves open: the step from *adjacent* members — two members
+meeting in a common face — to all members. The members above `σ` that meet `C` have to be joined
+by a chain in which consecutive members meet in a common face cut out of each by a form.
+
+This section proves that step, in the form and in the cone, with no coordinates.
+
+* `reflTransGen_inter_nonempty_of_isPreconnected` is the topological fact underneath, and the
+  reason the decomposition has to be *locally finite*: a preconnected set covered by finitely many
+  closed sets is chained through the intersections of those sets. It is the standard clopen
+  argument. The union `U` of the sets reachable from a starting one is closed, a finite union of
+  closed sets; it is open in the covered set `s`, because `s ∖ U` is the union of the remaining
+  closed sets, again by the cover; so `U` is a nonempty clopen subset of `s` and is all of `s`,
+  since a preconnected set has no nonempty proper clopen subset
+  (`isPreconnected_iff_subset_of_disjoint_closed`). Convexity of the members is *not* used in this
+  step. Closedness is, and local finiteness supplies finiteness.
+* `reflTransGen_inf_nonempty_of_convex` applies it to the members of a decomposition covering a
+  convex cone `C` that meet `C`: any two of them are joined by a chain of members in which
+  consecutive members meet in a point of `C`. The segment `[x, y]` between a point of `C` in one
+  member and a point of `C` in the other is compact, so the local finiteness of `Σ` leaves
+  finitely many members meeting it (`LocallyFinite.finite_nonempty_inter_compact`); each of those
+  members cuts an interval out of the segment, and the intervals cover the segment because `C` is
+  convex. This is the route the source takes in the case that is "otherwise", through the local
+  finiteness of `Σ` near a point of `σ` meeting `C`.
+* `Dominates` is the incidence datum at one member and `supportSpace_eq_of_dominates` is the face
+  step read through it: `w` is nonnegative on `τ` and zero on `σ`, and every form nonnegative on
+  the common face `τ ⊓ τ'` and zero on `σ` becomes nonnegative on `τ` after adding a multiple of
+  `w`. That is the source's "the translation space of the adjacent members contains that of this
+  one", as a statement about forms. For a polyhedral member it is free
+  (`exists_dominates_of_fg`).
+* `supportSpace_eq_of_locallyFinite` joins the two: the support space of `σ` is the same for every
+  member above `σ` meeting `C`. With `sigmaSupportSpace_eq_supportSpace` that gives the support
+  space `L_σ` of Lemma-Definition 4.5 as the value at any one member
+  (`sigmaSupportSpace_eq_supportSpace_of_locallyFinite`).
+
+What this section still takes as a hypothesis is the existence of the cutting forms `w` and `w'`
+for a pair of members meeting `C` (the `hexp` of the last two theorems) — the source obtains them
+from the affine model, and for the cells of `Σ(H)` of Example 4.3 (b) they are the forms of the
+two sign conditions that separate the cells. Also a hypothesis is that the members cover `C`
+itself, not only `C₊`. -/
+
+section ConnectivityCore
+
+variable {X : Type*} [TopologicalSpace X]
+
+/-- **A preconnected set covered by finitely many closed sets is chained through their
+intersections.** For any two members meeting `s`, there is a finite chain of members between them
+in which consecutive members meet in a point of `s`.
+
+The set `U` of members reachable from `i₀` and the set `V` of the others are both finite unions of
+closed sets, so `s ⊆ U ∪ V` is a cover by two closed sets; they are disjoint on `s`, since a point
+of `s` in `J a ∩ J b` with `a` reachable makes `b` reachable; and `U` meets `s`, so a preconnected
+`s` lies in `U`. -/
+theorem reflTransGen_inter_nonempty_of_isPreconnected {ι : Type*} [Finite ι] {s : Set X}
+    (J : ι → Set X) (hs : IsPreconnected s) (hclosed : ∀ i, IsClosed (J i))
+    (hcover : ∀ x ∈ s, ∃ i, x ∈ J i) {i₀ : ι} (h₀ : (J i₀ ∩ s).Nonempty) {i : ι}
+    (hi : (J i ∩ s).Nonempty) :
+    Relation.ReflTransGen (fun a b => (J a ∩ J b ∩ s).Nonempty) i₀ i := by
+  classical
+  set r : ι → ι → Prop := fun a b => (J a ∩ J b ∩ s).Nonempty with hr
+  set cls : Set ι := {j | Relation.ReflTransGen r i₀ j} with hcls
+  have hclsfin : cls.Finite := Set.toFinite cls
+  have hcomplfin : clsᶜ.Finite := Set.toFinite clsᶜ
+  set U : Set X := ⋃ j ∈ cls, J j with hU
+  set V : Set X := ⋃ j ∈ clsᶜ, J j with hV
+  have hUc : IsClosed U := hclsfin.isClosed_biUnion fun j _ => hclosed j
+  have hVc : IsClosed V := hcomplfin.isClosed_biUnion fun j _ => hclosed j
+  have hsub : s ⊆ U ∪ V := by
+    intro x hx
+    obtain ⟨j, hxj⟩ := hcover x hx
+    by_cases h : j ∈ cls
+    · exact Or.inl (Set.mem_iUnion.2 ⟨j, Set.mem_iUnion.2 ⟨h, hxj⟩⟩)
+    · exact Or.inr (Set.mem_iUnion.2 ⟨j, Set.mem_iUnion.2 ⟨h, hxj⟩⟩)
+  have hdisj : s ∩ (U ∩ V) = ∅ := by
+    rw [Set.eq_empty_iff_forall_notMem]
+    rintro x ⟨hxs, hxU, hxV⟩
+    obtain ⟨a, ha'⟩ := Set.mem_iUnion.1 hxU
+    obtain ⟨hacls, hxa⟩ := Set.mem_iUnion.1 ha'
+    obtain ⟨b, hb'⟩ := Set.mem_iUnion.1 hxV
+    obtain ⟨hbcls, hxb⟩ := Set.mem_iUnion.1 hb'
+    exact hbcls (hacls.tail ⟨x, ⟨hxa, hxb⟩, hxs⟩)
+  rcases (isPreconnected_iff_subset_of_disjoint_closed.1 hs) U V hUc hVc hsub hdisj
+    with h | h
+  · obtain ⟨x, hxJ, hxs⟩ := hi
+    obtain ⟨j, hj'⟩ := Set.mem_iUnion.1 (h hxs)
+    obtain ⟨hjcls, hxj⟩ := Set.mem_iUnion.1 hj'
+    exact hjcls.tail ⟨x, ⟨hxj, hxJ⟩, hxs⟩
+  · exfalso
+    obtain ⟨x, hxJ, hxs⟩ := h₀
+    obtain ⟨j, hj'⟩ := Set.mem_iUnion.1 (h hxs)
+    obtain ⟨hjcls, hxj⟩ := Set.mem_iUnion.1 hj'
+    exact hjcls (Relation.ReflTransGen.single ⟨x, ⟨hxJ, hxj⟩, hxs⟩)
+
+/-- A relation is carried along a map that sends each of its steps to a step of the target
+relation. -/
+theorem reflTransGen_map_of_step {α β : Type*} {r : α → α → Prop} {s : β → β → Prop} (f : α → β)
+    (h : ∀ a b, r a b → s (f a) (f b)) {a b : α} (hab : Relation.ReflTransGen r a b) :
+    Relation.ReflTransGen s (f a) (f b) := by
+  induction hab with
+  | refl => exact Relation.ReflTransGen.refl
+  | tail _ hbc ih => exact ih.tail (h _ _ hbc)
+
+end ConnectivityCore
+
+section ConeConnectivity
+
+/-- The parametrized segment `t ↦ x + t • (y - x)`. -/
+noncomputable def segParam (x y : realified V) : ℝ → realified V := fun t => x + t • (y - x)
+
+/-- The closed segment `[x, y]`, as the image of `Icc 0 1` under `segParam`. -/
+noncomputable def seg (x y : realified V) : Set (realified V) :=
+  segParam x y '' Set.Icc (0 : ℝ) 1
+
+theorem continuous_segParam (x y : realified V) : Continuous (segParam x y) :=
+  continuous_const.add (continuous_id.smul continuous_const)
+
+theorem isCompact_seg (x y : realified V) : IsCompact (seg x y) :=
+  isCompact_Icc.image (continuous_segParam x y)
+
+theorem segParam_zero (x y : realified V) : segParam x y 0 = x := by simp [segParam]
+
+theorem segParam_one (x y : realified V) : segParam x y 1 = y := by simp [segParam]
+
+/-- The segment between two points of a convex cone stays in the cone. -/
+theorem segParam_mem_of_convex {C : PointedCone ℝ (realified V)}
+    (hconv : Convex ℝ (C : Set (realified V))) {x y : realified V} (hx : x ∈ C) (hy : y ∈ C)
+    {t : ℝ} (ht : t ∈ Set.Icc (0 : ℝ) 1) : segParam x y t ∈ C := by
+  have h : segParam x y t = (1 - t) • x + t • y := by
+    rw [segParam, smul_sub, sub_smul, one_smul]
+    abel
+  rw [h]
+  exact hconv hx hy (by linarith [ht.2]) ht.1 (by ring)
+
+/-- **The incidence datum of a decomposition at one member.** `w` is a form nonnegative on `τ`
+and zero on `σ` — the form that cuts the face `F` out of `τ` — and it *dominates* `τ` over `F`:
+every form nonnegative on `F` and zero on `σ` becomes nonnegative on `τ` after adding a multiple of
+`w`. This is Looijenga's "the translation space of the adjacent members contains that of this one"
+(the proof of Lemma-Definition 4.5, p. 19), as a statement about forms. -/
+def Dominates (σ τ F : PointedCone ℝ (realified V)) (w : (realified V) →ₗ[ℝ] ℝ) : Prop :=
+  (∀ y ∈ τ, 0 ≤ w y) ∧ (∀ y ∈ σ, w y = 0) ∧
+    ∀ φ : (realified V) →ₗ[ℝ] ℝ, (∀ y ∈ F, 0 ≤ φ y) → (∀ y ∈ σ, φ y = 0) →
+      ∃ c : ℝ, ∀ y ∈ τ, 0 ≤ (φ + c • w) y
+
+/-- **Two members whose common face is cut out of each by such a form have the same support space
+over `σ`** — the face step `supportSpace_eq_of_face`, read through `Dominates`. -/
+theorem supportSpace_eq_of_dominates {σ a b : PointedCone ℝ (realified V)}
+    {w w' : (realified V) →ₗ[ℝ] ℝ} (ha : Dominates σ a (a ⊓ b) w)
+    (hb : Dominates σ b (a ⊓ b) w') : supportSpace a σ = supportSpace b σ :=
+  supportSpace_eq_of_common_face ha.1 ha.2.1 ha.2.2 hb.1 hb.2.1 hb.2.2
+
+/-- **The domination half of `Dominates` is free for a finitely generated member**: if `τ` is
+generated by a finite `T` and the generators on which the cutting form `w` vanishes lie in the
+face `F`, then `w` dominates `τ` over `F` (`exists_add_smul_of_fg`). What a polyhedral member of a
+decomposition still owes is that its common face with another member *is* the zero set of a form
+nonnegative on it. -/
+theorem dominates_of_fg {σ τ F : PointedCone ℝ (realified V)} (T : Finset (realified V))
+    (hτ : τ = PointedCone.hull ℝ ((T : Set (realified V)))) {w : (realified V) →ₗ[ℝ] ℝ}
+    (hwτ : ∀ y ∈ τ, 0 ≤ w y) (hwσ : ∀ y ∈ σ, w y = 0)
+    (hF : ∀ m ∈ T, w m = 0 → m ∈ F) : Dominates σ τ F w :=
+  ⟨hwτ, hwσ, fun φ hφ hφσ =>
+    exists_add_smul_of_fg hwτ (le_of_eq hτ)
+      (fun m hm => hτ.symm ▸ PointedCone.subset_hull (by simpa using hm)) hF hφ⟩
+
+/-- **The members of a locally finite decomposition covering a convex cone `C`, that meet `C`, are
+connected through their common intersections**: any two of them are joined by a chain of members in
+which consecutive members meet in a point of `C` (Looijenga, the proof of Lemma-Definition 4.5,
+p. 19). -/
+theorem reflTransGen_inf_nonempty_of_convex {C : PointedCone ℝ (realified V)}
+    {S : Set (PointedCone ℝ (realified V))}
+    (hconv : Convex ℝ (C : Set (realified V)))
+    (hclosed : ∀ τ ∈ S, IsClosed ((τ : PointedCone ℝ (realified V)) : Set (realified V)))
+    (hcover : ∀ z ∈ C, ∃ τ ∈ S, z ∈ τ)
+    (hloc : LocallyFinite fun τ : {τ : PointedCone ℝ (realified V) // τ ∈ S} =>
+      ((τ.1 : PointedCone ℝ (realified V)) : Set (realified V)))
+    {x y : realified V} (hx : x ∈ C) (hy : y ∈ C)
+    {τ τ' : PointedCone ℝ (realified V)} (hτ : τ ∈ S) (hτ' : τ' ∈ S)
+    (hxτ : x ∈ τ) (hyτ' : y ∈ τ') :
+    Relation.ReflTransGen (fun a b => a ∈ S ∧ b ∈ S ∧
+      (((a ⊓ b : PointedCone ℝ (realified V)) : Set (realified V)) ∩
+        (C : Set (realified V))).Nonempty) τ τ' := by
+  classical
+  set ι := {i : {τ : PointedCone ℝ (realified V) // τ ∈ S} //
+    (((i.1 : PointedCone ℝ (realified V)) : Set (realified V)) ∩ seg x y).Nonempty} with hιdef
+  have hιfin : Finite ι := (hloc.finite_nonempty_inter_compact (isCompact_seg x y)).to_subtype
+  let J : ι → Set ℝ := fun j => Set.Icc (0 : ℝ) 1 ∩ segParam x y ⁻¹'
+    ((j.1.1 : PointedCone ℝ (realified V)) : Set (realified V))
+  have hJclosed : ∀ j : ι, IsClosed (J j) := fun j =>
+    isClosed_Icc.inter ((hclosed j.1.1 j.1.2).preimage (continuous_segParam x y))
+  have hJcover : ∀ t ∈ Set.Icc (0 : ℝ) 1, ∃ j : ι, t ∈ J j := by
+    intro t ht
+    have htC : segParam x y t ∈ C := segParam_mem_of_convex hconv hx hy ht
+    obtain ⟨τ₀, hτ₀S, hτ₀⟩ := hcover _ htC
+    exact ⟨⟨⟨τ₀, hτ₀S⟩, ⟨segParam x y t, hτ₀, ⟨t, ht, rfl⟩⟩⟩, ht, hτ₀⟩
+  have hxseg : x ∈ seg x y := ⟨0, ⟨le_refl 0, zero_le_one⟩, segParam_zero x y⟩
+  have hyseg : y ∈ seg x y := ⟨1, ⟨zero_le_one, le_refl 1⟩, segParam_one x y⟩
+  let i₀ : ι := ⟨⟨τ, hτ⟩, ⟨x, hxτ, hxseg⟩⟩
+  let i₁ : ι := ⟨⟨τ', hτ'⟩, ⟨y, hyτ', hyseg⟩⟩
+  have h0 : (J i₀ ∩ Set.Icc (0 : ℝ) 1).Nonempty :=
+    ⟨0, ⟨⟨⟨le_refl 0, zero_le_one⟩, by
+        change segParam x y 0 ∈ ((i₀.1.1 : PointedCone ℝ (realified V)) : Set (realified V))
+        rw [segParam_zero]
+        exact hxτ⟩, ⟨le_refl 0, zero_le_one⟩⟩⟩
+  have h1 : (J i₁ ∩ Set.Icc (0 : ℝ) 1).Nonempty :=
+    ⟨1, ⟨⟨⟨zero_le_one, le_refl 1⟩, by
+        change segParam x y 1 ∈ ((i₁.1.1 : PointedCone ℝ (realified V)) : Set (realified V))
+        rw [segParam_one]
+        exact hyτ'⟩, ⟨zero_le_one, le_refl 1⟩⟩⟩
+  have hchain := reflTransGen_inter_nonempty_of_isPreconnected J isPreconnected_Icc hJclosed
+    hJcover h0 h1
+  let rcone : PointedCone ℝ (realified V) → PointedCone ℝ (realified V) → Prop :=
+    fun a b => a ∈ S ∧ b ∈ S ∧ (((a ⊓ b : PointedCone ℝ (realified V)) : Set (realified V)) ∩
+      (C : Set (realified V))).Nonempty
+  have hstep : ∀ a b : ι, (J a ∩ J b ∩ Set.Icc (0 : ℝ) 1).Nonempty → rcone a.1.1 b.1.1 := by
+    rintro a b ⟨t, ⟨hta, htb⟩, htI⟩
+    exact ⟨a.1.2, b.1.2, ⟨segParam x y t,
+      ⟨Submodule.mem_inf.2 ⟨hta.2, htb.2⟩, segParam_mem_of_convex hconv hx hy htI⟩⟩⟩
+  exact reflTransGen_map_of_step (fun i : ι => i.1.1) hstep hchain
+
+end ConeConnectivity
+
+section SupportSpaceIndependenceLocallyFinite
+
+/-- A step of the chains of `reflTransGen_inf_nonempty_of_convex`: two members of `S` whose
+intersection meets `C`. -/
+def ChainRel (C : PointedCone ℝ (realified V))
+    (S : Set (PointedCone ℝ (realified V))) (a b : PointedCone ℝ (realified V)) : Prop :=
+  a ∈ S ∧ b ∈ S ∧ (((a ⊓ b : PointedCone ℝ (realified V)) : Set (realified V)) ∩
+    (C : Set (realified V))).Nonempty
+
+/-- **Along a chain in which consecutive members meet in a common face cut out of each by a form,
+the support space over `σ` does not change.** -/
+theorem supportSpace_eq_of_reflTransGen {C : PointedCone ℝ (realified V)}
+    {S : Set (PointedCone ℝ (realified V))} {σ : PointedCone ℝ (realified V)}
+    {τ τ' : PointedCone ℝ (realified V)} (h : Relation.ReflTransGen (ChainRel C S) τ τ')
+    (hface : ∀ a b : PointedCone ℝ (realified V), ChainRel C S a b →
+      supportSpace a σ = supportSpace b σ) :
+    supportSpace τ σ = supportSpace τ' σ := by
+  induction h with
+  | refl => rfl
+  | tail _ hbc ih => exact ih.trans (hface _ _ hbc)
+
+/-- **Lemma-Definition 4.5: the support space of `σ` does not depend on the member `τ` above it**
+(Looijenga, p. 19). The members above `σ` that meet the convex cone `C` are joined by a chain of
+members of the decomposition (`reflTransGen_inf_nonempty_of_convex`), and along that chain
+consecutive members meet in a common face on which the support space does not change
+(`supportSpace_eq_of_dominates`). Nothing is assumed about the members beyond being closed and
+locally finite, covering `C`, and the cutting forms at each pair; no coordinates are used. -/
+theorem supportSpace_eq_of_locallyFinite {C : PointedCone ℝ (realified V)}
+    {S : Set (PointedCone ℝ (realified V))} {σ : PointedCone ℝ (realified V)}
+    (hconv : Convex ℝ (C : Set (realified V)))
+    (hclosed : ∀ τ ∈ S, IsClosed ((τ : PointedCone ℝ (realified V)) : Set (realified V)))
+    (hcover : ∀ z ∈ C, ∃ τ ∈ S, z ∈ τ)
+    (hloc : LocallyFinite fun τ : {τ : PointedCone ℝ (realified V) // τ ∈ S} =>
+      ((τ.1 : PointedCone ℝ (realified V)) : Set (realified V)))
+    (hexp : ∀ a b : PointedCone ℝ (realified V), a ∈ S → b ∈ S →
+      (((a ⊓ b : PointedCone ℝ (realified V)) : Set (realified V)) ∩
+        (C : Set (realified V))).Nonempty →
+      ∃ w w' : (realified V) →ₗ[ℝ] ℝ, Dominates σ a (a ⊓ b) w ∧ Dominates σ b (a ⊓ b) w')
+    {τ τ' : PointedCone ℝ (realified V)} (hτ : τ ∈ S) (hτ' : τ' ∈ S)
+    (hτC : (((τ : PointedCone ℝ (realified V)) : Set (realified V)) ∩
+      (C : Set (realified V))).Nonempty)
+    (hτ'C : (((τ' : PointedCone ℝ (realified V)) : Set (realified V)) ∩
+      (C : Set (realified V))).Nonempty) :
+    supportSpace τ σ = supportSpace τ' σ := by
+  obtain ⟨x, hxτ, hxC⟩ := hτC
+  obtain ⟨y, hyτ', hyC⟩ := hτ'C
+  refine supportSpace_eq_of_reflTransGen
+    (reflTransGen_inf_nonempty_of_convex hconv hclosed hcover hloc hxC hyC hτ hτ' hxτ hyτ') ?_
+  rintro a b ⟨ha, hb, hab⟩
+  obtain ⟨w, w', hw, hw'⟩ := hexp a b ha hb hab
+  exact supportSpace_eq_of_dominates hw hw'
+
+/-- **Lemma-Definition 4.5, the `Σ`-support space of a locally finite decomposition**: the
+intersection of the support spaces of the members above `σ` — the `sigmaSupportSpace` carried in
+this file — is the support space of any one of them, which is the independence from `τ` that the
+source asserts. -/
+theorem sigmaSupportSpace_eq_supportSpace_of_locallyFinite {C : PointedCone ℝ (realified V)}
+    {S : Set (PointedCone ℝ (realified V))} {σ : PointedCone ℝ (realified V)}
+    (hconv : Convex ℝ (C : Set (realified V)))
+    (hclosed : ∀ τ ∈ S, IsClosed ((τ : PointedCone ℝ (realified V)) : Set (realified V)))
+    (hcover : ∀ z ∈ C, ∃ τ ∈ S, z ∈ τ)
+    (hloc : LocallyFinite fun τ : {τ : PointedCone ℝ (realified V) // τ ∈ S} =>
+      ((τ.1 : PointedCone ℝ (realified V)) : Set (realified V)))
+    (hexp : ∀ a b : PointedCone ℝ (realified V), a ∈ S → b ∈ S →
+      (((a ⊓ b : PointedCone ℝ (realified V)) : Set (realified V)) ∩
+        (C : Set (realified V))).Nonempty →
+      ∃ w w' : (realified V) →ₗ[ℝ] ℝ, Dominates σ a (a ⊓ b) w ∧ Dominates σ b (a ⊓ b) w')
+    (τ₀ : supportIndex C S σ) :
+    sigmaSupportSpace C S σ = supportSpace τ₀.1 σ :=
+  sigmaSupportSpace_eq_supportSpace τ₀ fun τ =>
+    supportSpace_eq_of_locallyFinite hconv hclosed hcover hloc hexp τ.2.1 τ₀.2.1 τ.2.2.2 τ₀.2.2.2
+
+end SupportSpaceIndependenceLocallyFinite
+
 
 
 /-! ## The decomposition attached to an arrangement of hyperplanes
