@@ -1007,6 +1007,47 @@ theorem isRationalCone_top [Module.Finite ℚ V] :
     rfl
   exact hcone.symm
 
+/-- A cone cut out of the whole real form by normalized coordinate bounds. At a point with
+`0 < ell x`, the ratios `rationalCoordinate b i x / ell x` lie between `lo i` and `up i`.
+The construction is used for Lemma-Definition 4.5's rational neighbourhood of a point of `C`. -/
+noncomputable def normalizedConeOn {ι : Type*} [DecidableEq ι] (F : Finset ι)
+    (b : Module.Basis ι ℚ V) (ell : (realified V) →ₗ[ℝ] ℝ) (lo up : ι → ℚ) :
+    PointedCone ℝ (realified V) :=
+  (F.inf fun i => halfspaceCone (rationalCoordinate b i - (lo i : ℝ) • ell) ⊓
+    halfspaceCone ((up i : ℝ) • ell - rationalCoordinate b i)) ⊓ halfspaceCone ell
+
+theorem mem_normalizedConeOn {ι : Type*} [DecidableEq ι] {F : Finset ι}
+    {b : Module.Basis ι ℚ V} {ell : (realified V) →ₗ[ℝ] ℝ} {lo up : ι → ℚ}
+    {y : realified V} :
+    y ∈ normalizedConeOn F b ell lo up ↔
+      (∀ i ∈ F, 0 ≤ (rationalCoordinate b i - (lo i : ℝ) • ell) y ∧
+        0 ≤ ((up i : ℝ) • ell - rationalCoordinate b i) y) ∧ 0 ≤ ell y := by
+  simp only [normalizedConeOn, Submodule.mem_inf, mem_halfspaceCone, Finset.inf_eq_iInf,
+    Submodule.mem_iInf]
+
+/-- Normalized rational coordinate bounds define a rational cone. Induction on the finite set of
+cuts uses `isRationalCone_inf_halfspace` and starts from `isRationalCone_top`. -/
+theorem isRationalCone_normalizedConeOn {ι : Type*} [DecidableEq ι]
+    (F : Finset ι) (b : Module.Basis ι ℚ V) [Module.Finite ℚ V]
+    {ell : (realified V) →ₗ[ℝ] ℝ}
+    (hell : IsRationalForm ell) (lo up : ι → ℚ) :
+    IsRationalCone (normalizedConeOn F b ell lo up) := by
+  have hrlo (i : ι) : IsRationalForm (rationalCoordinate b i - (lo i : ℝ) • ell) :=
+    IsRationalForm.sub (isRationalForm_rationalCoordinate b i)
+      (IsRationalForm.qsmul hell (lo i))
+  have hrup (i : ι) : IsRationalForm ((up i : ℝ) • ell - rationalCoordinate b i) :=
+    IsRationalForm.sub (IsRationalForm.qsmul hell (up i))
+      (isRationalForm_rationalCoordinate b i)
+  induction F using Finset.induction with
+  | empty =>
+      simpa [normalizedConeOn] using
+        (isRationalCone_inf_halfspace (P := (⊤ : PointedCone ℝ (realified V)))
+          isRationalCone_top hell)
+  | @insert i F hi ih =>
+      have h := isRationalCone_inf_halfspace
+        (isRationalCone_inf_halfspace ih (hrlo i)) (hrup i)
+      simpa [normalizedConeOn, Finset.inf_insert, inf_assoc, inf_left_comm, inf_comm] using h
+
 /-- Looijenga, Definition 4.1, p. 16: a *rational cone system* in `L(ℝ)` is a finite
 collection of nondegenerate rational convex cones such that a face of a member is a member,
 and any two members meet along a common face. -/
