@@ -8502,14 +8502,15 @@ normed-space theorem along the continuous linear equivalence supplied by `Module
 LC-09 (2026-11-19): `content:intrinsicInterior content:IsOpen content:Nonempty` located
 TauCeti's `Analysis/Convex/Intrinsic.lean`; the nonemptiness assertion itself is already in
 Mathlib, so only this transport is new. -/
-theorem nonempty_intrinsicInterior_of_convex_moduleTopology {s : Set (realified V)}
+theorem nonempty_intrinsicInterior_of_convex_moduleTopology {E : Type*}
+    [AddCommGroup E] [Module ℝ E] [Module.Finite ℝ E]
+    [TopologicalSpace E] [IsModuleTopology ℝ E] [ContinuousAdd E] {s : Set E}
     (hs : Convex ℝ s) (hne : s.Nonempty) : (intrinsicInterior ℝ s).Nonempty := by
   classical
-  let e : realified V ≃ₗ[ℝ] (Fin (Module.finrank ℝ (realified V)) → ℝ) :=
-    (Module.finBasis ℝ (realified V)).equivFun
+  let e : E ≃ₗ[ℝ] (Fin (Module.finrank ℝ E) → ℝ) := (Module.finBasis ℝ E).equivFun
   have h1 : Continuous e := IsModuleTopology.continuous_of_linearMap e.toLinearMap
   have h2 : Continuous e.symm := IsModuleTopology.continuous_of_linearMap e.symm.toLinearMap
-  let E' : realified V ≃L[ℝ] (Fin (Module.finrank ℝ (realified V)) → ℝ) :=
+  let E' : E ≃L[ℝ] (Fin (Module.finrank ℝ E) → ℝ) :=
     { e with continuous_toFun := h1, continuous_invFun := h2 }
   have hs' : Convex ℝ (E' '' s) := hs.linear_image E'.toLinearMap
   obtain ⟨z, hz⟩ := (intrinsicInterior_nonempty hs').2 (hne.image E')
@@ -8525,23 +8526,25 @@ the supplied point toward a relative-interior point. The segment step is Mathlib
 of the target is the finite-dimensional module-topology transport immediately above.
 LC-09: `content:intrinsicInterior content:IsOpen content:Nonempty` found TauCeti's related
 intrinsic-interior API; this exact open-set intersection statement was not present. -/
-theorem Convex.exists_mem_intrinsicInterior_inter_of_isOpen {s U : Set (realified V)}
+theorem Convex.exists_mem_intrinsicInterior_inter_of_isOpen {E : Type*}
+    [AddCommGroup E] [Module ℝ E] [Module.Finite ℝ E]
+    [TopologicalSpace E] [IsModuleTopology ℝ E] [ContinuousAdd E] {s U : Set E}
     (hs : Convex ℝ s) (hU : IsOpen U) (hne : (s ∩ U).Nonempty) :
     (intrinsicInterior ℝ s ∩ U).Nonempty := by
-  let _ := IsModuleTopology.isTopologicalAddGroup ℝ (realified V)
+  let _ := IsModuleTopology.isTopologicalAddGroup ℝ E
   obtain ⟨z, hzs, hzU⟩ := hne
   obtain ⟨y, hy⟩ := nonempty_intrinsicInterior_of_convex_moduleTopology hs ⟨z, hzs⟩
-  have hlim : Filter.Tendsto (segParam z y) (𝓝 0) (𝓝 z) := by
-    simpa only [ContinuousAt, segParam_zero] using
-      (continuous_segParam z y).continuousAt (x := 0)
-  have hev : ∀ᶠ r in 𝓝 (0 : ℝ), segParam z y r ∈ U :=
+  have hlim : Filter.Tendsto (AffineMap.lineMap z y : ℝ → E) (𝓝 0) (𝓝 z) := by
+    simpa only [ContinuousAt, AffineMap.lineMap_apply_zero] using
+      (AffineMap.lineMap_continuous (R := ℝ) (p := z) (q := y)).continuousAt (x := (0 : ℝ))
+  have hev : ∀ᶠ r in 𝓝 (0 : ℝ), AffineMap.lineMap z y r ∈ U :=
     hlim.eventually (hU.mem_nhds hzU)
   obtain ⟨r, hr, hrU, hr1⟩ := (hev.and (eventually_lt_nhds zero_lt_one)).exists_gt
-  refine ⟨segParam z y r, ?_, hrU⟩
+  refine ⟨AffineMap.lineMap z y r, ?_, hrU⟩
   apply hs.openSegment_intrinsicInterior_intrinsicClosure_subset_intrinsicInterior hy
     (subset_intrinsicClosure hzs)
-  rw [show segParam z y r = AffineMap.lineMap y z (1 - r) by
-    rw [segParam, AffineMap.lineMap_apply_module']; module]
+  rw [show AffineMap.lineMap z y r = AffineMap.lineMap y z (1 - r) by
+    rw [AffineMap.lineMap_apply_module', AffineMap.lineMap_apply_module']; module]
   exact lineMap_mem_openSegment ℝ y z ⟨sub_pos.mpr hr1, sub_lt_self 1 hr⟩
 
 /-- **Ambient characterization of the relative interior.** Port of TauCeti
@@ -8772,6 +8775,114 @@ theorem exists_mem_map_star_of_isotropicHalfspace (hpos : sigPos Q = 1)
   refine ⟨b, hbS, hrayb, ?_⟩
   rw [← hscale]
   exact (b.map N.mkQ).smul_mem (inv_nonneg.2 hr.le) ⟨e + r • x, hyB.1, rfl⟩
+
+/-- **The projected star is locally finite at points of the open half-space.** On a projected
+rational neighbourhood there are only finitely many possible projected traces. Two projected
+star members with the same trace are equal: open sets meet their relative interiors, and their
+common projected face is therefore both members. LC-09 (2026-11-19):
+`content:projection locally finite cone traces rational` and
+`content:LocallyFinite content:affine halfspace content:cone` found no competing declaration. -/
+theorem locallyFinite_map_star_of_isotropicHalfspace (hpos : sigPos Q = 1)
+    (hnd : Q.Nondegenerate) {ht : 0 < Q t}
+    {S : Set (PointedCone ℝ (realified V))}
+    (hS : IsLocallyRationalDecomposition (rationalClosure (closedSheet Q hpos ht)) S)
+    {e : realified V} (he0 : e ≠ 0) (heQ : Q e = 0)
+    {a₀ : PointedCone ℝ (realified V)}
+    (hea₀ : PointedCone.hull ℝ ({e} : Set (realified V)) ≤ a₀) (ha₀ : a₀ ∈ S) :
+    let N := Submodule.span ℝ ({e} : Set (realified V))
+    let _ : ContinuousAdd (realified V ⧸ N) := IsModuleTopology.toContinuousAdd ℝ _
+    let T : Set (PointedCone ℝ (realified V ⧸ N)) :=
+      {D | ∃ a ∈ S, PointedCone.hull ℝ ({e} : Set (realified V)) ≤ a ∧ D = a.map N.mkQ}
+    ∀ {z : realified V ⧸ N}, 0 < isotropicHalfspaceForm Q heQ z →
+      ∃ U ∈ 𝓝 z, {D : {D // D ∈ T} |
+        (((D.1 : PointedCone ℝ (realified V ⧸ N)) : Set (realified V ⧸ N)) ∩ U).Nonempty}.Finite := by
+  classical
+  let N := Submodule.span ℝ ({e} : Set (realified V))
+  let _ : ContinuousAdd (realified V ⧸ N) := IsModuleTopology.toContinuousAdd ℝ _
+  let T : Set (PointedCone ℝ (realified V ⧸ N)) :=
+    {D | ∃ a ∈ S, PointedCone.hull ℝ ({e} : Set (realified V)) ≤ a ∧ D = a.map N.mkQ}
+  change ∀ {z : realified V ⧸ N}, 0 < isotropicHalfspaceForm Q heQ z →
+    ∃ U ∈ 𝓝 z, {D : {D // D ∈ T} |
+      (((D.1 : PointedCone ℝ (realified V ⧸ N)) : Set (realified V ⧸ N)) ∩ U).Nonempty}.Finite
+  intro z hzβ
+  have hrayle : PointedCone.hull ℝ ({e} : Set (realified V)) ≤
+      rationalClosure (closedSheet Q hpos ht) := hea₀.trans (hS.le ha₀)
+  have heC : e ∈ rationalClosure (closedSheet Q hpos ht) :=
+    hrayle (PointedCone.subset_hull (Set.mem_singleton e))
+  have heSheet : e ∈ closedSheet Q hpos ht := rationalClosure_le_closedSheet hpos heC
+  have hrayrat : IsRationalCone (PointedCone.hull ℝ ({e} : Set (realified V))) :=
+    IsIsotropicHalfLine.isRationalCone_of_le_of_mem hpos hnd hS
+      ⟨e, he0, heQ, rfl⟩ ha₀ hea₀
+  have him : z ∈ N.mkQ '' (positiveCone.upper Q t) := by
+    rw [image_mkQ_upper_eq Q hpos hnd ht he0 heQ heSheet.2]
+    exact hzβ
+  obtain ⟨x, hxC, hxq⟩ := him
+  obtain ⟨K, hKrat, hKle, hrayK, hKx, -⟩ :=
+    exists_rationalCone_sup_mem_nhds_of_isotropic hpos hrayle hrayrat hxC hxC
+  have heK : e ∈ K := hrayK (PointedCone.subset_hull (Set.mem_singleton e))
+  have hmapK : (K.map N.mkQ : Set (realified V ⧸ N)) ∈ 𝓝 z := by
+    rw [← hxq]
+    exact N.isOpenMap_mkQ.image_mem_nhds hKx
+  let U : Set (realified V ⧸ N) := interior (K.map N.mkQ : Set (realified V ⧸ N))
+  let RC := faceClosure (restrictionTo S K)
+  let R := hS.restriction K hKrat hKle
+  let J := {D : {D // D ∈ T} |
+    (((D.1 : PointedCone ℝ (realified V ⧸ N)) : Set (realified V ⧸ N)) ∩ U).Nonempty}
+  refine ⟨U, interior_mem_nhds.2 hmapK, ?_⟩
+  have hmaps : Set.MapsTo (fun D : {D // D ∈ T} => D.1 ⊓ K.map N.mkQ) J
+      ((fun B : PointedCone ℝ (realified V) => B.map N.mkQ) '' RC) := by
+    rintro ⟨A, hAT⟩ hAJ
+    obtain ⟨a, ha, hea, rfl⟩ := hAT
+    have hea' : e ∈ a := hea (PointedCone.subset_hull (Set.mem_singleton e))
+    have hRC : a ⊓ K ∈ RC := mem_faceClosure.2 ⟨a ⊓ K,
+      mem_restrictionTo.2 ⟨a, ha, rfl⟩, PointedCone.IsFaceOf.refl (a ⊓ K)⟩
+    exact ⟨a ⊓ K, hRC, map_inf_eq_inf_map_of_span_singleton hea' heK⟩
+  have hinj : Set.InjOn (fun D : {D // D ∈ T} => D.1 ⊓ K.map N.mkQ) J := by
+    rintro ⟨A, hAT⟩ hAJ ⟨B, hBT⟩ hBJ htr
+    obtain ⟨a, ha, hea, rfl⟩ := hAT
+    obtain ⟨b, hb, heb, rfl⟩ := hBT
+    change a.map N.mkQ ⊓ K.map N.mkQ = b.map N.mkQ ⊓ K.map N.mkQ at htr
+    have hea' : e ∈ a := hea (PointedCone.subset_hull (Set.mem_singleton e))
+    have heb' : e ∈ b := heb (PointedCone.subset_hull (Set.mem_singleton e))
+    have hfaceab : (a.map N.mkQ ⊓ b.map N.mkQ).IsFaceOf (a.map N.mkQ) := by
+      have hf := PointedCone.IsFaceOf.map_mkQ_span_singleton (e := e)
+        (F := a ⊓ b) (C := a) (he := ⟨hea', heb'⟩)
+        (hF := inf_isFaceOf_of_isLocallyRationalDecomposition hS ha hb)
+      dsimp only at hf
+      rwa [map_inf_eq_inf_map_of_span_singleton hea' heb'] at hf
+    have hfaceba : (b.map N.mkQ ⊓ a.map N.mkQ).IsFaceOf (b.map N.mkQ) := by
+      have hf := PointedCone.IsFaceOf.map_mkQ_span_singleton (e := e)
+        (F := b ⊓ a) (C := b) (he := ⟨heb', hea'⟩)
+        (hF := inf_isFaceOf_of_isLocallyRationalDecomposition hS hb ha)
+      dsimp only at hf
+      rwa [map_inf_eq_inf_map_of_span_singleton heb' hea'] at hf
+    obtain ⟨x, hxA, hxU⟩ := Convex.exists_mem_intrinsicInterior_inter_of_isOpen
+      (s := ((a.map N.mkQ : PointedCone ℝ (realified V ⧸ N)) : Set (realified V ⧸ N)))
+      (U := U) (a.map N.mkQ).convex (by exact isOpen_interior) hAJ
+    obtain ⟨y, hyB, hyU⟩ := Convex.exists_mem_intrinsicInterior_inter_of_isOpen
+      (s := ((b.map N.mkQ : PointedCone ℝ (realified V ⧸ N)) : Set (realified V ⧸ N)))
+      (U := U) (b.map N.mkQ).convex (by exact isOpen_interior) hBJ
+    have hxaK : x ∈ a.map N.mkQ ⊓ K.map N.mkQ :=
+      ⟨intrinsicInterior_subset hxA, interior_subset hxU⟩
+    have hybK : y ∈ b.map N.mkQ ⊓ K.map N.mkQ :=
+      ⟨intrinsicInterior_subset hyB, interior_subset hyU⟩
+    have hxb : x ∈ b.map N.mkQ := (show x ∈ b.map N.mkQ ⊓ K.map N.mkQ from htr ▸ hxaK).1
+    have hya : y ∈ a.map N.mkQ := (show y ∈ a.map N.mkQ ⊓ K.map N.mkQ from htr.symm ▸ hybK).1
+    have hxab : x ∈ a.map N.mkQ ⊓ b.map N.mkQ := ⟨intrinsicInterior_subset hxA, hxb⟩
+    have hyba : y ∈ b.map N.mkQ ⊓ a.map N.mkQ := ⟨intrinsicInterior_subset hyB, hya⟩
+    have hleft : a.map N.mkQ ⊓ b.map N.mkQ = a.map N.mkQ :=
+      face_eq_of_mem_intrinsicInterior hfaceab (x := x) hxab hxA
+    have hright : b.map N.mkQ ⊓ a.map N.mkQ = b.map N.mkQ :=
+      face_eq_of_mem_intrinsicInterior hfaceba (x := y) hyba hyB
+    apply Subtype.ext
+    change a.map N.mkQ = b.map N.mkQ
+    apply le_antisymm
+    · rw [← hleft]
+      exact inf_le_right
+    · rw [← hright]
+      exact inf_le_right
+  exact Set.Finite.of_injOn hmaps hinj (R.finite.image (fun B : PointedCone ℝ (realified V) =>
+    B.map N.mkQ))
 
 end IsotropicRationalTraces
 
