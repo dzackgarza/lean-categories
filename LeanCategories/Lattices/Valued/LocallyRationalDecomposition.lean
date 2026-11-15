@@ -501,11 +501,12 @@ What `Σ(bb)` does not have is face-closure. A face of `C₊` that contains a ra
 closed cone, a large rational multiple of that timelike point minus `v` is again a rational
 point of the open cone, hence lies in `C₊`, and the face relation applied to
 `(q • u - v) + v = q • u` forces `v` into the face. Take then a rational cone `P` spanned by
-two rational points `u`, `v` of the open cone with `v` not a multiple of `u`. Its only traces
-on `Σ(bb)` are `P` itself and `{0}`, yet the ray `ℝ≥0 u` is a face of `P`
-(`isFaceOf_hull_singleton`) and is neither. So the restriction of `Σ(bb)` to `P` fails
-`mem_of_isFaceOf`, and `Σ(bb)` is not a locally rational decomposition in the printed sense
-(`not_isLocallyRationalDecomposition_facialDecomposition`).
+two rational points `u`, `v` of the open cone with `v` not a multiple of `u`. The cone `P` is
+itself a trace of `Σ(bb)` (the trace on the face `C₊`), and the ray `ℝ≥0 u` is a face of `P`
+(`isFaceOf_hull_singleton`); but a trace `σ ⊓ P` of `Σ(bb)` that contains `u` has `u ∈ σ`, so
+`σ = C₊` and the trace is `P`, which is not that ray. So the restriction of `Σ(bb)` to `P`
+fails `mem_of_isFaceOf`, and `Σ(bb)` is not a locally rational decomposition in the printed
+sense (`not_isLocallyRationalDecomposition_facialDecomposition`).
 
 The failing clause is therefore face-closure, not finiteness. -/
 
