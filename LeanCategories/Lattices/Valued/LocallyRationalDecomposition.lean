@@ -289,8 +289,11 @@ decomposition
   case the first projection of the source's proof is carried as `L_σ ⊆ I^⊥`
   (`supportSpace_le_ker_associated_of_isotropic`,
   `sigmaSupportSpace_le_ker_associated_of_isotropic`), which together with
-  `supportSpace_le_span` is the source's description as an upper bound. What the affine model adds
-  to it, the reverse inclusion, is not carried; see "What is not carried".
+  `supportSpace_le_span` is the source's description as an upper bound, and for the facial
+  decomposition both inclusions are carried (`supportSpace_closedSheet_hull_eq_ker`, the section
+  "The support space of an isotropic half line in the facial decomposition"). What the affine
+  model adds for a general `Σ` — the reverse inclusion `I^⊥ ∩ ⋂_{τ > σ} ⟨τ⟩ ⊆ L_σ` — is not
+  carried; see "What is not carried".
 * A check by hand of the shape, in a basis `e, f, w₁, w₂` of signature `(1, 3)` with `e · f = 1`
   and `w_i · w_i = -1`: for the single `ℚ`-hyperplane `{z₁ = 0}` through `σ = ℝ≥0 e`, the members
   above `σ` meeting `C` are the two cells and `C₊ ∩ H`, their polyhedra are the two half-spaces
@@ -468,6 +471,17 @@ self-duality statement for a quadratic form of signature `(1, n − 1)`. The sel
 names as the corpus's nearest neighbour to the exposure question; nothing about a support space
 being the span of a cone whose span is the kernel of a nonnegative form. Nothing to port for either
 description: both are linear algebra over `supportForms` and `PointedCone.hull_le_span`.
+
+For the facial case of the isotropic description
+(`supportSpace_closedSheet_hull_eq_ker`) the two searches that matter are the self-duality one
+above — no hit, the statement is proved from the repository's own
+`quadratic_spatialPart_nonpos`, `mul_self_le_associated_sq` and
+`eq_zero_of_perp_of_quadratic_eq_zero` — and `content:support space of a cone` (recorded above,
+82 files, too broad to be a signal). The general proportional statement
+`exists_smul_of_associated_eq_zero_of_mem_closedSheet_self` is the file's own rational
+`exists_smul_of_associated_eq_zero_of_mem_closedSheet` with the rationality dropped; nothing to
+port. Mathlib's `LinearMap.BilinForm.toDual` (`LinearAlgebra/BilinearForm/Properties.lean:351`) is
+what turns an arbitrary functional into a vector of the sheet, used as it is.
 
 ### LC-09 record for discreteness and properness (2026-11-16)
 
@@ -3045,8 +3059,15 @@ independence holds for every pair of members meeting `C` (`supportSpace_eq_of_lo
   `I^⊥ ∩ H`, the value the source's description gives; and on two `ℚ`-hyperplanes in signature
   `(1, 3)`, where the four cells, the two walls and the corner cone all have support space
   `I^⊥ ∩ H₁ ∩ H₂ = I`, again the source's value.
-* Also not carried is the identification of the support spaces of `Σ(bb)` as `V`, `{0}` and the
-  hyperplanes orthogonal to the `ℚ`-isotropic lines (p. 19).
+* **The isotropic item of that list is carried**: for `σ` the ray through an isotropic `e` of the
+  closed sheet, the support space relative to the sheet is `I^⊥`, both inclusions
+  (`supportSpace_closedSheet_hull_eq_ker`, in the section "The support space of an isotropic half
+  line in the facial decomposition"). The upper bound is `supportSpace_le_ker_associated_of_isotropic`;
+  the lower one is the sheet's self-duality,
+  `quadratic_nonneg_of_forall_mem_closedSheet_nonneg`, together with
+  `exists_smul_of_associated_eq_zero_of_mem_closedSheet_self` (a form of the sheet vanishing on `e`
+  is a multiple of `e`). Still not carried: `V` for `C₊` itself and `{0}`, and the same
+  identification for a general `Σ`.
 * **`C ⊆ C₊` is carried** (`subset_rationalClosure`, for a finite-dimensional `L`), and with it the
   cover hypothesis `hcover`: `exists_mem_of_mem_of_cover_rationalClosure` turns a cover of `C₊`
   into one of `C`, and `supportSpace_eq_of_locallyFinite_of_cover_rationalClosure` and
@@ -6567,5 +6588,197 @@ theorem example43b_of_orbitFamily
 end Example43b
 
 end FiniteOrbits
+
+/-! ## The support space of an isotropic half line in the facial decomposition
+
+Looijenga, Lemma-Definition 4.5, p. 19, and the list after its proof: "the support spaces of `Σ(bb)`
+are `V`, `{0}` and the hyperplanes orthogonal to a `ℚ`-isotropic line." This section carries the
+isotropic item of that list in full, both inclusions.
+
+The description the source reads off the affine model is `L_σ = I^⊥` when `σ` spans the isotropic
+line `I`, and for the facial decomposition the only members above `σ` that meet `C` are the closed
+sheet and `σ` itself, so `supportSpace` is taken at `τ = C₊` alone. The upper bound `L_σ ⊆ I^⊥` is
+`supportSpace_le_ker_associated_of_isotropic` (the form `y ↦ e · y` is nonnegative on the sheet and
+vanishes on `σ`). The lower bound is where the sheet being self-dual enters: a form nonnegative on
+the whole closed sheet has `Q ≥ 0` value (`quadratic_nonneg_of_forall_mem_closedSheet_nonneg`, whose
+proof is a two-dimensional construction — if `Q φ < 0` the vector `√(-Q ψ/Q t) • t + ψ`, with `ψ`
+the projection of `φ` off `t`, is on the light cone of the sheet and pairs negatively with `φ`), so
+it lies in the closed sheet, and a form of the sheet vanishing on the isotropic `e` is a multiple of
+`e` (`exists_smul_of_associated_eq_zero_of_mem_closedSheet_self`, the general form of the rational
+statement `exists_smul_of_associated_eq_zero_of_mem_closedSheet`) — hence vanishes on `I^⊥`. -/
+
+section FacialDecompositionSupportSpace
+
+variable {Q : QuadraticForm ℝ (realified V)} [Module.Finite ℚ V]
+
+/-- **A form nonnegative on the closed sheet has nonnegative value.** -/
+theorem quadratic_nonneg_of_forall_mem_closedSheet_nonneg (hpos : sigPos Q = 1) {t : realified V}
+    (ht : 0 < Q t) {phi : realified V}
+    (hphi : ∀ y ∈ closedSheet Q hpos ht, 0 ≤ (associated Q) phi y) : 0 ≤ Q phi := by
+  by_contra hneg
+  have hneg' : Q phi < 0 := lt_of_not_ge hneg
+  have ht_mem : t ∈ closedSheet Q hpos ht :=
+    (mem_closedSheet hpos ht).2 ⟨ht.le, by rw [associated_self_apply]; exact ht.le⟩
+  set b : ℝ := (associated Q) phi t with hb
+  have hb0 : 0 ≤ b := hphi t ht_mem
+  set psi : realified V := spatialPart Q t phi with hpsi
+  have hQt : Q t ≠ 0 := ht.ne'
+  have hpsit : (associated Q) psi t = 0 := by
+    rw [hpsi]; exact associated_spatialPart_right Q hQt phi
+  have hQpsi : Q psi = Q phi - b ^ 2 / Q t := by
+    rw [hpsi]; exact quadratic_spatialPart Q hQt phi
+  set u : ℝ := -(Q psi) with hu_def
+  have hu_eq : u = b ^ 2 / Q t - Q phi := by
+    rw [hu_def, hQpsi]; ring
+  have hu0 : 0 < u := by
+    rw [hu_eq]
+    linarith [hneg', div_nonneg (sq_nonneg b) ht.le]
+  have hbsq : b ^ 2 < u * Q t := by
+    have h1 : u * Q t = b ^ 2 - Q phi * Q t := by
+      rw [hu_eq]; field_simp
+    rw [h1]; nlinarith [hneg', ht]
+  have hb_lt : b < Real.sqrt (u * Q t) := by
+    calc b = Real.sqrt (b ^ 2) := (Real.sqrt_sq hb0).symm
+      _ < Real.sqrt (u * Q t) := Real.sqrt_lt_sqrt (by nlinarith) hbsq
+  set c : ℝ := Real.sqrt (u / Q t) with hc_def
+  have hcpos : 0 < c := Real.sqrt_pos.2 (div_pos hu0 ht)
+  have hcsq : c ^ 2 = u / Q t := Real.sq_sqrt (div_pos hu0 ht).le
+  set v : realified V := c • t + psi with hv_def
+  have hQv : Q v = 0 := by
+    have hexp : Q (c • t + psi) = c ^ 2 * Q t + 2 * c * ((associated Q) psi t) + Q psi := by
+      rw [show c • t + psi = c • t + (1 : ℝ) • psi by simp, quadratic_expand,
+        associated_comm Q t psi]
+      ring
+    have hc2 : c ^ 2 * Q t = u := by rw [hcsq]; field_simp
+    rw [hv_def, hexp, hpsit, hc2]
+    simp only [mul_zero, add_zero]
+    rw [hu_def]; ring
+  have hvt : 0 ≤ (associated Q) v t := by
+    have h1 : (associated Q) v t = c * Q t + (associated Q) psi t := by
+      rw [hv_def]
+      simp only [map_add, map_smul, LinearMap.add_apply, LinearMap.smul_apply, smul_eq_mul,
+        associated_self_apply]
+    rw [h1, hpsit, add_zero]
+    exact mul_nonneg hcpos.le ht.le
+  have hv_mem : v ∈ closedSheet Q hpos ht := (mem_closedSheet hpos ht).2 ⟨by rw [hQv], hvt⟩
+  have hpair : (associated Q) phi v = c * b + Q psi := by
+    have h1 : (associated Q) phi v = c * ((associated Q) phi t) + (associated Q) phi psi := by
+      rw [hv_def]
+      simp only [map_add, map_smul, smul_eq_mul]
+    have h2 : (associated Q) phi psi = Q psi := by
+      have hdec : phi = psi + (b / Q t) • t := by
+        rw [hpsi, spatialPart, hb]
+        abel
+      rw [hdec]
+      simp only [map_add, map_smul, LinearMap.add_apply, LinearMap.smul_apply, smul_eq_mul]
+      rw [associated_comm Q t psi, hpsit, mul_zero, add_zero, associated_self_apply]
+    rw [h1, h2, hb]
+  have hsqrt : Real.sqrt (u / Q t) * Real.sqrt (u * Q t) = u := by
+    rw [← Real.sqrt_mul (div_nonneg hu0.le ht.le)]
+    have h2 : u / Q t * (u * Q t) = u ^ 2 := by field_simp
+    rw [h2, Real.sqrt_sq hu0.le]
+  have hcb : c * b < u := by
+    have hpos_sqrt : 0 < Real.sqrt (u / Q t) := Real.sqrt_pos.2 (div_pos hu0 ht)
+    calc c * b = Real.sqrt (u / Q t) * b := by rw [hc_def]
+      _ < Real.sqrt (u / Q t) * Real.sqrt (u * Q t) := mul_lt_mul_of_pos_left hb_lt hpos_sqrt
+      _ = u := hsqrt
+  have hneg_pair : (associated Q) phi v < 0 := by
+    have hQpsi' : Q psi = -u := by linarith [hu_def]
+    rw [hpair, hQpsi']
+    linarith
+  have := hphi v hv_mem
+  linarith
+
+/-- **Two vectors of the closed sheet with vanishing pairing are proportional** — the general form
+of `exists_smul_of_associated_eq_zero_of_mem_closedSheet`, which is stated for rational points. -/
+theorem exists_smul_of_associated_eq_zero_of_mem_closedSheet_self (hpos : sigPos Q = 1)
+    (hnd : Q.Nondegenerate) {t : realified V} (ht : 0 < Q t) {a b : realified V}
+    (ha : a ∈ closedSheet Q hpos ht) (hb : b ∈ closedSheet Q hpos ht)
+    (hab : (associated Q) a b = 0) (ha0 : a ≠ 0) : ∃ c : ℝ, b = c • a := by
+  rcases eq_or_lt_of_le ha.1 with hQa | hQa
+  · have hat : 0 < (associated Q) a t := by
+      rcases eq_or_lt_of_le ha.2 with h | h
+      · exact absurd (eq_zero_of_perp_of_quadratic_eq_zero hpos hnd ht h.symm hQa.symm) ha0
+      · exact h
+    have hQa0 : Q a = 0 := hQa.symm
+    set c : ℝ := (associated Q) b t / (associated Q) a t with hc
+    have hwt : (associated Q) (b - c • a) t = 0 := by
+      have h1 : (associated Q) (b - c • a) t
+          = (associated Q) b t - c * ((associated Q) a t) := by
+        rw [map_sub, map_smul, LinearMap.sub_apply, LinearMap.smul_apply, smul_eq_mul]
+      rw [h1, hc]
+      field_simp
+      ring
+    have hQw_le : Q (b - c • a) ≤ 0 :=
+      quadratic_nonpos_of_associated_eq_zero hpos ht hwt
+    have hQw : Q (b - c • a) = Q b := by
+      have hsub : b - c • a = (1 : ℝ) • b + (-c) • a := by
+        rw [one_smul, sub_eq_add_neg, neg_smul]
+      rw [hsub]
+      have hexp := quadratic_expand Q 1 (-c) b a
+      rw [hexp, associated_comm Q b a, hab, hQa0]
+      ring
+    have hQb : Q b = 0 := le_antisymm (hQw ▸ hQw_le) hb.1
+    have hzero : b - c • a = 0 :=
+      eq_zero_of_perp_of_quadratic_eq_zero hpos hnd ht hwt (by rw [hQw, hQb])
+    exact ⟨c, sub_eq_zero.1 hzero⟩
+  · have hat_pos : 0 < (associated Q) a t := by
+      rcases eq_or_lt_of_le ha.2 with h | h
+      · exfalso
+        have hle := mul_self_le_associated_sq (Q := Q) hpos ht a
+        rw [h.symm] at hle
+        nlinarith [hQa, ht]
+      · exact h
+    have hb0 : b = 0 := by
+      by_contra hb0
+      have ha_open : a ∈ positiveCone.upper Q t := ⟨hQa, hat_pos⟩
+      have h := associated_pos_of_mem_upper_of_mem_closedSheet Q hpos hnd ht ha_open hb hb0
+      rw [hab] at h
+      exact lt_irrefl 0 h
+    exact ⟨0, by rw [hb0, zero_smul]⟩
+
+/-- **The support space of an isotropic ray relative to the closed sheet is `I^⊥`**: the isotropic
+case of Lemma-Definition 4.5 in full, for the facial decomposition `Σ(bb)` — the source's "the
+hyperplanes orthogonal to a `ℚ`-isotropic line" (p. 19). -/
+theorem supportSpace_closedSheet_hull_eq_ker (hpos : sigPos Q = 1) (hnd : Q.Nondegenerate)
+    {t : realified V} (ht : 0 < Q t) {e : realified V} (he : Q e = 0) (he0 : e ≠ 0)
+    (het : 0 ≤ (associated Q) e t) :
+    supportSpace (closedSheet Q hpos ht) (PointedCone.hull ℝ ({e} : Set (realified V)))
+      = LinearMap.ker (associated Q e) := by
+  refine le_antisymm (supportSpace_le_ker_associated_of_isotropic hpos ht he het rfl le_rfl) ?_
+  intro x hx
+  refine mem_supportSpace.2 fun phi hphi => ?_
+  rcases eq_or_ne phi 0 with hzero | hne
+  · rw [hzero]; simp
+  have ht_mem : t ∈ closedSheet Q hpos ht :=
+    (mem_closedSheet hpos ht).2 ⟨ht.le, by rw [associated_self_apply]; exact ht.le⟩
+  have hBnd : (associated Q).Nondegenerate :=
+    QuadraticMap.nondegenerate_associated_iff.mpr hnd
+  set p : realified V := (LinearMap.BilinForm.toDual (associated Q) hBnd).symm phi with hp
+  have hp_app : ∀ y : realified V, (associated Q) p y = phi y := by
+    intro y
+    rw [hp]
+    exact LinearMap.BilinForm.apply_toDual_symm_apply phi y
+  have hp0 : p ≠ 0 := by
+    intro h
+    refine hne (LinearMap.ext fun y => ?_)
+    rw [← hp_app y, h]
+    simp
+  have hQp : 0 ≤ Q p :=
+    quadratic_nonneg_of_forall_mem_closedSheet_nonneg hpos ht fun y hy => by
+      rw [hp_app]; exact hphi.1 y hy
+  have hpt : 0 ≤ (associated Q) p t := by
+    rw [hp_app]; exact hphi.1 t ht_mem
+  have hpe : (associated Q) p e = 0 := by
+    rw [hp_app]
+    exact hphi.2 e (PointedCone.subset_hull (Set.mem_singleton e))
+  obtain ⟨c, hc⟩ := exists_smul_of_associated_eq_zero_of_mem_closedSheet_self hpos hnd ht
+    ((mem_closedSheet hpos ht).2 ⟨he.ge, het⟩) ((mem_closedSheet hpos ht).2 ⟨hQp, hpt⟩)
+    (by rw [associated_comm]; exact hpe) he0
+  have hxe : (associated Q) e x = 0 := hx
+  rw [← hp_app x, hc]
+  simp only [map_smul, LinearMap.smul_apply, smul_eq_mul, hxe, mul_zero]
+
+end FacialDecompositionSupportSpace
 
 end LeanCategories.Lattices.Valued
