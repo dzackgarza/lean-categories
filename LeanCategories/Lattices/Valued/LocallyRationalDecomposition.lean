@@ -599,7 +599,7 @@ coordinate identity, which replaces twenty lines of `Finset.sum_eq_single`.
 
 open PointedCone
 
-open scoped TensorProduct Topology
+open scoped TensorProduct Topology Pointwise
 
 namespace LeanCategories.Lattices.Valued
 
@@ -808,6 +808,43 @@ theorem IsRationalForm.neg {φ : (realified V) →ₗ[ℝ] ℝ} (h : IsRationalF
   rw [LinearMap.neg_apply, hl v, LinearMap.neg_apply]
   push_cast
   ring
+
+/-- A rational scalar multiple of a rational form is rational. -/
+theorem IsRationalForm.qsmul {φ : (realified V) →ₗ[ℝ] ℝ} (h : IsRationalForm φ) (q : ℚ) :
+    IsRationalForm ((q : ℝ) • φ) := by
+  obtain ⟨l, hl⟩ := h
+  refine ⟨q • l, fun v => ?_⟩
+  rw [LinearMap.smul_apply, smul_eq_mul, hl v, LinearMap.smul_apply, smul_eq_mul]
+  push_cast
+  ring
+
+/-- The difference of two rational forms is rational. -/
+theorem IsRationalForm.sub {φ ψ : (realified V) →ₗ[ℝ] ℝ}
+    (hφ : IsRationalForm φ) (hψ : IsRationalForm ψ) : IsRationalForm (φ - ψ) := by
+  obtain ⟨l, hl⟩ := hφ
+  obtain ⟨m, hm⟩ := hψ
+  refine ⟨l - m, fun v => ?_⟩
+  rw [LinearMap.sub_apply, hl v, hm v, LinearMap.sub_apply]
+  push_cast
+  ring
+
+/-- The `i`-th coordinate against a `ℚ`-basis, extended to `L(ℝ)` by base change. -/
+noncomputable def rationalCoordinate {ι : Type*} (b : Module.Basis ι ℚ V) (i : ι) :
+    (realified V) →ₗ[ℝ] ℝ :=
+  (Finsupp.lapply i).comp (b.baseChange ℝ).repr.toLinearMap
+
+theorem rationalCoordinate_apply {ι : Type*} (b : Module.Basis ι ℚ V) (i : ι)
+    (x : realified V) : rationalCoordinate b i x = (b.baseChange ℝ).repr x i := rfl
+
+theorem rationalCoordinate_rationalPoint {ι : Type*} (b : Module.Basis ι ℚ V) (i : ι) (v : V) :
+    rationalCoordinate b i (rationalPoint v) = (b.repr v i : ℝ) := by
+  simp [rationalCoordinate, rationalPoint_apply]
+
+/-- Every base-changed rational coordinate is a rational form. -/
+theorem isRationalForm_rationalCoordinate {ι : Type*} (b : Module.Basis ι ℚ V) (i : ι) :
+    IsRationalForm (rationalCoordinate b i) := by
+  refine ⟨(Finsupp.lapply i).comp b.repr.toLinearMap, fun v => ?_⟩
+  simp [rationalCoordinate_rationalPoint]
 
 /-- The generators of the cone cut out of `hull (rationalPoint '' s)` by the halfspace of `l`, as
 points of `L(ℚ)`: the points of `s` on which `l` is nonnegative, and the boundary combinations
