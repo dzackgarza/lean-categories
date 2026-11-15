@@ -8549,7 +8549,7 @@ distance beyond that point away from any other point of the cone and apply the f
 LC-09: `content:IsFaceOf content:intrinsicInterior` and
 `content:PointedCone.IsFaceOf content:quotient` found no competing face/intrinsic-interior
 declaration. -/
-theorem PointedCone.IsFaceOf.eq_of_mem_intrinsicInterior {E : Type*}
+theorem face_eq_of_mem_intrinsicInterior {E : Type*}
     [AddCommGroup E] [Module ℝ E] [TopologicalSpace E] [ContinuousAdd E] [ContinuousSMul ℝ E]
     {F C : PointedCone ℝ E} (hF : F.IsFaceOf C) {x : E} (hxF : x ∈ F)
     (hx : x ∈ intrinsicInterior ℝ (C : Set E)) : F = C := by
@@ -8576,6 +8576,38 @@ theorem PointedCone.IsFaceOf.eq_of_mem_intrinsicInterior {E : Type*}
     rw [hcomb]
     exact F.smul_mem hpos.le hxF
   exact hF.mem_of_smul_add_mem hy hz hr hmem
+
+/-- **A member of a locally rational decomposition is determined by its trace on a neighbourhood.**
+Two members whose interiors meet a fixed open set in the same trace have a common face containing
+a relative-interior point of each, hence coincide. LC-09:
+`content:LocallyFinite content:common face` and
+`content:locally finite fan rational subcone` found no competing local-finiteness theorem. -/
+theorem eq_of_inf_eq_of_isLocallyRationalDecomposition {C K a b : PointedCone ℝ (realified V)}
+    {S : Set (PointedCone ℝ (realified V))}
+    (hS : IsLocallyRationalDecomposition (rationalClosure C) S)
+    (ha : a ∈ S) (hb : b ∈ S)
+    (haK : ((a : Set (realified V)) ∩ interior (K : Set (realified V))).Nonempty)
+    (hbK : ((b : Set (realified V)) ∩ interior (K : Set (realified V))).Nonempty)
+    (hab : a ⊓ K = b ⊓ K) : a = b := by
+  obtain ⟨x, hxa, hxK⟩ := Convex.exists_mem_intrinsicInterior_inter_of_isOpen
+    (s := (a : Set (realified V))) a.convex isOpen_interior haK
+  obtain ⟨y, hyb, hyK⟩ := Convex.exists_mem_intrinsicInterior_inter_of_isOpen
+    (s := (b : Set (realified V))) b.convex isOpen_interior hbK
+  have hxaK : x ∈ a ⊓ K := ⟨intrinsicInterior_subset hxa, interior_subset hxK⟩
+  have hybK : y ∈ b ⊓ K := ⟨intrinsicInterior_subset hyb, interior_subset hyK⟩
+  have hxb : x ∈ b := (show x ∈ b ⊓ K from hab ▸ hxaK).1
+  have hya : y ∈ a := (show y ∈ a ⊓ K from hab.symm ▸ hybK).1
+  have hxab : x ∈ a ⊓ b := ⟨intrinsicInterior_subset hxa, hxb⟩
+  have hyba : y ∈ b ⊓ a := ⟨intrinsicInterior_subset hyb, hya⟩
+  have hleft : a ⊓ b = a := face_eq_of_mem_intrinsicInterior
+    (inf_isFaceOf_of_isLocallyRationalDecomposition hS ha hb) (x := x) hxab hxa
+  have hright : b ⊓ a = b := face_eq_of_mem_intrinsicInterior
+    (inf_isFaceOf_of_isLocallyRationalDecomposition hS hb ha) (x := y) hyba hyb
+  apply le_antisymm
+  · rw [← hleft]
+    exact inf_le_right
+  · rw [← hright]
+    exact inf_le_right
 
 end IsotropicRationalTraces
 
