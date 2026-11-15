@@ -21,6 +21,9 @@ public import Mathlib.Algebra.Module.Torsion.Free
 public import Mathlib.Algebra.Module.ZLattice.Basic
 public import Mathlib.LinearAlgebra.Basis.Defs
 public import Mathlib.LinearAlgebra.Dual.Lemmas
+public import Mathlib.RingTheory.TensorProduct.Finite
+public import Mathlib.Analysis.Normed.Affine.AddTorsorBases
+public import Mathlib.Analysis.Normed.Module.FiniteDimension
 
 /-!
 # Locally rational decompositions of the rational closure of a cone
@@ -47,8 +50,9 @@ an `ℝ`-vector space with no extra structure.
   `IsLocallyRationalDecomposition.restriction`); and the facial decomposition `Σ(bb)`.
   Of the relation of `C` to its rational closure: `C ⊆ closure C₊` for an open `C`, from the
   density of the rational points of `L(ℝ)` (`dense_range_rationalPoint`,
-  `subset_closure_rationalClosure`). That `C ⊆ C₊` itself — the cover hypothesis `C ⊆ ⋃ Σ` of the
-  theorems below — is *not* proved; see "What is not carried" under Lemma-Definition 4.5.
+  `subset_closure_rationalClosure`), and `C ⊆ C₊` itself for a finite-dimensional `L`
+  (`subset_rationalClosure`), which discharges the cover hypothesis `hcover` of the
+  support-space theorems (`exists_mem_of_mem_of_cover_rationalClosure`).
 * **The reading of "the restriction"** (the point on which this file takes a position): the
   restriction of `Σ` to a rational subcone `P` is the collection of *faces* of the traces
   `σ ⊓ P`, `σ ∈ Σ` (`faceClosure (restrictionTo Σ P)`), not the traces themselves. The two
@@ -90,7 +94,10 @@ an `ℝ`-vector space with no extra structure.
   half-space — the cones of `Σ` above `σ` projecting to polyhedra, their minimal members, and
   the translation space `U` with `L_σ` its preimage — is carried in algebraic form in the section
   "Lemma-Definition 4.5, the general case" below, whose docstring says which of its steps are
-  carried and which are not.
+  carried and which are not; of the description of `L_σ` itself the upper bound `L_σ ⊆ I^⊥` is
+  carried in the section "The two descriptions of `L_σ`"
+  (`sigmaSupportSpace_le_ker_associated_of_isotropic`), and the reverse inclusion, which is what
+  the affine model over `A_I(ℝ)` supplies, is not.
 * **Lemma-Definition 4.5 for every locally rational `Σ`** (p. 19, the proof at line 521): the
   support space of `σ` is the same for every member `τ ≥ σ` meeting `C`. Proved in three steps:
   the face step (`supportSpace_eq_of_face`), which turns the source's "translation space of the
@@ -245,12 +252,7 @@ decomposition
   sub-combination that is timelike (`exists_pos_pair_sum`), cut off one term at a time with the
   two-term quadratic expansion. A face containing that sub-combination contains a rational point
   of the open sheet, and the rational case applies.
-* Carried of the isotropic case: its first step only, in the section "Lemma-Definition 4.5, the
-  isotropic case" — the projection `π_I : L → L/I` of an isotropic line, and the theorem that it
-  carries the open cone onto the open half-space `{u | 0 < β u}` of the quotient
-  (`image_mkQ_upper_eq`). The half-space is the affine space `A_I(ℝ)` of the source's proof
-  ("we prefer to think of this image as a cone over a real affine space", p. 19).
-* Carried of the isotropic case: its first step only, in the section "Lemma-Definition 4.5, the
+* Carried of the isotropic case: its first step, in the section "Lemma-Definition 4.5, the
   isotropic case" — the projection `π_I : L → L/I` of an isotropic line, and the theorem that it
   carries the open cone onto the open half-space `{u | 0 < β u}` of the quotient
   (`image_mkQ_upper_eq`). The half-space is the affine space `A_I(ℝ)` of the source's proof
@@ -278,6 +280,17 @@ decomposition
   exposure half is the part of the source's affine argument that this section does not reconstruct,
   and for the cells of `Σ(H)` of Example 4.3 (b) it is the form of the sign condition that
   separates the two cells. Also a hypothesis: that the members cover `C`, not only `C₊`.
+* **Two descriptions of `L_σ` are carried instead, in the section "The two descriptions of `L_σ`"**,
+  and neither of them goes through the cutting forms: for `σ` whose span is the kernel of a form
+  nonnegative on the member (`supportSpace_eq_span_of_ker_eq`) the support space is `⟨σ⟩`, and
+  with that hypothesis at every member above `σ` the `Σ`-support space is `⟨σ⟩`
+  (`sigmaSupportSpace_eq_span_of_forall_ker_eq`) — the independence from `τ` with no `hexp` at
+  all, which is the source's "clear" case for `σ` not an isotropic half line. In the isotropic
+  case the first projection of the source's proof is carried as `L_σ ⊆ I^⊥`
+  (`supportSpace_le_ker_associated_of_isotropic`,
+  `sigmaSupportSpace_le_ker_associated_of_isotropic`), which together with
+  `supportSpace_le_span` is the source's description as an upper bound. What the affine model adds
+  to it, the reverse inclusion, is not carried; see "What is not carried".
 * A check by hand of the shape, in a basis `e, f, w₁, w₂` of signature `(1, 3)` with `e · f = 1`
   and `w_i · w_i = -1`: for the single `ℚ`-hyperplane `{z₁ = 0}` through `σ = ℝ≥0 e`, the members
   above `σ` meeting `C` are the two cells and `C₊ ∩ H`, their polyhedra are the two half-spaces
@@ -422,6 +435,39 @@ that carries `s` into a closed set carries `closure s` into it). Nothing to port
 `content:IsExposed face polyhedral` and `content:PointedCone face exposed` belong to the exposure
 question of the pair of members, not to this one; their hits are recorded in the section
 "Lemma-Definition 4.5, the general case" as the nearest thing the corpus has to the cutting form.
+
+### LC-09 record for `C ⊆ C₊` and the two descriptions of `L_σ` (2026-11-18)
+
+The formulations of this unit, run against the corpus API, with every returned file read:
+
+`content:convex set interior closure equal`: 60 files, all of them about closures of convex sets in
+general; the one file returned is TauCeti `Topology/ClusterSet.lean`, cluster sets of a map, no
+`interior (closure s) = interior s`. `content:interior_closure_eq_interior`: 8 files, 12 matches —
+TauCeti `Analysis/Convex/Topology.lean`, a mirror of Mathlib's `Analysis/Convex/Topology.lean` in
+which `Convex.interior_closure_eq_interior_of_nonempty_interior` appears under the same name, and
+TauCeti `Analysis/Convex/Cone/StrictInward.lean`, which applies it. Nothing to port: the lemma is
+Mathlib's and is used here directly. `content:affineSpan_eq_top_of_nonempty_interior`: 10 matches —
+LeanPool `Polytopes/Halfspace.lean` and atlas `Geometry/Euclidean/Viviani.lean`, both applying the
+same Mathlib lemma to a half-space and to a triangle. `content:rational points dense convex hull`:
+9 files, the one returned being TauCeti `Geometry/Convex/PolyhedralCochain/Pairing.lean` (affine
+test simplices in a polyhedral cochain complex), nothing about a convex hull of rational points
+being dense in an open convex set — no file formalizes `C ⊆ C₊`, and the two Mathlib lemmas above
+plus `IsOpen.affineSpan_eq_top` and `interior_maximal` are the whole proof. `content:continuous
+linear map finite dimensional moduleTopology`: 7 files, the one returned ImperialCollegeLondon
+`FLT/NumberField/AdeleRing.lean`; the statement used is Mathlib's
+`IsModuleTopology.continuous_of_linearMap`, which the repository's own module-topology section
+already uses, and `Module.finBasis` supplies the basis.
+
+For the two descriptions: `content:self dual cone Lorentz`: 5 files, the one returned leanprover
+`Physlib.lean`'s import list — Physlib's order-unit cones are not the light cone and carry no
+self-duality statement for a quadratic form of signature `(1, n − 1)`. The self-duality used in
+`supportSpace_le_ker_associated_of_isotropic` is the repository's own
+`nonneg_associated_of_quadratic_eq_zero_of_mem_closedSheet`, not a corpus import.
+`content:isExposed face cone`: 2 files, the one returned qinz1yang
+`Analysis/Convex/ProperConeFace.lean` (`ProperCone.IsDualElement`), the same file the earlier record
+names as the corpus's nearest neighbour to the exposure question; nothing about a support space
+being the span of a cone whose span is the kernel of a nonnegative form. Nothing to port for either
+description: both are linear algebra over `supportForms` and `PointedCone.hull_le_span`.
 
 ### LC-09 record for discreteness and properness (2026-11-16)
 
@@ -1061,15 +1107,109 @@ theorem subset_closure_rationalBoundary (C : PointedCone ℝ (realified V))
   exact ⟨y, hUT hy.1, ⟨by simpa using hyS, subset_closure hy.2⟩⟩
 
 /-- **The open cone `C` lies in the closure of its rational closure `C₊`** (Looijenga, Definition
-4.2, p. 17). What this does *not* give is `C ⊆ C₊` itself: the convex hull of the rational points of
-`C̄` is not known to be closed, and the step from `C ⊆ closure C₊` to `C ⊆ C₊` is the one the
-support-space theorems below still take as their cover hypothesis (`hcover`). -/
+4.2, p. 17). This does not by itself give `C ⊆ C₊`: the convex hull of the rational points of `C̄`
+is not known to be closed. That step is `subset_rationalClosure` below, which needs the finite
+dimensionality of `L` and the simplex around a point of the open cone. -/
 theorem subset_closure_rationalClosure (C : PointedCone ℝ (realified V))
     (hC : IsOpen (C : Set (realified V))) :
     (C : Set (realified V)) ⊆ closure (rationalClosure C) := by
   refine (subset_closure_rationalBoundary C hC).trans (closure_mono ?_)
   intro x hx
   exact mem_rationalClosure.2 (subset_convexHull ℝ (rationalBoundary C) hx)
+
+/-! ### `C ⊆ C₊`
+
+Looijenga, Definition 4.2, p. 17, writes the rational closure of the open cone `C` as `C₊ ⊃ C`.
+`subset_closure_rationalClosure` above carries `C ⊆ closure C₊`; this section closes the gap to
+`C ⊆ C₊` itself, which is what the cover hypothesis of the support-space theorems needs.
+
+The step is the simplex: a point of the open cone is a convex combination of finitely many
+rational points of `C̄`. Around a point `x` of the open cone there is a simplex whose centroid is
+`x` and whose vertices are in `C`, and a rational point is taken near each vertex; the barycentric
+coordinates of `x` are continuous in the vertices, so `x` is still inside the convex hull of the
+approximating rational points, which lie in `C₊`.
+
+Three of the covering lemmas are Mathlib's and are stated for sets in a normed space: an open
+set contained in a closure is contained in the interior of the closure (`interior_maximal`), the
+affine span of a nonempty open set is everything (`IsOpen.affineSpan_eq_top`), and for a convex
+set with nonempty interior the interior of its closure is its interior
+(`Convex.interior_closure_eq_interior_of_nonempty_interior`). `L(ℝ)` here carries the module
+topology, not a norm, so the argument runs in the coordinate space `Fin n → ℝ` after the
+continuous linear equivalence `realified V ≃L[ℝ] (Fin n → ℝ)` — every linear map out of a
+finite-dimensional module with the module topology is continuous,
+`IsModuleTopology.continuous_of_linearMap`, in particular both directions of the equivalence —
+and is transported back along its homeomorphism. This is where the finite dimensionality of `L`
+is used: `C ⊆ C₊` is false for a convex cone with empty interior dense in its closure, so no
+general-topological argument can give it. -/
+
+/-- **A convex set whose closure contains an open set contains that open set.** The open set
+`C'` is contained in the interior of `closure T'`, and the affine span of a nonempty open set is
+everything, so `affineSpan T' = ⊤` (an affine subspace of a finite-dimensional space is closed,
+so `affineSpan (closure T') ≤ affineSpan T'`); a convex set spanning an affine space has nonempty
+interior (`Convex.interior_nonempty_iff_affineSpan_eq_top`), which makes
+`interior (closure T') = interior T'`. -/
+theorem subset_of_subset_closure_of_convex {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+    [FiniteDimensional ℝ E] {C' T' : Set E} (hopen : IsOpen C') (hsub : C' ⊆ closure T')
+    (hconv : Convex ℝ T') : C' ⊆ T' := by
+  intro x hx
+  have hsub' : C' ⊆ interior (closure T') := interior_maximal hsub hopen
+  have hne : (interior (closure T')).Nonempty := ⟨x, hsub' hx⟩
+  have haff₁ : affineSpan ℝ (interior (closure T')) = ⊤ :=
+    IsOpen.affineSpan_eq_top isOpen_interior hne
+  have haff : affineSpan ℝ (closure T') = ⊤ :=
+    top_le_iff.mp (haff₁.ge.trans (affineSpan_mono ℝ interior_subset))
+  have hclosed : IsClosed ((affineSpan ℝ T' : AffineSubspace ℝ E) : Set E) :=
+    AffineSubspace.isClosed_of_finiteDimensional _
+  have hclsub : closure T' ⊆ (affineSpan ℝ T' : Set E) :=
+    hclosed.closure_subset_iff.mpr (subset_affineSpan ℝ T')
+  have haff' : affineSpan ℝ T' = ⊤ := by
+    have hle : affineSpan ℝ (closure T') ≤ affineSpan ℝ T' := by
+      rw [← AffineSubspace.affineSpan_coe (affineSpan ℝ T')]
+      exact affineSpan_mono ℝ hclsub
+    exact top_le_iff.mp (haff.ge.trans hle)
+  have hne₂ : (interior T').Nonempty :=
+    (Convex.interior_nonempty_iff_affineSpan_eq_top hconv).mpr haff'
+  have hEq : interior (closure T') = interior T' :=
+    Convex.interior_closure_eq_interior_of_nonempty_interior hconv hne₂
+  exact interior_subset (hEq ▸ hsub' hx)
+
+/-- **The open cone lies in its rational closure**, the `C₊ ⊃ C` of Looijenga, Definition 4.2,
+p. 17. Transported to `Fin n → ℝ` along `Module.finBasis`, `C` becomes an open set inside the
+closure of the convex set `C₊`, and `subset_of_subset_closure_of_convex` closes the gap. -/
+theorem subset_rationalClosure (C : PointedCone ℝ (realified V)) [Module.Finite ℚ V]
+    (hC : IsOpen (C : Set (realified V))) :
+    (C : Set (realified V)) ⊆ (rationalClosure C : Set (realified V)) := by
+  classical
+  let e : realified V ≃ₗ[ℝ] (Fin (Module.finrank ℝ (realified V)) → ℝ) :=
+    (Module.finBasis ℝ (realified V)).equivFun
+  have h1 : Continuous e := IsModuleTopology.continuous_of_linearMap e.toLinearMap
+  have h2 : Continuous e.symm := IsModuleTopology.continuous_of_linearMap e.symm.toLinearMap
+  let E' : realified V ≃L[ℝ] (Fin (Module.finrank ℝ (realified V)) → ℝ) :=
+    { e with continuous_toFun := h1, continuous_invFun := h2 }
+  have hconv : Convex ℝ (E' '' (rationalClosure C : Set (realified V))) :=
+    (rationalClosure C).convex.linear_image E'.toLinearMap
+  have hopen : IsOpen (E' '' (C : Set (realified V))) := E'.toHomeomorph.isOpenMap _ hC
+  have himg : E' '' closure (rationalClosure C : Set (realified V)) =
+      closure (E' '' (rationalClosure C : Set (realified V))) :=
+    Homeomorph.image_closure E'.toHomeomorph _
+  have hsub : E' '' (C : Set (realified V)) ⊆
+      closure (E' '' (rationalClosure C : Set (realified V))) := by
+    rw [← himg]
+    exact Set.image_mono (subset_closure_rationalClosure C hC)
+  have key : E' '' (C : Set (realified V)) ⊆ E' '' (rationalClosure C : Set (realified V)) :=
+    subset_of_subset_closure_of_convex hopen hsub hconv
+  rintro x hx
+  obtain ⟨y, hy, hyx⟩ := key ⟨x, hx, rfl⟩
+  rwa [E'.injective hyx] at hy
+
+/-- **The members of a locally rational decomposition cover the open cone**, given that they cover
+`C₊`: the cover hypothesis `hcover` of the support-space theorems, discharged through `C ⊆ C₊`. -/
+theorem exists_mem_of_mem_of_cover_rationalClosure {C : PointedCone ℝ (realified V)}
+    [Module.Finite ℚ V] (hC : IsOpen (C : Set (realified V)))
+    {S : Set (PointedCone ℝ (realified V))}
+    (hcover : ∀ z ∈ rationalClosure C, ∃ τ ∈ S, z ∈ τ) :
+    ∀ z ∈ C, ∃ τ ∈ S, z ∈ τ :=
+  fun z hz => hcover z (subset_rationalClosure C hC hz)
 
 /-- Looijenga, Definition 4.2, p. 17: a cone is *locally rational* in `C₊` when its
 intersection with every rational subcone of `C₊` is rational. -/
@@ -2886,27 +3026,44 @@ independence holds for every pair of members meeting `C` (`supportSpace_eq_of_lo
   The source's proof passes instead through the polyhedra `{z | (1, z) ∈ π_I τ}` of its affine
   space `A_I(ℝ)`, a minimal member among those meeting `C`, and the translation space of that
   member, from which it reads `L_σ`; that affine model is not reconstructed here, and the
-  connectivity it stands for is. For the cells of `Σ(H)` of Example 4.3 (b) the cutting form of two
-  adjacent cells is the form of a sign condition separating them, which is where the hypothesis is
-  met in the example the source is about. The module docstring records a check by hand of the
-  shape, on the single `ℚ`-hyperplane through `σ` in signature `(1, 3)`: there the polyhedra are
-  two half-spaces and their boundary, the three members above `σ` that meet `C` have one
-  translation space and one support space, and it is the space the source's description gives.
+  connectivity it stands for is. What is reconstructed of the source's proof is the section "The
+  two descriptions of `L_σ`": its "clear" case, as the two theorems
+  `supportSpace_eq_span_of_ker_eq` and `sigmaSupportSpace_eq_span_of_forall_ker_eq` — for members
+  whose span is the kernel of a form nonnegative on them, the support space is `⟨σ⟩` and does not
+  depend on the member at all, with no cutting form `hexp` anywhere — and, in the isotropic case,
+  the projection step `L_σ ⊆ I^⊥` (`supportSpace_le_ker_associated_of_isotropic`,
+  `sigmaSupportSpace_le_ker_associated_of_isotropic`), which with `supportSpace_le_span` gives the
+  source's description `L_σ ⊆ I^⊥ ∩ ⋂_{τ > σ} ⟨τ⟩` as an upper bound. The reverse inclusion is
+  exactly what the affine model supplies — a minimal member of the induced decomposition of
+  `A_I(ℝ)` is an affine subspace, the decomposition is invariant under its translation space `U`,
+  and `L_σ` is the space over `U` — and that is the part of the isotropic case still not carried.
+  For the cells of `Σ(H)` of Example 4.3 (b) the cutting form of two adjacent cells is the form of
+  a sign condition separating them, which is where the hypothesis is met in the example the source
+  is about. The module docstring records two checks by hand of the shape: on the single
+  `ℚ`-hyperplane through `σ` in signature `(1, 3)`, where the polyhedra are two half-spaces and
+  their boundary, the three members above `σ` that meet `C` have one support space, and it is
+  `I^⊥ ∩ H`, the value the source's description gives; and on two `ℚ`-hyperplanes in signature
+  `(1, 3)`, where the four cells, the two walls and the corner cone all have support space
+  `I^⊥ ∩ H₁ ∩ H₂ = I`, again the source's value.
 * Also not carried is the identification of the support spaces of `Σ(bb)` as `V`, `{0}` and the
   hyperplanes orthogonal to the `ℚ`-isotropic lines (p. 19).
-* Also not carried: that the members of `Σ` cover `C` itself rather than only `C₊`, which the
-  theorems above take as the hypothesis `hcover`. It is the one statement about the rational
-  closure, `C ⊆ C₊`, that this file does not prove. The source asserts it as part of the notation
-  — "denote by `C₊ ⊃ C` the convex hull of `L(ℚ) ∩ C̄`" (Definition 4.2, text version line 481) —
-  and it is true: `C` is open, so a point of it has a neighbourhood in `C`, and the rational
-  points of that neighbourhood surround it, which puts the point in the convex hull of
-  `L(ℚ) ∩ C̄`. What is carried is `C ⊆ closure C₊` (`subset_closure_rationalClosure`), from the
-  density of `L(ℚ)` in `L(ℝ)` (`dense_range_rationalPoint`). The gap between the two is the step
-  "a point of `C` is a convex combination of *finitely many* rational points of `C̄`", which needs
-  the simplex around the point, and Mathlib has the finite-dimensional simplex machinery
-  (`Convex.interior_closure_eq_interior_of_nonempty_interior`,
-  `interior_convexHull_nonempty_iff_affineSpan_eq_top`) only for normed spaces at this revision,
-  while `L(ℝ)` here carries the module topology.
+* **`C ⊆ C₊` is carried** (`subset_rationalClosure`, for a finite-dimensional `L`), and with it the
+  cover hypothesis `hcover`: `exists_mem_of_mem_of_cover_rationalClosure` turns a cover of `C₊`
+  into one of `C`, and `supportSpace_eq_of_locallyFinite_of_cover_rationalClosure` and
+  `sigmaSupportSpace_eq_supportSpace_of_locallyFinite_of_cover_rationalClosure` are the two
+  theorems above with that hypothesis discharged. The step is the simplex: a point of the open cone
+  is the centroid of a simplex whose vertices are in `C`, and each vertex is replaced by a rational
+  point near it, the barycentric coordinates being continuous. It needs `L` finite dimensional — a
+  convex cone with empty interior dense in its closure has `int (closure C) ⊄ C` — and it is run in
+  the coordinate space `Fin n → ℝ` along `realified V ≃L[ℝ] (Fin n → ℝ)`, because the two
+  Mathlib lemmas it rests on, `IsOpen.affineSpan_eq_top` and
+  `Convex.interior_nonempty_iff_affineSpan_eq_top`, are stated for sets in a normed space, while
+  `L(ℝ)` here carries the module topology. The transport is `Module.finBasis` together with
+  `IsModuleTopology.continuous_of_linearMap`; every linear map out of a finite-dimensional module
+  with the module topology is continuous, so the basis equivalence is a `ContinuousLinearEquiv`.
+  (`Convex.interior_closure_eq_interior_of_nonempty_interior`, the third of them, is *not*
+  restricted to normed spaces: its section assumes only `IsTopologicalAddGroup` and
+  `ContinuousSMul`.)
 * Also not carried, and this is *not* a hypothesis of Definition 4.2 that could be discharged from
   it: the cutting form `w` of `hexp`. Definition 4.2 (line 481) calls a cone *locally rational in
   `C₊`* when "its intersection with every rational subcone of `C₊` is rational", and rational means
@@ -3440,7 +3597,152 @@ theorem sigmaSupportSpace_eq_supportSpace_of_locallyFinite {C : PointedCone ℝ 
   sigmaSupportSpace_eq_supportSpace τ₀ fun τ =>
     supportSpace_eq_of_locallyFinite hconv hclosed hcover hloc hexp τ.2.1 τ₀.2.1 τ.2.2.2 τ₀.2.2.2
 
+/-- **Lemma-Definition 4.5, the independence of `L_σ` from `τ`, with the cover taken from the
+decomposition itself** (Looijenga, p. 19): the members cover the rational closure `C₊`, and
+`C ⊆ C₊` (`subset_rationalClosure`) supplies the cover hypothesis of
+`supportSpace_eq_of_locallyFinite`. -/
+theorem supportSpace_eq_of_locallyFinite_of_cover_rationalClosure
+    {C : PointedCone ℝ (realified V)} {S : Set (PointedCone ℝ (realified V))}
+    {σ : PointedCone ℝ (realified V)} [Module.Finite ℚ V]
+    (hconv : Convex ℝ (C : Set (realified V)))
+    (hclosed : ∀ τ ∈ S, IsClosed ((τ : PointedCone ℝ (realified V)) : Set (realified V)))
+    (hCopen : IsOpen (C : Set (realified V)))
+    (hCplus : ∀ z ∈ rationalClosure C, ∃ τ ∈ S, z ∈ τ)
+    (hloc : LocallyFinite fun τ : {τ : PointedCone ℝ (realified V) // τ ∈ S} =>
+      ((τ.1 : PointedCone ℝ (realified V)) : Set (realified V)))
+    (hexp : ∀ a b : PointedCone ℝ (realified V), a ∈ S → b ∈ S →
+      (((a ⊓ b : PointedCone ℝ (realified V)) : Set (realified V)) ∩
+        (C : Set (realified V))).Nonempty →
+      ∃ w w' : (realified V) →ₗ[ℝ] ℝ, Dominates σ a (a ⊓ b) w ∧ Dominates σ b (a ⊓ b) w')
+    {τ τ' : PointedCone ℝ (realified V)} (hτ : τ ∈ S) (hτ' : τ' ∈ S)
+    (hτC : (((τ : PointedCone ℝ (realified V)) : Set (realified V)) ∩
+      (C : Set (realified V))).Nonempty)
+    (hτ'C : (((τ' : PointedCone ℝ (realified V)) : Set (realified V)) ∩
+      (C : Set (realified V))).Nonempty) :
+    supportSpace τ σ = supportSpace τ' σ :=
+  supportSpace_eq_of_locallyFinite hconv hclosed
+    (exists_mem_of_mem_of_cover_rationalClosure hCopen hCplus) hloc hexp hτ hτ' hτC hτ'C
+
+/-- **Lemma-Definition 4.5, `L_σ` from the members covering `C₊`** — the previous theorem as the
+support space of `σ` in the decomposition. -/
+theorem sigmaSupportSpace_eq_supportSpace_of_locallyFinite_of_cover_rationalClosure
+    {C : PointedCone ℝ (realified V)} {S : Set (PointedCone ℝ (realified V))}
+    {σ : PointedCone ℝ (realified V)} [Module.Finite ℚ V]
+    (hconv : Convex ℝ (C : Set (realified V)))
+    (hclosed : ∀ τ ∈ S, IsClosed ((τ : PointedCone ℝ (realified V)) : Set (realified V)))
+    (hCopen : IsOpen (C : Set (realified V)))
+    (hCplus : ∀ z ∈ rationalClosure C, ∃ τ ∈ S, z ∈ τ)
+    (hloc : LocallyFinite fun τ : {τ : PointedCone ℝ (realified V) // τ ∈ S} =>
+      ((τ.1 : PointedCone ℝ (realified V)) : Set (realified V)))
+    (hexp : ∀ a b : PointedCone ℝ (realified V), a ∈ S → b ∈ S →
+      (((a ⊓ b : PointedCone ℝ (realified V)) : Set (realified V)) ∩
+        (C : Set (realified V))).Nonempty →
+      ∃ w w' : (realified V) →ₗ[ℝ] ℝ, Dominates σ a (a ⊓ b) w ∧ Dominates σ b (a ⊓ b) w')
+    (τ₀ : supportIndex C S σ) :
+    sigmaSupportSpace C S σ = supportSpace τ₀.1 σ :=
+  sigmaSupportSpace_eq_supportSpace τ₀ fun τ =>
+    supportSpace_eq_of_locallyFinite_of_cover_rationalClosure hconv hclosed hCopen hCplus hloc
+      hexp τ.2.1 τ₀.2.1 τ.2.2.2 τ₀.2.2.2
+
 end SupportSpaceIndependenceLocallyFinite
+
+/-! ## The two descriptions of `L_σ` in the source's proof of Lemma-Definition 4.5
+
+Looijenga's proof (p. 19; text version `.tmp-sources/looijenga-math0201218v2.md:521`) has two
+cases, and neither of them is the cutting form `hexp` of the section above:
+
+* `σ` is not an isotropic half line. The source says the assertion is "clear" here; what it is
+  clear *from* is the description that follows, `L_σ = ⟨σ⟩_ℂ`. If the span of `σ` is cut out by a
+  single form `λ` that is nonnegative on `τ`, then a form nonnegative on `τ` and zero on `σ`
+  vanishes on `⟨σ⟩`, hence is a multiple of `λ`, and the common zero set of those multiples is
+  `⟨σ⟩`: `supportSpace_eq_span_of_ker_eq`. This is the case of the members and walls of the
+  arrangement of Example 4.3 (b), where the form of a sign condition cuts the wall out of the
+  cells on either side of it, and of the facial decomposition.
+* `σ` spans an isotropic line `I`. The source projects along `I`: the image of `C` under
+  `L → L/I` is a half-space, `C₊` maps to the union of that half-space with the origin, and the
+  members above `σ` become polyhedra in an affine space `A_I(ℝ)` over `(I ⊗ I^⊥/I)(ℝ)`. The form
+  `y ↦ e · y` for `e` spanning `I` is nonnegative on the closed sheet (`closedSheet`, and the
+  Cauchy–Schwarz inequality of `nonneg_associated_of_quadratic_eq_zero_of_mem_closedSheet`) and
+  vanishes on `σ` because `e` is isotropic, which is the projection step: `L_σ ⊆ I^⊥`,
+  `supportSpace_le_ker_associated_of_isotropic`. What the source then reads off the affine model
+  — that a minimal member of the induced decomposition of `A_I(ℝ)` is an affine subspace, that the
+  whole decomposition is invariant under its translation space `U`, and that `L_σ` is the space
+  over `U` — is not reconstructed; see "What is not carried" in the module docstring. -/
+
+section SupportSpaceDescriptions
+
+/-- **The source's "clear" case of Lemma-Definition 4.5**: if the span of `σ` is the kernel of a
+form nonnegative on `τ`, every form nonnegative on `τ` and zero on `σ` is a multiple of it, so the
+common zero set is `⟨σ⟩` — the `Σ`-support space does not depend on `τ` here at all. -/
+theorem supportSpace_eq_span_of_ker_eq {σ τ : PointedCone ℝ (realified V)}
+    {lam : (realified V) →ₗ[ℝ] ℝ} (hστ : σ ≤ τ) (hlamτ : ∀ x ∈ τ, 0 ≤ lam x)
+    (hker : Submodule.span ℝ (σ : Set (realified V)) = LinearMap.ker lam) :
+    supportSpace τ σ = Submodule.span ℝ (σ : Set (realified V)) := by
+  refine le_antisymm ?_ (span_le_supportSpace hστ)
+  have hσ : ∀ y ∈ σ, lam y = 0 := by
+    intro y hy
+    have hy' : y ∈ LinearMap.ker lam := hker ▸ Submodule.subset_span hy
+    simpa using hy'
+  intro x hx
+  have hφ : lam ∈ supportForms τ σ := ⟨hlamτ, hσ⟩
+  have hxlam : x ∈ LinearMap.ker lam := mem_supportSpace.1 hx lam hφ
+  rwa [← hker] at hxlam
+
+/-- **Lemma-Definition 4.5 for the members cut out of the ambient space by a nonnegative form**:
+if every member `τ` above `σ` meeting `C` has `⟨σ⟩` as the kernel of a form nonnegative on `τ`,
+then the `Σ`-support space of `σ` is `⟨σ⟩`. This is the independence from `τ` that the lemma
+asserts, and it needs neither the cutting forms `hexp` at pairs of members nor the cover of `C`. -/
+theorem sigmaSupportSpace_eq_span_of_forall_ker_eq {C : PointedCone ℝ (realified V)}
+    {S : Set (PointedCone ℝ (realified V))} {σ : PointedCone ℝ (realified V)}
+    (τ₀ : supportIndex C S σ)
+    (h : ∀ τ : supportIndex C S σ, ∃ lam : (realified V) →ₗ[ℝ] ℝ,
+      (∀ x ∈ τ.1, 0 ≤ lam x) ∧
+      Submodule.span ℝ (σ : Set (realified V)) = LinearMap.ker lam) :
+    sigmaSupportSpace C S σ = Submodule.span ℝ (σ : Set (realified V)) := by
+  refine sigmaSupportSpace_eq_of_forall_eq τ₀ fun τ => ?_
+  obtain ⟨lam, hlamτ, hker⟩ := h τ
+  exact supportSpace_eq_span_of_ker_eq τ.2.2.1 hlamτ hker
+
+/-- **The projection step of the source's proof of Lemma-Definition 4.5 in the isotropic case**:
+`σ` spans an isotropic line `I = ℝe` and the members lie in the closed sheet of the form. The form
+`y ↦ e · y` is nonnegative on `τ` — `e` is isotropic and in the sheet, and the sheet is
+self-dual, which is `nonneg_associated_of_quadratic_eq_zero_of_mem_closedSheet` — and it vanishes
+on `σ` because `e` is isotropic, so every point of `L_σ` is orthogonal to `e`: `L_σ ⊆ I^⊥`, the
+image of the first projection `L → L/I` of the source's affine model. -/
+theorem supportSpace_le_ker_associated_of_isotropic {Q : QuadraticForm ℝ (realified V)}
+    [Module.Finite ℚ V] (hpos : sigPos Q = 1) {t : realified V} (ht : 0 < Q t)
+    {e : realified V} (he : Q e = 0) (het : 0 ≤ (associated Q) e t)
+    {σ τ : PointedCone ℝ (realified V)}
+    (hσ : σ = PointedCone.hull ℝ ({e} : Set (realified V)))
+    (hτ : τ ≤ closedSheet Q hpos ht) :
+    supportSpace τ σ ≤ LinearMap.ker (associated Q e) := by
+  have hσe : ∀ y ∈ σ, (associated Q e) y = 0 := by
+    intro y hy
+    rw [hσ] at hy
+    obtain ⟨c, rfl⟩ := Submodule.mem_span_singleton.1
+      (PointedCone.hull_le_span ℝ _ hy : y ∈ Submodule.span ℝ ({e} : Set (realified V)))
+    rw [map_smul, smul_eq_mul, associated_self_apply, he, mul_zero]
+  intro x hx
+  have hφ : (associated Q e) ∈ supportForms τ σ := by
+    refine ⟨fun y hy => ?_, hσe⟩
+    exact nonneg_associated_of_quadratic_eq_zero_of_mem_closedSheet hpos ht he het (hτ hy)
+  simpa using mem_supportSpace.1 hx (associated Q e) hφ
+
+/-- **`L_σ ⊆ I^⊥` for the `Σ`-support space of an isotropic half line**, the τ-independent form of
+`supportSpace_le_ker_associated_of_isotropic`: together with `supportSpace_le_span` this is the
+source's description of `L_σ` in the isotropic case, as an upper bound. -/
+theorem sigmaSupportSpace_le_ker_associated_of_isotropic {Q : QuadraticForm ℝ (realified V)}
+    [Module.Finite ℚ V] (hpos : sigPos Q = 1) {t : realified V} (ht : 0 < Q t)
+    {e : realified V} (he : Q e = 0) (het : 0 ≤ (associated Q) e t)
+    {C σ : PointedCone ℝ (realified V)} {S : Set (PointedCone ℝ (realified V))}
+    (τ₀ : supportIndex C S σ)
+    (hσ : σ = PointedCone.hull ℝ ({e} : Set (realified V)))
+    (hτ : ∀ τ : supportIndex C S σ, τ.1 ≤ closedSheet Q hpos ht) :
+    sigmaSupportSpace C S σ ≤ LinearMap.ker (associated Q e) :=
+  (sigmaSupportSpace_le τ₀.2.1 τ₀.2.2.1 τ₀.2.2.2).trans
+    (supportSpace_le_ker_associated_of_isotropic hpos ht he het hσ (hτ τ₀))
+
+end SupportSpaceDescriptions
 
 
 
