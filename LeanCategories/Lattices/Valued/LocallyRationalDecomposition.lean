@@ -193,8 +193,9 @@ theorem rationalPoint_rat_smul (q : ℚ) (v : V) :
 
 /-! ## Definition 4.1: rational cones and rational cone systems -/
 
-/-- Looijenga, Definition 4.1, p. 16: a cone in `L(ℝ)` is *rational* when it is the convex
-cone spanned by a finite subset of `L(ℚ)`. -/
+/-- Looijenga, Definition 4.1, p. 16 (text version
+`.tmp-sources/looijenga-math0201218v2.md:459`): a cone in `L(ℝ)` is *rational* when it is the
+convex cone spanned by a finite subset of `L(ℚ)`. -/
 def IsRationalCone (σ : PointedCone ℝ (realified V)) : Prop :=
   ∃ s : Finset V, σ = PointedCone.hull ℝ (rationalPoint '' (s : Set V))
 
@@ -468,11 +469,14 @@ of convex cones whose union is `C₊` and whose restriction to every rational su
 a rational cone system (Definition 4.1, p. 16, so in particular a *finite* set of nondegenerate
 rational cones, closed under taking faces and with pairwise intersections along common faces).
 
-**The reading of "the restriction".** The restriction of `Σ` to `P` is taken here to be the
-collection of *faces* of the traces `σ ⊓ P`, `σ ∈ Σ` (`faceClosure (restrictionTo Σ P)`), not
-the traces themselves. Definition 4.2 has two readings, and this one is forced by the uses the
-source makes of it: he asserts (p. 17) that the facial decomposition `Σ(bb)` is a locally
-rational decomposition, and with the traces themselves it is not one — in the setting of
+**The reading of "the restriction".** The clause of Definition 4.2 (p. 17) reads "the
+restriction to every rational subcone of `C₊` is a rational cone system"
+(`.tmp-sources/looijenga-math0201218v2.md:481`). The restriction of `Σ` to `P` is taken here
+to be the collection of *faces* of the traces `σ ⊓ P`, `σ ∈ Σ`
+(`faceClosure (restrictionTo Σ P)`), not the traces themselves. Definition 4.2 has two
+readings, and this one is forced by the uses the source makes of it: he asserts (p. 17) that
+the facial decomposition `Σ(bb)` is a locally rational decomposition, and with the traces
+themselves it is not one — in the setting of
 Example 4.3, `P` spanned by two rational points of the open cone is a trace of `Σ(bb)`, a ray of
 `P` is a face of `P`, and no trace is that ray, so face-closure fails
 (`not_isLocallyRationalDecompositionTraces_facialDecomposition`). With the faces of the traces
@@ -909,7 +913,8 @@ end Example43
 
 /-! ## The hyperbolic setting of Example 4.3, pp. 17-18
 
-Looijenga, Example 4.3, p. 17: `C` is a connected component of the set of `x` with `x · x > 0`,
+Looijenga, Example 4.3, pp. 17-18 (`.tmp-sources/looijenga-math0201218v2.md:487`): `C` is a
+connected component of the set of `x` with `x · x > 0`,
 for a *nondegenerate* symmetric bilinear form of hyperbolic signature `(1, dim L − 1)` defined
 over `ℚ`, and `Γ` an arithmetic subgroup of `O(L(ℚ))` preserving `C`. The closed component —
 the sheet cut out by a fixed positive vector `t` — is a cone (`closedSheet`), and it is salient
@@ -1590,7 +1595,8 @@ theorem mem_supportForms {τ σ : PointedCone ℝ (realified V)} {φ : (realifie
     φ ∈ supportForms τ σ ↔ (∀ x ∈ τ, 0 ≤ φ x) ∧ (∀ x ∈ σ, φ x = 0) :=
   Iff.rfl
 
-/-- Looijenga, Lemma-Definition 4.5, p. 19: the common zero set of the real linear forms on
+/-- Looijenga, Lemma-Definition 4.5, p. 19 (text version
+`.tmp-sources/looijenga-math0201218v2.md:519`): the common zero set of the real linear forms on
 `L(ℝ)` that are nonnegative on `τ` and zero on `σ`. -/
 noncomputable def supportSpace (τ σ : PointedCone ℝ (realified V)) :
     Submodule ℝ (realified V) :=
