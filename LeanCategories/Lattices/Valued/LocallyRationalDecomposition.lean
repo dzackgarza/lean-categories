@@ -1801,6 +1801,12 @@ theorem coneMap_inf (P Q : PointedCone ℝ (realified V)) :
   refine SetLike.ext fun x => ?_
   rw [mem_coneMap, Submodule.mem_inf, Submodule.mem_inf, mem_coneMap, mem_coneMap]
 
+/-- The image map on cones is monotone. -/
+theorem coneMap_mono {P Q : PointedCone ℝ (realified V)} (h : P ≤ Q) :
+    coneMap e P ≤ coneMap e Q := by
+  rintro - ⟨y, hy, rfl⟩
+  exact ⟨y, h hy, rfl⟩
+
 /-- **Faces map to faces** under a linear equivalence. -/
 theorem isFaceOf_coneMap {F P : PointedCone ℝ (realified V)} (hF : F.IsFaceOf P) :
     (coneMap e F).IsFaceOf (coneMap e P) where
@@ -5051,8 +5057,393 @@ theorem cutsFinitelyOnRational_orbitFamily {Q : QuadraticForm ℝ (realified V)}
     fun ℓ => Classical.choose_spec (exists_generator_of_orbitFamily
       (Submodule.span ℤ (Set.range bs)) H₀ Γ hΓΛ hH₀) ℓ
 
+/-! ## Example 4.3 (b) with no finiteness hypothesis: `Σ(H)` for a `Γ`-finite `H`
+
+Looijenga, Example 4.3 (b), pp. 17-18 (`.tmp-sources/looijenga-math0201218v2.md:491`): let `L`
+carry a form of signature `(1, dim L - 1)`, let `C` be a component of `x · x > 0` and let `Γ` be an
+arithmetic subgroup of `O(L(ℚ))` preserving `C`. A collection `H` of `ℚ`-hyperplanes of `L` which
+meet `C` and whose image in the Grassmannian is a finite union of `Γ`-orbits "decomposes `C₊` into
+the locally rational decomposition `Σ(H)`"; the preamble of Example 4.3 (p. 17, line 487) asks the
+decomposition to be `Γ`-invariant.
+
+* **Locally rational, with nothing left to assume.** `arrangementDecomposition_isLocallyRational`
+  proves Definition 4.2's condition for `Σ(H)` from `CutsFinitelyOnRational`, and
+  `cutsFinitelyOnRational_orbitFamily` derives that hypothesis for `H` the union of the `Γ`-orbits
+  of a finite `H₀`; `arrangementDecomposition_isLocallyRational_of_orbitFamily` is the composition.
+* **`Γ`-invariance.** An element `g` of `Γ` carries the hyperplane of a line `ℓ` to the hyperplane
+  of `ℓ.map g`, and the generator of the lattice cut `Λ ⊓ ℓ` to `± g` of the generator of the cut
+  of
+  `ℓ.map g` (`orbitGenerator_eq_or_eq_neg`, from the uniqueness of the primitive generator of a
+  rank-one free `ℤ`-submodule). The sign is real: `g` may reverse the chosen generator. With the
+  isometry identity on `L(ℝ)` (`associated_realifiedEquiv`, transported from the rational points by
+  `span_range_rationalPoint`) this makes `realifiedEquiv g` permute the forms `normalForm Q (gen ℓ)`
+  up to `±1`, and since the cells of `Σ(H)` are indexed by *all* sign patterns, a sign flip of one
+  form is absorbed by reindexing the patterns
+  (`arrangementDecomposition_coneMap_of_equivariant`).
+* `example43b_of_orbitFamily` is the two together: the setting of Example 4.3, `Σ(H)`, and the
+  statement of (b) for a `Γ`-finite `H`.
+
+`Γ` is carried as a set (`Γ : Set (V ≃ₗ[ℚ] V)`) throughout this file, so the invariance statements
+take closure under composition and inverse as hypotheses — `Γ` is a subgroup of `O(L(ℚ))` in the
+source. The locally rational statement needs neither. -/
+
+section Example43b
+
+open Classical
+
+/-- The real form of a `ℚ`-linear equivalence: the base change of `g` to `ℝ`, i.e. the action of
+`g ∈ Γ` on `L(ℝ) = ℝ ⊗[ℚ] L` (Looijenga, Example 4.3, p. 17). -/
+noncomputable def realifiedEquiv (g : V ≃ₗ[ℚ] V) : (realified V) ≃ₗ[ℝ] (realified V) :=
+  g.baseChange ℚ ℝ
+
+omit [Module.Finite ℚ V] in
+theorem realifiedEquiv_rationalPoint (g : V ≃ₗ[ℚ] V) (v : V) :
+    realifiedEquiv g (rationalPoint v) = rationalPoint (g v) := by
+  rw [realifiedEquiv, rationalPoint_apply, rationalPoint_apply, LinearEquiv.baseChange_tmul]
+
+omit [Module.Finite ℚ V] in
+theorem isRationalEquiv_realifiedEquiv (g : V ≃ₗ[ℚ] V) : IsRationalEquiv (realifiedEquiv g) :=
+  ⟨g, realifiedEquiv_rationalPoint g⟩
+
+omit [Module.Finite ℚ V] in
+/-- The rational points span `L(ℝ)` over `ℝ`: a pure tensor is a real multiple of a rational
+point. Used to transport identities of linear forms from `L(ℚ)` to `L(ℝ)`. -/
+theorem span_range_rationalPoint :
+    Submodule.span ℝ (Set.range (rationalPoint (V := V))) = ⊤ := by
+  refine Submodule.eq_top_iff'.2 fun x => ?_
+  induction x using TensorProduct.inductionOn with
+  | tmul r v =>
+    rw [TensorProduct.tmul_eq_smul_one_tmul]
+    exact Submodule.smul_mem _ r (Submodule.subset_span ⟨v, rfl⟩)
+  | add x y hx hy => exact Submodule.add_mem _ hx hy
+
+omit [Module.Finite ℚ V] in
+/-- **An isometry of `Γ` is an isometry of the associated form on `L(ℝ)`**: both sides are linear in
+the second argument and agree on the rational points (`hBQ`, `hg`), which span `L(ℝ)`. -/
+theorem associated_realifiedEquiv {Q : QuadraticForm ℝ (realified V)}
+    {BQ : LinearMap.BilinForm ℚ V} {g : V ≃ₗ[ℚ] V}
+    (hBQ : ∀ u w : V, (associated Q) (rationalPoint u) (rationalPoint w) = (BQ u w : ℝ))
+    (hg : ∀ x y : V, BQ (g x) (g y) = BQ x y) (v : V) (y : realified V) :
+    (associated Q) (rationalPoint (g v)) (realifiedEquiv g y)
+      = (associated Q) (rationalPoint v) y := by
+  let F : (realified V) →ₗ[ℝ] ℝ :=
+    ((associated Q) (rationalPoint (g v))).comp (realifiedEquiv g).toLinearMap -
+      (associated Q) (rationalPoint v)
+  have hF : ∀ x : V, F (rationalPoint x) = 0 := by
+    intro x
+    show (associated Q) (rationalPoint (g v)) (realifiedEquiv g (rationalPoint x))
+      - (associated Q) (rationalPoint v) (rationalPoint x) = 0
+    rw [realifiedEquiv_rationalPoint, hBQ (g v) (g x), hBQ v x, hg, sub_self]
+  have hzero : F = 0 := by
+    have hle : Submodule.span ℝ (Set.range (rationalPoint (V := V))) ≤ F.ker := by
+      rw [Submodule.span_le]
+      rintro - ⟨x, rfl⟩
+      simpa using hF x
+    rw [span_range_rationalPoint] at hle
+    have hker : F.ker = ⊤ := top_le_iff.1 hle
+    exact LinearMap.ext fun z => by
+      have hz : z ∈ F.ker := by rw [hker]; exact Submodule.mem_top
+      simpa using hz
+  have h := congrArg (fun f : (realified V) →ₗ[ℝ] ℝ => f y) hzero
+  simpa [F, sub_eq_zero] using h
+
+omit [Module.Finite ℚ V] in
+/-- **A family of forms permuted by an equivalence permutes its cells**, one direction: if
+`ψ (ρ i) (e y) = d i · ψ i y`, the sign of `ψ j` at `x` is the sign of `ψ (ρ⁻¹ j)` at `e⁻¹ x`. -/
+theorem cell_le_coneMap_of_equivariant {ι : Type*} {ψ : ι → (realified V) →L[ℝ] ℝ}
+    {e : (realified V) ≃ₗ[ℝ] (realified V)} {ρ : ι ≃ ι} {d : ι → ℝ}
+    (hψ : ∀ i (y : realified V), ψ (ρ i) (e y) = d i * ψ i y) (s : ι → SignType) :
+    coneMap e (arrangementCone ψ s) ≤
+      arrangementCone ψ (fun j => SignType.sign (d (ρ.symm j)) * s (ρ.symm j)) := by
+  intro x hx
+  rw [mem_coneMap, mem_arrangementCone_iff_specializes (φ := ψ)] at hx
+  rw [mem_arrangementCone_iff_specializes (φ := ψ)]
+  intro j
+  have h1 : ψ j x = d (ρ.symm j) * ψ (ρ.symm j) (e.symm x) := by
+    have h2 := hψ (ρ.symm j) (e.symm x)
+    simpa using h2
+  rw [h1, sign_mul]
+  rcases hx (ρ.symm j) with h0 | h0
+  · rw [h0, mul_zero]
+    exact Or.inl rfl
+  · rw [h0]
+    exact Or.inr rfl
+
+omit [Module.Finite ℚ V] in
+/-- **An equivalence that permutes the forms up to nonzero scalars permutes the cells of the
+arrangement**: the pattern's signs are carried along, `s j` becoming `sign (c j) * s j`. The
+reverse inclusion is the same statement at `e.symm` with the inverse scalars. -/
+theorem coneMap_arrangementCone_of_equivariant {ι : Type*} {φ : ι → (realified V) →L[ℝ] ℝ}
+    {e : (realified V) ≃ₗ[ℝ] (realified V)} {ρ : ι ≃ ι} {c : ι → ℝ} (hc : ∀ i, c i ≠ 0)
+    (hφ : ∀ i (y : realified V), φ (ρ i) (e y) = c i * φ i y) (s : ι → SignType) :
+    coneMap e (arrangementCone φ s) =
+      arrangementCone φ (fun j => SignType.sign (c (ρ.symm j)) * s (ρ.symm j)) := by
+  set t : ι → SignType := fun j => SignType.sign (c (ρ.symm j)) * s (ρ.symm j) with ht
+  have hpair : ∀ i, SignType.sign ((c i)⁻¹) * SignType.sign (c i) = 1 := by
+    intro i
+    rw [← sign_mul, inv_mul_cancel₀ (hc i)]
+    simp
+  refine le_antisymm (cell_le_coneMap_of_equivariant hφ s) ?_
+  have hφ' : ∀ i (y : realified V),
+      φ (ρ.symm i) (e.symm y) = (c (ρ.symm i))⁻¹ * φ i y := by
+    intro i y
+    have h2 : φ i y = c (ρ.symm i) * φ (ρ.symm i) (e.symm y) := by
+      simpa using hφ (ρ.symm i) (e.symm y)
+    rw [h2, inv_mul_cancel_left₀ (hc (ρ.symm i))]
+  have hpat : (fun j => SignType.sign ((c (ρ.symm ((ρ.symm).symm j)))⁻¹) *
+      t ((ρ.symm).symm j)) = s := by
+    funext j
+    simp only [Equiv.symm_symm, ht]
+    rw [show ρ.symm (ρ j) = j from Equiv.symm_apply_apply ρ j, ← mul_assoc, hpair j, one_mul]
+  have hle := cell_le_coneMap_of_equivariant (e := e.symm) (ρ := ρ.symm)
+    (d := fun i => (c (ρ.symm i))⁻¹) hφ' t
+  rw [hpat] at hle
+  have hmono := coneMap_mono (e := e) hle
+  rwa [coneMap_coneMap_symm] at hmono
+
+omit [Module.Finite ℚ V] in
+/-- **An equivalence permuting the forms leaves the decomposition `Σ(H)` fixed.** -/
+theorem arrangementDecomposition_coneMap_of_equivariant {ι : Type*}
+    {φ : ι → (realified V) →L[ℝ] ℝ} {e : (realified V) ≃ₗ[ℝ] (realified V)} {ρ : ι ≃ ι}
+    {c : ι → ℝ} (hc : ∀ i, c i ≠ 0)
+    (hφ : ∀ i (y : realified V), φ (ρ i) (e y) = c i * φ i y)
+    {Cplus : PointedCone ℝ (realified V)} (hC : coneMap e Cplus = Cplus) :
+    coneMap e '' arrangementDecomposition φ Cplus = arrangementDecomposition φ Cplus := by
+  have hsq : ∀ a : SignType, a ≠ 0 → a * a = 1 := by
+    rintro (_ | _ | _) h <;> simp_all
+  refine Set.Subset.antisymm ?_ ?_
+  · rintro - ⟨σ, ⟨s, rfl⟩, rfl⟩
+    refine ⟨fun j => SignType.sign (c (ρ.symm j)) * s (ρ.symm j), ?_⟩
+    rw [coneMap_inf, hC, coneMap_arrangementCone_of_equivariant hc hφ s]
+  · rintro - ⟨u, rfl⟩
+    have hpat : (fun j => SignType.sign (c (ρ.symm j)) * (SignType.sign (c (ρ.symm j)) *
+        u (ρ (ρ.symm j)))) = u := by
+      funext j
+      rw [show ρ (ρ.symm j) = j from Equiv.apply_symm_apply ρ j, ← mul_assoc,
+        hsq _ (fun h => hc _ (sign_eq_zero_iff.1 h)), one_mul]
+    refine ⟨arrangementCone φ (fun i => SignType.sign (c i) * u (ρ i)) ⊓ Cplus,
+      ⟨fun i => SignType.sign (c i) * u (ρ i), rfl⟩, ?_⟩
+    rw [coneMap_inf, hC, coneMap_arrangementCone_of_equivariant hc hφ]
+    rw [hpat]
+
+omit [Module.Finite ℚ V] in
+/-- The image of a hyperplane of the family under a member of `Γ`, as a hyperplane of the family:
+composition of the two maps, in the order `Submodule.map_comp` states it. -/
+theorem map_map_eq_map_trans {ℓ : Submodule ℚ V} {f g : V ≃ₗ[ℚ] V} :
+    (ℓ.map (f : V →ₗ[ℚ] V)).map (g : V →ₗ[ℚ] V)
+      = ℓ.map ((f.trans g : V ≃ₗ[ℚ] V) : V →ₗ[ℚ] V) := by
+  have hcomp : ((f.trans g : V ≃ₗ[ℚ] V) : V →ₗ[ℚ] V)
+      = (g : V →ₗ[ℚ] V).comp (f : V →ₗ[ℚ] V) := by
+    ext x
+    rfl
+  rw [hcomp, ← Submodule.map_comp]
+
+/-- **`Γ` acts on the orbit family of `H₀`** by carrying a hyperplane to its image. `Γ` is a set in
+this file and a subgroup in the source, so closure under composition and inverse is carried. -/
+noncomputable def orbitFamilyMap {H₀ : Finset (Submodule ℚ V)} {Γ : Set (V ≃ₗ[ℚ] V)}
+    (hΓcomp : ∀ f ∈ Γ, ∀ g ∈ Γ, f.trans g ∈ Γ) (hΓinv : ∀ g ∈ Γ, g.symm ∈ Γ)
+    {g : V ≃ₗ[ℚ] V} (hg : g ∈ Γ) : ↥(orbitFamily H₀ Γ) ≃ ↥(orbitFamily H₀ Γ) where
+  toFun ℓ := ⟨ℓ.1.map (g : V →ₗ[ℚ] V), by
+    obtain ⟨ℓ₀, h₀, f, hf, hℓ⟩ := mem_orbitFamily.1 ℓ.2
+    exact mem_orbitFamily.2 ⟨ℓ₀, h₀, f.trans g, hΓcomp f hf g hg, by
+      rw [hℓ]; exact map_map_eq_map_trans⟩⟩
+  invFun ℓ := ⟨ℓ.1.map ((g.symm : V ≃ₗ[ℚ] V) : V →ₗ[ℚ] V), by
+    obtain ⟨ℓ₀, h₀, f, hf, hℓ⟩ := mem_orbitFamily.1 ℓ.2
+    exact mem_orbitFamily.2 ⟨ℓ₀, h₀, f.trans g.symm, hΓcomp f hf g.symm (hΓinv g hg), by
+      rw [hℓ]; exact map_map_eq_map_trans⟩⟩
+  left_inv ℓ := by
+    refine Subtype.ext ?_
+    show ((ℓ.1.map (g : V →ₗ[ℚ] V)).map ((g.symm : V ≃ₗ[ℚ] V) : V →ₗ[ℚ] V)) = ℓ.1
+    rw [map_map_eq_map_trans]
+    have hid : ((g.trans g.symm : V ≃ₗ[ℚ] V) : V →ₗ[ℚ] V) = LinearMap.id := by
+      ext x
+      simp
+    rw [hid, Submodule.map_id]
+  right_inv ℓ := by
+    refine Subtype.ext ?_
+    show ((ℓ.1.map ((g.symm : V ≃ₗ[ℚ] V) : V →ₗ[ℚ] V)).map (g : V →ₗ[ℚ] V)) = ℓ.1
+    rw [map_map_eq_map_trans]
+    have hid : ((g.symm.trans g : V ≃ₗ[ℚ] V) : V →ₗ[ℚ] V) = LinearMap.id := by
+      ext x
+      simp
+    rw [hid, Submodule.map_id]
+
+omit [Module.Finite ℚ V] in
+/-- **The generator of a lattice cut goes to `±` the generator of the image cut**: `g ∈ Γ` with
+`g(Λ) = Λ` carries `Λ ⊓ ℓ` onto `Λ ⊓ ℓ.map g`, and the generator of a rank-one free `ℤ`-submodule
+is unique up to sign (Looijenga, Example 4.3 (b), p. 18). -/
+theorem orbitGenerator_eq_or_eq_neg {Λ : Submodule ℤ V} {H₀ : Finset (Submodule ℚ V)}
+    {Γ : Set (V ≃ₗ[ℚ] V)} {gen : ↥(orbitFamily H₀ Γ) → V}
+    (hgen : ∀ ℓ, gen ℓ ≠ 0 ∧ Λ ⊓ ℓ.1.restrictScalars ℤ = Submodule.span ℤ ({gen ℓ} : Set V))
+    (hΓcomp : ∀ f ∈ Γ, ∀ g ∈ Γ, f.trans g ∈ Γ) (hΓinv : ∀ g ∈ Γ, g.symm ∈ Γ)
+    {g : V ≃ₗ[ℚ] V} (hg : g ∈ Γ)
+    (hΛ : Submodule.map ((g : V →ₗ[ℚ] V).restrictScalars ℤ) Λ = Λ)
+    (ℓ : ↥(orbitFamily H₀ Γ)) :
+    gen (orbitFamilyMap hΓcomp hΓinv hg ℓ) = g (gen ℓ) ∨
+      gen (orbitFamilyMap hΓcomp hΓinv hg ℓ) = -(g (gen ℓ)) := by
+  have h1 : Λ ⊓ ((ℓ.1.map (g : V →ₗ[ℚ] V)).restrictScalars ℤ)
+      = Submodule.span ℤ ({gen (orbitFamilyMap hΓcomp hΓinv hg ℓ)} : Set V) :=
+    (hgen (orbitFamilyMap hΓcomp hΓinv hg ℓ)).2
+  have h2 : Λ ⊓ ((ℓ.1.map (g : V →ₗ[ℚ] V)).restrictScalars ℤ)
+      = Submodule.span ℤ ({g (gen ℓ)} : Set V) := by
+    rw [← map_inf_restrictScalars (Λ := Λ) (e := g) hΛ ℓ, (hgen ℓ).2, Submodule.map_span]
+    simp
+  have hg0 : g (gen ℓ) ≠ 0 :=
+    fun h => (hgen ℓ).1 (g.injective (by rw [h, map_zero]))
+  exact eq_or_eq_neg_of_span_singleton_eq (h2.symm.trans h1) hg0
+
+omit [Module.Finite ℚ V] in
+theorem normalForm_neg (Q : QuadraticForm ℝ (realified V)) (v : V) :
+    normalForm Q (-v) = -normalForm Q v := by
+  ext z
+  simp [normalForm_apply]
+
+omit [Module.Finite ℚ V] in
+/-- **`Γ` permutes the forms of `Σ(H)` up to sign**: the form of the generator of `ℓ.map g` is `±`
+the form of `g (gen ℓ)`, and the latter is the form of `gen ℓ` transported along `realifiedEquiv g`
+(`associated_realifiedEquiv`). -/
+theorem normalForm_orbitFamily_equivariant {Q : QuadraticForm ℝ (realified V)}
+    {BQ : LinearMap.BilinForm ℚ V} {Λ : Submodule ℤ V} {H₀ : Finset (Submodule ℚ V)}
+    {Γ : Set (V ≃ₗ[ℚ] V)} {gen : ↥(orbitFamily H₀ Γ) → V}
+    (hgen : ∀ ℓ, gen ℓ ≠ 0 ∧ Λ ⊓ ℓ.1.restrictScalars ℤ = Submodule.span ℤ ({gen ℓ} : Set V))
+    (hΓcomp : ∀ f ∈ Γ, ∀ g ∈ Γ, f.trans g ∈ Γ) (hΓinv : ∀ g ∈ Γ, g.symm ∈ Γ)
+    (hΓΛ : ∀ g ∈ Γ, Submodule.map ((g : V →ₗ[ℚ] V).restrictScalars ℤ) Λ = Λ)
+    (hBQ : ∀ u w : V, (associated Q) (rationalPoint u) (rationalPoint w) = (BQ u w : ℝ))
+    (hΓiso : ∀ g ∈ Γ, ∀ x y, BQ (g x) (g y) = BQ x y)
+    {g : V ≃ₗ[ℚ] V} (hg : g ∈ Γ) (ℓ : ↥(orbitFamily H₀ Γ)) (y : realified V) :
+    normalForm Q (gen (orbitFamilyMap hΓcomp hΓinv hg ℓ)) (realifiedEquiv g y)
+      = (if gen (orbitFamilyMap hΓcomp hΓinv hg ℓ) = g (gen ℓ) then 1 else -1) *
+        normalForm Q (gen ℓ) y := by
+  have hiso : normalForm Q (g (gen ℓ)) (realifiedEquiv g y) = normalForm Q (gen ℓ) y :=
+    associated_realifiedEquiv hBQ (hΓiso g hg) (gen ℓ) y
+  rcases orbitGenerator_eq_or_eq_neg hgen hΓcomp hΓinv hg (hΓΛ g hg) ℓ with h | h
+  · rw [ite_eq_left h, h, one_mul]
+    exact hiso
+  · have hne : ¬ (gen (orbitFamilyMap hΓcomp hΓinv hg ℓ) = g (gen ℓ)) := by
+      intro hh
+      have hneg : g (gen ℓ) = -g (gen ℓ) := hh ▸ h
+      have htwice : (2 : ℚ) • g (gen ℓ) = 0 := by
+        rw [two_smul]
+        nth_rewrite 1 [hneg]
+        exact neg_add_cancel _
+      have hzero : g (gen ℓ) = 0 := by
+        rcases smul_eq_zero.1 htwice with h3 | h3
+        · exact absurd h3 (by norm_num)
+        · exact h3
+      exact (fun h0 => (hgen ℓ).1 (g.injective (by rw [h0, map_zero]))) hzero
+    have hval : normalForm Q (gen (orbitFamilyMap hΓcomp hΓinv hg ℓ)) (realifiedEquiv g y)
+        = -normalForm Q (g (gen ℓ)) (realifiedEquiv g y) := by
+      rw [h, normalForm_neg]
+      simp
+    rw [ite_eq_right hne, hval, hiso]
+    norm_num
+
+/-- **Looijenga, Example 4.3 (b), pp. 17-18, with no finiteness hypothesis**: for `H` the union of
+the `Γ`-orbits of finitely many `ℚ`-hyperplanes, `Σ(H)` is a locally rational decomposition of
+`C₊` (`arrangementDecomposition_isLocallyRational` composed with
+`cutsFinitelyOnRational_orbitFamily`, the section above). -/
+theorem arrangementDecomposition_isLocallyRational_of_orbitFamily
+    {Q : QuadraticForm ℝ (realified V)} (hpos : sigPos Q = 1) (hnd : Q.Nondegenerate)
+    {BQ : LinearMap.BilinForm ℚ V} (hBQsym : BQ.IsSymm) (hBQnd : BQ.Nondegenerate)
+    (hBQ : ∀ u w : V, (associated Q) (rationalPoint u) (rationalPoint w) = (BQ u w : ℝ))
+    {Cplus : PointedCone ℝ (realified V)} (hsal : (Cplus : ConvexCone ℝ (realified V)).Salient)
+    {t : realified V} (ht : 0 < Q t)
+    (hsheet : ∀ v : V, rationalPoint v ∈ Cplus →
+      0 ≤ Q (rationalPoint v) ∧ 0 ≤ (associated Q) (rationalPoint v) t)
+    {ι : Type*} [Fintype ι] [DecidableEq ι] {bs : Module.Basis ι ℚ V}
+    (Γ : Set (V ≃ₗ[ℚ] V)) (H₀ : Finset (Submodule ℚ V))
+    (hΓΛ : ∀ e ∈ Γ, Submodule.map ((e : V →ₗ[ℚ] V).restrictScalars ℤ)
+      (Submodule.span ℤ (Set.range bs)) = Submodule.span ℤ (Set.range bs))
+    (hΓiso : ∀ e ∈ Γ, ∀ x y, BQ (e x) (e y) = BQ x y)
+    (hH₀ : ∀ ℓ₀ ∈ H₀, ∃ v : V, v ≠ 0 ∧
+      Submodule.span ℤ (Set.range bs) ⊓ ℓ₀.restrictScalars ℤ = Submodule.span ℤ ({v} : Set V))
+    (hint : ∀ x ∈ Submodule.span ℤ (Set.range bs), ∀ y ∈ Submodule.span ℤ (Set.range bs),
+      ∃ n : ℤ, BQ x y = (n : ℚ)) :
+    IsLocallyRationalDecomposition Cplus
+      (arrangementDecomposition (fun ℓ : ↥(orbitFamily H₀ Γ) =>
+        normalForm Q (Classical.choose (exists_generator_of_orbitFamily
+          (Submodule.span ℤ (Set.range bs)) H₀ Γ hΓΛ hH₀) ℓ)) Cplus) := by
+  let gen : ↥(orbitFamily H₀ Γ) → V := Classical.choose
+    (exists_generator_of_orbitFamily (Submodule.span ℤ (Set.range bs)) H₀ Γ hΓΛ hH₀)
+  have hcut : CutsFinitelyOnRational Cplus (fun ℓ => normalForm Q (gen ℓ)) :=
+    cutsFinitelyOnRational_orbitFamily hpos hnd hBQsym hBQnd hBQ hsal ht hsheet Γ H₀ hΓΛ hΓiso
+      hH₀ hint
+  have hφ : ∀ ℓ : ↥(orbitFamily H₀ Γ), IsRationalForm (normalForm Q (gen ℓ)).toLinearMap :=
+    fun ℓ => ⟨BQ (gen ℓ), fun v => hBQ (gen ℓ) v⟩
+  exact arrangementDecomposition_isLocallyRational hsal hφ hcut
+
+omit [Module.Finite ℚ V] in
+/-- **Looijenga, Example 4.3 (b), pp. 17-18: `Σ(H)` is `Γ`-invariant**, for `H` the union of the
+`Γ`-orbits of finitely many `ℚ`-hyperplanes. -/
+theorem isGammaInvariant_arrangementDecomposition_of_orbitFamily
+    {Q : QuadraticForm ℝ (realified V)} {BQ : LinearMap.BilinForm ℚ V}
+    {ι : Type*} [Fintype ι] [DecidableEq ι] {bs : Module.Basis ι ℚ V}
+    (Γ : Set (V ≃ₗ[ℚ] V)) (H₀ : Finset (Submodule ℚ V))
+    {gen : ↥(orbitFamily H₀ Γ) → V}
+    (hgen : ∀ ℓ, gen ℓ ≠ 0 ∧
+      Submodule.span ℤ (Set.range bs) ⊓ ℓ.1.restrictScalars ℤ
+        = Submodule.span ℤ ({gen ℓ} : Set V))
+    (hΓcomp : ∀ f ∈ Γ, ∀ g ∈ Γ, f.trans g ∈ Γ) (hΓinv : ∀ g ∈ Γ, g.symm ∈ Γ)
+    (hΓΛ : ∀ e ∈ Γ, Submodule.map ((e : V →ₗ[ℚ] V).restrictScalars ℤ)
+      (Submodule.span ℤ (Set.range bs)) = Submodule.span ℤ (Set.range bs))
+    (hBQ : ∀ u w : V, (associated Q) (rationalPoint u) (rationalPoint w) = (BQ u w : ℝ))
+    (hΓiso : ∀ e ∈ Γ, ∀ x y, BQ (e x) (e y) = BQ x y)
+    {Cplus : PointedCone ℝ (realified V)}
+    (hCplus : ∀ g ∈ Γ, coneMap (realifiedEquiv g) Cplus = Cplus) :
+    IsGammaInvariant (realifiedEquiv '' Γ)
+      (arrangementDecomposition (fun ℓ : ↥(orbitFamily H₀ Γ) =>
+        normalForm Q (gen ℓ)) Cplus) := by
+  intro ê hê
+  obtain ⟨g, hg, rfl⟩ := hê
+  exact arrangementDecomposition_coneMap_of_equivariant
+    (ρ := orbitFamilyMap hΓcomp hΓinv hg)
+    (c := fun ℓ => if gen (orbitFamilyMap hΓcomp hΓinv hg ℓ) = g (gen ℓ) then 1 else -1)
+    (fun ℓ => by split <;> norm_num)
+    (fun ℓ y => normalForm_orbitFamily_equivariant hgen hΓcomp hΓinv hΓΛ hBQ hΓiso hg ℓ y)
+    (hCplus g hg)
+
+/-- **Looijenga, Example 4.3 (b), pp. 17-18** (`.tmp-sources/looijenga-math0201218v2.md:491`; the
+hypotheses are those of Example 4.3, p. 17, line 487): for a lattice of signature `(1, n - 1)`, `Γ`
+preserving it, and `H` the union of the `Γ`-orbits of finitely many `ℚ`-hyperplanes, `Σ(H)` is a
+`Γ`-invariant locally rational decomposition of `C₊`. -/
+theorem example43b_of_orbitFamily
+    {Q : QuadraticForm ℝ (realified V)} (hpos : sigPos Q = 1) (hnd : Q.Nondegenerate)
+    {BQ : LinearMap.BilinForm ℚ V} (hBQsym : BQ.IsSymm) (hBQnd : BQ.Nondegenerate)
+    (hBQ : ∀ u w : V, (associated Q) (rationalPoint u) (rationalPoint w) = (BQ u w : ℝ))
+    {Cplus : PointedCone ℝ (realified V)} (hsal : (Cplus : ConvexCone ℝ (realified V)).Salient)
+    {t : realified V} (ht : 0 < Q t)
+    (hsheet : ∀ v : V, rationalPoint v ∈ Cplus →
+      0 ≤ Q (rationalPoint v) ∧ 0 ≤ (associated Q) (rationalPoint v) t)
+    {ι : Type*} [Fintype ι] [DecidableEq ι] {bs : Module.Basis ι ℚ V}
+    (Γ : Set (V ≃ₗ[ℚ] V)) (H₀ : Finset (Submodule ℚ V))
+    (hΓcomp : ∀ f ∈ Γ, ∀ g ∈ Γ, f.trans g ∈ Γ) (hΓinv : ∀ g ∈ Γ, g.symm ∈ Γ)
+    (hΓΛ : ∀ e ∈ Γ, Submodule.map ((e : V →ₗ[ℚ] V).restrictScalars ℤ)
+      (Submodule.span ℤ (Set.range bs)) = Submodule.span ℤ (Set.range bs))
+    (hΓiso : ∀ e ∈ Γ, ∀ x y, BQ (e x) (e y) = BQ x y)
+    (hH₀ : ∀ ℓ₀ ∈ H₀, ∃ v : V, v ≠ 0 ∧
+      Submodule.span ℤ (Set.range bs) ⊓ ℓ₀.restrictScalars ℤ = Submodule.span ℤ ({v} : Set V))
+    (hint : ∀ x ∈ Submodule.span ℤ (Set.range bs), ∀ y ∈ Submodule.span ℤ (Set.range bs),
+      ∃ n : ℤ, BQ x y = (n : ℚ))
+    (hCplus : ∀ g ∈ Γ, coneMap (realifiedEquiv g) Cplus = Cplus) :
+    IsLocallyRationalDecomposition Cplus
+        (arrangementDecomposition (fun ℓ : ↥(orbitFamily H₀ Γ) =>
+          normalForm Q (Classical.choose (exists_generator_of_orbitFamily
+            (Submodule.span ℤ (Set.range bs)) H₀ Γ hΓΛ hH₀) ℓ)) Cplus) ∧
+      IsGammaInvariant (realifiedEquiv '' Γ)
+        (arrangementDecomposition (fun ℓ : ↥(orbitFamily H₀ Γ) =>
+          normalForm Q (Classical.choose (exists_generator_of_orbitFamily
+            (Submodule.span ℤ (Set.range bs)) H₀ Γ hΓΛ hH₀) ℓ)) Cplus) :=
+  ⟨arrangementDecomposition_isLocallyRational_of_orbitFamily hpos hnd hBQsym hBQnd hBQ hsal ht
+      hsheet Γ H₀ hΓΛ hΓiso hH₀ hint,
+    isGammaInvariant_arrangementDecomposition_of_orbitFamily Γ H₀
+      (gen := Classical.choose (exists_generator_of_orbitFamily
+        (Submodule.span ℤ (Set.range bs)) H₀ Γ hΓΛ hH₀))
+      (Classical.choose_spec (exists_generator_of_orbitFamily
+        (Submodule.span ℤ (Set.range bs)) H₀ Γ hΓΛ hH₀))
+      hΓcomp hΓinv hΓΛ hBQ hΓiso hCplus⟩
+
+end Example43b
 
 end FiniteOrbits
 
 end LeanCategories.Lattices.Valued
-
