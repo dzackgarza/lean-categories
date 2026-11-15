@@ -9261,6 +9261,31 @@ theorem eq_bot_or_isotropicHalfLine_of_not_mem_upper (hpos : sigPos Q = 1)
     rw [← hc]
     exact σ.smul_mem hc0 hx
 
+/-- **Zero support in a hyperbolic locally rational decomposition.** The member's closure lies in
+the closed salient sheet, hence is salient. LC-09:
+`content:supportSpace_bot content:salient content:closedSheet` found no competing declaration. -/
+theorem supportSpace_bot_eq_bot_of_mem (hpos : sigPos Q = 1)
+    (hnd : Q.Nondegenerate) {ht : 0 < Q t}
+    {S : Set (PointedCone ℝ (realified V))}
+    (hS : IsLocallyRationalDecomposition (rationalClosure (closedSheet Q hpos ht)) S)
+    {τ : PointedCone ℝ (realified V)} (hτ : τ ∈ S) : supportSpace τ ⊥ = ⊥ := by
+  let _ : ContinuousAdd (realified V) := IsModuleTopology.toContinuousAdd ℝ _
+  have hτle : τ ≤ closedSheet Q hpos ht :=
+    (hS.le hτ).trans (rationalClosure_le_closedSheet hpos)
+  have hclosedSheet := isClosed_closedSheet_of_moduleTopology Q hpos ht
+  have hτcl : τ.topologicalClosure ≤ closedSheet Q hpos ht :=
+    closure_minimal hτle hclosedSheet
+  have hsal : (τ.topologicalClosure : ConvexCone ℝ (realified V)).Salient :=
+    (closedSheet_salient hpos hnd ht).anti hτcl
+  have hzero : supportSpace τ.topologicalClosure ⊥ = ⊥ :=
+    supportSpace_bot_of_isClosed_of_salient (Submodule.isClosed_topologicalClosure τ) hsal
+  have hmain := supportSpace_bot_eq_topologicalClosure_lineal τ
+  have hclosed := Submodule.isClosed_topologicalClosure τ
+  have hclosure := supportSpace_bot_eq_topologicalClosure_lineal τ.topologicalClosure
+  rw [hclosed.submodule_topologicalClosure_eq] at hclosure
+  rw [hmain, ← hclosure]
+  exact hzero
+
 end IsotropicRationalTraces
 
 end LeanCategories.Lattices.Valued
