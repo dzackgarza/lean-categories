@@ -3670,6 +3670,27 @@ bound on the pairings `ℓ · a` and `ℓ · b`; what is carried here is the res
   of `Γ`-orbits; `m` is a parameter, and that only finitely many `m` occur is exactly what the
   arithmeticity of `Γ` supplies and this file does not carry. With it, the lemmas here give the
   statement of #161 by taking the union over the finitely many values `m`.
+
+  The owed statement, as a Lean shape: for a `ℤ`-lattice `Λ ⊆ L(ℚ)` spanning `V` over `ℚ`, a
+  `Γ ⊆ V ≃ₗ[ℚ] V` of isometries with `Λ` `Γ`-stable and of finite index in `O(Λ)`, and `H` a finite
+  family of `ℚ`-lines whose members lie in finitely many `Γ`-orbits,
+
+  ```
+  theorem cutsFinitelyOnRational_of_finiteOrbits [Module.Finite ℚ V]
+      (Λ : Submodule ℤ V) (hΛ : Submodule.span ℚ (Λ : Set V) = ⊤)
+      (Γ : Set (V ≃ₗ[ℚ] V)) (hΓΛ : ∀ e ∈ Γ, Λ.map (e : V →ₗ[ℚ] V) = Λ)
+      (H : Finset (Submodule ℚ V))
+      (hOrb : ∃ H₀ : Finset (Submodule ℚ V), ∀ ℓ ∈ H, ∃ ℓ₀ ∈ H₀, ∃ e ∈ Γ, ℓ = ℓ₀.map e) :
+      CutsFinitelyOnRational Cplus (fun ℓ : H => …)
+  ```
+
+  and it stops at the *first* of the two steps it needs: from the finite orbit representation `hOrb`
+  to the finiteness of `{ℓ² | ℓ ∈ H}`. That needs the primitive normal of a `ℚ`-line in `Λ` (the
+  generator divided by the gcd of its coordinates in a `ℤ`-basis — this file has no `ℤ`-basis), the
+  invariance of `ℓ²` under `Γ`, and the exclusion of the isotropic `ℓ` for a hyperplane meeting `C`
+  (`neg_quadratic_of_associated_eq_zero` gives the sign; the primitive normal is what makes `ℓ²`
+  depend only on the line). Everything past that point is on main:
+  `finite_cutters_of_pair_bounds` per value `m`, and the union over the finitely many values.
 * The negative definiteness of the complement of the pair's plane, which the projection onto
   `ℝ (a + b)` above makes unnecessary, has a port target should it be wanted: TauCeti
   `LowDimTopology/Plumbing/NegativeDefinite.lean`,
