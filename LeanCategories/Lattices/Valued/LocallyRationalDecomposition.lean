@@ -2425,6 +2425,46 @@ theorem isGammaInvariant_facialDecomposition (Γ : Set ((realified V) ≃ₗ[ℝ
 
 end GammaAction
 
+/-! ## Faces exposed by a nonnegative functional
+
+Looijenga's Lemma-Definition 4.5 uses the common faces of the finite rational traces of a
+locally rational decomposition. The following declarations are the algebraic exposure input for
+those traces, ported from TauCeti `Geometry/Convex/Cone/Face/Exposed.lean` at
+`7b3aaabdeaef0c48b006d1ff4aa81e1f83ba020e`, itself adapted from Mei
+`Geometry/Convex/Cone/Face/Exposed.lean` at `7f1e4c7714fb020473694755ad8748c8f15d0e7f`
+(Apache 2.0).
+
+LC-09 for this step (2026-11-19): the whole-corpus queries
+`content:supportSpace PointedCone`, `content:locally rational decomposition`,
+`content:IsExposed PointedCone.IsFaceOf`, `content:exists_nonneg_linear_zero_iff`,
+`content:polyhedron recession cone`, `content:recessionCone`,
+`content:FinitePolyhedralComplex MinimalCell`, `content:AffineSubspace polyhedron decomposition`,
+`content:minimal IsConvexPolyhedron lineal`, `content:minimalCell affineSubspace`,
+`content:translation space members decomposition invariant`, and
+`content:locally finite polyhedral complex`. The third and fourth found this exact exposure
+implementation; no hit supplied the locality or the affine decomposition argument. The recession
+and homogenization hits are recorded below where the isotropic argument consumes them.
+-/
+
+section PointedConeExposure
+
+variable {K E : Type*} [Field K] [LinearOrder K] [IsStrictOrderedRing K]
+  [AddCommGroup E] [Module K E]
+
+/-- A linear functional nonnegative on a pointed cone cuts out a face of the cone. Ported from
+TauCeti `PointedCone.isFaceOf_inf_ker` (Apache 2.0). -/
+theorem PointedCone.isFaceOf_inf_ker {C : PointedCone K E} {φ : Module.Dual K E}
+    (hφ : ∀ x ∈ C, 0 ≤ φ x) :
+    (C ⊓ PointedCone.ofSubmodule (LinearMap.ker φ)).IsFaceOf C := by
+  refine ⟨inf_le_left, fun {x y a} hx hy ha hxy ↦ ⟨hx, ?_⟩⟩
+  have hker : φ (a • x + y) = 0 := hxy.2
+  rw [map_add, map_smul, smul_eq_mul] at hker
+  have hax : a * φ x = 0 :=
+    (add_eq_zero_iff_of_nonneg (mul_nonneg ha.le (hφ x hx)) (hφ y hy)).1 hker |>.1
+  exact (mul_eq_zero.1 hax).resolve_left ha.ne'
+
+end PointedConeExposure
+
 /-! ## Lemma-Definition 4.5: the support space of a cone of a decomposition -/
 
 /-- Looijenga, Lemma-Definition 4.5, p. 19: the real linear forms that are nonnegative on
