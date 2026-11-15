@@ -284,7 +284,7 @@ decomposition
   decomposition both inclusions are carried (`supportSpace_closedSheet_hull_eq_ker`, the section
   "The support space of an isotropic half line in the facial decomposition"). What the affine
   model adds for a general `Σ` — the reverse inclusion `I^⊥ ∩ ⋂_{τ > σ} ⟨τ⟩ ⊆ L_σ` — is not
-  carried; see "What is not carried".
+  carried; see "Completed independence, and assertions that remain separate".
 * A check by hand of the shape, in a basis `e, f, w₁, w₂` of signature `(1, 3)` with `e · f = 1`
   and `w_i · w_i = -1`: for the single `ℚ`-hyperplane `{z₁ = 0}` through `σ = ℝ≥0 e`, the members
   above `σ` meeting `C` are the two cells and `C₊ ∩ H`, their polyhedra are the two half-spaces
@@ -4002,17 +4002,24 @@ theorem image_mkQ_upper_eq (Q : QuadraticForm ℝ (realified V)) (hpos : sigPos 
 
 /-- **The image of `C₊` under `π_I` lies in the closed half-space**: the "plus the origin" of
 Looijenga's description (the proof of Lemma-Definition 4.5, p. 19). `C₊` is spanned by the
-rational points of the closure of `C`, where the pairing with `e` is nonnegative by the
-continuity input `hbe`, stated at the rational boundary points where the projection argument
-uses it. The salience and hyperbolic facial-decomposition results need no analogous hypothesis:
-they use `isClosed_closedSheet_of_moduleTopology` directly. -/
+rational points of the closure of `C`. Closedness identifies those points with points of
+`closedSheet`, where the pairing with `e` is nonnegative by
+`nonneg_associated_of_quadratic_eq_zero_of_mem_closedSheet`; the orientation `het` is the only
+geometric input. -/
 theorem image_mkQ_rationalClosure_subset (Q : QuadraticForm ℝ (realified V)) (hpos : sigPos Q = 1)
     {t e : realified V} (ht : 0 < Q t) (he : Q e = 0)
-    (hbe : ∀ v : V, rationalPoint v ∈ (closedSheet Q hpos ht).closure →
-      0 ≤ (associated Q) e (rationalPoint v)) :
+    (het : 0 ≤ (associated Q) e t) :
     (Submodule.span ℝ ({e} : Set (realified V))).mkQ ''
         (rationalClosure (closedSheet Q hpos ht) : Set (realified V))
       ⊆ {u | 0 ≤ isotropicHalfspaceForm Q he u} := by
+  have hbe : ∀ v : V, rationalPoint v ∈ (closedSheet Q hpos ht).closure →
+      0 ≤ (associated Q) e (rationalPoint v) := by
+    intro v hv
+    have hclosed := isClosed_closedSheet_of_moduleTopology Q hpos ht
+    have hvS : rationalPoint v ∈ closedSheet Q hpos ht := by
+      rw [← hclosed.submodule_topologicalClosure_eq]
+      exact hv
+    exact nonneg_associated_of_quadratic_eq_zero_of_mem_closedSheet hpos ht he het hvS
   rintro _ ⟨x, hx, rfl⟩
   rw [rationalClosure_eq_hull] at hx
   induction hx using Submodule.span_induction with
@@ -4055,13 +4062,12 @@ theorem image_mkQ_rationalClosure_subset (Q : QuadraticForm ℝ (realified V)) (
 Lemma-Definition 4.5, p. 19). -/
 theorem image_mkQ_subset_of_le_rationalClosure (Q : QuadraticForm ℝ (realified V))
     (hpos : sigPos Q = 1) {t e : realified V} (ht : 0 < Q t) (he : Q e = 0)
-    (hbe : ∀ v : V, rationalPoint v ∈ (closedSheet Q hpos ht).closure →
-      0 ≤ (associated Q) e (rationalPoint v))
+    (het : 0 ≤ (associated Q) e t)
     {τ : PointedCone ℝ (realified V)} (hτ : τ ≤ rationalClosure (closedSheet Q hpos ht)) :
     (Submodule.span ℝ ({e} : Set (realified V))).mkQ '' (τ : Set (realified V))
       ⊆ {u | 0 ≤ isotropicHalfspaceForm Q he u} :=
   Set.Subset.trans (Set.image_mono hτ)
-    (image_mkQ_rationalClosure_subset Q hpos ht he hbe)
+    (image_mkQ_rationalClosure_subset Q hpos ht he het)
 
 end IsotropicProjection
 
@@ -4134,8 +4140,9 @@ independence holds for every pair of members meeting `C` (`supportSpace_eq_of_lo
   the lower one is the sheet's self-duality,
   `quadratic_nonneg_of_forall_mem_closedSheet_nonneg`, together with
   `exists_smul_of_associated_eq_zero_of_mem_closedSheet_self` (a form of the sheet vanishing on `e`
-  is a multiple of `e`). Still not carried: `V` for `C₊` itself and `{0}`, and the same
-  identification for a general `Σ`.
+  is a multiple of `e`). The `{0}` entry is carried for every hyperbolic locally rational
+  decomposition by `supportSpace_bot_eq_bot_of_mem` below. Still not carried: `V` for `C₊` itself
+  and the corresponding explicit description for a general `Σ`.
 * **`C ⊆ C₊` is carried** (`subset_rationalClosure`, for a finite-dimensional `L`), and with it the
   cover hypothesis `hcover`: `exists_mem_of_mem_of_cover_rationalClosure` turns a cover of `C₊`
   into one of `C`, and `supportSpace_eq_of_locallyFinite_of_cover_rationalClosure` and
@@ -4935,7 +4942,8 @@ cases, and neither of them is the cutting form `hexp` of the section above:
   `supportSpace_le_ker_associated_of_isotropic`. What the source then reads off the affine model
   — that a minimal member of the induced decomposition of `A_I(ℝ)` is an affine subspace, that the
   whole decomposition is invariant under its translation space `U`, and that `L_σ` is the space
-  over `U` — is not reconstructed; see "What is not carried" in the module docstring. -/
+  over `U` — is not reconstructed; see "Completed independence, and assertions that remain
+  separate" in the module docstring. -/
 
 section SupportSpaceDescriptions
 
@@ -8291,20 +8299,12 @@ theorem lineal_topologicalClosure_map_le_of_hull_singleton (hpos : sigPos Q = 1)
   have hrayrat : IsRationalCone (PointedCone.hull ℝ ({e} : Set (realified V))) :=
     IsIsotropicHalfLine.isRationalCone_of_le_of_mem hpos hnd hS
       ⟨e, he0, heQ, rfl⟩ ha hea
-  have hbe : ∀ v : V, rationalPoint v ∈ (closedSheet Q hpos ht).closure →
-      0 ≤ (associated Q) e (rationalPoint v) := by
-    intro v hv
-    have hclosed := isClosed_closedSheet_of_moduleTopology Q hpos ht
-    have hvS : rationalPoint v ∈ closedSheet Q hpos ht := by
-      rw [← hclosed.submodule_topologicalClosure_eq]
-      exact hv
-    exact nonneg_associated_of_mem_closedSheet hpos ht heSheet.1 heSheet.2 hvS.1 hvS.2
   let β := isotropicHalfspaceForm Q heQ
   have hβcont : Continuous β := IsModuleTopology.continuous_of_linearMap β
   have hclosure_nonneg {u : realified V ⧸ N} (hu : u ∈ A.topologicalClosure) : 0 ≤ β u := by
     apply closure_minimal (t := {u | 0 ≤ β u}) ?_
       (isClosed_le continuous_const hβcont) hu
-    exact image_mkQ_subset_of_le_rationalClosure Q hpos ht heQ hbe (hS.le ha)
+    exact image_mkQ_subset_of_le_rationalClosure Q hpos ht heQ heSheet.2 (hS.le ha)
   have hzA : zq ∈ A := ⟨z, hzab.1, rfl⟩
   have hzβ : 0 < β zq := by
     have hzim : zq ∈ N.mkQ '' (positiveCone.upper Q t) := ⟨z, hzC, rfl⟩
@@ -8588,14 +8588,6 @@ theorem mem_map_of_mem_topologicalClosure_of_isotropicHalfspace (hpos : sigPos Q
   have hrayrat : IsRationalCone (PointedCone.hull ℝ ({e} : Set (realified V))) :=
     IsIsotropicHalfLine.isRationalCone_of_le_of_mem hpos hnd hS
       ⟨e, he0, heQ, rfl⟩ ha hea
-  have hbe : ∀ v : V, rationalPoint v ∈ (closedSheet Q hpos ht).closure →
-      0 ≤ (associated Q) e (rationalPoint v) := by
-    intro v hv
-    have hclosed := isClosed_closedSheet_of_moduleTopology Q hpos ht
-    have hvS : rationalPoint v ∈ closedSheet Q hpos ht := by
-      rw [← hclosed.submodule_topologicalClosure_eq]
-      exact hv
-    exact nonneg_associated_of_mem_closedSheet hpos ht heSheet.1 heSheet.2 hvS.1 hvS.2
   have him : z ∈ N.mkQ '' (positiveCone.upper Q t) := by
     rw [image_mkQ_upper_eq Q hpos hnd ht he0 heQ heSheet.2]
     exact hzβ
