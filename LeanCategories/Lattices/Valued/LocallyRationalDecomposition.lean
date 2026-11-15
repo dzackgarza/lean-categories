@@ -2983,21 +2983,23 @@ theorem supportSpace_mono {σ τ τ' : PointedCone ℝ (realified V)} (hτ : τ 
 /-- **A point outside a closed pointed cone is separated by a real nonnegative form.** Separation
 is run in normed coordinates and composed with the continuous linear equivalence. This is the
 form used by the closed-cone support-space lemmas below. -/
-theorem exists_dual_nonneg_lt_of_isClosed [Module.Finite ℚ V] {τ : PointedCone ℝ (realified V)}
-    (hclosed : IsClosed (τ : Set (realified V))) {x : realified V} (hx : x ∉ τ) :
-    ∃ f : (realified V) →ₗ[ℝ] ℝ, (∀ y ∈ τ, 0 ≤ f y) ∧ f x < 0 := by
-  let e : realified V ≃ₗ[ℝ] (Fin (Module.finrank ℝ (realified V)) → ℝ) :=
-    (Module.finBasis ℝ (realified V)).equivFun
+theorem exists_dual_nonneg_lt_of_isClosed {E : Type*} [AddCommGroup E] [Module ℝ E]
+    [TopologicalSpace E] [IsModuleTopology ℝ E] [Module.Finite ℝ E]
+    {τ : PointedCone ℝ E} (hclosed : IsClosed (τ : Set E)) {x : E} (hx : x ∉ τ) :
+    ∃ f : E →ₗ[ℝ] ℝ, (∀ y ∈ τ, 0 ≤ f y) ∧ f x < 0 := by
+  let _ : IsTopologicalAddGroup E := IsModuleTopology.isTopologicalAddGroup ℝ E
+  let e : E ≃ₗ[ℝ] (Fin (Module.finrank ℝ E) → ℝ) :=
+    (Module.finBasis ℝ E).equivFun
   have h1 : Continuous e := IsModuleTopology.continuous_of_linearMap e.toLinearMap
   have h2 : Continuous e.symm := IsModuleTopology.continuous_of_linearMap e.symm.toLinearMap
-  let E' : realified V ≃L[ℝ] (Fin (Module.finrank ℝ (realified V)) → ℝ) :=
+  let E' : E ≃L[ℝ] (Fin (Module.finrank ℝ E) → ℝ) :=
     { e with continuous_toFun := h1, continuous_invFun := h2 }
-  let P : ProperCone ℝ (Fin (Module.finrank ℝ (realified V)) → ℝ) :=
+  let P : ProperCone ℝ (Fin (Module.finrank ℝ E) → ℝ) :=
     { toSubmodule := τ.map E'.toLinearMap
       isClosed' := by
-        change IsClosed (E' '' (τ : Set (realified V)))
+        change IsClosed (E' '' (τ : Set E))
         exact E'.toHomeomorph.isClosedMap _ hclosed }
-  have hxmap : E' x ∉ E' '' (τ : Set (realified V)) := by
+  have hxmap : E' x ∉ E' '' (τ : Set E) := by
     intro himage
     obtain ⟨y, hy, hyx⟩ := himage
     exact hx (E'.injective hyx ▸ hy)
@@ -3051,12 +3053,15 @@ theorem supportSpace_bot_of_isClosed_of_salient [Module.Finite ℚ V]
 /-- **The support space over zero is the lineality of the closure.** A point lies in it exactly
 when both it and its negative lie in the closure. This is the double-dual statement over `ℝ`,
 proved directly from `ProperCone.hyperplane_separation_point`; no salience is assumed. -/
-theorem supportSpace_bot_eq_topologicalClosure_lineal [Module.Finite ℚ V]
-    (D : PointedCone ℝ (realified V)) :
+theorem supportSpace_bot_eq_topologicalClosure_lineal {E : Type*} [AddCommGroup E] [Module ℝ E]
+    [TopologicalSpace E] [IsModuleTopology ℝ E] [Module.Finite ℝ E]
+    (D : PointedCone ℝ E) :
+    letI := IsModuleTopology.toContinuousAdd ℝ E
     supportSpace D ⊥ = PointedCone.lineal D.topologicalClosure := by
-  have hclosed : IsClosed (D.topologicalClosure : Set (realified V)) :=
+  haveI : ContinuousAdd E := IsModuleTopology.toContinuousAdd ℝ E
+  have hclosed : IsClosed (D.topologicalClosure : Set E) :=
     Submodule.isClosed_topologicalClosure D
-  have next {f : (realified V) →ₗ[ℝ] ℝ} (hf : ∀ y ∈ D, 0 ≤ f y) {x : realified V}
+  have next {f : E →ₗ[ℝ] ℝ} (hf : ∀ y ∈ D, 0 ≤ f y) {x : E}
       (hx : x ∈ D.topologicalClosure) : 0 ≤ f x := by
     exact closure_minimal (t := {y | 0 ≤ f y}) (fun y hy => hf y hy)
       (isClosed_le continuous_const (IsModuleTopology.continuous_of_linearMap f)) hx
@@ -3129,6 +3134,19 @@ theorem supportSpace_map_mkQ_bot {τ σ : PointedCone ℝ (realified V)} :
         (Submodule.subset_span hy)
       rw [hzero]
       exact f.map_zero
+
+/-- **The projected-closed-cone form of the support space.** Compose the quotient bridge with the
+closed-cone lineality identification. This is the object whose independence the isotropic affine
+argument has to establish. -/
+theorem supportSpace_map_mkQ_bot_eq_topologicalClosure_lineal [Module.Finite ℚ V]
+    {τ σ : PointedCone ℝ (realified V)} :
+    let N := Submodule.span ℝ (σ : Set (realified V))
+    letI := IsModuleTopology.toContinuousAdd ℝ (realified V ⧸ N)
+    (PointedCone.lineal (τ.map N.mkQ).topologicalClosure).comap N.mkQ = supportSpace τ σ := by
+  let N := Submodule.span ℝ (σ : Set (realified V))
+  letI : ContinuousAdd (realified V ⧸ N) := IsModuleTopology.toContinuousAdd ℝ _
+  change (PointedCone.lineal (τ.map N.mkQ).topologicalClosure).comap N.mkQ = supportSpace τ σ
+  rw [← supportSpace_map_mkQ_bot, supportSpace_bot_eq_topologicalClosure_lineal]
 
 /-- **Locality of the supporting forms at a point of `σ`.** If `K` is a neighbourhood of
 `x ∈ σ`, then the cone `τ` and its trace `τ ⊓ K` have the same forms nonnegative on them and zero
