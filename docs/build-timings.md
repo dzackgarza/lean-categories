@@ -20,11 +20,9 @@ The directory is outside the build tree: `lake clean` does not remove it, and it
 `.gitignore`d because it is a record of a run, not a source file. `BUILD_TIMING_DIR` moves it.
 
 CI runs the same entry point (`just test-ci` → `just test`), so every CI run of `main` writes the
-same files. Uploading them as an artifact needs this step in `.github/workflows/ci.yml`, which is
-**not in the workflow yet**: the agent connection that lands commits here has no `workflows`
-permission, and GitHub rejects any push that touches a workflow file (`refusing to allow a GitHub
-App to create or update workflow .github/workflows/ci.yml without workflows permission`). Add it,
-or grant that permission, and the upload is active:
+same files, and the workflow uploads them as the `build-timings` artifact with this step
+(`.github/workflows/ci.yml`, landed at `83ff077d53` with the orchestrator's `workflows` permission;
+the agent connection has none, so a change to the step travels through a person):
 
 ```yaml
       - name: Upload the per-module elaboration times of this run
@@ -33,9 +31,12 @@ or grant that permission, and the upload is active:
         with:
           name: build-timings
           path: build-timings/
-          if-no-files-found: warn
+          if-no-files-found: error
           retention-days: 90
 ```
+
+`if-no-files-found: error`, not `warn`: `scripts/build-timing.sh` writes a record on every build, so
+an upload with nothing in it is a broken build step and should fail the job, not pass quietly.
 
 ## Which modules a record covers
 

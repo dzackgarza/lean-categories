@@ -99,7 +99,13 @@ decomposition
 * **The hypothesis, restated: `CutsFinitelyOnRational`.** A `ℚ`-hyperplane *meets* a cone, in the
   sense of Example 4.3 (b) (p. 18; text version `.tmp-sources/looijenga-math0201218v2.md:487`),
   when it cuts it: the form defining it takes both signs on the cone (`CutsOn`). The hypothesis is
-  that only finitely many of the forms cut any rational cone. The reading this replaces said
+  that only finitely many of the forms cut any given rational **subcone of `C₊`** — the quantifier
+  of Definition 4.2, p. 17 ("the restriction to every rational subcone of `C₊` is a rational cone
+  system"), which is where a locally rational decomposition is used. It is not a quantifier over the
+  rational cones outside `C₊`: those are cut by every normal of a given negative value, so the
+  statement is false there even for the arithmetic `H` of Example 4.3 (b) (the definition's own
+  docstring carries an integral isometry of infinite order whose orbit witnesses it), and `Σ(H)`
+  decomposes none of them. The reading this replaces said
   instead that all but finitely many of the forms **vanish** on every rational cone, which no
   infinite `H` has in the setting of Example 4.3 — an open piece of `C` lies in a rational cone,
   and a form that meets `C` vanishes on no open set — so that version of the theorem was vacuous
@@ -109,40 +115,63 @@ decomposition
   why the finiteness of the traces now runs through the faces of the cells of the *finitely many*
   forms that cut (`range_reducePattern_finite`, `finite_faces_of_isRationalCone`) instead of
   through a finite set of nonvanishing forms.
-* **What is not settled here: the finiteness of the traces for an infinite `H` of Example 4.3.**
-  Definition 4.2's restriction clause asks for a *finite* family — a rational cone system,
-  Definition 4.1, p. 16 — on every rational subcone, and
-  `arrangementDecomposition_isLocallyRational` proves it only from `CutsFinitelyOnRational`.
-  Whether that hypothesis holds for the `H` of Example 4.3 (b), a finite union of `Γ`-orbits of
-  `ℚ`-hyperplanes meeting `C` with `Γ` arithmetic, is open, and the source's own ground for it
-  ("this collection is locally finite on `C`", p. 18) does not settle it: local finiteness on `C`
-  is a statement about compact pieces of the open cone, while cutting is a statement about the
+* **What is owed: the hypothesis for the `H` of Example 4.3 (b) (#161).** Definition 4.2's
+  restriction clause asks for a *finite* family — a rational cone system, Definition 4.1, p. 16 —
+  on every rational subcone, and `arrangementDecomposition_isLocallyRational` proves it only from
+  `CutsFinitelyOnRational`. The source asserts it of the arithmetic `H`; this file does not derive
+  it, and the two steps it takes are these.
+
+  (i) *Finitely many norms.* `Γ` arithmetic means that a finite-index subgroup preserves a lattice
+  `Λ ⊆ L(ℚ)` on which the form is integral. A `ℚ`-hyperplane that meets `C` has a spacelike normal:
+  its hyperplane contains a timelike vector `x`, and `0 > ℓ²` then follows from `sigPos Q = 1` and
+  nondegeneracy alone — `neg_quadratic_of_associated_eq_zero` below, general in `ℓ` and `x` rather
+  than stated for a cone (`ℓ² > 0` is excluded because `(ℓ, x)` would be a positive definite plane,
+  `ℓ² = 0` because `eq_zero_of_perp_of_quadratic_eq_zero` then makes `ℓ` vanish). The primitive
+  normal of a `ℚ`-line in `Λ` is unique up to sign, so its value `ℓ²` is constant on a `Γ`-orbit;
+  a finite union of orbits therefore has its primitive normals taking finitely many *negative*
+  values. (The lattice and the finite-index passage are not formalized here: this file has no
+  lattice of `L(ℚ)`.)
+
+  (ii) *The counting lemma.* For a rational cone `P ≤ C₊` and a negative integer `-m`, only finitely
+  many primitive `ℓ ∈ Λ` with `ℓ² = -m` cut `P`. This is linear algebra over `ℚ` with integrality —
+  no reduction theory and no proper discontinuity: a form cuts `P = hull` of its rational generators
+  exactly when its values on those generators take both signs, and the route is a case analysis on
+  the pair of generators witnessing the two signs. Two timelike generators span a hyperbolic plane
+  `W`, on which the cutting functional is spacelike and its value is bounded below by `-m`; the
+  orthogonal complement of `W` is negative definite, where `ℓ² = -m` bounds the rest. An isotropic
+  generator `w` is either paired with `ℓ` nontrivially — an integral value bounded away from `0`,
+  which with `ℓ² = -m` bounds `ℓ` — or `ℓ ∈ w^⊥`, where the class of `ℓ` in the negative definite
+  `w^⊥/w` is bounded by the other generators: that quotient is negative definite because it is
+  `w^⊥` modulo its radical, with `sigPos = sigPos Q - 1 = 0` (`sigPos_isotropicQuotientForm`,
+  `IsotropicQuotientSignature.lean:513`). What makes the second sub-case of the isotropic branch
+  impossible for a *cut* is `nonneg_associated_of_quadratic_eq_zero_of_mem_closedSheet` below: a
+  null direction is one-signed on the closed sheet, so it separates no two points of `C₊`.
+  `ZSpan.setFinite_inter` (`Mathlib/Algebra/Module/ZLattice/Basic.lean:328`) with the bounded set
+  closes each case — on a topological real form; `realified V` here carries no `ProperSpace`
+  instance (see the hyperbolic section's note), which is why the counting lemma is owed and not
+  carried.
+
+  Neither step is carried here: there is no lattice, no primitive-vector reduction and no counting
+  lemma in this file yet, so the hypothesis stays a hypothesis. The source's own ground for it
+  ("this collection is locally finite on `C`", p. 18) does not supply it either: local finiteness on
+  `C` is a statement about compact pieces of the open cone, while cutting is a statement about the
   sign pattern of a form on a whole rational cone, and a locally finite family can have infinitely
   many members cutting one rational cone. The family `(x, y) ↦ x - (n+1)y`, `n ∈ ℕ`, on the
   quadrant of the plane with the form `x·y` of signature `(1,1)` is such a family: every one of
   its hyperplanes meets the open cone, all of them cut the quadrant, and the cells of the pattern
   "`pos` up to `n`, `neg` above `n`" are the distinct wedges
   `{(x, y) | 0 ≤ y, (n+1)y ≤ x ≤ (n+2)y}` (the point `(2n+3, 2)` lies in the `n`-th and in no
-  earlier one), so the restriction of `Σ(H)` to that rational cone is infinite. Both of these are
-  checks by hand: this file states and proves nothing about that family, and the sentence is
-  recorded here as the reason the hypothesis is left to the source's arithmetic setting rather
-  than derived. That family is not shown to be a finite union of `Γ`-orbits for an arithmetic
-  `Γ`, so it refutes the restriction clause for an arbitrary infinite `H`, not for the arithmetic
-  one; the
-  arithmetic case needs the parabolic analysis of the source's proof of Lemma-Definition 4.5 (the
-  horosphere at an isotropic ray, the boundedness of the cross-section of a rational cone there,
-  and the local finiteness of the hyperplanes through that ray), together with a formalization of
-  proper discontinuity of `Γ`. The repository has neither: `HasLocallyFiniteTraces` below is
-  stated and not used, and the LC-09 record in this file names the Mathlib lemmas such a
-  formalization would start from. Setting 4.4 (p. 18; text version line 495) supplies the
-  properness of the `Γ`-action on `C` and says nothing about sign patterns on rational cones; the
-  classical statement behind it — that an arithmetic subgroup of `O(L)(ℚ)` acts properly
-  discontinuously on the hyperbolic space `C`, hence with locally finite orbits of hyperplanes —
-  is A. Borel and Harish-Chandra, *Arithmetic subgroups of algebraic groups*, Ann. of Math. 75
-  (1962), 485-535, and Looijenga states the instance he uses at Setting 4.4 (p. 18) and, for the
-  Baily-Borel domain, at §1 (text version line 183: "Γ′ acts properly discretely on `D`"). No
-  derivation from that statement yields the finiteness of the traces on a rational cone, which is
-  why the hypothesis is not derived here.
+  earlier one), so the restriction of `Σ(H)` to that rational cone is infinite. That is a check by
+  hand: this file states and proves nothing about that family. It is not a finite union of
+  `Γ`-orbits for an arithmetic `Γ`, and the point of (i)-(ii) is that arithmeticity excludes it — by
+  bounding the *norm*, which is what the family's `x - (n+1)y` vary. Setting 4.4 (p. 18; text
+  version line 495) supplies the properness of the `Γ`-action on `C` and says nothing about sign
+  patterns on
+  rational cones; the classical statement behind it — that an arithmetic subgroup of `O(L)(ℚ)` acts
+  properly discontinuously on the hyperbolic space `C`, hence with locally finite orbits of
+  hyperplanes — is A. Borel and Harish-Chandra, *Arithmetic subgroups of algebraic groups*, Ann. of
+  Math. 75 (1962), 485-535, and Looijenga states the instance he uses at Setting 4.4 (p. 18) and,
+  for the Baily-Borel domain, at §1 (text version line 183: "Γ′ acts properly discretely on `D`").
 
 ## Lemma-Definition 4.5: the independence of `L_σ` from `τ`
 
@@ -249,6 +278,34 @@ boundedness of `{v | v · v = c, v ⊥ p}` for a fixed timelike `p`, which is th
 form on `p^⊥` and is not in the corpus. Note that what these give is local finiteness on `C`, not
 the hypothesis of the theorem below (`CutsFinitelyOnRational`); see the section on Example 4.3 (b)
 above for why local finiteness on `C` does not give it.
+
+### LC-09 record for the counting lemma and the spacelike normal (2026-11-15, #161)
+
+The queries this unit names, with every hit. `content:Finite lattice bounded norm`: 163 files,
+one returned — LionSR `TNLean/Lattice/FiniteDomain.lean`, finite domains of the square lattice
+(a graph-diameter development), unrelated. `content:ZLattice finite ball`: 43 files, one returned,
+`mathlib4/Mathlib.lean`, the import list, no file. `content:Set.Finite norm le`: 153 files, one
+returned — TauCeti `RingTheory/Length/Norm.lean`, the order of a field norm, unrelated.
+`content:ZLattice`: 124 files, one returned — CBirkbeck/LeanBridge's import list, whose
+`ForMathlib/Algebra/Module/ZLattice/` directory is the live development. `content:ZLattice finite`
+and `file:MinimalVectors content:Finite`: two files, and the one statement there that the counting
+lemma needs is LeanBridge `ZLattice/MinimalVectors.lean`'s
+`finite_inter_closedBall (r : ℝ) : (Metric.closedBall 0 r ∩ (L : Set E)).Finite`, a two-line
+corollary of Mathlib's `Metric.finite_isBounded_inter_isClosed`
+(`Mathlib/Topology/MetricSpace/Bounded.lean:627`); its substance is Mathlib's own lemma, so nothing
+is ported for it — the same ground on which the discreteness half of the local-finiteness argument
+was left to Mathlib in the record above. `content:lattice vectors bounded norm finite`: 58 files,
+one returned — QudeLeap `QuantumAlg/Util/FiniteCyclicDLP.lean`, discrete logarithms, unrelated. On
+the Mathlib side the finiteness step is `ZSpan.setFinite_inter`
+(`Mathlib/Algebra/Module/ZLattice/Basic.lean:328`, the `ℤ`-span of a real basis meets a bounded set
+in a finite set), which is the lemma named in (ii) above; nothing to port.
+
+For the spacelike-normal step (i) the repository's own signature facts are the ones used, and
+nothing new was needed: `mul_self_le_associated_sq` (`PositiveCone.lean`, the key inequality of
+signature `(1, n)`) and `eq_zero_of_perp_of_quadratic_eq_zero` (above) give
+`neg_quadratic_of_associated_eq_zero`, and `sigPos_isotropicQuotientForm` /
+`sigNeg_isotropicQuotientForm` (`IsotropicQuotientSignature.lean:513`, `:520`, the `e^⊥/e`
+signature on main) carry the negative definiteness of `w^⊥/w` that (ii) quotes.
 
 ## References
 
@@ -1392,6 +1449,25 @@ theorem eq_zero_of_perp_of_quadratic_eq_zero {Q : QuadraticForm ℝ (realified V
   rw [hcc0, zero_smul] at hcc
   exact hp0 hcc.symm
 
+/-- **The normal of a `ℚ`-hyperplane through a timelike vector is spacelike**: for a nondegenerate
+form of signature `(1, dim − 1)` over `ℝ`, a nonzero `l` whose hyperplane contains a positive vector
+`x` has `Q l < 0`. This is step (i) of the arithmetic argument in the module docstring — a
+`ℚ`-hyperplane that *meets* `C` has a spacelike normal, so its value `l · l` is negative — stated
+for an arbitrary pair rather than for a cone: `Q l > 0` is excluded by `mul_self_le_associated_sq`
+(`Q l * Q x ≤ ((associated Q) l x) ^ 2 = 0` with `0 < Q x`), and `Q l = 0` by
+`eq_zero_of_perp_of_quadratic_eq_zero`, which makes `l` itself vanish. -/
+theorem neg_quadratic_of_associated_eq_zero {Q : QuadraticForm ℝ (realified V)}
+    (hpos : sigPos Q = 1) (hnd : Q.Nondegenerate) {l x : realified V} (hl : l ≠ 0)
+    (hx : 0 < Q x) (hxl : (associated Q) l x = 0) : Q l < 0 := by
+  have hle : Q l ≤ 0 := by
+    have h := mul_self_le_associated_sq (Q := Q) hpos hx l
+    rw [hxl] at h
+    nlinarith
+  rcases lt_or_eq_of_le hle with h | h
+  · exact h
+  · exact absurd (eq_zero_of_perp_of_quadratic_eq_zero (Q := Q) (t := x) (x := l) hpos hnd hx
+      hxl h) hl
+
 /-- **The closed sheet** of the light cone of a form of signature `(1, dim − 1)` at a positive
 vector `t`: the vectors with `0 ≤ Q x` and `0 ≤ x · t`. It is the closure of the connected
 component of `{x | 0 < Q x}` containing `t`, carried as a cone. -/
@@ -1420,6 +1496,16 @@ theorem mem_closedSheet {Q : QuadraticForm ℝ (realified V)} {t : realified V}
     (hpos : sigPos Q = 1) (ht : 0 < Q t) {x : realified V} :
     x ∈ closedSheet Q hpos ht ↔ 0 ≤ Q x ∧ 0 ≤ (associated Q) x t :=
   Iff.rfl
+
+/-- **A null form is one-signed on the closed sheet**: an isotropic `u` of the sheet takes a value
+of one sign on all of it, `0 ≤ (associated Q) u x`. This is the mechanism that bounds the counting
+lemma below at an isotropic generator `w` of a rational cone: a direction `u` with `Q u = 0` cannot
+separate two points of `C₊`, so the normals far along `u` do not cut the cone. -/
+theorem nonneg_associated_of_quadratic_eq_zero_of_mem_closedSheet
+    {Q : QuadraticForm ℝ (realified V)} (hpos : sigPos Q = 1) {t : realified V} (ht : 0 < Q t)
+    {u x : realified V} (hu : Q u = 0) (hut : 0 ≤ (associated Q) u t)
+    (hx : x ∈ closedSheet Q hpos ht) : 0 ≤ (associated Q) u x :=
+  nonneg_associated_of_mem_closedSheet (Q := Q) hpos ht (le_of_eq hu.symm) hut hx.1 hx.2
 
 /-- The open sheet lies on the closed sheet. -/
 theorem subset_closedSheet {Q : QuadraticForm ℝ (realified V)} {t : realified V}
@@ -2557,11 +2643,13 @@ another along the common sign pattern (`isFaceOf_arrangementCone_commonSignPatte
 that `Σ(H)` is a locally rational decomposition (`arrangementDecomposition_isLocallyRational`).
 
 `Γ`-finiteness enters only through the hypothesis `CutsFinitelyOnRational`: of the hyperplanes
-of `H`, only finitely many cut any rational cone. That is not the source's local finiteness of
-`H` on `C` (whose ground is the properness of the action of `Γ`, Setting 4.4, p. 18), and the
-module docstring's section on Example 4.3 (b) records why the passage from the one to the other
-is not available here: the finiteness of the traces on a rational cone is proved below from
-`CutsFinitelyOnRational`, and whether Example 4.3's arithmetic `H` satisfies it is open. -/
+of `H`, only finitely many cut any rational subcone of `C₊` (Definition 4.2's quantifier; the
+definition's docstring records why the quantifier cannot be over all rational cones). That is not
+the source's local finiteness of `H` on `C` (whose ground is the properness of the action of `Γ`,
+Setting 4.4, p. 18), and the module docstring's section on Example 4.3 (b) records what deriving
+it from `Γ`'s arithmeticity needs — finitely many normal values, and the counting lemma for one
+value — and that neither is carried here: the finiteness of the traces on a rational cone is proved
+below from `CutsFinitelyOnRational`, not from `Γ`. -/
 
 section ArrangementRational
 
@@ -2719,7 +2807,25 @@ def CutsOn (ψ : (realified V) →ₗ[ℝ] ℝ) (P : PointedCone ℝ (realified 
   (∃ x ∈ P, 0 < ψ x) ∧ ∃ y ∈ P, ψ y < 0
 
 /-- **The hypothesis of Example 4.3 (b), as the finiteness argument of this section consumes it**:
-of the hyperplanes `H`, only finitely many cut any given rational cone of `L(ℝ)`.
+of the hyperplanes `H`, only finitely many cut any given **rational subcone of `C₊`**.
+
+The restriction to subcones of `C₊` is the source's: Looijenga, Definition 4.2, p. 17
+(`.tmp-sources/looijenga-math0201218v2.md:483`), asks of a locally rational decomposition of `C₊`
+that "the restriction to every rational subcone of `C₊` is a rational cone system", and nowhere of
+cones outside `C₊`. The wider quantifier is not a hypothesis that Example 4.3 (b) can supply, and it
+is *false* in that setting, arithmetic `Γ` included: a `ℚ`-hyperplane meets `C` exactly when its
+normal is spacelike (`neg_quadratic_of_associated_eq_zero`), and a rational cone outside `C₊` is cut
+by every normal of one negative value. Take `L = ℚ³` with the form `2 x₁ x₂ - x₃²` of signature
+`(1, 2)` and `Λ = ℤ³`: `T(x) = (x₁ + 2 x₂ + 2 x₃, x₂, x₃ + 2 x₂)` is an integral isometry of
+infinite order — `Tᵀ G T = G` for the Gram matrix `G` of the form, and `T - 1` is nilpotent — so
+`Γ = O(Λ)`, an arithmetic subgroup of `O(L(ℚ))`, has the infinite orbit of `ℓ = (1, -1, 0)`. Each of
+its members has `ℓ · ℓ = -2 < 0`, so each hyperplane meets `C`; and each member cuts the rational
+cone `{(0, y, z)} = cone {e₂, e₃}`, on which the form of `ℓ` is `ℓ₁ y - ℓ₃ z`, which takes both
+signs as soon as `(ℓ₁, ℓ₃) ≠ (0, 0)` — and `ℓ₁ = 0` would force `ℓ₃² = 2`. That cone is outside
+`C₊`, where `Σ(H)` decomposes nothing, and the count of cutting normals is infinite on it. So the
+finiteness of the normals' values, which is all step (i) of the arithmetic argument gives, does not
+make the unrestricted statement true. (A check by hand — three lines with the Gram matrix; the
+family of `(x, y) ↦ x - (n+1)y` in the module docstring is the same check without the lattice.)
 
 This replaces the earlier reading, which asked that all but finitely many of the forms *vanish* on
 every rational cone — a property no infinite `H` has in the setting of Example 4.3, since an open
@@ -2727,8 +2833,10 @@ piece of `C` is contained in a rational cone and no form that meets `C` vanishes
 form that meets `C` is not one-signed on the cones it does not cut: it is nonnegative or nonpositive
 on them, and then its sign condition is a face condition (`isFaceOf_inf_reducePattern`). That is
 what makes the traces finite below. -/
-def CutsFinitelyOnRational (φ : ι → (realified V) →L[ℝ] ℝ) : Prop :=
-  ∀ P : PointedCone ℝ (realified V), IsRationalCone P → {i : ι | CutsOn (φ i).toLinearMap P}.Finite
+def CutsFinitelyOnRational (Cplus : PointedCone ℝ (realified V))
+    (φ : ι → (realified V) →L[ℝ] ℝ) : Prop :=
+  ∀ P : PointedCone ℝ (realified V), IsRationalCone P → P ≤ Cplus →
+    {i : ι | CutsOn (φ i).toLinearMap P}.Finite
 
 /-- A form that does not cut a cone is one-signed on it. -/
 theorem le_or_le_of_not_cutsOn {ψ : (realified V) →ₗ[ℝ] ℝ} {P : PointedCone ℝ (realified V)}
@@ -2900,12 +3008,13 @@ theorem range_reducePattern_finite (P : PointedCone ℝ (realified V)) (t : Fins
 /-- **The trace of a cell of `Σ(H)` on a rational subcone is a rational cone** (Looijenga,
 Example 4.3 (b), p. 18): the trace is a face of the cell of the finitely many forms that cut the
 cone, and that cell is a rational cone cut out by finitely many rational sign conditions. -/
-theorem isRationalCone_arrangementCone_inf (hφ : ∀ i, IsRationalForm (φ i).toLinearMap)
-    (hcut : CutsFinitelyOnRational φ) (s : ι → SignType)
-    (P : PointedCone ℝ (realified V)) (hP : IsRationalCone P) :
+theorem isRationalCone_arrangementCone_inf {Cplus : PointedCone ℝ (realified V)}
+    (hφ : ∀ i, IsRationalForm (φ i).toLinearMap) (hcut : CutsFinitelyOnRational Cplus φ)
+    (s : ι → SignType)
+    (P : PointedCone ℝ (realified V)) (hP : IsRationalCone P) (hPle : P ≤ Cplus) :
     IsRationalCone (arrangementCone φ s ⊓ P) := by
   classical
-  have hPf := hcut P hP
+  have hPf := hcut P hP hPle
   have hnt : ∀ i ∉ hPf.toFinset, ¬ CutsOn (φ i).toLinearMap P := by
     intro i hi hc
     exact hi (by rw [Set.Finite.mem_toFinset]; exact hc)
@@ -2922,17 +3031,18 @@ theorem isRationalCone_arrangementCone_inf (hφ : ∀ i, IsRationalForm (φ i).t
   exact hcell.of_isFaceOf hface
 
 /-- **The cells of `Σ(H)` are locally rational in `C₊`** (Looijenga, Example 4.3 (b), p. 18). -/
-theorem isLocallyRationalCone_arrangementCone (hφ : ∀ i, IsRationalForm (φ i).toLinearMap)
-    (hcut : CutsFinitelyOnRational φ) (s : ι → SignType)
-    (Cplus : PointedCone ℝ (realified V)) :
+theorem isLocallyRationalCone_arrangementCone (Cplus : PointedCone ℝ (realified V))
+    (hφ : ∀ i, IsRationalForm (φ i).toLinearMap)
+    (hcut : CutsFinitelyOnRational Cplus φ) (s : ι → SignType) :
     IsLocallyRationalCone Cplus (arrangementCone φ s ⊓ Cplus) := by
   intro P hP hPle
   rw [inf_assoc, inf_eq_right.2 hPle, inf_comm]
   rw [inf_comm]
-  exact isRationalCone_arrangementCone_inf hφ hcut s P hP
+  exact isRationalCone_arrangementCone_inf hφ hcut s P hP hPle
 
 /-- **`Σ(H)` is a locally rational decomposition of `C₊`** (Looijenga, Example 4.3 (b),
-pp. 17-18), from the hypothesis that only finitely many of the hyperplanes cut any rational cone:
+pp. 17-18), from the hypothesis that only finitely many of the hyperplanes cut any rational subcone
+of `C₊`:
 the cells of the arrangement of such a family `H` decompose `C₊`, each cell is locally rational, and
 the faces of the traces on a rational subcone form a rational cone system.
 
@@ -2945,15 +3055,15 @@ longer traces of the cells of finitely many forms but faces of them, which is wh
 runs through `faceClosure` twice. -/
 theorem arrangementDecomposition_isLocallyRational {Cplus : PointedCone ℝ (realified V)}
     (hsal : (Cplus : ConvexCone ℝ (realified V)).Salient)
-    (hφ : ∀ i, IsRationalForm (φ i).toLinearMap) (hcut : CutsFinitelyOnRational φ) :
+    (hφ : ∀ i, IsRationalForm (φ i).toLinearMap) (hcut : CutsFinitelyOnRational Cplus φ) :
     IsLocallyRationalDecomposition Cplus (arrangementDecomposition φ Cplus) where
   union_eq := union_arrangementDecomposition φ Cplus
   isLocallyRational σ hσ := by
     obtain ⟨s, rfl⟩ := hσ
-    exact isLocallyRationalCone_arrangementCone hφ hcut s Cplus
+    exact isLocallyRationalCone_arrangementCone Cplus hφ hcut s
   restriction P hP hPle := by
     classical
-    have hPf := hcut P hP
+    have hPf := hcut P hP hPle
     set t := hPf.toFinset with ht
     have hnt : ∀ i ∉ t, ¬ CutsOn (φ i).toLinearMap P := by
       intro i hi hc
