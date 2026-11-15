@@ -8483,6 +8483,100 @@ theorem lineal_topologicalClosure_map_eq_of_reflTransGen_of_hull_singleton
           hbc.2.2.2.1 hbc.2.2.1 hbc.2.1 hbc.1
         simpa only [inf_comm] using hbc.2.2.2.2
 
+/-- **Relative interior is nonempty in the finite-dimensional module topology.** Transport the
+normed-space theorem along the continuous linear equivalence supplied by `Module.finBasis`.
+LC-09 (2026-11-19): `content:intrinsicInterior content:IsOpen content:Nonempty` located
+TauCeti's `Analysis/Convex/Intrinsic.lean`; the nonemptiness assertion itself is already in
+Mathlib, so only this transport is new. -/
+theorem nonempty_intrinsicInterior_of_convex_moduleTopology {s : Set (realified V)}
+    (hs : Convex ℝ s) (hne : s.Nonempty) : (intrinsicInterior ℝ s).Nonempty := by
+  classical
+  let e : realified V ≃ₗ[ℝ] (Fin (Module.finrank ℝ (realified V)) → ℝ) :=
+    (Module.finBasis ℝ (realified V)).equivFun
+  have h1 : Continuous e := IsModuleTopology.continuous_of_linearMap e.toLinearMap
+  have h2 : Continuous e.symm := IsModuleTopology.continuous_of_linearMap e.symm.toLinearMap
+  let E' : realified V ≃L[ℝ] (Fin (Module.finrank ℝ (realified V)) → ℝ) :=
+    { e with continuous_toFun := h1, continuous_invFun := h2 }
+  have hs' : Convex ℝ (E' '' s) := hs.linear_image E'.toLinearMap
+  obtain ⟨z, hz⟩ := (intrinsicInterior_nonempty hs').2 (hne.image E')
+  have himage := E'.toContinuousAffineEquiv.intrinsicInterior_image s
+  change intrinsicInterior ℝ (E' '' s) = E' '' intrinsicInterior ℝ s at himage
+  rw [himage] at hz
+  obtain ⟨x, hx, -⟩ := hz
+  exact ⟨x, hx⟩
+
+/-- **An open set meeting a convex set meets its relative interior.** Move a short distance from
+the supplied point toward a relative-interior point. The segment step is Mathlib's
+`Convex.openSegment_intrinsicInterior_intrinsicClosure_subset_intrinsicInterior`; the existence
+of the target is the finite-dimensional module-topology transport immediately above.
+LC-09: `content:intrinsicInterior content:IsOpen content:Nonempty` found TauCeti's related
+intrinsic-interior API; this exact open-set intersection statement was not present. -/
+theorem Convex.exists_mem_intrinsicInterior_inter_of_isOpen {s U : Set (realified V)}
+    (hs : Convex ℝ s) (hU : IsOpen U) (hne : (s ∩ U).Nonempty) :
+    (intrinsicInterior ℝ s ∩ U).Nonempty := by
+  let _ := IsModuleTopology.isTopologicalAddGroup ℝ (realified V)
+  obtain ⟨z, hzs, hzU⟩ := hne
+  obtain ⟨y, hy⟩ := nonempty_intrinsicInterior_of_convex_moduleTopology hs ⟨z, hzs⟩
+  have hlim : Filter.Tendsto (segParam z y) (𝓝 0) (𝓝 z) := by
+    simpa only [ContinuousAt, segParam_zero] using
+      (continuous_segParam z y).continuousAt (x := 0)
+  have hev : ∀ᶠ r in 𝓝 (0 : ℝ), segParam z y r ∈ U :=
+    hlim.eventually (hU.mem_nhds hzU)
+  obtain ⟨r, hr, hrU, hr1⟩ := (hev.and (eventually_lt_nhds zero_lt_one)).exists_gt
+  refine ⟨segParam z y r, ?_, hrU⟩
+  apply hs.openSegment_intrinsicInterior_intrinsicClosure_subset_intrinsicInterior hy
+    (subset_intrinsicClosure hzs)
+  rw [show segParam z y r = AffineMap.lineMap y z (1 - r) by
+    rw [segParam, AffineMap.lineMap_apply_module']; module]
+  exact lineMap_mem_openSegment ℝ y z ⟨sub_pos.mpr hr1, sub_lt_self 1 hr⟩
+
+/-- **Ambient characterization of the relative interior.** Port of TauCeti
+`Analysis/Convex/Intrinsic.lean`, `mem_intrinsicInterior_iff_eventually` (Mei `a79c5717`,
+Apache-2.0). LC-09: the corpus query `content:mem_intrinsicInterior_iff_eventually` returned this
+exact declaration; Mathlib has the definition but not this ambient characterization at the
+present revision. -/
+theorem mem_intrinsicInterior_iff_eventually {E : Type*} [AddCommGroup E] [Module ℝ E]
+    [TopologicalSpace E] {s : Set E} {x : E} :
+    x ∈ intrinsicInterior ℝ s ↔
+      x ∈ affineSpan ℝ s ∧ ∀ᶠ y in 𝓝 x, y ∈ affineSpan ℝ s → y ∈ s := by
+  refine ⟨fun ⟨z, hz, hzx⟩ ↦ ?_, fun ⟨hx, h⟩ ↦ ⟨⟨x, hx⟩, ?_, rfl⟩⟩
+  · obtain ⟨u, hu, hus⟩ := (mem_nhds_subtype _ _ _).1 (mem_interior_iff_mem_nhds.1 hz)
+    exact hzx ▸ ⟨z.2, Filter.mem_of_superset hu fun y hy hyA ↦ hus (a := ⟨y, hyA⟩) hy⟩
+  · exact mem_interior_iff_mem_nhds.2 ((mem_nhds_subtype _ _ _).2 ⟨_, h, fun y hy ↦ hy y.2⟩)
+
+/-- **A face containing a relative-interior point is the whole convex cone.** Extend a small
+distance beyond that point away from any other point of the cone and apply the face law.
+LC-09: `content:IsFaceOf content:intrinsicInterior` and
+`content:PointedCone.IsFaceOf content:quotient` found no competing face/intrinsic-interior
+declaration. -/
+theorem PointedCone.IsFaceOf.eq_of_mem_intrinsicInterior {E : Type*}
+    [AddCommGroup E] [Module ℝ E] [TopologicalSpace E] [ContinuousAdd E] [ContinuousSMul ℝ E]
+    {F C : PointedCone ℝ E} (hF : F.IsFaceOf C) {x : E} (hxF : x ∈ F)
+    (hx : x ∈ intrinsicInterior ℝ (C : Set E)) : F = C := by
+  have hxC : x ∈ C := intrinsicInterior_subset hx
+  apply le_antisymm hF.le
+  intro y hy
+  have hxspan : x ∈ affineSpan ℝ (C : Set E) := subset_affineSpan ℝ _ hxC
+  have hyspan : y ∈ affineSpan ℝ (C : Set E) := subset_affineSpan ℝ _ hy
+  rw [mem_intrinsicInterior_iff_eventually] at hx
+  have hev : ∀ᶠ r in 𝓝 (0 : ℝ), x + r • (x - y) ∈ (C : Set E) := by
+    have hc : Continuous (fun r : ℝ => x + r • (x - y)) := continuous_const.add
+      (continuous_id.smul continuous_const)
+    have hlim : Filter.Tendsto (fun r : ℝ => x + r • (x - y)) (𝓝 0) (𝓝 x) := by
+      simpa only [ContinuousAt, zero_smul, add_zero] using hc.continuousAt (x := 0)
+    filter_upwards [hlim.eventually hx.2] with r hr
+    apply hr
+    have hd : r • (x - y) ∈ (affineSpan ℝ (C : Set E)).direction :=
+      Submodule.smul_mem _ r (AffineSubspace.vsub_mem_direction hxspan hyspan)
+    simpa [add_comm] using AffineSubspace.vadd_mem_of_mem_direction hd hxspan
+  obtain ⟨r, hr, hz⟩ := hev.exists_gt
+  have hpos : 0 < 1 + r := by linarith
+  have hcomb : r • y + (x + r • (x - y)) = (1 + r) • x := by module
+  have hmem : r • y + (x + r • (x - y)) ∈ F := by
+    rw [hcomb]
+    exact F.smul_mem hpos.le hxF
+  exact hF.mem_of_smul_add_mem hy hz hr hmem
+
 end IsotropicRationalTraces
 
 end LeanCategories.Lattices.Valued
