@@ -9286,6 +9286,46 @@ theorem supportSpace_bot_eq_bot_of_mem (hpos : sigPos Q = 1)
   rw [hmain, ← hclosure]
   exact hzero
 
+omit [Module.Finite ℚ V] in
+/-- **Looijenga's Lemma-Definition 4.5: independence of the support space from `τ`.** The three
+cases are exactly the hyperbolic dichotomy: an upper-sheet point gives a rational neighbourhood,
+the zero cone has zero support by salience, and an isotropic half line uses the projected affine
+chain. No hypothesis beyond the source's is added. LC-09:
+`content:supportSpace_eq_of_locallyRational` found no competing declaration. -/
+theorem supportSpace_eq_of_locallyRational
+    [Module.Finite ℚ V]
+    {Q : QuadraticForm ℝ (realified V)} {t : realified V}
+    (hpos : sigPos Q = 1) (hnd : Q.Nondegenerate) {ht : 0 < Q t}
+    {S : Set (PointedCone ℝ (realified V))}
+    (hS : IsLocallyRationalDecomposition (rationalClosure (closedSheet Q hpos ht)) S)
+    {σ τ τ' : PointedCone ℝ (realified V)}
+    (hστ : σ ≤ τ) (hστ' : σ ≤ τ')
+    (hτ : τ ∈ S) (hτ' : τ' ∈ S)
+    (hτC : ((τ : Set (realified V)) ∩ (positiveCone.upper Q t : Set (realified V))).Nonempty)
+    (hτ'C : ((τ' : Set (realified V)) ∩ (positiveCone.upper Q t : Set (realified V))).Nonempty) :
+    supportSpace τ σ = supportSpace τ' σ := by
+  classical
+  by_cases hσC : ((σ : Set (realified V)) ∩
+      (positiveCone.upper Q t : Set (realified V))).Nonempty
+  · obtain ⟨x, hxσ, hxC⟩ := hσC
+    have hx0 : x ≠ 0 := by
+      intro h
+      subst x
+      have hfalse : (0 : ℝ) < 0 := by simpa using hxC.1
+      exact lt_irrefl 0 hfalse
+    obtain ⟨K, hKrat, hKn, hKle₀⟩ := exists_rationalCone_mem_nhds_subset_of_mem_interior
+      (upper_subset_interior_upperZero hpos ht hxC) hx0
+    have hKle : K ≤ rationalClosure (closedSheet Q hpos ht) :=
+      hKle₀.trans (upperZero_le_rationalClosure_closedSheet hpos)
+    exact supportSpace_eq_of_rational_neighborhood hS hτ hτ' hστ hστ' hKrat hKle hxσ hKn
+  · have hσle : σ ≤ closedSheet Q hpos ht := hστ.trans
+      ((hS.le hτ).trans (rationalClosure_le_closedSheet hpos))
+    rcases eq_bot_or_isotropicHalfLine_of_not_mem_upper hpos hnd hσle hσC with rfl | hσ
+    · rw [supportSpace_bot_eq_bot_of_mem hpos hnd hS hτ,
+        supportSpace_bot_eq_bot_of_mem hpos hnd hS hτ']
+    · exact supportSpace_eq_of_isotropicHalfLine_of_locallyRational hpos hnd hS hσ
+        hστ hστ' hτ hτ' hτC hτ'C
+
 end IsotropicRationalTraces
 
 end LeanCategories.Lattices.Valued
