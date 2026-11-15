@@ -2463,6 +2463,27 @@ theorem PointedCone.isFaceOf_inf_ker {C : PointedCone K E} {φ : Module.Dual K E
     (add_eq_zero_iff_of_nonneg (mul_nonneg ha.le (hφ x hx)) (hφ y hy)).1 hker |>.1
   exact (mul_eq_zero.1 hax).resolve_left ha.ne'
 
+/-- A nonnegative functional that vanishes at exactly the generators lying in a face cuts out
+that face. Ported from TauCeti `PointedCone.inf_ker_eq_of_eq_hull` (Apache 2.0). -/
+theorem PointedCone.inf_ker_eq_of_eq_hull {C F : PointedCone K E} {s : Set E}
+    (hC : C = PointedCone.hull K s) (hF : F.IsFaceOf C) {φ : Module.Dual K E}
+    (hφ : ∀ x ∈ s, 0 ≤ φ x) (hφF : ∀ x ∈ s, φ x = 0 ↔ x ∈ F) :
+    C ⊓ PointedCone.ofSubmodule (LinearMap.ker φ) = F := by
+  have hφC : ∀ x ∈ C, 0 ≤ φ x := by
+    subst hC
+    intro x hx
+    induction hx using Submodule.span_induction with
+    | mem x hx => exact hφ x hx
+    | zero => simp
+    | add x y _ _ hx hy => rw [map_add]; exact add_nonneg hx hy
+    | smul c x _ hx =>
+        rw [← Nonneg.coe_smul, map_smul, smul_eq_mul]
+        exact mul_nonneg c.2 hx
+  refine le_antisymm (((PointedCone.isFaceOf_inf_ker hφC).eq_hull_inter_of_eq_hull hC).le.trans
+    (Submodule.span_le.2 fun x hx ↦ (hφF x hx.1).1 hx.2.2)) ?_
+  exact (hF.eq_hull_inter_of_eq_hull hC).le.trans <| Submodule.span_le.2 fun x hx ↦
+    ⟨hC ▸ PointedCone.subset_hull hx.1, (hφF x hx.1).2 hx.2⟩
+
 end PointedConeExposure
 
 /-! ## Lemma-Definition 4.5: the support space of a cone of a decomposition -/
