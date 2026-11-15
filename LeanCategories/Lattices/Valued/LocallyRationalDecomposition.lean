@@ -3059,7 +3059,9 @@ independence holds for every pair of members meeting `C` (`supportSpace_eq_of_lo
   `I^⊥ ∩ H`, the value the source's description gives; and on two `ℚ`-hyperplanes in signature
   `(1, 3)`, where the four cells, the two walls and the corner cone all have support space
   `I^⊥ ∩ H₁ ∩ H₂ = I`, again the source's value.
-* **The isotropic item of that list is carried**: for `σ` the ray through an isotropic `e` of the
+* **The isotropic item of the list after the proof of Lemma-Definition 4.5 is carried** — the
+  source's "so the support spaces of `Σ(bb)` are `V`, `{0}` and the hyperplanes orthogonal to a
+  `ℚ`-isotropic line" (p. 19). For `σ` the ray through an isotropic `e` of the
   closed sheet, the support space relative to the sheet is `I^⊥`, both inclusions
   (`supportSpace_closedSheet_hull_eq_ker`, in the section "The support space of an isotropic half
   line in the facial decomposition"). The upper bound is `supportSpace_le_ker_associated_of_isotropic`;
