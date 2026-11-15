@@ -623,7 +623,7 @@ theorem facialDecomposition_coarsest (Cplus : PointedCone ℝ (realified V))
   rw [hunion] at hx'
   simpa using hx'
 
-/-! ## Example 4.3: the facial decomposition against Definition 4.2 as printed
+/-! ## Example 4.3: the facial decomposition against the literal reading of Definition 4.2
 
 Looijenga, Example 4.3, pp. 17-18: `C` is a connected component of the set of `x` with
 `x · x > 0`, for a form of signature `(1, dim L - 1)` over `ℚ`. What Definition 4.2 asks of
@@ -641,10 +641,14 @@ two rational points `u`, `v` of the open cone with `v` not a multiple of `u`. Th
 itself a trace of `Σ(bb)` (the trace on the face `C₊`), and the ray `ℝ≥0 u` is a face of `P`
 (`isFaceOf_hull_singleton`); but a trace `σ ⊓ P` of `Σ(bb)` that contains `u` has `u ∈ σ`, so
 `σ = C₊` and the trace is `P`, which is not that ray. So the restriction of `Σ(bb)` to `P`
-fails `mem_of_isFaceOf`, and `Σ(bb)` is not a locally rational decomposition in the printed
-sense (`not_isLocallyRationalDecomposition_facialDecomposition`).
+fails `mem_of_isFaceOf`, and `Σ(bb)` is not a locally rational decomposition when the
+restriction is read as the traces themselves
+(`not_isLocallyRationalDecompositionTraces_facialDecomposition`).
 
-The failing clause is therefore face-closure, not finiteness. -/
+The failing clause is therefore face-closure, not finiteness: the traces are finitely many and
+each is a rational cone, as the source's description of the faces of `C₊` says, and what they
+are not closed under is taking faces, which is why the restriction of Definition 4.2 is read in
+`IsLocallyRationalDecomposition` as the faces of the traces. -/
 
 section Example43
 
