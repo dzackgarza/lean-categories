@@ -9048,6 +9048,128 @@ theorem exists_mem_inf_upper_of_mem_map_inf (hpos : sigPos Q = 1)
       abel
     exact ⟨w, hwab, hweq ▸ hwC⟩
 
+/-- **The isotropic common-face chain.** Apply the relative convex-set chain to the projected star
+on the open half-space, choose a containing-ray lift of every projected node, and repair every
+projected common-cell point to an upper-sheet point. One further such step at each end identifies
+the chosen endpoint lifts with the prescribed `τ` and `τ'`. LC-09:
+`content:projected chain lift isotropic star` and
+`content:ReflTransGen content:quotient content:isotropic` found no competing declaration. -/
+theorem reflTransGen_star_of_isotropicHalfspace (hpos : sigPos Q = 1)
+    (hnd : Q.Nondegenerate) {ht : 0 < Q t}
+    {S : Set (PointedCone ℝ (realified V))}
+    (hS : IsLocallyRationalDecomposition (rationalClosure (closedSheet Q hpos ht)) S)
+    {e : realified V} (he0 : e ≠ 0) (heQ : Q e = 0)
+    {τ τ' : PointedCone ℝ (realified V)}
+    (hστ : PointedCone.hull ℝ ({e} : Set (realified V)) ≤ τ)
+    (hστ' : PointedCone.hull ℝ ({e} : Set (realified V)) ≤ τ')
+    (hτ : τ ∈ S) (hτ' : τ' ∈ S)
+    (hτC : ((τ : Set (realified V)) ∩ (positiveCone.upper Q t : Set (realified V))).Nonempty)
+    (hτ'C : ((τ' : Set (realified V)) ∩ (positiveCone.upper Q t : Set (realified V))).Nonempty) :
+    let N := Submodule.span ℝ ({e} : Set (realified V))
+    let _ : ContinuousAdd (realified V ⧸ N) := IsModuleTopology.toContinuousAdd ℝ _
+    Relation.ReflTransGen (fun a b =>
+      a ∈ S ∧ b ∈ S ∧ PointedCone.hull ℝ ({e} : Set (realified V)) ≤ a ∧
+      PointedCone.hull ℝ ({e} : Set (realified V)) ≤ b ∧
+      (((a ⊓ b : PointedCone ℝ (realified V)) : Set (realified V)) ∩
+        (positiveCone.upper Q t : Set (realified V))).Nonempty) τ τ' := by
+  classical
+  let N := Submodule.span ℝ ({e} : Set (realified V))
+  let _ : ContinuousAdd (realified V ⧸ N) := IsModuleTopology.toContinuousAdd ℝ _
+  let β := isotropicHalfspaceForm Q heQ
+  let H : Set (realified V ⧸ N) := {u | 0 < β u}
+  let T : Set (PointedCone ℝ (realified V ⧸ N)) :=
+    {D | ∃ a ∈ S, PointedCone.hull ℝ ({e} : Set (realified V)) ≤ a ∧ D = a.map N.mkQ}
+  let Rq : PointedCone ℝ (realified V ⧸ N) → PointedCone ℝ (realified V ⧸ N) → Prop :=
+    fun A B => A ∈ T ∧ B ∈ T ∧ (((A ⊓ B : PointedCone ℝ (realified V ⧸ N)) :
+      Set (realified V ⧸ N)) ∩ H).Nonempty
+  let R : PointedCone ℝ (realified V) → PointedCone ℝ (realified V) → Prop := fun a b =>
+    a ∈ S ∧ b ∈ S ∧ PointedCone.hull ℝ ({e} : Set (realified V)) ≤ a ∧
+    PointedCone.hull ℝ ({e} : Set (realified V)) ≤ b ∧
+    (((a ⊓ b : PointedCone ℝ (realified V)) : Set (realified V)) ∩
+      (positiveCone.upper Q t : Set (realified V))).Nonempty
+  change Relation.ReflTransGen R τ τ'
+  have hrayle : PointedCone.hull ℝ ({e} : Set (realified V)) ≤
+      rationalClosure (closedSheet Q hpos ht) := hστ.trans (hS.le hτ)
+  have heSheet : e ∈ closedSheet Q hpos ht := rationalClosure_le_closedSheet hpos
+    (hrayle (PointedCone.subset_hull (Set.mem_singleton e)))
+  have hβmem {x : realified V} (hx : x ∈ positiveCone.upper Q t) :
+      N.mkQ x ∈ H := by
+    change 0 < isotropicHalfspaceForm Q heQ (N.mkQ x)
+    have him : N.mkQ x ∈ N.mkQ '' (positiveCone.upper Q t) := ⟨x, hx, rfl⟩
+    rwa [image_mkQ_upper_eq Q hpos hnd ht he0 heQ heSheet.2] at him
+  obtain ⟨x, hxτ, hxC⟩ := hτC
+  obtain ⟨y, hyτ', hyC⟩ := hτ'C
+  have hconv : Convex ℝ H := by
+    change Convex ℝ {u | 0 < isotropicHalfspaceForm Q heQ u}
+    simpa only [Set.mem_univ, true_and] using
+      ((isotropicHalfspaceForm Q heQ).concaveOn convex_univ).convex_gt 0
+  have hclosed : ∀ D ∈ T, ∀ z ∈ H, z ∈ closure (D : Set (realified V ⧸ N)) → z ∈ D := by
+    intro D hD z hzH hzcl
+    obtain ⟨a, ha, hea, rfl⟩ := hD
+    exact mem_map_of_mem_topologicalClosure_of_isotropicHalfspace hpos hnd hS he0 heQ
+      hea ha hzcl hzH
+  have hcover : ∀ z ∈ H, ∃ D ∈ T, z ∈ D := by
+    intro z hz
+    obtain ⟨a, ha, hea, hzmem⟩ := exists_mem_map_star_of_isotropicHalfspace hpos hnd hS
+      he0 heQ hστ hτ hz
+    exact ⟨a.map N.mkQ, ⟨a, ha, hea, rfl⟩, hzmem⟩
+  have hloc : ∀ z ∈ H, ∃ U ∈ 𝓝 z, {D : {D : PointedCone ℝ (realified V ⧸ N) // D ∈ T} |
+      (((D.1 : PointedCone ℝ (realified V ⧸ N)) : Set (realified V ⧸ N)) ∩ U).Nonempty}.Finite := by
+    intro z hz
+    exact locallyFinite_map_star_of_isotropicHalfspace hpos hnd hS he0 heQ hστ hτ hz
+  have hτT : τ.map N.mkQ ∈ T := ⟨τ, hτ, hστ, rfl⟩
+  have hτ'T : τ'.map N.mkQ ∈ T := ⟨τ', hτ', hστ', rfl⟩
+  have hchainQ : Relation.ReflTransGen Rq (τ.map N.mkQ) (τ'.map N.mkQ) := by
+    apply reflTransGen_inf_nonempty_of_convex_set_of_relative hconv hclosed hcover hloc
+      (hβmem hxC) (hβmem hyC) hτT hτ'T
+    · exact ⟨x, hxτ, rfl⟩
+    · exact ⟨y, hyτ', rfl⟩
+  let lift : PointedCone ℝ (realified V ⧸ N) → PointedCone ℝ (realified V) := fun D =>
+    if hD : D ∈ T then Classical.choose hD else τ
+  have hlift (D : PointedCone ℝ (realified V ⧸ N)) (hD : D ∈ T) :
+      lift D ∈ S ∧ PointedCone.hull ℝ ({e} : Set (realified V)) ≤ lift D ∧
+        (lift D).map N.mkQ = D := by
+    have hs := Classical.choose_spec hD
+    simp only [lift, dite_eq_left hD]
+    exact ⟨hs.1, hs.2.1, hs.2.2.symm⟩
+  have hstep : ∀ A B, Rq A B → R (lift A) (lift B) := by
+    rintro A B ⟨hAT, hBT, z, hzAB, hzH⟩
+    obtain ⟨hAS, hAe, hAmap⟩ := hlift A hAT
+    obtain ⟨hBS, hBe, hBmap⟩ := hlift B hBT
+    have heA : e ∈ lift A := hAe (PointedCone.subset_hull (Set.mem_singleton e))
+    have heB : e ∈ lift B := hBe (PointedCone.subset_hull (Set.mem_singleton e))
+    refine ⟨hAS, hBS, hAe, hBe, ?_⟩
+    have hz : z ∈ (lift A ⊓ lift B).map N.mkQ := by
+      rw [map_inf_eq_inf_map_of_span_singleton heA heB, hAmap, hBmap]
+      exact hzAB
+    exact exists_mem_inf_upper_of_mem_map_inf hpos hnd he0 heQ heSheet heA heB hz hzH
+  have hconnect (a b : PointedCone ℝ (realified V)) (ha : a ∈ S) (hb : b ∈ S)
+      (hea : PointedCone.hull ℝ ({e} : Set (realified V)) ≤ a)
+      (heb : PointedCone.hull ℝ ({e} : Set (realified V)) ≤ b)
+      (hmap : a.map N.mkQ = b.map N.mkQ) {z : realified V}
+      (hza : z ∈ a) (hzC : z ∈ positiveCone.upper Q t) : R a b := by
+    have hea' : e ∈ a := hea (PointedCone.subset_hull (Set.mem_singleton e))
+    have heb' : e ∈ b := heb (PointedCone.subset_hull (Set.mem_singleton e))
+    refine ⟨ha, hb, hea, heb, ?_⟩
+    have hz : N.mkQ z ∈ (a ⊓ b).map N.mkQ := by
+      rw [map_inf_eq_inf_map_of_span_singleton hea' heb']
+      refine ⟨⟨z, hza, rfl⟩, ?_⟩
+      rw [← hmap]
+      exact ⟨z, hza, rfl⟩
+    exact exists_mem_inf_upper_of_mem_map_inf hpos hnd he0 heQ heSheet hea' heb' hz (hβmem hzC)
+  have hlchain := reflTransGen_map_of_step lift hstep hchainQ
+  have hstart : R τ (lift (τ.map N.mkQ)) := by
+    obtain ⟨hAS, hAe, hAmap⟩ := hlift (τ.map N.mkQ) hτT
+    exact hconnect τ (lift (τ.map N.mkQ)) hτ hAS hστ hAe hAmap.symm hxτ hxC
+  have hend : R (lift (τ'.map N.mkQ)) τ' := by
+    obtain ⟨hAS, hAe, hAmap⟩ := hlift (τ'.map N.mkQ) hτ'T
+    have hback : R τ' (lift (τ'.map N.mkQ)) :=
+      hconnect τ' (lift (τ'.map N.mkQ)) hτ' hAS hστ' hAe hAmap.symm hyτ' hyC
+    refine ⟨hback.2.1, hback.1, hback.2.2.2.1, hback.2.2.1, ?_⟩
+    obtain ⟨z, hz, hzC⟩ := hback.2.2.2.2
+    exact ⟨z, Submodule.mem_inf.2 ⟨hz.2, hz.1⟩, hzC⟩
+  exact Relation.ReflTransGen.head hstart (hlchain.tail hend)
+
 end IsotropicRationalTraces
 
 end LeanCategories.Lattices.Valued
