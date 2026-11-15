@@ -1048,6 +1048,170 @@ theorem isRationalCone_normalizedConeOn {ι : Type*} [DecidableEq ι]
         (isRationalCone_inf_halfspace ih (hrlo i)) (hrup i)
       simpa [normalizedConeOn, Finset.inf_insert, inf_assoc, inf_left_comm, inf_comm] using h
 
+/-- **A nonzero point of an open cone has a rational cone neighbourhood contained in the
+cone** (the local input to Looijenga's Lemma-Definition 4.5). Choose a signed coordinate `ell`
+positive at `x`, take a small closed coordinate ball around `x` inside `C`, and choose rational
+bounds around the ratios `rationalCoordinate b i x / ell x`. Their normalized cone is a
+neighbourhood of `x`. Conversely, if `y` satisfies the bounds, normalize it to `ell z = ell x`;
+the coordinate bounds put `z` in the closed ball inside `C`; and `y` is a nonnegative multiple
+of `z`. This handles arbitrary real `x`, not only rational points. -/
+theorem exists_rationalCone_mem_nhds_subset_of_ne_zero [Module.Finite ℚ V]
+    {C : PointedCone ℝ (realified V)} (hCopen : IsOpen (C : Set (realified V)))
+    {x : realified V} (hx : x ∈ C) (hx0 : x ≠ 0) :
+    ∃ K : PointedCone ℝ (realified V), IsRationalCone K ∧
+      (K : Set (realified V)) ∈ 𝓝 x ∧ K ≤ C := by
+  classical
+  let b := Module.finBasis ℚ V
+  let e := (b.baseChange ℝ).equivFun
+  have hex (i) (y : realified V) : rationalCoordinate b i y = e y i := by
+    simp only [rationalCoordinate_apply, e, Module.Basis.equivFun_apply]
+  obtain ⟨j, hj⟩ : ∃ j, e x j ≠ 0 := by
+    by_contra h
+    push Not at h
+    apply hx0
+    apply e.injective
+    ext i
+    simp [h i]
+  let s : ℚ := if 0 < e x j then 1 else -1
+  let ell : (realified V) →ₗ[ℝ] ℝ := (s : ℝ) • rationalCoordinate b j
+  have hell : IsRationalForm ell :=
+    IsRationalForm.qsmul (isRationalForm_rationalCoordinate b j) s
+  have hellx : 0 < ell x := by
+    dsimp [ell, s]
+    split_ifs with hpos
+    · rw [hex]
+      simpa using hpos
+    · have hneg : e x j < 0 := (lt_or_gt_of_ne hj).resolve_right hpos
+      simp only [Rat.cast_neg, Rat.cast_one]
+      rw [hex]
+      simpa using hneg
+  let ex : Fin (Module.finrank ℚ V) → ℝ := e x
+  let r : Fin (Module.finrank ℚ V) → ℝ := fun i => ex i / ell x
+  have hcont : Continuous e.symm := IsModuleTopology.continuous_of_linearMap e.symm.toLinearMap
+  have hx' : e.symm ex ∈ (C : Set (realified V)) := by
+    dsimp [ex]
+    rw [LinearEquiv.symm_apply_apply]
+    exact hx
+  have hpre : (C : Set (realified V)) ∈ 𝓝 (e.symm ex) := hCopen.mem_nhds hx'
+  have hnhood : e.symm ⁻¹' (C : Set (realified V)) ∈ 𝓝 ex :=
+    hcont.continuousAt.preimage_mem_nhds hpre
+  obtain ⟨ε, hε, hball⟩ := Metric.mem_nhds_iff.1 hnhood
+  let R := ε / 2
+  have hR : 0 < R := by dsimp [R]; positivity
+  let η := R / ell x
+  have hη : 0 < η := div_pos hR hellx
+  have hballsub : Metric.closedBall ex R ⊆ e.symm ⁻¹' (C : Set (realified V)) :=
+    (Metric.closedBall_subset_ball (by dsimp [R]; linarith)).trans hball
+  choose lo hlo₁ hlo₂ using fun i =>
+    exists_rat_btwn (show r i - η < r i from sub_lt_self (r i) hη)
+  choose up hup₁ hup₂ using fun i =>
+    exists_rat_btwn (show r i < r i + η from lt_add_of_pos_right (r i) hη)
+  let K := normalizedConeOn Finset.univ b ell lo up
+  have hKrat : IsRationalCone K := isRationalCone_normalizedConeOn _ _ hell _ _
+  refine ⟨K, hKrat, ?_, ?_⟩
+  · let U : Set (realified V) := {y | 0 < ell y} ∩ {y | ∀ i,
+      0 < (rationalCoordinate b i - (lo i : ℝ) • ell) y ∧
+        0 < ((up i : ℝ) • ell - rationalCoordinate b i) y}
+    have hUopen : IsOpen U := by
+      dsimp only [U]
+      refine (isOpen_lt continuous_const (IsModuleTopology.continuous_of_linearMap ell)).inter ?_
+      rw [show {y | ∀ i, 0 < (rationalCoordinate b i - (lo i : ℝ) • ell) y ∧
+          0 < ((up i : ℝ) • ell - rationalCoordinate b i) y} =
+        ⋂ i, {y | 0 < (rationalCoordinate b i - (lo i : ℝ) • ell) y ∧
+          0 < ((up i : ℝ) • ell - rationalCoordinate b i) y} from by
+        ext y
+        simp only [Set.mem_iInter, Set.mem_ofPred_eq]]
+      apply isOpen_iInter_of_finite
+      intro i
+      change IsOpen ({y | (0 : ℝ) < (rationalCoordinate b i - (lo i : ℝ) • ell) y} ∩
+        {y | (0 : ℝ) < ((up i : ℝ) • ell - rationalCoordinate b i) y})
+      exact (isOpen_lt continuous_const (IsModuleTopology.continuous_of_linearMap
+        (rationalCoordinate b i - (lo i : ℝ) • ell))).inter
+        (isOpen_lt continuous_const (IsModuleTopology.continuous_of_linearMap
+          ((up i : ℝ) • ell - rationalCoordinate b i)))
+    have hxU : x ∈ U := by
+      refine ⟨hellx, fun i => ?_⟩
+      constructor <;>
+        simp only [LinearMap.sub_apply, LinearMap.smul_apply, smul_eq_mul, hex]
+      · exact sub_pos.mpr ((lt_div_iff₀ hellx).1 (hlo₂ i))
+      · exact sub_pos.mpr ((div_lt_iff₀ hellx).1 (hup₁ i))
+    have hUK : U ⊆ (K : Set (realified V)) := by
+      intro y hy
+      change y ∈ normalizedConeOn Finset.univ b ell lo up
+      rw [mem_normalizedConeOn]
+      exact ⟨fun i _ => ⟨(hy.2 i).1.le, (hy.2 i).2.le⟩, hy.1.le⟩
+    exact Filter.mem_of_superset (hUopen.mem_nhds hxU) hUK
+  · intro y hy
+    rw [mem_normalizedConeOn] at hy
+    have hbnd (i) := hy.1 i (Finset.mem_univ i)
+    rcases hy.2.eq_or_lt with helly | helly
+    · have hcoord (i) : rationalCoordinate b i y = 0 := by
+        have hm := hbnd i
+        simp only [LinearMap.sub_apply, LinearMap.smul_apply, smul_eq_mul] at hm
+        rw [← helly] at hm
+        simp only [mul_zero, sub_zero, zero_sub] at hm
+        exact le_antisymm (neg_nonneg.mp hm.2) hm.1
+      have hy0 : y = 0 := by
+        apply (b.baseChange ℝ).repr.injective
+        ext i
+        rw [← rationalCoordinate_apply]
+        exact hcoord i
+      rw [hy0]
+      exact C.zero_mem
+    · have helly0 : ell y ≠ 0 := ne_of_gt helly
+      let z := (ell x / ell y) • y
+      have hzcoord (i) : rationalCoordinate b i z = (ell x / ell y) * rationalCoordinate b i y := by
+        dsimp [z]
+        rw [map_smul, smul_eq_mul]
+      have hzball : e z ∈ Metric.closedBall ex R := by
+        rw [closedBall_pi ex hR.le]
+        intro i _
+        change e z i ∈ Metric.closedBall (ex i) R
+        rw [Real.closedBall_eq_Icc, Set.mem_Icc]
+        have hzratio : e z i / ell x = rationalCoordinate b i y / ell y := by
+          rw [← hex i z, hzcoord]
+          field_simp
+        have hlow : (r i - η) * ell x < e z i := by
+          apply (lt_div_iff₀ hellx).1
+          rw [hzratio]
+          have hl : r i - η < (lo i : ℝ) := hlo₁ i
+          have hb : (lo i : ℝ) ≤ rationalCoordinate b i y / ell y := by
+            apply (le_div_iff₀ helly).2
+            have hm := hbnd i
+            simp only [LinearMap.sub_apply, LinearMap.smul_apply, smul_eq_mul] at hm
+            exact sub_nonneg.mp hm.1
+          exact hl.trans_le hb
+        have hupp : e z i < (r i + η) * ell x := by
+          apply (div_lt_iff₀ hellx).1
+          rw [hzratio]
+          have hu : (up i : ℝ) < r i + η := hup₂ i
+          have hb : rationalCoordinate b i y / ell y ≤ (up i : ℝ) := by
+            apply (div_le_iff₀ helly).2
+            have hm := hbnd i
+            simp only [LinearMap.sub_apply, LinearMap.smul_apply, smul_eq_mul] at hm
+            exact sub_nonneg.mp hm.2
+          exact hb.trans_lt hu
+        have hid₁ : (r i - η) * ell x = ex i - R := by
+          dsimp [r, η]
+          field_simp
+        have hid₂ : (r i + η) * ell x = ex i + R := by
+          dsimp [r, η]
+          field_simp
+        rw [hid₁] at hlow
+        rw [hid₂] at hupp
+        constructor <;> linarith
+      have hzC : z ∈ (C : Set (realified V)) := by
+        have hm := hballsub hzball
+        change e.symm (e z) ∈ (C : Set (realified V)) at hm
+        simpa only [LinearEquiv.symm_apply_apply] using hm
+      have hy_eq : (ell y / ell x) • z = y := by
+        dsimp [z]
+        rw [smul_smul]
+        field_simp
+        simp
+      rw [← hy_eq]
+      exact C.smul_mem (div_nonneg helly.le hellx.le) hzC
+
 /-- Looijenga, Definition 4.1, p. 16: a *rational cone system* in `L(ℝ)` is a finite
 collection of nondegenerate rational convex cones such that a face of a member is a member,
 and any two members meet along a common face. -/
