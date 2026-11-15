@@ -131,6 +131,12 @@ just cache
 just build
 ```
 
+Both entry points keep Lake's own per-module elaboration times in `build-timings/` (a `.log`
+and a `.tsv` per build step, named by commit and start time, outside the build tree; the
+`just test` step that builds `LeanCategories.All` records the whole library) -- see
+[`docs/build-timings.md`](docs/build-timings.md), which also carries the CI artifact step
+(retention 90 days) that still has to be added to `.github/workflows/ci.yml`.
+
 ## The foundational corpus
 
 <https://dzackgarza.github.io/lean-categories/> publishes the survey behind the reuse

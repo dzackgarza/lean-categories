@@ -34,9 +34,18 @@ update:
 # every dependency's (see docs/mathlib-build-store.md) -- so four worktrees cost
 # one copy of them all, and a head move still cannot leave stale traces hiding the
 # gap behind a fresh `lake build`.
+#
+# The build runs through `scripts/build-timing.sh`, which keeps Lake's own per-module
+# timing report in `build-timings/<commit>-<start time>.{log,tsv}` -- one file per run,
+# outside the build tree, so that "which module is slow" is answered from the record and
+# not by a second build (`docs/build-timings.md`; lean-categories#160). `test` depends on
+# this recipe, so every `just test` leaves that record too. A bare `lake build` does not:
+# Lake has no post-build hook, and this repository's builds go through `just`.
+
+# Build, keeping this run's per-module elaboration times (docs/build-timings.md).
 build:
     @scripts/cache-get.sh
-    @lake build
+    @scripts/build-timing.sh
 
 # Fetch the prebuilt compilation cache of every package (linking this worktree to the
 # repository's shared build trees)
@@ -87,10 +96,12 @@ _lean-axiom-audit:
 # back a plain compiled executable. Building the module is enough — `run_cmd
 # audit` inside it fires at elaboration time. Run directly in `test` rather
 # than through the global gate, unlike axiom-audit, since no shared gate
-# target for this check exists yet.
+# target for this check exists yet. Unlike the `build` step it elaborates
+# `LeanCategories.All`, so it is run through `scripts/build-timing.sh` too: its
+# record is the one that covers the whole library (docs/build-timings.md).
 [private]
 _lean-vacuity-audit:
-    @lake build LeanCategories.Tools.VacuityAudit
+    @scripts/build-timing.sh LeanCategories.Tools.VacuityAudit
 
 # Repo-supplied standard Batteries/Mathlib `#lint` battery, minus `docBlame`
 # (later work, see the files' module docs) and `unusedArguments` (demonstrated
