@@ -9170,6 +9170,44 @@ theorem reflTransGen_star_of_isotropicHalfspace (hpos : sigPos Q = 1)
     exact ⟨z, Submodule.mem_inf.2 ⟨hz.2, hz.1⟩, hzC⟩
   exact Relation.ReflTransGen.head hstart (hlchain.tail hend)
 
+omit [Module.Finite ℚ V] in
+/-- **Lemma-Definition 4.5, the isotropic half-line case.** The projected affine decomposition
+supplies the common-face chain, lineality is constant along it, and the two quotient-support
+bridges identify endpoint lineality with the two support spaces. -/
+theorem supportSpace_eq_of_isotropicHalfLine_of_locallyRational
+    [Module.Finite ℚ V]
+    {Q : QuadraticForm ℝ (realified V)} {t : realified V}
+    (hpos : sigPos Q = 1) (hnd : Q.Nondegenerate) {ht : 0 < Q t}
+    {S : Set (PointedCone ℝ (realified V))}
+    (hS : IsLocallyRationalDecomposition (rationalClosure (closedSheet Q hpos ht)) S)
+    {σ τ τ' : PointedCone ℝ (realified V)}
+    (hσ : IsIsotropicHalfLine Q σ)
+    (hστ : σ ≤ τ) (hστ' : σ ≤ τ')
+    (hτ : τ ∈ S) (hτ' : τ' ∈ S)
+    (hτC : ((τ : Set (realified V)) ∩ (positiveCone.upper Q t : Set (realified V))).Nonempty)
+    (hτ'C : ((τ' : Set (realified V)) ∩ (positiveCone.upper Q t : Set (realified V))).Nonempty) :
+    supportSpace τ σ = supportSpace τ' σ := by
+  obtain ⟨e, he0, heQ, rfl⟩ := hσ
+  have hN : Submodule.span ℝ
+      ((PointedCone.hull ℝ ({e} : Set (realified V))) : Set (realified V)) =
+      Submodule.span ℝ ({e} : Set (realified V)) := by
+    apply le_antisymm
+    · apply Submodule.span_le.2
+      intro x hx
+      exact PointedCone.hull_le_span ℝ {e} hx
+    · exact Submodule.span_mono PointedCone.subset_hull
+  have hchain := reflTransGen_star_of_isotropicHalfspace hpos hnd hS he0 heQ
+    hστ hστ' hτ hτ' hτC hτ'C
+  have hlin := lineal_topologicalClosure_map_eq_of_reflTransGen_of_hull_singleton
+    hpos hnd hS he0 heQ hchain
+  have hleft := supportSpace_map_mkQ_bot_eq_topologicalClosure_lineal
+    (τ := τ) (σ := PointedCone.hull ℝ ({e} : Set (realified V)))
+  have hright := supportSpace_map_mkQ_bot_eq_topologicalClosure_lineal
+    (τ := τ') (σ := PointedCone.hull ℝ ({e} : Set (realified V)))
+  dsimp only at hlin hleft hright
+  rw [hN] at hleft hright
+  rw [← hleft, ← hright, hlin]
+
 end IsotropicRationalTraces
 
 end LeanCategories.Lattices.Valued
