@@ -2411,6 +2411,101 @@ theorem subset_closedSheet {Q : QuadraticForm ℝ (realified V)} {t : realified 
     positiveCone.upper Q t ⊆ (closedSheet Q hpos ht : Set (realified V)) :=
   fun _ hx => ⟨hx.1.le, hx.2.le⟩
 
+/-- The open upper sheet with its cone apex adjoined. Positivity of pairings on the sheet proves
+the addition law; positive scaling preserves the two defining strict inequalities. LC-09:
+`content:convex open cone zero` and `content:PointedCone insert zero` found geometric coning APIs,
+but no declaration for this pointed-cone wrapper. -/
+noncomputable def positiveCone.upperZero {Q : QuadraticForm ℝ (realified V)}
+    (hpos : sigPos Q = 1) {t : realified V} (ht : 0 < Q t) :
+    PointedCone ℝ (realified V) where
+  carrier := insert 0 (positiveCone.upper Q t)
+  zero_mem' := Or.inl rfl
+  add_mem' {x y} hx hy := by
+    rcases hx with rfl | hx
+    · rw [zero_add]
+      exact hy
+    rcases hy with rfl | hy
+    · rw [add_zero]
+      exact Or.inr hx
+    right
+    have hpair : 0 < (associated Q) x y := associated_pos_of_mem_upper Q hpos ht hx hy
+    constructor
+    · rw [show x + y = (1 : ℝ) • x + (1 : ℝ) • y by simp, quadratic_expand]
+      nlinarith [hx.1, hy.1]
+    · rw [map_add, LinearMap.add_apply]
+      exact add_pos hx.2 hy.2
+  smul_mem' c x hx := by
+    rcases eq_or_lt_of_le c.2 with hc | hc
+    · have hc0 : c = (0 : Nonneg ℝ) := Subtype.ext hc.symm
+      simp [hc0]
+    · rcases hx with rfl | hx
+      · exact Or.inl rfl
+      · right
+        constructor
+        · rw [← Nonneg.coe_smul, QuadraticMap.map_smul, smul_eq_mul]
+          exact mul_pos (mul_pos hc hc) hx.1
+        · rw [← Nonneg.coe_smul, map_smul, LinearMap.smul_apply, smul_eq_mul]
+          exact mul_pos hc hx.2
+
+/-- Membership in the pointed upper sheet is either the apex or membership in the open sheet. -/
+@[simp] theorem mem_upperZero {Q : QuadraticForm ℝ (realified V)}
+    {hpos : sigPos Q = 1} {t : realified V} {ht : 0 < Q t} {x : realified V} :
+    x ∈ positiveCone.upperZero hpos ht ↔ x = 0 ∨ x ∈ positiveCone.upper Q t := Iff.rfl
+
+/-- The pointed upper sheet lies in the closed sheet. -/
+theorem upperZero_le_closedSheet {Q : QuadraticForm ℝ (realified V)}
+    (hpos : sigPos Q = 1) {t : realified V} (ht : 0 < Q t) :
+    positiveCone.upperZero hpos ht ≤ closedSheet Q hpos ht := by
+  intro x hx
+  rcases hx with rfl | hx
+  · exact zero_mem _
+  · exact subset_closedSheet hpos ht hx
+
+/-- The open upper sheet is contained in the interior of its pointed version. -/
+theorem upper_subset_interior_upperZero {Q : QuadraticForm ℝ (realified V)}
+    (hpos : sigPos Q = 1) {t : realified V} (ht : 0 < Q t) :
+    positiveCone.upper Q t ⊆ interior (positiveCone.upperZero hpos ht) := by
+  apply interior_maximal
+  · exact fun x hx => Set.mem_insert_iff.mpr (Or.inr hx)
+  · exact isOpen_positiveCone_upper_of_moduleTopology Q t
+
+/-- A point in the interior of a cone contained in another cone's closure belongs to the latter's
+rational closure. This is the pointwise form used for the open upper sheet. -/
+theorem subset_rationalClosure_of_mem
+    {C D : PointedCone ℝ (realified V)} (hDC : D ≤ C.closure) {x : realified V}
+    (hx : x ∈ interior D) : x ∈ rationalClosure C := by
+  classical
+  let e : realified V ≃ₗ[ℝ] (Fin (Module.finrank ℝ (realified V)) → ℝ) :=
+    (Module.finBasis ℝ (realified V)).equivFun
+  have h1 : Continuous e := IsModuleTopology.continuous_of_linearMap e.toLinearMap
+  have h2 : Continuous e.symm := IsModuleTopology.continuous_of_linearMap e.symm.toLinearMap
+  let E' : realified V ≃L[ℝ] (Fin (Module.finrank ℝ (realified V)) → ℝ) :=
+    { e with continuous_toFun := h1, continuous_invFun := h2 }
+  have hconv : Convex ℝ (E' '' (rationalClosure C : Set (realified V))) :=
+    (rationalClosure C).convex.linear_image E'.toLinearMap
+  have hopen : IsOpen (E' '' (interior D)) := E'.toHomeomorph.isOpenMap _ isOpen_interior
+  have himg : E' '' closure (rationalClosure C : Set (realified V)) =
+      closure (E' '' (rationalClosure C : Set (realified V))) :=
+    Homeomorph.image_closure E'.toHomeomorph _
+  have hrb : (interior D : Set (realified V)) ⊆ closure (rationalBoundary C) := by
+    intro x hx
+    rw [mem_closure_iff_nhds]
+    intro T hT
+    obtain ⟨U, hUT, hU, hxU⟩ := mem_nhds_iff.1 hT
+    obtain ⟨y, hyQ, hy⟩ := dense_range_rationalPoint.exists_mem_open
+      (hU.inter isOpen_interior) ⟨x, hxU, hx⟩
+    exact ⟨y, hUT hy.1, ⟨by simpa using hyQ, hDC (interior_subset hy.2)⟩⟩
+  have hcl : (interior D : Set (realified V)) ⊆
+      closure (rationalClosure C : Set (realified V)) :=
+    hrb.trans (closure_mono fun x hx => subset_convexHull ℝ _ hx)
+  have hsub : E' '' (interior D) ⊆ closure (E' '' (rationalClosure C : Set (realified V))) := by
+    rw [← himg]
+    exact Set.image_mono hcl
+  have key : E' '' (interior D) ⊆ E' '' (rationalClosure C : Set (realified V)) :=
+    subset_of_subset_closure_of_convex hopen hsub hconv
+  obtain ⟨y, hy, hyx⟩ := key ⟨x, hx, rfl⟩
+  rwa [E'.injective hyx] at hy
+
 /-- **The closed sheet is a nondegenerate cone**: `x` and `-x` both on it forces `x ⊥ t`,
 `Q x = 0`, and then `x = 0` (`eq_zero_of_perp_of_quadratic_eq_zero`). -/
 theorem closedSheet_salient {Q : QuadraticForm ℝ (realified V)} (hpos : sigPos Q = 1)
@@ -4055,15 +4150,18 @@ remaining isotropic object with projected closed-cone lineality, and
 `map_inf_eq_inf_map_of_span_singleton` supplies projection of intersections.
 
 The exact conclusion still owed for an isotropic member of a locally rational decomposition is
-this statement (written here as a handoff specification, not asserted as a proved declaration):
+the following statement (written here as a handoff specification, not asserted as a proved
+declaration). The handoff at `aca6d70a1b` was not well-typed: `positiveCone.upper` is a set and
+omits zero, whereas `rationalClosure` takes a pointed cone retaining zero. The corrected carrier
+is `rationalClosure (closedSheet Q hpos ht)`, with the source's hyperbolic hypotheses made explicit.
 
 ```
 theorem supportSpace_eq_of_isotropicHalfLine_of_locallyRational
     [Module.Finite ℚ V]
     {Q : QuadraticForm ℝ (realified V)} {t : realified V}
+    (hpos : sigPos Q = 1) (hnd : Q.Nondegenerate) {ht : 0 < Q t}
     {S : Set (PointedCone ℝ (realified V))}
-    (hS : IsLocallyRationalDecomposition
-      (rationalClosure (positiveCone.upper Q t)) S)
+    (hS : IsLocallyRationalDecomposition (rationalClosure (closedSheet Q hpos ht)) S)
     {σ τ τ' : PointedCone ℝ (realified V)}
     (hσ : IsIsotropicHalfLine Q σ)
     (hστ : σ ≤ τ) (hστ' : σ ≤ τ')
@@ -4075,13 +4173,35 @@ theorem supportSpace_eq_of_isotropicHalfLine_of_locallyRational
     supportSpace τ σ = supportSpace τ' σ
 ```
 
-The proof stops at projected common-face exposure: one still has to derive, from Definition
-4.2's rational traces, that the quotient-system members satisfy the common-face premise of
-`lineal_eq_of_reflTransGen`, and connect the projected half-space along the existing chain.
-After that premise, the quotient identification above closes the target immediately. No global
-cutting-form hypothesis `hexp` is to be added. The recession-cone draft that was being written
-for this step is retained unexported at `.scratch/wt159b-isotropic-draft/RecessionCone.lean`; it
-has not elaborated and declares no proved result.
+The proof still stops at **lineality of the projected closures through the projected half-space**
+along the existing common-face chain. The following inputs are now proved and must be retained
+for the next attempt:
+
+* finite generation is preserved by linear images (`PointedCone.FG.map`);
+* in the finite-dimensional module topology, finitely generated cones are closed
+  (`PointedCone.FG.isClosed_of_moduleTopology`);
+* a face containing the isotropic generator projects to a face
+  (`PointedCone.IsFaceOf.map_mkQ_span_singleton`);
+* a projected neighborhood localizes closure membership to its intersection with a cone
+  (`mem_topologicalClosure_map_inf_of_mem_nhds`);
+* the upper sheet is open by direct finite-dimensional computation
+  (`isOpen_positiveCone_upper_of_moduleTopology`), and the set-level chain theorem is
+  `reflTransGen_inf_nonempty_of_convex_set`.
+
+What remains is the affine/recession statement saying that the whole face has the same translation
+space. In particular, membership of `z ± ε • x` in a common closed cone does **not** imply that
+`±x` belongs to it, so a pointwise translation shortcut is not a proof. Recession lineality can
+also change under closure, so the generic nonclosed face lemma cannot be applied to the closure of
+its slice: the source's minimal-cell/translation-space induction on the projected slices must be
+carried, or a stronger analogous theorem established. Once lineality follows along that chain,
+`supportSpace_map_mkQ_bot_eq_topologicalClosure_lineal` finishes the isotropic statement. No
+`hexp`, no `sorry` and no new axiom is to be introduced.
+
+The earlier recession-cone draft remains unexported at
+`.scratch/wt159b-isotropic-draft/RecessionCone.lean`; it was read and does not elaborate. The
+`upperZero` wrapper and the pointwise bridge `subset_rationalClosure_of_mem` above supply the
+upper-sheet side of the eventual combined theorem: the open upper sheet is in the interior of its
+pointed version and lies in the rational closure of the closed sheet.
 -/
 
 section SupportSpaceIndependenceGeneral
