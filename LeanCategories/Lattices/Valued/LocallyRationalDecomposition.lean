@@ -4156,9 +4156,12 @@ case is now `supportSpace_eq_of_mem_open_of_locallyRational`, with no `hexp`, us
 `exists_rationalCone_mem_nhds_subset_of_ne_zero`, and the exposed common faces of its finite
 rational traces. The zero-cone case is `supportSpace_bot_of_isClosed_of_salient`. For the
 quotient by `span σ`, `supportSpace_map_mkQ_bot_eq_topologicalClosure_lineal` identifies the
-remaining isotropic object with projected closed-cone lineality, and
-`lineal_eq_of_reflTransGen` supplies the induction once projected common faces are established.
-`map_inf_eq_inf_map_of_span_singleton` supplies projection of intersections.
+remaining isotropic object with projected closed-cone lineality. The projected adjacency and
+chain steps are now proved: `lineal_topologicalClosure_map_le_of_hull_singleton` transfers every
+lineality direction across one adjacent pair, and
+`lineal_topologicalClosure_map_eq_of_reflTransGen_of_hull_singleton` propagates the equality along
+an isotropic common-face chain. `map_inf_eq_inf_map_of_span_singleton` supplies projection of
+intersections.
 
 The exact conclusion still owed for an isotropic member of a locally rational decomposition is
 the following statement (written here as a handoff specification, not asserted as a proved
@@ -4199,14 +4202,26 @@ for the next attempt:
   (`isOpen_positiveCone_upper_of_moduleTopology`), and the set-level chain theorem is
   `reflTransGen_inf_nonempty_of_convex_set`.
 
-What remains is the affine/recession statement saying that the whole face has the same translation
-space. In particular, membership of `z ± ε • x` in a common closed cone does **not** imply that
-`±x` belongs to it, so a pointwise translation shortcut is not a proof. Recession lineality can
-also change under closure, so the generic nonclosed face lemma cannot be applied to the closure of
-its slice: the source's minimal-cell/translation-space induction on the projected slices must be
-carried, or a stronger analogous theorem established. Once lineality follows along that chain,
-`supportSpace_map_mkQ_bot_eq_topologicalClosure_lineal` finishes the isotropic statement. No
-`hexp`, no `sorry` and no new axiom is to be introduced.
+The affine/recession step itself is now carried, without asserting that closure commutes with
+faces. The isotropic ray is a face of its carrier
+(`IsIsotropicHalfLine.isFaceOf_rationalClosure`) and is rational on locally rational traces
+(`IsIsotropicHalfLine.isRationalCone_of_le_of_mem`). For `z` in a common projected cell and `x`
+in one closure's lineality, the isotropic functional is nonnegative on both `x` and `-x`, so
+`β x = 0` and every `z + r x` lifts to the open sheet. A common rational cone neighbourhood of
+lifts of `z`, `z + r x`, and `z - r x` is supplied by
+`exists_rationalCone_sup_mem_nhds_of_isotropic_three`. Closedness of the finitely generated trace
+then lets the common projected face transfer `z + r x` through their midpoint `z`. The limit
+lemma `mem_topologicalClosure_of_forall_add_smul_mem` gives both signs of `x` in the other
+projected closure.
+
+What remains for the exact statement is the **star-chain input**: between two members above the
+same isotropic ray, construct a reflexive-transitive chain in which every node contains that ray
+and consecutive intersections meet the upper sheet. This is precisely the relation consumed by
+`lineal_topologicalClosure_map_eq_of_reflTransGen_of_hull_singleton`. The older generic chain
+`reflTransGen_inf_nonempty_of_convex_set` does not by itself prove this: its intermediate nodes
+can lie outside the `σ`-star, and the adjacency theorem intentionally requires the ray at every
+node. Once this chain is supplied, `supportSpace_map_mkQ_bot_eq_topologicalClosure_lineal`
+finishes the isotropic statement. No `hexp`, no `sorry` and no new axiom is to be introduced.
 
 The earlier recession-cone draft remains unexported at
 `.scratch/wt159b-isotropic-draft/RecessionCone.lean`; it was read and does not elaborate. The
