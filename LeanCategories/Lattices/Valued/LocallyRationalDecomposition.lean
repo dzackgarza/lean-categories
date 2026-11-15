@@ -3861,6 +3861,48 @@ independence holds for every pair of members meeting `C` (`supportSpace_eq_of_lo
   `U`; it is not a consequence of the decomposition axioms.
 -/
 
+/-! ## Remaining isotropic obligation after the locality and quotient steps
+
+The following status supersedes the older provisional wording in this document. The interior
+case is now `supportSpace_eq_of_mem_open_of_locallyRational`, with no `hexp`, using
+`supportSpace_inf_eq_of_mem_nhds`, the rational neighbourhood from
+`exists_rationalCone_mem_nhds_subset_of_ne_zero`, and the exposed common faces of its finite
+rational traces. The zero-cone case is `supportSpace_bot_of_isClosed_of_salient`. For the
+quotient by `span σ`, `supportSpace_map_mkQ_bot_eq_topologicalClosure_lineal` identifies the
+remaining isotropic object with projected closed-cone lineality, and
+`lineal_eq_of_reflTransGen` supplies the induction once projected common faces are established.
+`map_inf_eq_inf_map_of_span_singleton` supplies projection of intersections.
+
+The exact conclusion still owed for an isotropic member of a locally rational decomposition is
+this statement (written here as a handoff specification, not asserted as a proved declaration):
+
+```
+theorem supportSpace_eq_of_isotropicHalfLine_of_locallyRational
+    [Module.Finite ℚ V]
+    {Q : QuadraticForm ℝ (realified V)} {t : realified V}
+    {S : Set (PointedCone ℝ (realified V))}
+    (hS : IsLocallyRationalDecomposition
+      (rationalClosure (positiveCone.upper Q t)) S)
+    {σ τ τ' : PointedCone ℝ (realified V)}
+    (hσ : IsIsotropicHalfLine Q σ)
+    (hστ : σ ≤ τ) (hστ' : σ ≤ τ')
+    (hτ : τ ∈ S) (hτ' : τ' ∈ S)
+    (hτC : ((τ : Set (realified V)) ∩
+      (positiveCone.upper Q t : Set (realified V))).Nonempty)
+    (hτ'C : ((τ' : Set (realified V)) ∩
+      (positiveCone.upper Q t : Set (realified V))).Nonempty) :
+    supportSpace τ σ = supportSpace τ' σ
+```
+
+The proof stops at projected common-face exposure: one still has to derive, from Definition
+4.2's rational traces, that the quotient-system members satisfy the common-face premise of
+`lineal_eq_of_reflTransGen`, and connect the projected half-space along the existing chain.
+After that premise, the quotient identification above closes the target immediately. No global
+cutting-form hypothesis `hexp` is to be added. The recession-cone draft that was being written
+for this step is retained unexported at `.scratch/wt159b-isotropic-draft/RecessionCone.lean`; it
+has not elaborated and declares no proved result.
+-/
+
 section SupportSpaceIndependenceGeneral
 
 /-- A form vanishes on the half line `hull ℝ {e}` exactly when it vanishes at `e`: the cone hull
