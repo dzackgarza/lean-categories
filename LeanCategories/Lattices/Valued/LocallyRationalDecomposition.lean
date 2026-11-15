@@ -2300,7 +2300,8 @@ facial decomposition `Σ(bb)` every member meeting `C` is `C₊` itself
 `C₊`, for an *arbitrary* point of `C`, not only a rational one), so the independence is
 immediate there (`supportSpace_eq_of_meets_openSheet`). The source's argument for a general `Σ`,
 where `σ` spans an isotropic half line and the proof runs through the projection `π_I` on
-`I^⊥/I` (p. 19), is not carried.
+`I^⊥/I` (p. 19), is carried in the form and in the cone, and not through its affine model: see the
+section "The connectivity of a locally finite decomposition through common faces" below.
 
 The step that replaces the rational case: a nonnegative combination of rational points of the
 closed sheet that is timelike has a sub-combination that is timelike
@@ -2504,8 +2505,10 @@ affine space over `I^⊥/I`, whose form is the business of
 is the quadratic form on that subquotient, not the functional `β` here). The half-space is the
 space `A_I(ℝ)` that the rest of the source's argument decomposes into polyhedra; the
 decomposition itself — the cones of `Σ` above `σ` projected to polyhedra, their minimal members,
-and the translation space `U` whose preimage is `L_σ` — is not carried, and is named in the
-module docstring as the remaining gap of Lemma-Definition 4.5.
+and the translation space `U` whose preimage is `L_σ` — is not carried. What that decomposition
+yields, the independence of `L_σ` from the member, is carried in the form and the cone in the
+section "The connectivity of a locally finite decomposition through common faces" below, whose
+`σ` is not assumed to span an isotropic half line.
 
 The proof of the image statement is in two halves. A point of the open sheet pairs positively
 with every nonzero point of the closed sheet (`associated_pos_of_mem_upper_of_mem_closedSheet`),
