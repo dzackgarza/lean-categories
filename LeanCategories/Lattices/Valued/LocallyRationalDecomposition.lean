@@ -1122,6 +1122,328 @@ theorem hyperbolicFacialDecomposition_isLocallyRational {Q : QuadraticForm ℝ (
 
 end Hyperbolic
 
+/-! ## The action of `Γ` on locally rational decompositions (Example 4.3, p. 17)
+
+Looijenga, Example 4.3, p. 17: `Γ` is an arithmetic subgroup of the orthogonal group of
+`L(ℚ)` preserving `C`. What the action on locally rational decompositions of `C₊` needs of `Γ`
+is only that its elements are linear equivalences of `L(ℝ)` *defined over `ℚ`* — so that they
+carry rational cones to rational cones (`IsRationalEquiv`) — and that they preserve `C₊`. The
+form itself is not needed: salience, faces and traces are preserved by any linear equivalence.
+
+The two statements are the action (`IsLocallyRationalDecomposition.coneMap`: the image of a
+locally rational decomposition of `C₊` is again one) and invariance (`IsGammaInvariant`, and
+`isGammaInvariant_facialDecomposition`: the facial decomposition `Σ(bb)` is fixed by every
+element of such a group, as the coarsest locally rational decomposition must be). -/
+
+section GammaAction
+
+variable {e : (realified V) ≃ₗ[ℝ] (realified V)}
+
+/-- The image of a cone under a real linear equivalence of `L(ℝ)`. -/
+noncomputable def coneMap (e : (realified V) ≃ₗ[ℝ] (realified V))
+    (P : PointedCone ℝ (realified V)) : PointedCone ℝ (realified V) where
+  carrier := e '' (P : Set (realified V))
+  zero_mem' := ⟨0, P.zero_mem, by simp⟩
+  add_mem' := by
+    rintro _ _ ⟨a, ha, rfl⟩ ⟨b, hb, rfl⟩
+    exact ⟨a + b, P.add_mem ha hb, by simp⟩
+  smul_mem' := by
+    rintro c _ ⟨a, ha, rfl⟩
+    exact ⟨(c : ℝ) • a, P.smul_mem c.2 ha, by rw [map_smul, ← Nonneg.coe_smul]⟩
+
+@[simp]
+theorem mem_coneMap {P : PointedCone ℝ (realified V)} {x : realified V} :
+    x ∈ coneMap e P ↔ e.symm x ∈ P := by
+  constructor
+  · rintro ⟨a, ha, rfl⟩
+    simpa using ha
+  · intro hx
+    exact ⟨e.symm x, hx, by simp⟩
+
+/-- The image under the inverse equivalence is the original cone. -/
+theorem coneMap_symm_coneMap (P : PointedCone ℝ (realified V)) :
+    coneMap e.symm (coneMap e P) = P := by
+  refine SetLike.ext fun x => ?_
+  rw [mem_coneMap, mem_coneMap]
+  simp
+
+/-- The image of the inverse image is the original cone. -/
+theorem coneMap_coneMap_symm (P : PointedCone ℝ (realified V)) :
+    coneMap e (coneMap e.symm P) = P :=
+  coneMap_symm_coneMap (e := e.symm) P
+
+/-- The image map on cones is injective. -/
+theorem coneMap_injective : Function.Injective (coneMap e) := by
+  intro P Q h
+  have h' := congrArg (coneMap e.symm) h
+  rwa [coneMap_symm_coneMap, coneMap_symm_coneMap] at h'
+
+/-- The image of an intersection is the intersection of the images. -/
+theorem coneMap_inf (P Q : PointedCone ℝ (realified V)) :
+    coneMap e (P ⊓ Q) = coneMap e P ⊓ coneMap e Q := by
+  refine SetLike.ext fun x => ?_
+  rw [mem_coneMap, Submodule.mem_inf, Submodule.mem_inf, mem_coneMap, mem_coneMap]
+
+/-- **Faces map to faces** under a linear equivalence. -/
+theorem isFaceOf_coneMap {F P : PointedCone ℝ (realified V)} (hF : F.IsFaceOf P) :
+    (coneMap e F).IsFaceOf (coneMap e P) where
+  le := by
+    rintro _ ⟨a, ha, rfl⟩
+    exact ⟨a, hF.le ha, rfl⟩
+  mem_of_smul_add_mem := by
+    rintro x y a hx hy ha hxy
+    rw [mem_coneMap] at hx hy hxy ⊢
+    have h : e.symm (a • x + y) = a • e.symm x + e.symm y := by simp
+    rw [h] at hxy
+    exact hF.mem_of_smul_add_mem hx hy ha hxy
+
+theorem isFaceOf_coneMap_iff {F P : PointedCone ℝ (realified V)} :
+    (coneMap e F).IsFaceOf (coneMap e P) ↔ F.IsFaceOf P := by
+  refine ⟨fun h => ?_, isFaceOf_coneMap⟩
+  have h' := isFaceOf_coneMap (e := e.symm) h
+  rwa [coneMap_symm_coneMap, coneMap_symm_coneMap] at h'
+
+/-- **Salience is preserved** by a linear equivalence. -/
+theorem salient_coneMap_iff {P : PointedCone ℝ (realified V)} :
+    (coneMap e P : ConvexCone ℝ (realified V)).Salient ↔
+      (P : ConvexCone ℝ (realified V)).Salient := by
+  constructor
+  · intro h x hx hx0 hneg
+    refine h (e x) ⟨x, hx, rfl⟩ ?_ ⟨-x, hneg, by simp⟩
+    intro h0
+    exact hx0 (by simpa using congrArg e.symm h0)
+  · intro h x hx hx0 hneg
+    obtain ⟨a, ha, rfl⟩ := hx
+    obtain ⟨b, hb, hbx⟩ := hneg
+    have hba : b = -a := by
+      have h' := congrArg e.symm hbx
+      simpa using h'
+    have hb' : -a ∈ P := hba ▸ hb
+    have ha0 : a = 0 := by
+      by_contra hne
+      exact h a ha hne hb'
+    exact hx0 (by rw [ha0]; simp)
+
+/-- **A real linear equivalence defined over `ℚ`**: one that carries `L(ℚ)` to itself.
+Looijenga's `Γ` is a subgroup of the orthogonal group of `L(ℚ)`, so each of its elements extends
+to such an equivalence of `L(ℝ)`. -/
+structure IsRationalEquiv (e : (realified V) ≃ₗ[ℝ] (realified V)) : Prop where
+  /-- The `ℚ`-linear equivalence inducing `e` on `L(ℚ)`. -/
+  exists_rat : ∃ g : V ≃ₗ[ℚ] V, ∀ v : V, e (rationalPoint v) = rationalPoint (g v)
+
+theorem IsRationalEquiv.symm (he : IsRationalEquiv e) : IsRationalEquiv e.symm := by
+  obtain ⟨g, hg⟩ := he.exists_rat
+  refine ⟨g.symm, fun v => ?_⟩
+  apply e.injective
+  rw [LinearEquiv.apply_symm_apply, hg]
+  simp
+
+/-- **A rational cone maps to a rational cone** under an equivalence defined over `ℚ`. -/
+theorem IsRationalEquiv.isRationalCone_coneMap (he : IsRationalEquiv e)
+    {P : PointedCone ℝ (realified V)} (hP : IsRationalCone P) :
+    IsRationalCone (coneMap e P) := by
+  classical
+  obtain ⟨s, rfl⟩ := hP
+  obtain ⟨g, hg⟩ := he.exists_rat
+  refine ⟨s.image g, ?_⟩
+  refine le_antisymm ?_ ?_
+  · rintro x ⟨y, hy, rfl⟩
+    induction hy using Submodule.span_induction with
+    | mem z hz =>
+      obtain ⟨v, hv, rfl⟩ := hz
+      rw [hg]
+      exact PointedCone.subset_hull
+        ⟨g v, Finset.mem_coe.2 (Finset.mem_image_of_mem g (Finset.mem_coe.1 hv)), rfl⟩
+    | zero => rw [map_zero]; exact (PointedCone.hull ℝ _).zero_mem
+    | add u v _ _ hu hv => rw [map_add]; exact (PointedCone.hull ℝ _).add_mem hu hv
+    | smul c u _ hu =>
+      rw [show e (c • u) = c • e u by
+        change e ((c : ℝ) • u) = (c : ℝ) • e u
+        rw [map_smul]]
+      exact (PointedCone.hull ℝ _).smul_mem c.2 hu
+  · intro x hx
+    rw [mem_coneMap]
+    induction hx using Submodule.span_induction with
+    | mem z hz =>
+      obtain ⟨w, hw, rfl⟩ := hz
+      obtain ⟨v, hv, rfl⟩ := Finset.mem_image.1 (Finset.mem_coe.1 hw)
+      have h : e.symm (rationalPoint (g v)) = rationalPoint v := by
+        rw [← hg v]; simp
+      rw [h]
+      exact PointedCone.subset_hull ⟨v, hv, rfl⟩
+    | zero => rw [map_zero]; exact (PointedCone.hull ℝ _).zero_mem
+    | add u v _ _ hu hv => rw [map_add]; exact (PointedCone.hull ℝ _).add_mem hu hv
+    | smul c u _ hu =>
+      rw [show e.symm (c • u) = c • e.symm u by
+        change e.symm ((c : ℝ) • u) = (c : ℝ) • e.symm u
+        rw [map_smul]]
+      exact (PointedCone.hull ℝ _).smul_mem c.2 hu
+
+/-- The traces of the image of a family are the images of the traces. -/
+theorem restrictionTo_coneMap (S : Set (PointedCone ℝ (realified V)))
+    (P : PointedCone ℝ (realified V)) :
+    restrictionTo (coneMap e '' S) P
+      = coneMap e '' (restrictionTo S (coneMap e.symm P)) := by
+  ext F
+  constructor
+  · rintro ⟨σ, hσ, rfl⟩
+    obtain ⟨σ₀, hσ₀, rfl⟩ := hσ
+    refine ⟨σ₀ ⊓ coneMap e.symm P, ⟨σ₀, hσ₀, rfl⟩, ?_⟩
+    rw [coneMap_inf, coneMap_coneMap_symm]
+  · rintro ⟨τ, hτ, rfl⟩
+    obtain ⟨σ, hσ, rfl⟩ := mem_restrictionTo.1 hτ
+    refine mem_restrictionTo.2 ⟨coneMap e σ, ⟨σ, hσ, rfl⟩, ?_⟩
+    rw [coneMap_inf, coneMap_coneMap_symm]
+
+/-- The face-closure of the image of a family is the image of its face-closure. -/
+theorem faceClosure_coneMap (S : Set (PointedCone ℝ (realified V))) :
+    faceClosure (coneMap e '' S) = coneMap e '' faceClosure S := by
+  ext F
+  constructor
+  · rintro ⟨σ, hσ, hFσ⟩
+    obtain ⟨σ₀, hσ₀, rfl⟩ := hσ
+    refine ⟨coneMap e.symm F, mem_faceClosure.2 ⟨σ₀, hσ₀, ?_⟩, coneMap_coneMap_symm F⟩
+    refine (isFaceOf_coneMap_iff (e := e) (F := coneMap e.symm F) (P := σ₀)).1 ?_
+    rw [coneMap_coneMap_symm]
+    exact hFσ
+  · rintro ⟨F₀, ⟨σ₀, hσ₀, hF₀⟩, rfl⟩
+    exact mem_faceClosure.2 ⟨coneMap e σ₀, ⟨σ₀, hσ₀, rfl⟩, isFaceOf_coneMap hF₀⟩
+
+/-- **A rational cone system maps to a rational cone system** under an equivalence defined over
+`ℚ`: Definition 4.1, p. 16, is invariant under `Γ`. -/
+theorem IsRationalEquiv.isRationalConeSystem_coneMap (he : IsRationalEquiv e)
+    {S : Set (PointedCone ℝ (realified V))} (hS : IsRationalConeSystem S) :
+    IsRationalConeSystem (coneMap e '' S) where
+  finite := hS.finite.image _
+  salient σ hσ := by
+    obtain ⟨σ₀, hσ₀, rfl⟩ := hσ
+    exact salient_coneMap_iff.2 (hS.salient σ₀ hσ₀)
+  isRational σ hσ := by
+    obtain ⟨σ₀, hσ₀, rfl⟩ := hσ
+    exact he.isRationalCone_coneMap (hS.isRational σ₀ hσ₀)
+  mem_of_isFaceOf := by
+    rintro σ τ ⟨σ₀, hσ₀, rfl⟩ hτσ
+    refine ⟨coneMap e.symm τ, hS.mem_of_isFaceOf hσ₀ ?_, coneMap_coneMap_symm τ⟩
+    refine (isFaceOf_coneMap_iff (e := e) (F := coneMap e.symm τ) (P := σ₀)).1 ?_
+    rw [coneMap_coneMap_symm]
+    exact hτσ
+  inf_isFaceOf_left := by
+    rintro σ τ ⟨σ₀, hσ₀, rfl⟩ ⟨τ₀, hτ₀, rfl⟩
+    have h := isFaceOf_coneMap (e := e) (hS.inf_isFaceOf_left hσ₀ hτ₀)
+    have hinf : coneMap e σ₀ ⊓ coneMap e τ₀ = coneMap e (σ₀ ⊓ τ₀) := (coneMap_inf _ _).symm
+    rwa [hinf]
+
+/-- A cone fixed by an equivalence fixes the rational cones of its inverse image: used to pull a
+rational subcone back along `Γ`. -/
+theorem coneMap_symm_le_of_eq {Cplus P : PointedCone ℝ (realified V)}
+    (hC : coneMap e Cplus = Cplus) (hPle : P ≤ Cplus) : coneMap e.symm P ≤ Cplus := by
+  have h1 : (e : realified V → realified V) '' (Cplus : Set (realified V))
+      = (Cplus : Set (realified V)) :=
+    congrArg (fun Q : PointedCone ℝ (realified V) => (Q : Set (realified V))) hC
+  have key : ∀ y : realified V, y ∈ (Cplus : Set (realified V)) →
+      e y ∈ (Cplus : Set (realified V)) := by
+    intro y hy
+    rw [← h1]
+    exact Set.mem_image_of_mem _ hy
+  have key' : ∀ y : realified V, e y ∈ (Cplus : Set (realified V)) →
+      y ∈ (Cplus : Set (realified V)) := by
+    intro y hy
+    have hmem : e y ∈ (e : realified V → realified V) '' (Cplus : Set (realified V)) := by
+      rw [h1]
+      exact hy
+    obtain ⟨z, hz, hzy⟩ := hmem
+    have hyz : z = y := by
+      have h' := congrArg e.symm hzy
+      simpa using h'
+    rw [hyz] at hz
+    exact hz
+  have himg : (e.symm : realified V → realified V) '' (Cplus : Set (realified V))
+      = (Cplus : Set (realified V)) := by
+    ext y
+    constructor
+    · rintro ⟨x, hx, rfl⟩
+      exact key' (e.symm x) (by simpa using hx)
+    · intro hy
+      exact ⟨e y, key y hy, by simp⟩
+  intro x hx
+  rw [mem_coneMap] at hx
+  simp only [LinearEquiv.symm_symm] at hx
+  change x ∈ (Cplus : Set (realified V))
+  rw [← himg]
+  have hxe : x = (e.symm : realified V → realified V) (e x) := by simp
+  rw [hxe]
+  exact Set.mem_image_of_mem _ (hPle hx)
+/-- **The `Γ`-action on locally rational decompositions of `C₊`** (Looijenga, Example 4.3,
+p. 17): an element of `Γ` — a `ℚ`-rational linear equivalence preserving `C₊` — carries a
+locally rational decomposition of `C₊` to a locally rational decomposition of `C₊`. -/
+theorem isLocallyRationalDecomposition_coneMap (he : IsRationalEquiv e)
+    {Cplus : PointedCone ℝ (realified V)} {S : Set (PointedCone ℝ (realified V))}
+    (hS : IsLocallyRationalDecomposition Cplus S) (hC : coneMap e Cplus = Cplus) :
+    IsLocallyRationalDecomposition Cplus (coneMap e '' S) where
+  union_eq := by
+    have h1 : (⋃ σ ∈ S, ((coneMap e σ : PointedCone ℝ (realified V)) : Set (realified V)))
+        = e '' (Cplus : Set (realified V)) := by
+      rw [← hS.union_eq]
+      ext x
+      simp only [Set.mem_iUnion, Set.mem_image, exists_prop]
+      constructor
+      · rintro ⟨σ, hσ, z, hz, rfl⟩
+        exact ⟨z, ⟨σ, hσ, hz⟩, rfl⟩
+      · rintro ⟨z, ⟨σ, hσ, hz⟩, rfl⟩
+        exact ⟨σ, hσ, z, hz, rfl⟩
+    have h2 : (⋃ σ ∈ coneMap e '' S, (σ : Set (realified V)))
+        = ⋃ σ ∈ S, ((coneMap e σ : PointedCone ℝ (realified V)) : Set (realified V)) := by
+      ext x
+      simp only [Set.mem_iUnion, exists_prop]
+      constructor
+      · rintro ⟨σ, ⟨σ₀, hσ₀, rfl⟩, hx⟩
+        exact ⟨σ₀, hσ₀, hx⟩
+      · rintro ⟨σ₀, hσ₀, hx⟩
+        exact ⟨coneMap e σ₀, ⟨σ₀, hσ₀, rfl⟩, hx⟩
+    rw [h2, h1]
+    exact congrArg (fun P : PointedCone ℝ (realified V) => (P : Set (realified V))) hC
+  isLocallyRational σ hσ := by
+    obtain ⟨σ₀, hσ₀, rfl⟩ := hσ
+    intro P hP hPle
+    have hP' : IsRationalCone (coneMap e.symm P) := he.symm.isRationalCone_coneMap hP
+    have hPle' : coneMap e.symm P ≤ Cplus := coneMap_symm_le_of_eq hC hPle
+    have h := hS.isLocallyRational σ₀ hσ₀ (coneMap e.symm P) hP' hPle'
+    have hinf : coneMap e σ₀ ⊓ P = coneMap e (σ₀ ⊓ coneMap e.symm P) := by
+      rw [coneMap_inf, coneMap_coneMap_symm]
+    rw [hinf]
+    exact he.isRationalCone_coneMap h
+  restriction P hP hPle := by
+    have hP' : IsRationalCone (coneMap e.symm P) := he.symm.isRationalCone_coneMap hP
+    have hPle' : coneMap e.symm P ≤ Cplus := coneMap_symm_le_of_eq hC hPle
+    have h := hS.restriction (coneMap e.symm P) hP' hPle'
+    rw [restrictionTo_coneMap, faceClosure_coneMap]
+    exact he.isRationalConeSystem_coneMap h
+
+/-- `Σ` is `Γ`-invariant when every element of `Γ` fixes it. -/
+def IsGammaInvariant (Γ : Set ((realified V) ≃ₗ[ℝ] (realified V)))
+    (S : Set (PointedCone ℝ (realified V))) : Prop :=
+  ∀ e ∈ Γ, coneMap e '' S = S
+
+/-- **The facial decomposition `Σ(bb)` is `Γ`-invariant** (Looijenga, Definition 4.2, p. 17): faces
+map to faces under a linear equivalence, and `Σ(bb)` is the set of faces of `C₊`. -/
+theorem isGammaInvariant_facialDecomposition (Γ : Set ((realified V) ≃ₗ[ℝ] (realified V)))
+    (Cplus : PointedCone ℝ (realified V)) (hΓ : ∀ e ∈ Γ, coneMap e Cplus = Cplus) :
+    IsGammaInvariant Γ (facialDecomposition Cplus) := by
+  intro e he
+  ext F
+  constructor
+  · rintro ⟨F₀, hF₀, rfl⟩
+    have h := isFaceOf_coneMap (e := e) hF₀
+    rwa [hΓ e he] at h
+  · intro hF
+    refine ⟨coneMap e.symm F, ?_, coneMap_coneMap_symm F⟩
+    have h1 : (coneMap e (coneMap e.symm F)).IsFaceOf (coneMap e Cplus) := by
+      rw [coneMap_coneMap_symm, hΓ e he]
+      exact hF
+    exact (isFaceOf_coneMap_iff (e := e) (F := coneMap e.symm F) (P := Cplus)).1 h1
+
+end GammaAction
+
 /-! ## Lemma-Definition 4.5: the support space of a cone of a decomposition -/
 
 /-- Looijenga, Lemma-Definition 4.5, p. 19: the real linear forms that are nonnegative on
