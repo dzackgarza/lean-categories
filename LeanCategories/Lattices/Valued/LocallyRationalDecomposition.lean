@@ -1557,6 +1557,28 @@ theorem exists_mem_of_mem_of_cover_rationalClosure {C : PointedCone ℝ (realifi
     ∀ z ∈ C, ∃ τ ∈ S, z ∈ τ :=
   fun z hz => hcover z (subset_rationalClosure C hC hz)
 
+/-- Rational closure is monotone under inclusion of the topological closures.
+LC-09 (2026-11-19): `content:rationalClosure content:mono` and
+`content:convex hull content:monotone content:closure` found no competing declaration or
+specialized analogue; the generator-level proof is immediate from `rationalClosure_eq_hull`. -/
+theorem rationalClosure_mono {C D : PointedCone ℝ (realified V)}
+    (h : C.closure ≤ D.closure) : rationalClosure C ≤ rationalClosure D := by
+  rw [rationalClosure_eq_hull C, rationalClosure_eq_hull D]
+  apply Submodule.span_mono
+  rintro x ⟨hx, hxc⟩
+  exact ⟨hx, h hxc⟩
+
+/-- An open cone contained in another cone's closure lies in that other cone's rational closure.
+This specializes to the open upper sheet inside the rational closure of `closedSheet`. -/
+theorem subset_rationalClosure_of_subset [Module.Finite ℚ V]
+    {C D : PointedCone ℝ (realified V)} (hDC : D ≤ C.closure)
+    (hDopen : IsOpen (D : Set (realified V))) :
+    (D : Set (realified V)) ⊆ (rationalClosure C : Set (realified V)) := by
+  intro x hx
+  exact rationalClosure_mono
+    (closure_minimal hDC (Submodule.isClosed_topologicalClosure C))
+    (subset_rationalClosure D hDopen hx)
+
 /-- Looijenga, Definition 4.2, p. 17: a cone is *locally rational* in `C₊` when its
 intersection with every rational subcone of `C₊` is rational. -/
 def IsLocallyRationalCone (Cplus σ : PointedCone ℝ (realified V)) : Prop :=
