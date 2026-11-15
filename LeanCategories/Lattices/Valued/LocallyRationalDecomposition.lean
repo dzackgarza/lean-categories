@@ -4361,10 +4361,24 @@ section SupportSpaceIndependenceLocallyFinite
 
 /-- A step of the chains of `reflTransGen_inf_nonempty_of_convex`: two members of `S` whose
 intersection meets `C`. -/
-def ChainRel (C : PointedCone ℝ (realified V))
-    (S : Set (PointedCone ℝ (realified V))) (a b : PointedCone ℝ (realified V)) : Prop :=
-  a ∈ S ∧ b ∈ S ∧ (((a ⊓ b : PointedCone ℝ (realified V)) : Set (realified V)) ∩
-    (C : Set (realified V))).Nonempty
+def ChainRel {E : Type*} [AddCommGroup E] [Module ℝ E]
+    (C : PointedCone ℝ E) (S : Set (PointedCone ℝ E)) (a b : PointedCone ℝ E) : Prop :=
+  a ∈ S ∧ b ∈ S ∧ (((a ⊓ b : PointedCone ℝ E) : Set E) ∩ (C : Set E)).Nonempty
+
+/-- **Lineality is constant along a chain of common faces.** At each step the common face takes
+part in `PointedCone.IsFaceOf.lineal_congr`; induction carries the equality to the endpoints.
+This is the incidence part of Looijenga's affine translation-space induction. -/
+theorem lineal_eq_of_reflTransGen {E : Type*} [AddCommGroup E] [Module ℝ E]
+    {C : PointedCone ℝ E} {S : Set (PointedCone ℝ E)} {τ τ' : PointedCone ℝ E}
+    (h : Relation.ReflTransGen (ChainRel C S) τ τ')
+    (hface : ∀ a b : PointedCone ℝ E, ChainRel C S a b →
+      (a ⊓ b).IsFaceOf a ∧ (a ⊓ b).IsFaceOf b) :
+    PointedCone.lineal τ = PointedCone.lineal τ' := by
+  induction h with
+  | refl => rfl
+  | tail _ hbc ih =>
+      obtain ⟨ha, hb⟩ := hface _ _ hbc
+      exact ih.trans (ha.lineal_congr.symm.trans hb.lineal_congr)
 
 /-- **Along a chain in which consecutive members meet in a common face cut out of each by a form,
 the support space over `σ` does not change.** -/
