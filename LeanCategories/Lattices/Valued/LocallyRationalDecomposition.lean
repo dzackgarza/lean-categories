@@ -5089,8 +5089,6 @@ source. The locally rational statement needs neither. -/
 
 section Example43b
 
-open Classical
-
 /-- The real form of a `ℚ`-linear equivalence: the base change of `g` to `ℝ`, i.e. the action of
 `g ∈ Γ` on `L(ℝ) = ℝ ⊗[ℚ] L` (Looijenga, Example 4.3, p. 17). -/
 noncomputable def realifiedEquiv (g : V ≃ₗ[ℚ] V) : (realified V) ≃ₗ[ℝ] (realified V) :=
@@ -5131,7 +5129,7 @@ theorem associated_realifiedEquiv {Q : QuadraticForm ℝ (realified V)}
       (associated Q) (rationalPoint v)
   have hF : ∀ x : V, F (rationalPoint x) = 0 := by
     intro x
-    show (associated Q) (rationalPoint (g v)) (realifiedEquiv g (rationalPoint x))
+    change (associated Q) (rationalPoint (g v)) (realifiedEquiv g (rationalPoint x))
       - (associated Q) (rationalPoint v) (rationalPoint x) = 0
     rw [realifiedEquiv_rationalPoint, hBQ (g v) (g x), hBQ v x, hg, sub_self]
   have hzero : F = 0 := by
@@ -5253,7 +5251,7 @@ noncomputable def orbitFamilyMap {H₀ : Finset (Submodule ℚ V)} {Γ : Set (V 
       rw [hℓ]; exact map_map_eq_map_trans⟩⟩
   left_inv ℓ := by
     refine Subtype.ext ?_
-    show ((ℓ.1.map (g : V →ₗ[ℚ] V)).map ((g.symm : V ≃ₗ[ℚ] V) : V →ₗ[ℚ] V)) = ℓ.1
+    change ((ℓ.1.map (g : V →ₗ[ℚ] V)).map ((g.symm : V ≃ₗ[ℚ] V) : V →ₗ[ℚ] V)) = ℓ.1
     rw [map_map_eq_map_trans]
     have hid : ((g.trans g.symm : V ≃ₗ[ℚ] V) : V →ₗ[ℚ] V) = LinearMap.id := by
       ext x
@@ -5261,7 +5259,7 @@ noncomputable def orbitFamilyMap {H₀ : Finset (Submodule ℚ V)} {Γ : Set (V 
     rw [hid, Submodule.map_id]
   right_inv ℓ := by
     refine Subtype.ext ?_
-    show ((ℓ.1.map ((g.symm : V ≃ₗ[ℚ] V) : V →ₗ[ℚ] V)).map (g : V →ₗ[ℚ] V)) = ℓ.1
+    change ((ℓ.1.map ((g.symm : V ≃ₗ[ℚ] V) : V →ₗ[ℚ] V)).map (g : V →ₗ[ℚ] V)) = ℓ.1
     rw [map_map_eq_map_trans]
     have hid : ((g.symm.trans g : V ≃ₗ[ℚ] V) : V →ₗ[ℚ] V) = LinearMap.id := by
       ext x
@@ -5299,6 +5297,7 @@ theorem normalForm_neg (Q : QuadraticForm ℝ (realified V)) (v : V) :
   simp [normalForm_apply]
 
 omit [Module.Finite ℚ V] in
+open Classical in
 /-- **`Γ` permutes the forms of `Σ(H)` up to sign**: the form of the generator of `ℓ.map g` is `±`
 the form of `g (gen ℓ)`, and the latter is the form of `gen ℓ` transported along `realifiedEquiv g`
 (`associated_realifiedEquiv`). -/
@@ -5314,6 +5313,7 @@ theorem normalForm_orbitFamily_equivariant {Q : QuadraticForm ℝ (realified V)}
     normalForm Q (gen (orbitFamilyMap hΓcomp hΓinv hg ℓ)) (realifiedEquiv g y)
       = (if gen (orbitFamilyMap hΓcomp hΓinv hg ℓ) = g (gen ℓ) then 1 else -1) *
         normalForm Q (gen ℓ) y := by
+  classical
   have hiso : normalForm Q (g (gen ℓ)) (realifiedEquiv g y) = normalForm Q (gen ℓ) y :=
     associated_realifiedEquiv hBQ (hΓiso g hg) (gen ℓ) y
   rcases orbitGenerator_eq_or_eq_neg hgen hΓcomp hΓinv hg (hΓΛ g hg) ℓ with h | h
@@ -5393,6 +5393,7 @@ theorem isGammaInvariant_arrangementDecomposition_of_orbitFamily
     IsGammaInvariant (realifiedEquiv '' Γ)
       (arrangementDecomposition (fun ℓ : ↥(orbitFamily H₀ Γ) =>
         normalForm Q (gen ℓ)) Cplus) := by
+  classical
   intro ê hê
   obtain ⟨g, hg, rfl⟩ := hê
   exact arrangementDecomposition_coneMap_of_equivariant
