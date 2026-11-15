@@ -5,6 +5,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import LeanCategories.Lattices.Valued.RationalPolyhedralCone
+public import LeanCategories.Lattices.Valued.PositiveCone
+public import LeanCategories.Analysis.Convex.SignCell
 public import Mathlib.Analysis.Convex.Cone.Basic
 public import Mathlib.Analysis.Convex.Topology
 public import Mathlib.LinearAlgebra.TensorProduct.Defs
@@ -16,9 +18,10 @@ public import Mathlib.LinearAlgebra.Dual.Lemmas
 # Locally rational decompositions of the rational closure of a cone
 
 Definitions 4.1 and 4.2 of E. Looijenga, *Compactifications defined by arrangements II:
-locally symmetric varieties of type IV*, arXiv math/0201218v2 (2002), pp. 16-19, and the
-support spaces of his Lemma-Definition 4.5, p. 19, over a finite-dimensional `ℚ`-vector
-space `L`, on the rational cones of #37 (`RationalPolyhedralCone.lean`).
+locally symmetric varieties of type IV*, arXiv math/0201218v2 (2002), pp. 16-19, the support
+spaces of his Lemma-Definition 4.5, p. 19, and the arrangement decomposition of Example 4.3,
+over a finite-dimensional `ℚ`-vector space `L`, on the rational cones of #37
+(`RationalPolyhedralCone.lean`).
 
 The carrier is the real form `L(ℝ) = L ⊗_ℚ ℝ`. It is carried as `ℝ ⊗[ℚ] L`, canonically
 the same tensor product, because that is the order in which the scalar action of `ℝ` is
@@ -28,62 +31,81 @@ an `ℝ`-vector space with no extra structure.
 ## What is stated
 
 * Definition 4.1 (p. 16): rational cones, and rational cone systems.
-* Definition 4.2 (p. 17): the rational closure `C₊ = conv(L(ℚ) ∩ closure C)`, locally
-  rational cones, locally rational decompositions, and the facial decomposition `Σ(bb)`.
-* Lemma-Definition 4.5 (p. 19): the forms nonnegative on `τ` and zero on `σ`, and their
-  common zero set, together with the two inclusions `span σ ≤ L_σ ≤ span τ` that pin the
-  support space between the span of `σ` and the span of the cone above it.
+* Definition 4.2 (p. 17): the rational closure `C₊` as the **convex hull** of
+  `L(ℚ) ∩ closure C` (`rationalClosure`), with the proof that it is a cone
+  (`convexHull_coneComb`) and that it is the cone that set generates
+  (`rationalClosure_eq_hull`); locally rational cones; locally rational decompositions with the
+  restriction to a rational subcone a rational cone system, as printed
+  (`restrictionTo`, `IsLocallyRationalDecomposition.restriction`); and the facial decomposition
+  `Σ(bb)`.
+* Lemma-Definition 4.5 (p. 19): the forms nonnegative on `τ` and zero on `σ`, their common zero
+  set, the two inclusions `span σ ≤ L_σ ≤ span τ` that pin the support space between the span
+  of `σ` and the span of the cone above it, and `L_σ = span σ` for the cones that meet `C`.
 
 ## What is not in this file
 
-* Example 4.3 (pp. 17-18): the quadratic cone, the arithmetic group `Γ` acting on the
-  locally rational decompositions, and the theorem that a `Γ`-finite set of `ℚ`-hyperplanes
-  meeting `C` gives the locally rational decomposition `Σ(H)`. The rationality of the cells
-  of such an arrangement is Minkowski-Weyl over `ℚ` for cones cut out by finitely many
-  rational inequalities; the repository has Minkowski-Weyl over `ℚ` in
-  `ForMathlib/PointedConeMinkowskiWeyl.lean`, but not the transport of a cone so presented
-  through the realification `ℝ ⊗[ℚ] L` that this file's carrier uses.
-* The independence of `L_σ` from `τ` (Lemma-Definition 4.5, p. 19): the space is defined
-  here as the intersection over the members above `σ`, and its value is proved when `σ`
-  itself meets `C`, where it is `span σ` (`sigmaSupportSpace_eq_span_of_meets`). The
-  source's proof for the remaining cones runs through the projection `π_I` on
-  `I^⊥/I` for an isotropic line `I`.
-* The local finiteness of the facial decomposition's traces
-  (`facialDecomposition_isLocallyRational`): it is the hypothesis `HasLocallyFiniteTraces`
-  there. In the Lorentzian case it holds because a convex cone in the null cone of a form of
-  signature `(1, n)` lies in a totally isotropic subspace, so a rational cone meets at most
-  one isotropic ray.
+* `Σ(bb)` is **not** a locally rational decomposition in the printed sense, in the setting of
+  Example 4.3: the failing clause is face-closure, not finiteness
+  (`not_isLocallyRationalDecomposition_facialDecomposition`, and the section "Example 4.3"
+  below for the argument). `facialDecomposition_isLocallyRational` accordingly takes the
+  printed condition as a hypothesis.
+* Example 4.3 (pp. 17-18): the arithmetic group `Γ` acting on locally rational decompositions
+  of `C₊`, and part (b), that a `Γ`-finite set of `ℚ`-hyperplanes meeting `C` is locally finite
+  on `C` and gives the locally rational decomposition `Σ(H)`. What the cells of `Σ(H)` are is in
+  the last section (`arrangementCone`, `arrangementDecomposition`,
+  `union_arrangementDecomposition`, `arrangementCone_inf`); their being *rational* cones — and
+  so the cone-system property of `Σ(H)`'s traces — is the one gap. It reduces to extension of
+  scalars for cones: a cone in `L(ℝ)` cut out by finitely many `ℚ`-linear inequalities is the
+  real cone generated by its `ℚ`-points. The repository has Minkowski–Weyl over `ℚ`
+  (`ForMathlib/PointedConeMinkowskiWeyl.lean`), which makes the `ℚ`-cone finitely generated,
+  but not the passage from that to the real cone; see the port provenance in
+  `LeanCategories/Analysis/Convex/SignCell.lean`, where TauCeti's `SignCell/Rational.lean` — the
+  source's own treatment, via rational-normal polyhedra it does not carry either — is recorded
+  as not ported for the same reason.
+* The independence of `L_σ` from `τ` (Lemma-Definition 4.5, p. 19) in general: the space is
+  defined here as the intersection over the members above `σ`, and its value is proved when `σ`
+  itself meets `C`, where it is `span σ` (`sigmaSupportSpace_eq_span_of_meets`). The source's
+  proof for the remaining cones, which are the isotropic half lines, runs through the
+  projection `π_I` on `I^⊥/I` and is not carried.
 
-## LC-09 search record (2026-11-15)
+## The arrangement cells are a port
 
-Formalization-corpus queries, with the hits that decided the shape of the file.
+The cells of `Σ(H)` are the weak sign cells of the family of linear forms, and that machine is
+not written out here: it is the port of TauCeti's `Analysis/Convex/Polyhedron/SignCell/Basic.lean`
+and `Interior.lean` (from Mei at `a79c5717`, Apache 2.0) in
+`LeanCategories/Analysis/Convex/SignCell.lean`, with its provenance and the two files' own
+statement of what was left out. The last section of this file is the glue.
+
+## LC-09 search record (2026-11-15, extended for the port and the Example 4.3 argument)
+
+Formalization-corpus queries, with the hits that decided the shape of the file and of the port.
 `content:PointedCone convexHull rational`: no file. `content:locally finite hyperplane
 arrangement`: TauCeti `Analysis/Convex/SimplicialComplex/Arrangement.lean` and
-`Analysis/Convex/Polyhedron/SignCell/{Basic,Interior,Rational}.lean` (the sign-cell machine
-of an affine arrangement, adapted there from Mei `Geometry/Convex/Polyhedron/SignCell.lean`,
-commit `a79c57178cc83666fc244ca6e6eeaa722e9b8bc7`, Apache 2.0). `content:SignCell`: TauCeti
-`Polyhedron/SignCell/Basic.lean` — `signCell`, `weakSignCell`, `weakSignCellCone`,
-`closure_signCell`, `realizedSignCellClosures` and the finiteness and extreme-subset lemmas
-for a finite index set: the reference implementation of the cell construction of the
-arrangement section below. `content:sign cell hyperplane`: LeanPool
-`NandakumarRamanaRao/NRR/PowerDiagram/CellOverlap.lean`, unrelated (power diagrams).
-`content:rational closure cone` and `content:IsFaceOf`: TauCeti
-`Geometry/Toric/Algebraic/Cone/{Inf,Slice}.lean` (rational cones and faces, already ported
-in `RationalPolyhedralCone.lean`). `content:semifan`,
-`content:toroidal compactification cone` and `content:Fan support rational polyhedral`: no
-file — Looijenga's semifans (his Definition 6.1, the next unit) are not formalized anywhere
-in the corpus. `content:Lorentz cone` and `content:Baily-Borel`: no relevant hit (one
-quantum-logical-framework `lakefile.lean`, one unrelated Shimura-curve file).
-
-The cell construction below is written out here rather than ported, and the port of
-TauCeti's three `SignCell` files is owed: with `weakSignCellCone` and
-`realizedSignCellClosures` in the tree, the arrangement section becomes glue, and the
-finiteness of the realized cells for a finite family comes for free there.
+`Analysis/Convex/Polyhedron/SignCell/{Basic,Interior,Rational}.lean` (the sign-cell machine of an
+affine arrangement, adapted there from Mei `Geometry/Convex/Polyhedron/SignCell.lean`, commit
+`a79c57178cc83666fc244ca6e6eeaa722e9b8bc7`, Apache 2.0): ported, see above.
+`content:weakSignCellCone`: TauCeti `Polyhedron/SignCell/Basic.lean` — `weakSignCell`,
+`weakSignCellCone`, `closure_signCell`, `weakSignCell_inter`, `commonSignPattern`,
+`realizedSignCellClosures`, `mem_weakSignCell_iff_specializes` (latest `main`; the files named in
+the earlier record at `SignCell/` are at `TauCeti/Analysis/Convex/Polyhedron/SignCell/`).
+`content:signCell intrinsicInterior closure`: TauCeti `SignCell/Interior.lean` and
+`Analysis/Convex/Intrinsic.lean` (`eq_zero_of_nonneg_of_mem_intrinsicInterior`): ported.
+`content:sign cell hyperplane`: LeanPool `NandakumarRamanaRao/NRR/PowerDiagram/CellOverlap.lean`,
+unrelated (power diagrams). `content:rational closure cone` and `content:IsFaceOf`: TauCeti
+`Geometry/Toric/Algebraic/Cone/{Inf,Slice}.lean` (rational cones and faces, already ported in
+`RationalPolyhedralCone.lean`). `content:semifan`, `content:toroidal compactification cone` and
+`content:Fan support rational polyhedral`: no file — Looijenga's semifans (his Definition 6.1, the
+next unit) are not formalized anywhere in the corpus. `content:Lorentz cone` and
+`content:Baily-Borel`: no relevant hit (one quantum-logical-framework `lakefile.lean`, one
+unrelated Shimura-curve file). `content:totally isotropic subspace signature bound` and
+`content:cone cut by rational inequalities generated by rational points`: no file — the
+extension-of-scalars statement that the last section's gap names is not formalized in the corpus.
 
 ## References
 
 * E. Looijenga, *Compactifications defined by arrangements II: locally symmetric varieties
   of type IV*, arXiv math/0201218v2 (2002), §4.
+* The Tau Ceti contributors, the TauCeti repository (the sign-cell machine this file uses).
 -/
 
 @[expose] public section
@@ -93,6 +115,8 @@ open PointedCone
 open scoped TensorProduct
 
 namespace LeanCategories.Lattices.Valued
+
+open QuadraticMap
 
 universe u
 
@@ -120,6 +144,13 @@ noncomputable def rationalPoint : V →ₗ[ℚ] (realified V) :=
   (TensorProduct.mk ℚ ℝ V) 1
 
 theorem rationalPoint_apply (v : V) : rationalPoint v = (1 : ℝ) ⊗ₜ[ℚ] v := rfl
+
+/-- Scaling a rational point by a rational scalar scales its image by the same real scalar. -/
+theorem rationalPoint_rat_smul (q : ℚ) (v : V) :
+    rationalPoint (q • v) = (q : ℝ) • rationalPoint v := by
+  rw [rationalPoint_apply, rationalPoint_apply, TensorProduct.smul_tmul', smul_eq_mul, mul_one]
+  have h : (q : ℝ) = (q : ℚ) • (1 : ℝ) := by simp
+  rw [h, TensorProduct.smul_tmul]
 
 /-! ## Definition 4.1: rational cones and rational cone systems -/
 
@@ -222,39 +253,179 @@ theorem isRationalConeSystem_faces {σ : PointedCone ℝ (realified V)} (hσ : I
 
 /-! ## Definition 4.2: the rational closure and locally rational decompositions -/
 
+/-- `L(ℚ) ∩ C̄`: the rational points in the closure of `C` (Looijenga, Definition 4.2, p. 17). -/
+noncomputable def rationalBoundary (C : PointedCone ℝ (realified V)) : Set (realified V) :=
+  rationalPoint '' (Set.univ : Set V) ∩ (C.closure : Set (realified V))
+
+theorem zero_mem_rationalBoundary (C : PointedCone ℝ (realified V)) :
+    (0 : realified V) ∈ rationalBoundary C :=
+  ⟨⟨0, Set.mem_univ 0, by simp [rationalPoint]⟩, C.closure.zero_mem⟩
+
+/-- `L(ℚ) ∩ C̄` is closed under scaling by nonnegative rationals. -/
+theorem rat_smul_mem_rationalBoundary (C : PointedCone ℝ (realified V)) {q : ℚ} (hq : 0 ≤ q)
+    {x : realified V} (hx : x ∈ rationalBoundary C) : (q : ℝ) • x ∈ rationalBoundary C := by
+  obtain ⟨⟨v, -, hvx⟩, hxcl⟩ := hx
+  rw [← hvx] at hxcl ⊢
+  refine ⟨⟨q • v, Set.mem_univ _, ?_⟩, ?_⟩
+  · rw [rationalPoint_apply, rationalPoint_apply, TensorProduct.smul_tmul', smul_eq_mul, mul_one]
+    have h : (q : ℝ) = (q : ℚ) • (1 : ℝ) := by simp
+    rw [h, TensorProduct.smul_tmul]
+  · exact PointedCone.smul_mem C.closure (by exact_mod_cast hq) hxcl
+
+/-- The convex hull of `L(ℚ) ∩ C̄` is closed under scaling by nonnegative rationals. -/
+theorem convexHull_rat_smul_mem (C : PointedCone ℝ (realified V)) {q : ℚ} (hq : 0 ≤ q)
+    {x : realified V} (hx : x ∈ convexHull ℝ (rationalBoundary C)) :
+    (q : ℝ) • x ∈ convexHull ℝ (rationalBoundary C) := by
+  have hconv : Convex ℝ {y : realified V | (q : ℝ) • y ∈ convexHull ℝ (rationalBoundary C)} := by
+    intro y hy z hz a b ha hb hab
+    have hsplit : (q : ℝ) • (a • y + b • z) = a • ((q : ℝ) • y) + b • ((q : ℝ) • z) := by
+      rw [smul_add, smul_comm (q : ℝ) a y, smul_comm (q : ℝ) b z]
+    change (q : ℝ) • (a • y + b • z) ∈ convexHull ℝ (rationalBoundary C)
+    rw [hsplit]
+    exact (convex_convexHull ℝ (rationalBoundary C)) hy hz ha hb hab
+  exact convexHull_min (s := rationalBoundary C)
+    (t := {y : realified V | (q : ℝ) • y ∈ convexHull ℝ (rationalBoundary C)})
+    (fun y hy => subset_convexHull ℝ _ (rat_smul_mem_rationalBoundary C hq hy)) hconv hx
+
+/-- **The convex hull of `L(ℚ) ∩ C̄` is a cone**, and is closed under scaling by every
+nonnegative real: for `a > 0` and rationals `q₁ < a < q₂`, the point `a • x` is the point
+`q₁ • x` moved a fraction `(a - q₁)/(q₂ - q₁)` of the way towards `q₂ • x`, and both ends lie
+in the hull by the rational scaling above (Looijenga, Definition 4.2, p. 17). -/
+theorem convexHull_smul_mem (C : PointedCone ℝ (realified V)) {a : ℝ} (ha : 0 ≤ a)
+    {x : realified V} (hx : x ∈ convexHull ℝ (rationalBoundary C)) :
+    a • x ∈ convexHull ℝ (rationalBoundary C) := by
+  rcases ha.eq_or_lt with h0 | hapos
+  · rw [← h0, zero_smul]
+    exact subset_convexHull ℝ _ (zero_mem_rationalBoundary C)
+  · obtain ⟨q₁, hq₁pos, hq₁a⟩ := exists_rat_btwn hapos
+    obtain ⟨q₂, haq₂, -⟩ := exists_rat_btwn (show a < a + 1 by linarith)
+    have hq₁ : (0 : ℚ) ≤ q₁ := by exact_mod_cast hq₁pos.le
+    have hq₂ : (0 : ℚ) ≤ q₂ := by
+      have h : (0 : ℝ) < (q₂ : ℝ) := hq₁pos.trans (hq₁a.trans haq₂)
+      exact_mod_cast h.le
+    set t : ℝ := (a - q₁) / (q₂ - q₁) with ht
+    have hq₂q₁ : (0 : ℝ) < (q₂ : ℝ) - q₁ := by
+      have : (q₁ : ℝ) < (q₂ : ℝ) := hq₁a.trans haq₂
+      linarith
+    have ht0 : 0 ≤ t := div_nonneg (by linarith) hq₂q₁.le
+    have ht1 : t ≤ 1 := by
+      rw [ht, div_le_one hq₂q₁]
+      linarith
+    have hcomb : t • ((q₂ : ℝ) • x) + (1 - t) • ((q₁ : ℝ) • x) = a • x := by
+      rw [smul_smul, smul_smul, ← add_smul]
+      congr 1
+      rw [ht]
+      field_simp
+      ring
+    rw [← hcomb]
+    refine (convex_convexHull ℝ (rationalBoundary C))
+      (convexHull_rat_smul_mem C hq₂ hx) (convexHull_rat_smul_mem C hq₁ hx) ht0 ?_ ?_
+    · linarith
+    · ring
+
+/-- **The convex hull of `L(ℚ) ∩ C̄` is closed under conical combinations.** Both scaled points
+lie in the hull by `convexHull_smul_mem`, so their midpoint does, and the sum is twice the
+midpoint. -/
+theorem convexHull_coneComb (C : PointedCone ℝ (realified V))
+    {x y : realified V} (hx : x ∈ convexHull ℝ (rationalBoundary C))
+    (hy : y ∈ convexHull ℝ (rationalBoundary C)) {a b : ℝ} (ha : 0 ≤ a) (hb : 0 ≤ b) :
+    a • x + b • y ∈ convexHull ℝ (rationalBoundary C) := by
+  have hax : a • x ∈ convexHull ℝ (rationalBoundary C) := convexHull_smul_mem C ha hx
+  have hby : b • y ∈ convexHull ℝ (rationalBoundary C) := convexHull_smul_mem C hb hy
+  have hmid : (1 / 2 : ℝ) • (a • x) + (1 / 2 : ℝ) • (b • y)
+      ∈ convexHull ℝ (rationalBoundary C) :=
+    (convex_convexHull ℝ (rationalBoundary C)) hax hby (by norm_num) (by norm_num) (by norm_num)
+  have h2 : (a • x + b • y : realified V)
+      = (2 : ℝ) • ((1 / 2 : ℝ) • (a • x) + (1 / 2 : ℝ) • (b • y)) := by
+    rw [smul_add]
+    rw [show (2 : ℝ) • ((1 / 2 : ℝ) • (a • x)) = a • x by rw [smul_smul]; norm_num]
+    rw [show (2 : ℝ) • ((1 / 2 : ℝ) • (b • y)) = b • y by rw [smul_smul]; norm_num]
+  rw [h2]
+  exact convexHull_smul_mem C (by norm_num) hmid
+
 /-- Looijenga, Definition 4.2, p. 17: the *rational closure* `C₊` of a convex cone `C` is the
-convex hull of `L(ℚ) ∩ closure C`. The convex hull of a set of rational points of a cone is
-the cone it generates, which is how it is carried here. -/
+convex hull of `L(ℚ) ∩ closure C`. It is a cone (`convexHull_coneComb`), and it is the cone
+generated by that set: the hull contains the set and is a cone, so it contains the generated
+cone, and the generated cone is convex and contains the set (`rationalClosure_eq_hull`). -/
 noncomputable def rationalClosure (C : PointedCone ℝ (realified V)) :
-    PointedCone ℝ (realified V) :=
-  PointedCone.hull ℝ (rationalPoint '' (Set.univ : Set V) ∩ closure (C : Set (realified V)))
+    PointedCone ℝ (realified V) where
+  carrier := convexHull ℝ (rationalBoundary C)
+  zero_mem' := subset_convexHull ℝ _ (zero_mem_rationalBoundary C)
+  add_mem' {x y} hx hy := by
+    simpa using convexHull_coneComb C hx hy (a := 1) (b := 1) zero_le_one zero_le_one
+  smul_mem' c {x} hx := convexHull_smul_mem C (a := (c : ℝ)) c.2 hx
+
+theorem coe_rationalClosure (C : PointedCone ℝ (realified V)) :
+    (rationalClosure C : Set (realified V)) = convexHull ℝ (rationalBoundary C) := rfl
+
+/-- The rational closure is the cone generated by `L(ℚ) ∩ C̄`: the convex hull of a set that
+contains `0` and is closed under positive rational scaling is a cone
+(Looijenga, Definition 4.2, p. 17). -/
+theorem rationalClosure_eq_hull (C : PointedCone ℝ (realified V)) :
+    rationalClosure C = PointedCone.hull ℝ (rationalBoundary C) := by
+  refine le_antisymm ?_ ?_
+  · intro x hx
+    change x ∈ convexHull ℝ (rationalBoundary C) at hx
+    exact convexHull_min (s := rationalBoundary C)
+      (t := (PointedCone.hull ℝ (rationalBoundary C) : Set (realified V)))
+      (fun y hy => PointedCone.subset_hull hy)
+      ((PointedCone.hull ℝ (rationalBoundary C) : ConvexCone ℝ (realified V)).convex) hx
+  · refine Submodule.span_le (R := {c : ℝ // 0 ≤ c}) (M := realified V)
+      (s := rationalBoundary C) (p := rationalClosure C) |>.2 fun x hx => ?_
+    change x ∈ convexHull ℝ (rationalBoundary C)
+    exact subset_convexHull ℝ _ hx
+
+theorem mem_rationalClosure {C : PointedCone ℝ (realified V)} {x : realified V} :
+    x ∈ rationalClosure C ↔ x ∈ convexHull ℝ (rationalBoundary C) :=
+  Iff.rfl
 
 /-- Looijenga, Definition 4.2, p. 17: a cone is *locally rational* in `C₊` when its
 intersection with every rational subcone of `C₊` is rational. -/
 def IsLocallyRationalCone (Cplus σ : PointedCone ℝ (realified V)) : Prop :=
   ∀ P : PointedCone ℝ (realified V), IsRationalCone P → P ≤ Cplus → IsRationalCone (σ ⊓ P)
 
-/-- A cone whose traces on every rational subcone of `C₊` are locally finite. -/
+/-- The traces of a family of cones on every rational subcone of `C₊` are locally finite. This
+is *not* Looijenga's Definition 4.2 (which asks for a rational cone system, so a finite family,
+on every rational subcone); it is the property the semitoric construction of §4-5 uses, kept
+here because it is what local finiteness buys. -/
 def HasLocallyFiniteTraces (Cplus : PointedCone ℝ (realified V))
     (S : Set (PointedCone ℝ (realified V))) : Prop :=
   ∀ P : PointedCone ℝ (realified V), IsRationalCone P → P ≤ Cplus →
     LocallyFinite fun σ : {σ // σ ∈ S} =>
       ((σ.1 : PointedCone ℝ (realified V)) : Set (realified V)) ∩ (P : Set (realified V))
 
-/-- Looijenga, Definition 4.2, p. 17: a *locally rational decomposition* of `C₊` is a
-collection of convex cones whose union is `C₊` and whose restriction to every rational
-subcone of `C₊` is a rational cone system. The finiteness of a rational cone system
-(Definition 4.1, p. 16) is read locally, as local finiteness on each rational subcone: that
-is the reading under which the facial decomposition below is a locally rational
-decomposition, and it is the property the later sections of the source use. -/
+/-- The *restriction* of a family of cones to a subcone `P`: the traces `σ ⊓ P`
+(Looijenga, Definition 4.2, p. 17). -/
+def restrictionTo (S : Set (PointedCone ℝ (realified V))) (P : PointedCone ℝ (realified V)) :
+    Set (PointedCone ℝ (realified V)) :=
+  {τ | ∃ σ ∈ S, τ = σ ⊓ P}
+
+theorem mem_restrictionTo {S : Set (PointedCone ℝ (realified V))}
+    {P τ : PointedCone ℝ (realified V)} :
+    τ ∈ restrictionTo S P ↔ ∃ σ ∈ S, τ = σ ⊓ P :=
+  Iff.rfl
+
+/-- Looijenga, Definition 4.2, p. 17, as printed: a *locally rational decomposition* of `C₊` is
+a collection of convex cones whose union is `C₊` and whose restriction to every rational
+subcone of `C₊` is a rational cone system (Definition 4.1, p. 16, so in particular a *finite*
+set of nondegenerate rational cones, closed under taking faces and with pairwise intersections
+along common faces).
+
+The restriction is the family of traces `σ ⊓ P` (`restrictionTo`). The finiteness in
+Definition 4.1 is not relaxed here: `HasLocallyFiniteTraces` below records the local-finiteness
+property separately, because it is what the later sections of the source use, but it is not
+Definition 4.2. Whether `Σ(bb)` satisfies the printed condition in the setting of Example 4.3
+is settled below: it does not, and the failing clause is face-closure, not finiteness
+(`not_isLocallyRationalDecomposition_facialDecomposition`). -/
 structure IsLocallyRationalDecomposition (Cplus : PointedCone ℝ (realified V))
     (S : Set (PointedCone ℝ (realified V))) : Prop where
   /-- The union of the members is `C₊`. -/
   union_eq : (⋃ σ ∈ S, (σ : Set (realified V))) = (Cplus : Set (realified V))
   /-- Every member is a locally rational cone in `C₊`. -/
   isLocallyRational : ∀ σ ∈ S, IsLocallyRationalCone Cplus σ
-  /-- The traces on every rational subcone of `C₊` are locally finite. -/
-  locallyFinite : HasLocallyFiniteTraces Cplus S
+  /-- The restriction to every rational subcone of `C₊` is a rational cone system. -/
+  restriction : ∀ P : PointedCone ℝ (realified V), IsRationalCone P → P ≤ Cplus →
+    IsRationalConeSystem (restrictionTo S P)
 
 /-- The facial decomposition `Σ(bb)` of `C₊`: its faces, `C₊` itself included (Looijenga,
 Definition 4.2, p. 17). -/
@@ -289,13 +460,16 @@ theorem union_facialDecomposition (Cplus : PointedCone ℝ (realified V)) :
     exact Set.mem_iUnion.2 ⟨Cplus, Set.mem_iUnion.2 ⟨PointedCone.IsFaceOf.refl Cplus, hx⟩⟩
 
 /-- **The facial decomposition `Σ(bb)` is a locally rational decomposition** (Looijenga,
-Definition 4.2, p. 17), once its traces on rational subcones are locally finite. -/
+Definition 4.2, p. 17) as soon as its restriction to every rational subcone is a rational cone
+system — the printed condition, which is *not* discharged here: in the setting of Example 4.3
+it fails (`not_isLocallyRationalDecomposition_facialDecomposition`). -/
 theorem facialDecomposition_isLocallyRational (Cplus : PointedCone ℝ (realified V))
-    (hfin : HasLocallyFiniteTraces Cplus (facialDecomposition Cplus)) :
+    (hres : ∀ P : PointedCone ℝ (realified V), IsRationalCone P → P ≤ Cplus →
+      IsRationalConeSystem (restrictionTo (facialDecomposition Cplus) P)) :
     IsLocallyRationalDecomposition Cplus (facialDecomposition Cplus) where
   union_eq := union_facialDecomposition Cplus
   isLocallyRational := fun _ hσ => isLocallyRationalCone_facialDecomposition Cplus hσ
-  locallyFinite := hfin
+  restriction := hres
 
 /-- `Σ(bb)` is the coarsest locally rational decomposition: every cone of any locally
 rational decomposition of `C₊` lies in a member of `Σ(bb)` (Looijenga, Definition 4.2,
@@ -312,6 +486,284 @@ theorem facialDecomposition_coarsest (Cplus : PointedCone ℝ (realified V))
     Set.mem_iUnion.2 ⟨σ, Set.mem_iUnion.2 ⟨hσ, hx⟩⟩
   rw [hunion] at hx'
   simpa using hx'
+
+/-! ## Example 4.3: the facial decomposition against Definition 4.2 as printed
+
+Looijenga, Example 4.3, pp. 17-18: `C` is a connected component of the set of `x` with
+`x · x > 0`, for a form of signature `(1, dim L - 1)` over `ℚ`. What Definition 4.2 asks of
+the facial decomposition `Σ(bb)` is that its restriction to every rational subcone be a
+rational cone system, and the source's ground for it is that the faces of `C₊` are `C₊`, the
+rays spanned by rational isotropic vectors on the boundary, and `{0}`: a rational subcone
+meets only finitely many of those.
+
+What `Σ(bb)` does not have is face-closure. A face of `C₊` that contains a rational
+*timelike* point is all of `C₊` (`eq_of_isFaceOf_of_mem_pos`): for a rational point `v` of the
+closed cone, a large rational multiple of that timelike point minus `v` is again a rational
+point of the open cone, hence lies in `C₊`, and the face relation applied to
+`(q • u - v) + v = q • u` forces `v` into the face. Take then a rational cone `P` spanned by
+two rational points `u`, `v` of the open cone with `v` not a multiple of `u`. Its only traces
+on `Σ(bb)` are `P` itself and `{0}`, yet the ray `ℝ≥0 u` is a face of `P`
+(`isFaceOf_hull_singleton`) and is neither. So the restriction of `Σ(bb)` to `P` fails
+`mem_of_isFaceOf`, and `Σ(bb)` is not a locally rational decomposition in the printed sense
+(`not_isLocallyRationalDecomposition_facialDecomposition`).
+
+The failing clause is therefore face-closure, not finiteness. -/
+
+section Example43
+
+variable {Q : QuadraticForm ℝ (realified V)} {t : realified V}
+
+/-- The part of Looijenga's Example 4.3, p. 17, hypothesis on `C` — that it is a connected
+component of `x · x > 0` for a form of signature `(1, dim L - 1)` — that the argument below
+uses: the rational points of the open sheet lie in the closure of `C`, and `Q` is nonnegative
+there. (The signature hypothesis enters only through these two consequences, which an actual
+component satisfies.) -/
+structure IsPositiveConeComponent (C : PointedCone ℝ (realified V))
+    (Q : QuadraticForm ℝ (realified V)) (t : realified V) : Prop where
+  /-- The rational points of the open sheet lie in the closure of `C`. -/
+  open_points : ∀ v : V, 0 < Q (rationalPoint v) →
+    0 < (QuadraticMap.associated Q) (rationalPoint v) t → rationalPoint v ∈ C.closure
+  /-- `Q` is nonnegative on the closure of `C`. -/
+  nonneg : ∀ x ∈ C.closure, 0 ≤ Q x
+
+/-- **A face of `C₊` that contains a rational point of the open sheet is `C₊` itself.** -/
+theorem eq_of_isFaceOf_of_mem_pos {C F : PointedCone ℝ (realified V)} {u : V}
+    (hC : IsPositiveConeComponent C Q t)
+    (hu : 0 < Q (rationalPoint u))
+    (hut : 0 < (QuadraticMap.associated Q) (rationalPoint u) t)
+    (hF : F.IsFaceOf (rationalClosure C)) (hFu : rationalPoint u ∈ F) :
+    F = rationalClosure C := by
+  set Qu : ℝ := Q (rationalPoint u) with hQu_def
+  set bu : ℝ := (QuadraticMap.associated Q) (rationalPoint u) t with hbu_def
+  have hQu : 0 < Qu := hQu_def ▸ hu
+  have hbu : 0 < bu := hbu_def ▸ hut
+  refine le_antisymm hF.le ?_
+  rw [rationalClosure_eq_hull]
+  refine Submodule.span_le.2 ?_
+  rintro p ⟨⟨v, -, rfl⟩, hvcl⟩
+  set b : ℝ := (QuadraticMap.associated Q) (rationalPoint u) (rationalPoint v) with hb_def
+  set c : ℝ := (QuadraticMap.associated Q) (rationalPoint v) t with hc_def
+  set A : ℝ := 2 * |b| / Qu + 1 with hA_def
+  set B : ℝ := (c + 1) / bu with hB_def
+  obtain ⟨q, hq⟩ := exists_rat_gt (max A (max B 1))
+  have hq1 : (1 : ℝ) ≤ (q : ℝ) :=
+    le_trans (le_max_right B 1) (le_trans (le_max_right A (max B 1)) hq.le)
+  have hqA : A < (q : ℝ) := lt_of_le_of_lt (le_max_left A (max B 1)) hq
+  have hqB : B < (q : ℝ) :=
+    lt_of_le_of_lt (le_trans (le_max_left B 1) (le_max_right A (max B 1))) hq
+  rw [hA_def] at hqA
+  rw [hB_def] at hqB
+  have hqpos : (0 : ℚ) < q := by exact_mod_cast lt_of_lt_of_le zero_lt_one hq1
+  set z : realified V := rationalPoint (q • u - v) with hz_def
+  have hzrep : z = (q : ℝ) • rationalPoint u - rationalPoint v := by
+    rw [hz_def, map_sub, rationalPoint_rat_smul]
+  have hQv : 0 ≤ Q (rationalPoint v) := hC.nonneg _ hvcl
+  have hQz : 0 < Q z := by
+    have hrep2 : z = (q : ℝ) • rationalPoint u + (-1 : ℝ) • rationalPoint v := by
+      rw [hzrep, sub_eq_add_neg]
+      congr 1
+      exact (neg_one_smul ℝ (rationalPoint v)).symm
+    have h1 : 2 * |b| + Qu ≤ (q : ℝ) * Qu := by
+      have h2 : 2 * |b| / Qu < (q : ℝ) - 1 := by linarith
+      have h4 : 2 * |b| / Qu * Qu < ((q : ℝ) - 1) * Qu := mul_lt_mul_of_pos_right h2 hQu
+      have h5 : 2 * |b| / Qu * Qu = 2 * |b| := by field_simp
+      rw [h5] at h4
+      nlinarith
+    have hbq : 2 * (q : ℝ) * b ≤ 2 * (q : ℝ) * |b| := by
+      have h0 : (0 : ℝ) ≤ 2 * (q : ℝ) := by linarith
+      nlinarith [le_abs_self b]
+    have hexp : Q z = (q : ℝ) ^ 2 * Q (rationalPoint u) - 2 * (q : ℝ) * b
+        + Q (rationalPoint v) := by
+      rw [hrep2, quadratic_expand, hb_def]
+      ring
+    rw [hexp]
+    nlinarith [h1, hbq, hQv, hq1, hQu]
+  have hbz : 0 < (QuadraticMap.associated Q) z t := by
+    have hstep : (QuadraticMap.associated Q) z
+        = (q : ℝ) • (QuadraticMap.associated Q) (rationalPoint u)
+          - (QuadraticMap.associated Q) (rationalPoint v) := by
+      rw [hzrep, map_sub, map_smul]
+    have h1 : c < (q : ℝ) * bu := by
+      rw [div_lt_iff₀ hbu] at hqB
+      linarith
+    rw [hstep, LinearMap.sub_apply, LinearMap.smul_apply, smul_eq_mul]
+    have hgoal : (q : ℝ) * ((QuadraticMap.associated Q) (rationalPoint u) t)
+        - (QuadraticMap.associated Q) (rationalPoint v) t = (q : ℝ) * bu - c := by
+      rw [hbu_def, hc_def]
+    rw [hgoal]
+    linarith
+  have hzC : z ∈ rationalClosure C := by
+    rw [mem_rationalClosure, hz_def]
+    exact subset_convexHull ℝ _ ⟨⟨q • u - v, Set.mem_univ _, rfl⟩,
+      hC.open_points _ (by rw [← hz_def]; exact hQz) (by rw [← hz_def]; exact hbz)⟩
+  have hpC : rationalPoint v ∈ rationalClosure C := by
+    rw [mem_rationalClosure]
+    exact subset_convexHull ℝ _ ⟨⟨v, Set.mem_univ v, rfl⟩, hvcl⟩
+  have hsum : z + rationalPoint v ∈ F := by
+    have heq : z + rationalPoint v = (q : ℝ) • rationalPoint u := by
+      rw [hzrep]
+      abel
+    rw [heq]
+    exact PointedCone.smul_mem _ (by linarith) hFu
+  exact ((hF.add_mem_iff_mem hzC hpC).mp hsum).2
+
+/-- A functional nonnegative on two points is nonnegative on their cone. -/
+theorem nonneg_of_mem_hull_pair {m : (realified V) →ₗ[ℝ] ℝ} {x y z : realified V}
+    (hx : 0 ≤ m x) (hy : 0 ≤ m y)
+    (hz : z ∈ PointedCone.hull ℝ ({x, y} : Set (realified V))) : 0 ≤ m z := by
+  induction hz using Submodule.span_induction with
+  | mem w hw =>
+    rcases Set.mem_insert_iff.1 hw with rfl | hw
+    · exact hx
+    · rw [Set.mem_singleton_iff] at hw
+      exact hw ▸ hy
+  | zero =>
+    rw [map_zero]
+  | add u v _ _ hu hv =>
+    rw [map_add]
+    linarith
+  | smul c u _ hu =>
+    have hcu : c • u = c.1 • u := rfl
+    rw [hcu, map_smul, smul_eq_mul]
+    exact mul_nonneg c.2 hu
+
+/-- A real linear functional vanishing on `x` and taking the value `1` at `y`, when `y` is not a
+multiple of `x`. -/
+theorem exists_dual_eq_zero_of_notMem {x y : realified V}
+    (hy : y ∉ Submodule.span ℝ ({x} : Set (realified V))) :
+    ∃ m : (realified V) →ₗ[ℝ] ℝ, m x = 0 ∧ m y = 1 := by
+  obtain ⟨f, hfy, hfker⟩ :=
+    Submodule.exists_dual_map_eq_bot_of_notMem (p := Submodule.span ℝ ({x} : Set (realified V)))
+      hy (inferInstance : Module.Projective ℝ
+        ((realified V) ⧸ Submodule.span ℝ ({x} : Set (realified V))))
+  have hfx : f x = 0 := by
+    have hmem : f x ∈ (Submodule.span ℝ ({x} : Set (realified V))).map f :=
+      ⟨x, Submodule.subset_span (by simp), rfl⟩
+    rw [hfker] at hmem
+    simpa using hmem
+  refine ⟨(f y)⁻¹ • f, ?_, ?_⟩
+  · simp [hfx]
+  · simp [hfy]
+
+/-- **The ray through `x` is a face of the cone spanned by `x` and `y`** when `y` is not a
+multiple of `x`: applying the `y`-coordinate functional to `a • p + q` shows that the
+`y`-coordinate of `p` vanishes, and both coordinates of `p` are nonnegative. -/
+theorem isFaceOf_hull_singleton {x y : realified V} (hx0 : x ≠ 0)
+    (hy : y ∉ Submodule.span ℝ ({x} : Set (realified V))) :
+    (PointedCone.hull ℝ ({x} : Set (realified V))).IsFaceOf
+      (PointedCone.hull ℝ ({x, y} : Set (realified V))) where
+  le := Submodule.span_le.2 fun z hz => PointedCone.subset_hull (by
+    rcases Set.mem_singleton_iff.1 hz with rfl
+    exact Set.mem_insert _ _)
+  mem_of_smul_add_mem := by
+    obtain ⟨m, hmx, hmy⟩ := exists_dual_eq_zero_of_notMem hy
+    have hxnotin : x ∉ Submodule.span ℝ ({y} : Set (realified V)) := by
+      intro hxspan
+      obtain ⟨cc, hcc⟩ := Submodule.mem_span_singleton.1 hxspan
+      apply hy
+      rcases eq_or_ne cc 0 with hc0 | hc0
+      · rw [hc0, zero_smul] at hcc
+        exact absurd hcc.symm hx0
+      · rw [Submodule.mem_span_singleton]
+        exact ⟨cc⁻¹, by rw [← hcc, smul_smul, inv_mul_cancel₀ hc0, one_smul]⟩
+    obtain ⟨l, hly, hlx⟩ := exists_dual_eq_zero_of_notMem hxnotin
+    have hxl : l x = 1 := hlx
+    intro p q a hp hq ha hsum
+    have hmp : 0 ≤ m p :=
+      nonneg_of_mem_hull_pair (m := m) (x := x) (y := y)
+        (by simp [hmx]) (by simp [hmy]) hp
+    have hmq : 0 ≤ m q :=
+      nonneg_of_mem_hull_pair (m := m) (x := x) (y := y)
+        (by simp [hmx]) (by simp [hmy]) hq
+    have hzero : a * m p + m q = 0 := by
+      have hsumspan : a • p + q ∈ Submodule.span ℝ ({x} : Set (realified V)) :=
+        PointedCone.hull_le_span ℝ _ hsum
+      obtain ⟨cc, hcc⟩ := Submodule.mem_span_singleton.1 hsumspan
+      have h1 : m (a • p + q) = a * m p + m q := by
+        rw [map_add, map_smul, smul_eq_mul]
+      have h2 : m (a • p + q) = 0 := by
+        rw [← hcc, map_smul, hmx, smul_eq_mul, mul_zero]
+      linarith
+    have hmp0 : m p = 0 := by nlinarith
+    obtain ⟨a₁, b₁, ha₁⟩ := Submodule.mem_span_pair.1
+      (PointedCone.hull_le_span ℝ _ hp : p ∈ Submodule.span ℝ ({x, y} : Set (realified V)))
+    have hb₁ : b₁ = 0 := by
+      have h1 : m p = a₁ * m x + b₁ * m y := by
+        rw [← ha₁, map_add, map_smul, map_smul, smul_eq_mul, smul_eq_mul]
+      simp only [hmx, hmy, mul_zero, mul_one] at h1
+      rw [hmp0] at h1
+      simpa using h1.symm
+    have ha₁nonneg : 0 ≤ a₁ := by
+      have h2 := nonneg_of_mem_hull_pair (m := l) (x := x) (y := y)
+        (by simp [hxl]) (by simp [hly]) hp
+      rw [← ha₁, map_add, map_smul, map_smul, smul_eq_mul, smul_eq_mul, hxl, hly] at h2
+      simpa using h2
+    rw [← ha₁, hb₁, zero_smul, add_zero]
+    exact PointedCone.smul_mem _ ha₁nonneg (PointedCone.subset_hull (by simp))
+
+/-- **`Σ(bb)` is not a locally rational decomposition of `C₊` in the setting of Example 4.3**,
+with Definition 4.2 read as printed. The rational cone `P` spanned by two rational points `u`,
+`v` of the open sheet has only `P` and `{0}` among its traces on `Σ(bb)`, and the ray through
+`u` — a face of `P`, not a trace, and not `P` — is what the face-closure clause of
+Definition 4.1 asks for. -/
+theorem not_isLocallyRationalDecomposition_facialDecomposition
+    {C : PointedCone ℝ (realified V)} (hC : IsPositiveConeComponent C Q t)
+    {u v : V} (hu : 0 < Q (rationalPoint u))
+    (hut : 0 < (QuadraticMap.associated Q) (rationalPoint u) t)
+    (hv : 0 < Q (rationalPoint v))
+    (hvt : 0 < (QuadraticMap.associated Q) (rationalPoint v) t)
+    (hindep : rationalPoint v ∉ Submodule.span ℝ ({rationalPoint u} : Set (realified V))) :
+    ¬ IsLocallyRationalDecomposition (rationalClosure C)
+      (facialDecomposition (rationalClosure C)) := by
+  classical
+  intro h
+  have huC : rationalPoint u ∈ rationalClosure C := by
+    rw [mem_rationalClosure]
+    exact subset_convexHull ℝ _ ⟨⟨u, Set.mem_univ u, rfl⟩, hC.open_points u hu hut⟩
+  have hvC : rationalPoint v ∈ rationalClosure C := by
+    rw [mem_rationalClosure]
+    exact subset_convexHull ℝ _ ⟨⟨v, Set.mem_univ v, rfl⟩, hC.open_points v hv hvt⟩
+  set P : PointedCone ℝ (realified V) :=
+    PointedCone.hull ℝ ({rationalPoint u, rationalPoint v} : Set (realified V)) with hPdef
+  have hPle : P ≤ rationalClosure C := by
+    refine Submodule.span_le.2 ?_
+    intro z hz
+    rcases Set.mem_insert_iff.1 hz with rfl | hz
+    · exact huC
+    · rw [Set.mem_singleton_iff] at hz
+      exact hz ▸ hvC
+  have hPrat : IsRationalCone P := by
+    refine ⟨({u, v} : Finset V), ?_⟩
+    rw [hPdef]
+    congr 1
+    ext z
+    simp
+  have hsys := h.restriction P hPrat hPle
+  have hPmem : P ∈ restrictionTo (facialDecomposition (rationalClosure C)) P :=
+    ⟨rationalClosure C, PointedCone.IsFaceOf.refl _, (inf_eq_right.2 hPle).symm⟩
+  have hx0 : rationalPoint u ≠ 0 := by
+    intro h0
+    rw [h0, map_zero] at hu
+    exact lt_irrefl 0 hu
+  have hrayface : (PointedCone.hull ℝ ({rationalPoint u} : Set (realified V))).IsFaceOf P :=
+    isFaceOf_hull_singleton hx0 hindep
+  have hraymem := hsys.mem_of_isFaceOf hPmem hrayface
+  obtain ⟨σ, hσ, heq⟩ := mem_restrictionTo.1 hraymem
+  have huσ : rationalPoint u ∈ σ := by
+    have hmem : rationalPoint u ∈ PointedCone.hull ℝ ({rationalPoint u} : Set (realified V)) :=
+      PointedCone.subset_hull (by simp)
+    rw [heq] at hmem
+    exact hmem.1
+  have hσtop : σ = rationalClosure C :=
+    eq_of_isFaceOf_of_mem_pos hC hu hut hσ huσ
+  have hrayeq : PointedCone.hull ℝ ({rationalPoint u} : Set (realified V)) = P := by
+    rw [heq, hσtop, inf_eq_right.2 hPle]
+  have hvray : rationalPoint v ∈ PointedCone.hull ℝ ({rationalPoint u} : Set (realified V)) := by
+    rw [hrayeq]
+    exact PointedCone.subset_hull (by simp)
+  exact hindep (PointedCone.hull_le_span ℝ _ hvray)
+
+end Example43
 
 /-! ## Lemma-Definition 4.5: the support space of a cone of a decomposition -/
 
@@ -420,53 +872,38 @@ theorem sigmaSupportSpace_eq_span_of_meets {C : PointedCone ℝ (realified V)}
 
 Looijenga, Example 4.3 (b), pp. 17-18: a collection `H` of hyperplanes through the origin
 that meet `C` cuts `C₊` into the closures of the components of `C₊` minus their union, the
-decomposition `Σ(H)`. The cones are the weak sign cells of the family of linear forms
-defining the hyperplanes; the construction is here, its local rationality and local
-finiteness are not (see the module docstring). -/
+decomposition `Σ(H)`. The cones of `Σ(H)` are the *weak sign cells* of the linear forms
+defining the hyperplanes — not a construction of this file: it is the ported sign-cell machine
+of `LeanCategories.Analysis.Convex.SignCell` (the LC-09 hit TauCeti
+`Analysis/Convex/Polyhedron/SignCell/{Basic,Interior}.lean`, from Mei at `a79c5717`). What is
+written here is the glue: the cells of a family of linear forms, the sign pattern of a point,
+and the decomposition of `C₊`.
+
+The forms are taken as continuous linear forms: in Looijenga's setting `L` is finite
+dimensional, where every linear form is continuous, and the ported `weakSignCellCone` is stated
+for continuous rows. -/
 
 section Arrangement
 
-variable {ι : Type*} (φ : ι → (realified V) →ₗ[ℝ] ℝ)
+open LeanCategories.Analysis.Convex
 
-/-- The closed cone of a sign pattern: the locus where each form is zero, nonpositive or
-nonnegative according to the pattern. -/
-noncomputable def arrangementCone (s : ι → SignType) : PointedCone ℝ (realified V) where
-  carrier := {x | ∀ i, match s i with
-    | .zero => φ i x = 0
-    | .neg => φ i x ≤ 0
-    | .pos => 0 ≤ φ i x}
-  zero_mem' := by
-    intro i
-    cases h : s i <;> simp
-  add_mem' := by
-    intro x y hx hy i
-    have hx' := hx i
-    have hy' := hy i
-    have hsum : φ i (x + y) = φ i x + φ i y := map_add _ _ _
-    cases h : s i <;> simp only [h] at hx' hy' ⊢
-    · rw [hsum, hx', hy', add_zero]
-    · rw [hsum]; linarith
-    · rw [hsum]; linarith
-  smul_mem' := by
-    intro a x hx i
-    have hx' := hx i
-    have ha : (0 : ℝ) ≤ (a : ℝ) := a.2
-    have hsmul : φ i (a • x) = (a : ℝ) * φ i x := by
-      change φ i ((a : ℝ) • x) = (a : ℝ) * φ i x
-      rw [map_smul, smul_eq_mul]
-    cases h : s i <;> simp only [h] at hx' ⊢
-    · rw [hsmul, hx', mul_zero]
-    · rw [hsmul]
-      exact mul_nonpos_of_nonneg_of_nonpos ha hx'
-    · rw [hsmul]
-      exact mul_nonneg ha hx'
+variable {ι : Type*} (φ : ι → (realified V) →L[ℝ] ℝ)
+
+/-- The closed cell of a sign pattern: the weak sign cell of the family of linear forms, whose
+locus is that of the pattern (Looijenga, Example 4.3 (b), pp. 17-18). -/
+noncomputable def arrangementCone (s : ι → SignType) : PointedCone ℝ (realified V) :=
+  weakSignCellCone φ s
 
 theorem mem_arrangementCone {s : ι → SignType} {x : realified V} :
     x ∈ arrangementCone φ s ↔ ∀ i, match s i with
       | .zero => φ i x = 0
       | .neg => φ i x ≤ 0
-      | .pos => 0 ≤ φ i x :=
-  Iff.rfl
+      | .pos => 0 ≤ φ i x := by
+  rw [arrangementCone]
+  show x ∈ (weakSignCell (fun i => (φ i).toContinuousAffineMap) s : Set (realified V)) ↔ _
+  rw [mem_weakSignCell]
+  refine forall_congr' fun i => ?_
+  cases s i <;> simp
 
 /-- The sign pattern realized by a point. -/
 noncomputable def signPattern (x : realified V) : ι → SignType :=
@@ -474,6 +911,7 @@ noncomputable def signPattern (x : realified V) : ι → SignType :=
 
 theorem mem_arrangementCone_signPattern (x : realified V) :
     x ∈ arrangementCone φ (signPattern φ x) := by
+  rw [mem_arrangementCone]
   intro i
   have hs : signPattern φ x i = SignType.sign (φ i x) := rfl
   rw [hs]
@@ -482,7 +920,7 @@ theorem mem_arrangementCone_signPattern (x : realified V) :
   | neg => simpa using le_of_lt (sign_eq_neg_one_iff.1 h)
   | pos => simpa using le_of_lt (sign_eq_one_iff.1 h)
 
-/-- **The decomposition `Σ(H)` of `C₊` attached to a family of forms**: the closed sign cells
+/-- **The decomposition `Σ(H)` of `C₊` attached to a family of forms**: the closed cells
 intersected with the rational closure (Looijenga, Example 4.3 (b), pp. 17-18). -/
 noncomputable def arrangementDecomposition (Cplus : PointedCone ℝ (realified V)) :
     Set (PointedCone ℝ (realified V)) :=
@@ -499,6 +937,28 @@ theorem union_arrangementDecomposition (Cplus : PointedCone ℝ (realified V)) :
     refine Set.mem_iUnion.2 ⟨arrangementCone φ (signPattern φ x) ⊓ Cplus,
       Set.mem_iUnion.2 ⟨⟨signPattern φ x, rfl⟩, ?_⟩⟩
     exact ⟨mem_arrangementCone_signPattern φ x, hx⟩
+
+/-- Membership in a cell of `Σ(H)` is a specialization of the cell's sign pattern, so the cells
+are exactly the weak sign cells of the ported machine. -/
+theorem mem_arrangementCone_iff_specializes {s : ι → SignType} {x : realified V} :
+    x ∈ arrangementCone φ s ↔
+      ∀ i, SignType.sign (φ i x) = 0 ∨ SignType.sign (φ i x) = s i := by
+  rw [arrangementCone]
+  show x ∈ (weakSignCell (fun i => (φ i).toContinuousAffineMap) s : Set (realified V)) ↔ _
+  rw [mem_weakSignCell_iff_specializes]
+  exact Iff.rfl
+
+/-- Two cells of the arrangement meet in the cell of their common sign pattern: the traces are
+again weak sign cells (`weakSignCell_inter` of the port). -/
+theorem arrangementCone_inf (s s' : ι → SignType) :
+    arrangementCone φ s ⊓ arrangementCone φ s' = arrangementCone φ (commonSignPattern s s') := by
+  refine SetLike.ext fun x => ?_
+  rw [arrangementCone, arrangementCone, arrangementCone]
+  change x ∈ (weakSignCell (fun i => (φ i).toContinuousAffineMap) s : Set (realified V)) ∧
+      x ∈ (weakSignCell (fun i => (φ i).toContinuousAffineMap) s' : Set (realified V)) ↔
+    x ∈ (weakSignCell (fun i => (φ i).toContinuousAffineMap) (commonSignPattern s s') :
+      Set (realified V))
+  rw [← Set.mem_inter_iff, weakSignCell_inter]
 
 end Arrangement
 

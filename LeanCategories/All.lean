@@ -95,6 +95,7 @@ public import LeanCategories.Algebra.BrauerGroupData
 public import LeanCategories.Algebra.CanonicalForms
 public import LeanCategories.Algebra.GroupTheory
 public import LeanCategories.Algebra.SubgroupFiniteness
+public import LeanCategories.Analysis.Convex.SignCell
 public import LeanCategories.Analysis.NormExtension
 public import LeanCategories.Analysis.SecondNormEquivalence
 public import LeanCategories.Algebra.FieldHomework1
