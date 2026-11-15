@@ -9004,6 +9004,50 @@ theorem mem_upper_add_smul_of_mem_closedSheet (hpos : sigPos Q = 1)
       associated_comm (Q := Q) t x, associated_comm (Q := Q) t e]
     nlinarith [mul_nonneg hr hte.le, hx.2]
 
+/-- **A projected common-cell point in the open half-space lifts to an upper-sheet common
+point.** The two representatives differ by a multiple of `e`; a nonnegative translate remains in
+the upper sheet and in every cone containing the ray. -/
+theorem exists_mem_inf_upper_of_mem_map_inf (hpos : sigPos Q = 1)
+    (hnd : Q.Nondegenerate) {ht : 0 < Q t} {e : realified V}
+    (he0 : e ≠ 0) (heQ : Q e = 0) (heSheet : e ∈ closedSheet Q hpos ht)
+    {a b : PointedCone ℝ (realified V)} (hea : e ∈ a) (heb : e ∈ b) :
+    let N := Submodule.span ℝ ({e} : Set (realified V))
+    let _ : ContinuousAdd (realified V ⧸ N) := IsModuleTopology.toContinuousAdd ℝ _
+    ∀ {z : realified V ⧸ N}, z ∈ (a ⊓ b).map N.mkQ →
+      0 < isotropicHalfspaceForm Q heQ z →
+      (((a ⊓ b : PointedCone ℝ (realified V)) : Set (realified V)) ∩
+        (positiveCone.upper Q t : Set (realified V))).Nonempty := by
+  classical
+  let N := Submodule.span ℝ ({e} : Set (realified V))
+  let _ : ContinuousAdd (realified V ⧸ N) := IsModuleTopology.toContinuousAdd ℝ _
+  change ∀ {z : realified V ⧸ N}, z ∈ (a ⊓ b).map N.mkQ →
+    0 < isotropicHalfspaceForm Q heQ z →
+    (((a ⊓ b : PointedCone ℝ (realified V)) : Set (realified V)) ∩
+      (positiveCone.upper Q t : Set (realified V))).Nonempty
+  intro z hz hzβ
+  obtain ⟨w, hwab, hwq⟩ := hz
+  have him : z ∈ N.mkQ '' (positiveCone.upper Q t) := by
+    rw [image_mkQ_upper_eq Q hpos hnd ht he0 heQ heSheet.2]
+    exact hzβ
+  obtain ⟨x, hxC, hxq⟩ := him
+  have hxw : N.mkQ x = N.mkQ w := hxq.trans hwq.symm
+  have hdiff : w - x ∈ N := by
+    simpa only [sub_eq_add_neg, add_comm] using (Submodule.Quotient.eq' N).mp hxw
+  obtain ⟨r, hr⟩ := Submodule.mem_span_singleton.1 hdiff
+  rcases lt_or_ge r (0 : ℝ) with hr0 | hr0
+  · have hxmem : w + (-r) • e ∈ a ⊓ b := (a ⊓ b).add_mem hwab
+      ((a ⊓ b).smul_mem (neg_nonneg.mpr hr0.le) ⟨hea, heb⟩)
+    have hxeq : w + (-r) • e = x := by
+      rw [neg_smul, hr]
+      abel
+    exact ⟨x, hxeq ▸ hxmem, hxC⟩
+  · have hwC : x + r • e ∈ positiveCone.upper Q t :=
+      mem_upper_add_smul_of_mem_closedSheet hpos hnd hxC heSheet heQ he0 hr0
+    have hweq : x + r • e = w := by
+      rw [hr]
+      abel
+    exact ⟨w, hwab, hweq ▸ hwC⟩
+
 end IsotropicRationalTraces
 
 end LeanCategories.Lattices.Valued
