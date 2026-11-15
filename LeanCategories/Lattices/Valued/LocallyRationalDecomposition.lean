@@ -83,8 +83,16 @@ an `ℝ`-vector space with no extra structure.
   of the open sheet pairs positively with every nonzero point of the closed sheet
   (`associated_pos_of_mem_upper_of_mem_closedSheet`). What the source then does with the
   half-space — the cones of `Σ` above `σ` projecting to polyhedra, their minimal members, and
-  the translation space `U` with `L_σ` its preimage — is not carried; see the section on the
-  independence of `L_σ`.
+  the translation space `U` with `L_σ` its preimage — is carried in algebraic form in the section
+  "Lemma-Definition 4.5, the general case" below, whose docstring says which of its steps are
+  carried and which are not.
+* **Lemma-Definition 4.5 for every locally rational `Σ`** (p. 19, the proof at line 521): the
+  support space of `σ` is the same for every member `τ ≥ σ` meeting `C`. Proved from the face
+  step (`supportSpace_eq_of_face`), which turns the source's "translation space of the adjacent
+  members" into an algebraic domination hypothesis on the forms, and with that hypothesis
+  discharged for finitely generated cones (`supportSpace_eq_of_common_face_of_fg`); the
+  incidence hypothesis it carries, and the reason the source's polyhedral route is not available
+  as stated, are in the docstring of that section.
 
 ## Example 4.3 (b): the cells of `Σ(H)` are rational cones, and `Σ(H)` is a locally rational
 decomposition
@@ -232,14 +240,29 @@ decomposition
   carries the open cone onto the open half-space `{u | 0 < β u}` of the quotient
   (`image_mkQ_upper_eq`). The half-space is the affine space `A_I(ℝ)` of the source's proof
   ("we prefer to think of this image as a cone over a real affine space", p. 19).
-* Not carried: the rest of that proof. The cones `τ > σ` of a general locally rational `Σ` are
-  not projected to polyhedra of `A_I(ℝ)`, no minimal member of that decomposition is taken, and
-  the translation space `U` whose complexification gives `L_σ` (the last sentence of the proof,
-  p. 19) is not constructed; so the independence of `L_σ` from `τ` is proved here for `Σ(bb)`
-  only (`supportSpace_eq_of_meets_openSheet`), and `σ` spanning an isotropic half line is exactly
-  the case in which that argument does not apply. Also not carried: the identification of the
-  support spaces of `Σ(bb)` as `V`, `{0}` and the hyperplanes orthogonal to the `ℚ`-isotropic
-  lines (p. 19). What is proved here is the independence, not that description.
+* Carried of the isotropic case: its first step only, in the section "Lemma-Definition 4.5, the
+  isotropic case" — the projection `π_I : L → L/I` of an isotropic line, and the theorem that it
+  carries the open cone onto the open half-space `{u | 0 < β u}` of the quotient
+  (`image_mkQ_upper_eq`). The half-space is the affine space `A_I(ℝ)` of the source's proof
+  ("we prefer to think of this image as a cone over a real affine space", p. 19).
+* Carried of the rest of that proof, in the section "Lemma-Definition 4.5, the general case": the
+  independence from `τ` itself, as the face step `supportSpace_eq_of_face` plus the independence
+  `supportSpace_eq_of_common_face`, for a general `Σ` and a general `σ`; the domination hypothesis
+  of the face step is named, and discharged for finitely generated cones
+  (`exists_add_smul_of_fg`, `supportSpace_eq_of_face_of_fg`,
+  `supportSpace_eq_of_common_face_of_fg`). With it, `sigmaSupportSpace_eq_supportSpace` states
+  the `Σ`-support space of Lemma-Definition 4.5 as the value at any one member.
+* Not carried, and why: the domination hypothesis is not discharged for the members of a locally
+  rational decomposition of `C₊` in the hyperbolic setting of Example 4.3, where `C₊` is the round
+  cone and its pieces are not finitely generated. The source's proof passes through the polyhedra
+  of `A_I(ℝ)` instead, and that passage is not available as stated: the images `π_I τ` of two
+  members above a fixed `σ` differ by a translation along `I`, so they overlap and do not
+  decompose `A_I(ℝ)`, and the polyhedron `{z | (1, z) ∈ π_I τ}` of a member can be bounded, so a
+  minimal member need not be an affine subspace. The incidence data the face step carries is
+  therefore named as a hypothesis rather than derived.
+* Also not carried: the identification of the support spaces of `Σ(bb)` as `V`, `{0}` and the
+  hyperplanes orthogonal to the `ℚ`-isotropic lines (p. 19). What is proved here is the
+  independence, not that description.
 
 ## The arrangement cells are a port
 
@@ -286,6 +309,43 @@ client's time limit with no result. On the Mathlib side (`Mathlib/Geometry/Conve
 searched on disk) there is no `PointedCone.IsRational` or `ConvexCone.IsRational`, so the
 statement is not in Mathlib under those names either. Nothing to port; it is to be proved
 here.
+
+### LC-09 record for the independence of `L_σ` (this unit)
+
+The formulations the unit names for the general case of Lemma-Definition 4.5, run against the
+corpus API with the Mathlib-style identifiers among them, with every hit read:
+
+`content:Submodule.mkQ`: 398 files, 1095 matches; the returned hits are quotient maps of Lie
+ideals and of subgroups — atlas `MathlibExt/Algebra/Lie/Ado.lean`, TauCeti
+`Algebra/Lie/Quotient.lean` (`coe_mkQ`), `Algebra/Lie/Coadjoint.lean`, `RingTheory/Length.lean`,
+LeanPool `PFR/WeakPFR.lean` — and none is about the quotient of a vector space by an isotropic
+line. `content:Polyhedron`: 136 files, 773 matches; TauCeti `Analysis/Convex/Polyhedron/Basic.lean`
+(`IsConvexPolyhedron`), `Polyhedron/Homogenization.lean`, `Topology/PL/Map.lean`
+(`IsPiecewiseAffineOn`) — polyhedra as sets and the cone of a polyhedron's inequality rows, with
+nothing on the support space of a member of a decomposition. `content:affine translation space`:
+189 files, 11319 matches; the one file returned is atlas `WantedExt/Geometry/SpaceGroupsWanted.lean`
+(the 230 space groups), unrelated. `content:quotient by isotropic`: 35 files, 4223 matches; TauCeti
+`Geometry/Contact/Isotropic.lean`, isotropic *maps* into a contact manifold, not a quotient.
+`content:recession cone`: 8 files, 211 matches; TauCeti `Topology/PL/Cone.lean`, coning of
+piecewise-affine maps. `content:polar dual cone face cone`: 19 files, 2179 matches; LeanPool
+`Malliavin/ClarkOcone.lean`, unrelated. `content:PointedCone.dual`: 12 files, 39 matches; TauCeti
+`Analysis/Convex/Homogenization.lean` (`homogeneousInequalityCone`, the dual cone of the inequality
+rows of a polyhedron) and atlas `MathlibExt/Analysis/InnerProductSpace/PolarSet.lean` (the inner
+dual cone and `Submodule.dualAnnihilator`, a survey of the three duals) — the cone API, not the
+face step. `content:support space of a cone`: 82 files, 371507 matches, too broad to be a signal;
+the returned file is qinz1yang `Geometry/Metric/ConeRadius.lean`, the radius of a metric cone.
+`content:isotropic halfspace projection`: 1 file, 17 matches; CBirkbeck `LeanBridge`
+`Siegel/KlingenEisenstein.lean`, unrelated. `content:exposed face of a cone`: 21 files; qinz1yang
+`DifferentialGeometry/Analysis/Convex/ProperConeFace.lean`, faces of proper cones stated over
+Mathlib's `Mathlib.Analysis.Convex.Exposed` — the nearest thing in the corpus to the exposure
+hypothesis, and not about support spaces.
+
+Nothing to port: the independence below is linear algebra over the dual cone, and every cone
+statement it uses is already in Mathlib (`PointedCone.dual (Module.Dual.eval ℝ ·)`,
+`PointedCone.ofSubmodule`, `PointedCone.hull_le_span`, `Submodule.span_le`) or is the repository's
+own ported `halfspaceCone` (`ForMathlib/PointedConeMinkowskiWeyl.lean`). Nothing in Mathlib either,
+under the names searched on disk (`PointedCone.IsFaceOf` has no support-space or face-duality
+statement; `Mathlib/Analysis/Convex/Cone/Dual.lean` is `ProperCone.dual` and its double dual).
 
 ### LC-09 record for discreteness and properness (2026-11-16)
 
@@ -2623,6 +2683,278 @@ theorem image_mkQ_subset_of_le_rationalClosure (Q : QuadraticForm ℝ (realified
     (image_mkQ_rationalClosure_subset Q hpos ht he hbe)
 
 end IsotropicProjection
+
+/-! ## Lemma-Definition 4.5, the general case: the independence of `L_σ` from `τ`
+
+Looijenga, Lemma-Definition 4.5, p. 19 (text version
+`.tmp-sources/looijenga-math0201218v2.md:519`), and its proof (line 521): for `σ ∈ Σ` and any
+`τ ∈ Σ` with `τ ≥ σ` and `τ ∩ C ≠ ∅`, the common zero set of the real linear forms that are
+nonnegative on `τ` and zero on `σ` does not depend on `τ`; the source calls the common value the
+`Σ`-support space `L_σ`.
+
+The case the source's proof is about is `σ` spanning an isotropic line `I`, and what it consumes
+there is: the projection `π_I : L → L/I` (carried above, `image_mkQ_upper_eq` and
+`image_mkQ_subset_of_le_rationalClosure`), the polyhedra that the cones `τ > σ` determine in the
+affine space `A_I(ℝ)`, the minimal member of that decomposition, and the translation space `U` of
+that member, whose preimage is `L_σ`. Carried here is the algebraic content of that argument, in
+the form and the cone, for a general `Σ`:
+
+* `supportSpace_eq_of_span_supportForms_eq`: the support space depends only on the linear span of
+  the forms that define it, so it is unchanged by any operation on `τ` that preserves that span.
+* `supportSpace_eq_of_face`: **the face step**, and the heart of the matter. If `F` is a face of
+  `τ` and `w` is a form nonnegative on `τ` and zero on `σ` that exposes `F` — more precisely, if
+  every form nonnegative on `F` and zero on `σ` becomes nonnegative on `τ` after adding a
+  multiple of `w` (the *domination* hypothesis, the shape in which "the translation space of the
+  adjacent members contains that of this one" appears as an algebraic statement) — then
+  `L_τ = L_F`. A form nonnegative on the face and its multiple are both nonnegative on the cone,
+  and the form is their difference: the two spans agree.
+* `supportSpace_eq_of_common_face`: **the independence from `τ`**, for two members `τ`, `τ'`
+  whose common face `τ ⊓ τ'` is exposed in each with domination: `L_τ = L_{τ ⊓ τ'} = L_{τ'}`.
+  This is the source's induction over the decomposition, one face at a time.
+* `exists_add_smul_of_fg`, `supportSpace_eq_of_face_of_fg`, `supportSpace_eq_of_common_face_of_fg`:
+  domination is discharged for a finitely generated cone, which is what a rational cone of `Σ`
+  is. For `τ` generated by a finite `T` whose generators on which `w` vanishes lie in `F`, the
+  multiple is the sum of the multiples the finitely many generators need (`0 ≤ w` on `τ` makes
+  the sum dominate each term), and nonnegativity on the generators propagates to the cone
+  generated by them (`halfspaceCone`, the ported Minkowski–Weyl half-space). So for a
+  decomposition of `C₊` into finitely generated cones whose pairwise intersections are faces
+  exposed by forms of the decomposition, the independence is unconditional in the incidence data.
+* `sigmaSupportSpace_eq_supportSpace`: hence the intersection `sigmaSupportSpace` carried in this
+  file is the common value, which is the assertion of Lemma-Definition 4.5.
+
+## What is not carried, and why
+
+* Domination is not discharged for the members of a locally rational decomposition of `C₊` in the
+  hyperbolic setting of Example 4.3, where `C₊` is the round cone and its pieces are not finitely
+  generated. The source's proof passes through the polyhedra of `A_I(ℝ)` instead, and that passage
+  is not available as stated: the images `π_I τ` of the members above a fixed `σ` do not decompose
+  `A_I(ℝ)` — two such members differ by a translation along `I`, so their images overlap — and a
+  minimal member of a decomposition of the half-space `{β ≥ 0}` into cones need not be an affine
+  subspace (its polyhedron `Q_τ = {z | (1, z) ∈ π_I τ}` can be bounded, as one hyperplane meeting
+  `C` and containing `σ` shows). `supportSpace_eq_of_face` is the part of the source's argument
+  that does not need that passage; the incidence hypothesis it carries is named, not hidden.
+* The identification of the support spaces of `Σ(bb)` as `V`, `{0}` and the hyperplanes
+  orthogonal to the `ℚ`-isotropic lines (p. 19). What is proved here is the independence, not that
+  description.
+-/
+
+section SupportSpaceIndependenceGeneral
+
+/-- A form vanishes on the half line `hull ℝ {e}` exactly when it vanishes at `e`: the cone hull
+is contained in the linear span and contains `e`. -/
+theorem forall_mem_hull_singleton_eq_zero {e : realified V} {φ : (realified V) →ₗ[ℝ] ℝ} :
+    (∀ y ∈ PointedCone.hull ℝ ({e} : Set (realified V)), φ y = 0) ↔ φ e = 0 := by
+  constructor
+  · intro h
+    exact h e (PointedCone.subset_hull (Set.mem_singleton e))
+  · intro h y hy
+    have hle : PointedCone.hull ℝ ({e} : Set (realified V)) ≤
+        PointedCone.ofSubmodule (LinearMap.ker φ) := by
+      refine le_trans (PointedCone.hull_le_span ℝ _) ?_
+      rw [PointedCone.ofSubmodule_le_ofSubmodule, Submodule.span_singleton_le_iff_mem,
+        LinearMap.mem_ker]
+      exact h
+    exact hle hy
+
+/-- A point is in the common zero set of a set of forms exactly when it is in that of their
+linear span: the condition is linear in the form. -/
+theorem forall_apply_eq_zero_span {S : Set ((realified V) →ₗ[ℝ] ℝ)} {x : realified V} :
+    (∀ φ ∈ S, φ x = 0) ↔ ∀ φ ∈ Submodule.span ℝ S, φ x = 0 := by
+  constructor
+  · intro h φ hφ
+    induction hφ using Submodule.span_induction with
+    | mem _ hψ => exact h _ hψ
+    | zero => simp
+    | add _ _ _ _ h1 h2 => rw [LinearMap.add_apply, h1, h2, add_zero]
+    | smul c _ _ h1 => rw [LinearMap.smul_apply, smul_eq_mul, h1, mul_zero]
+  · exact fun h φ hφ => h φ (Submodule.subset_span hφ)
+
+/-- **The support space depends only on the span of the forms defining it**, so any change of
+`τ` that preserves that span — the face step below — preserves the support space (Looijenga,
+Lemma-Definition 4.5, p. 19). -/
+theorem supportSpace_eq_of_span_supportForms_eq {σ τ τ' : PointedCone ℝ (realified V)}
+    (h : Submodule.span ℝ (supportForms τ σ) = Submodule.span ℝ (supportForms τ' σ)) :
+    supportSpace τ σ = supportSpace τ' σ := by
+  ext x
+  rw [mem_supportSpace, mem_supportSpace, forall_apply_eq_zero_span, forall_apply_eq_zero_span, h]
+
+/-- **The face step of Lemma-Definition 4.5** (Looijenga, p. 19; the "adjacent members" step of
+its proof): let `F ≤ τ` be cones, `σ ≤ F`, and let `w` be a form nonnegative on `τ` and zero on
+`σ` that *dominates* `F` in `τ` — every form nonnegative on `F` and zero on `σ` is made
+nonnegative on `τ` by adding a multiple of `w`. Then the support spaces of `τ` and of `F` agree.
+
+A form `φ` nonnegative on `F` and zero on `σ` and its multiple `φ + c • w` are both nonnegative on
+`τ`, so the span of the forms of `τ` is the span of those of `F` from above, and the reverse
+inclusion is the inclusion `F ≤ τ`. -/
+theorem supportSpace_eq_of_face {σ F τ : PointedCone ℝ (realified V)} (hFτ : F ≤ τ)
+    {w : (realified V) →ₗ[ℝ] ℝ} (hwτ : ∀ y ∈ τ, 0 ≤ w y) (hwσ : ∀ y ∈ σ, w y = 0)
+    (hdom : ∀ φ : (realified V) →ₗ[ℝ] ℝ, (∀ y ∈ F, 0 ≤ φ y) → (∀ y ∈ σ, φ y = 0) →
+      ∃ c : ℝ, ∀ y ∈ τ, 0 ≤ (φ + c • w) y) :
+    supportSpace τ σ = supportSpace F σ := by
+  refine supportSpace_eq_of_span_supportForms_eq ?_
+  refine le_antisymm ?_ ?_
+  · rw [Submodule.span_le]
+    intro φ hφ
+    rw [mem_supportForms] at hφ
+    exact Submodule.subset_span (mem_supportForms.2 ⟨fun y hy => hφ.1 y (hFτ hy), hφ.2⟩)
+  · rw [Submodule.span_le]
+    intro φ hφ
+    rw [mem_supportForms] at hφ
+    obtain ⟨c, hc⟩ := hdom φ hφ.1 hφ.2
+    have hmem : φ + c • w ∈ Submodule.span ℝ (supportForms τ σ) :=
+      Submodule.subset_span (mem_supportForms.2 ⟨hc, by
+        intro y hy
+        rw [LinearMap.add_apply, LinearMap.smul_apply, smul_eq_mul, hφ.2 y hy, hwσ y hy,
+          mul_zero, add_zero]⟩)
+    have hw : w ∈ Submodule.span ℝ (supportForms τ σ) :=
+      Submodule.subset_span (mem_supportForms.2 ⟨hwτ, hwσ⟩)
+    have hsub : (φ + c • w) - c • w = φ := by abel
+    rw [← hsub]
+    exact Submodule.sub_mem _ hmem (Submodule.smul_mem _ c hw)
+
+/-- **Lemma-Definition 4.5: the support space does not depend on the member above `σ`**
+(Looijenga, p. 19). For two cones `τ`, `τ'` containing `σ` whose common face `τ ⊓ τ'` is exposed
+in each by a form nonnegative on the member and zero on `σ`, with domination, the support spaces
+of `τ` and of `τ'` are the same: both are that of the common face. -/
+theorem supportSpace_eq_of_common_face {σ τ τ' : PointedCone ℝ (realified V)}
+    {w : (realified V) →ₗ[ℝ] ℝ} (hwτ : ∀ y ∈ τ, 0 ≤ w y) (hwσ : ∀ y ∈ σ, w y = 0)
+    (hdom : ∀ φ : (realified V) →ₗ[ℝ] ℝ, (∀ y ∈ τ ⊓ τ', 0 ≤ φ y) → (∀ y ∈ σ, φ y = 0) →
+      ∃ c : ℝ, ∀ y ∈ τ, 0 ≤ (φ + c • w) y)
+    {w' : (realified V) →ₗ[ℝ] ℝ} (hwτ' : ∀ y ∈ τ', 0 ≤ w' y) (hwσ' : ∀ y ∈ σ, w' y = 0)
+    (hdom' : ∀ φ : (realified V) →ₗ[ℝ] ℝ, (∀ y ∈ τ ⊓ τ', 0 ≤ φ y) → (∀ y ∈ σ, φ y = 0) →
+      ∃ c : ℝ, ∀ y ∈ τ', 0 ≤ (φ + c • w') y) :
+    supportSpace τ σ = supportSpace τ' σ :=
+  (supportSpace_eq_of_face inf_le_left hwτ hwσ hdom).trans
+    (supportSpace_eq_of_face inf_le_right hwτ' hwσ' hdom').symm
+
+/-- **Lemma-Definition 4.5 for `σ` a half line, in the form the source states it** (p. 19): the
+domination hypotheses at the generator `e` of `σ = hull ℝ {e}`. The isotropic case of the source
+is the one in which `Q e = 0`; the argument is indifferent to it, and no isotropy is used. -/
+theorem supportSpace_eq_of_common_face_halfLine {σ τ τ' : PointedCone ℝ (realified V)}
+    {e : realified V} (hσ : σ = PointedCone.hull ℝ ({e} : Set (realified V)))
+    {w : (realified V) →ₗ[ℝ] ℝ} (hwτ : ∀ y ∈ τ, 0 ≤ w y) (hwe : w e = 0)
+    (hdom : ∀ φ : (realified V) →ₗ[ℝ] ℝ, (∀ y ∈ τ ⊓ τ', 0 ≤ φ y) → φ e = 0 →
+      ∃ c : ℝ, ∀ y ∈ τ, 0 ≤ (φ + c • w) y)
+    {w' : (realified V) →ₗ[ℝ] ℝ} (hwτ' : ∀ y ∈ τ', 0 ≤ w' y) (hwe' : w' e = 0)
+    (hdom' : ∀ φ : (realified V) →ₗ[ℝ] ℝ, (∀ y ∈ τ ⊓ τ', 0 ≤ φ y) → φ e = 0 →
+      ∃ c : ℝ, ∀ y ∈ τ', 0 ≤ (φ + c • w') y) :
+    supportSpace τ σ = supportSpace τ' σ := by
+  have hwσ : ∀ y ∈ σ, w y = 0 := by
+    rw [hσ]; exact forall_mem_hull_singleton_eq_zero.2 hwe
+  have hwσ' : ∀ y ∈ σ, w' y = 0 := by
+    rw [hσ]; exact forall_mem_hull_singleton_eq_zero.2 hwe'
+  exact supportSpace_eq_of_common_face hwτ hwσ
+    (fun φ h1 h2 => hdom φ h1 (forall_mem_hull_singleton_eq_zero.1 (hσ ▸ h2))) hwτ' hwσ'
+    (fun φ h1 h2 => hdom' φ h1 (forall_mem_hull_singleton_eq_zero.1 (hσ ▸ h2)))
+
+/-- **Domination at the generators of a finitely generated cone**, which is where the domination
+hypothesis of `supportSpace_eq_of_face` comes from for a polyhedral member: if `τ` is generated by
+a finite `T`, `w` is nonnegative on `τ` and vanishes on `F`, and `φ` is nonnegative on `F`, then
+some multiple of `w` makes `φ` nonnegative on `τ`.
+
+The multiple of the generator `m ∈ T` is any natural number past `-φ m / w m`, of which there is
+one because `w m > 0` unless `m ∈ F`; summing them works because `0 ≤ w` on `τ`. -/
+theorem exists_add_smul_of_fg {T : Finset (realified V)} {F τ : PointedCone ℝ (realified V)}
+    {w φ : (realified V) →ₗ[ℝ] ℝ}
+    (hwτ : ∀ y ∈ τ, 0 ≤ w y)
+    (hτT : τ ≤ PointedCone.hull ℝ ((T : Set (realified V))))
+    (hTτ : ∀ m ∈ T, m ∈ τ)
+    (hF : ∀ m ∈ T, w m = 0 → m ∈ F)
+    (hφF : ∀ y ∈ F, 0 ≤ φ y) :
+    ∃ c : ℝ, ∀ y ∈ τ, 0 ≤ (φ + c • w) y := by
+  classical
+  have hex : ∀ m : realified V, ∃ c : ℝ, m ∈ T → 0 ≤ φ m + c * w m := by
+    intro m
+    by_cases hm : m ∈ T
+    · by_cases h : w m = 0
+      · exact ⟨0, fun _ => by rw [h, mul_zero, add_zero]; exact hφF m (hF m hm h)⟩
+      · have hpos : 0 < w m := lt_of_le_of_ne (hwτ m (hTτ m hm)) (Ne.symm h)
+        obtain ⟨N, hN⟩ := exists_nat_gt (-(φ m) / w m)
+        exact ⟨(N : ℝ), fun _ => by
+          have h1 : -(φ m) / w m < (N : ℝ) := hN
+          rw [div_lt_iff₀ hpos] at h1
+          linarith⟩
+    · exact ⟨0, fun h => absurd h hm⟩
+  choose b hb using hex
+  refine ⟨∑ m ∈ T, max (b m) 0, fun y hy => ?_⟩
+  have hgen : ∀ m ∈ T, 0 ≤ (φ + (∑ m ∈ T, max (b m) 0) • w) m := by
+    intro m hm
+    rw [LinearMap.add_apply, LinearMap.smul_apply, smul_eq_mul]
+    have hle : b m ≤ ∑ m ∈ T, max (b m) 0 :=
+      le_trans (le_max_left _ _) (Finset.single_le_sum (fun i _ => le_max_right _ _) hm)
+    have hw₀ : 0 ≤ w m := hwτ m (hTτ m hm)
+    nlinarith [hb m hm]
+  have hle : PointedCone.hull ℝ ((T : Set (realified V))) ≤
+      halfspaceCone (φ + (∑ m ∈ T, max (b m) 0) • w) := by
+    rw [PointedCone.hull]
+    exact Submodule.span_le.2 (fun x hx => mem_halfspaceCone.2 (hgen x (by simpa using hx)))
+  exact hle (hτT hy)
+
+/-- **The face step for a finitely generated cone**, with the domination hypothesis discharged:
+the polyhedral case of `supportSpace_eq_of_face`, in which nothing is assumed about the members
+beyond the incidence data (Looijenga, p. 19, for a rational cone). -/
+theorem supportSpace_eq_of_face_of_fg {σ F : PointedCone ℝ (realified V)}
+    (T : Finset (realified V))
+    {w : (realified V) →ₗ[ℝ] ℝ}
+    (hwτ : ∀ y ∈ PointedCone.hull ℝ ((T : Set (realified V))), 0 ≤ w y)
+    (hwσ : ∀ y ∈ σ, w y = 0)
+    (hF : ∀ m ∈ T, w m = 0 → m ∈ F) (hFτ : F ≤ PointedCone.hull ℝ ((T : Set (realified V)))) :
+    supportSpace (PointedCone.hull ℝ ((T : Set (realified V)))) σ = supportSpace F σ := by
+  refine supportSpace_eq_of_face hFτ hwτ hwσ ?_
+  intro φ hφF hφσ
+  exact exists_add_smul_of_fg hwτ le_rfl (fun m hm => PointedCone.subset_hull (by simpa using hm))
+    hF hφF
+
+/-- **Lemma-Definition 4.5 for a decomposition into finitely generated cones** (Looijenga, p. 19,
+for the rational cones of Definition 4.1): if two members of `Σ` above `σ` are finitely generated
+and their common intersection is cut out of each by a form of the member that is nonnegative on
+it and zero on `σ`, the support spaces of the two members agree. Nothing is assumed about the
+domination of the forms: the generators supply it. -/
+theorem supportSpace_eq_of_common_face_of_fg {σ τ τ' : PointedCone ℝ (realified V)}
+    (T T' : Finset (realified V))
+    (hτ : τ = PointedCone.hull ℝ ((T : Set (realified V))))
+    (hτ' : τ' = PointedCone.hull ℝ ((T' : Set (realified V))))
+    {w : (realified V) →ₗ[ℝ] ℝ} (hwτ : ∀ y ∈ τ, 0 ≤ w y) (hwσ : ∀ y ∈ σ, w y = 0)
+    {w' : (realified V) →ₗ[ℝ] ℝ} (hwτ' : ∀ y ∈ τ', 0 ≤ w' y) (hwσ' : ∀ y ∈ σ, w' y = 0)
+    (hF : τ ⊓ τ' = τ ⊓ PointedCone.ofSubmodule (LinearMap.ker w))
+    (hF' : τ ⊓ τ' = τ' ⊓ PointedCone.ofSubmodule (LinearMap.ker w')) :
+    supportSpace τ σ = supportSpace τ' σ := by
+  subst hτ
+  subst hτ'
+  have h1 : supportSpace (PointedCone.hull ℝ ((T : Set (realified V)))) σ =
+      supportSpace (PointedCone.hull ℝ ((T : Set (realified V)))
+        ⊓ PointedCone.ofSubmodule (LinearMap.ker w)) σ :=
+    supportSpace_eq_of_face_of_fg T hwτ hwσ (fun m hm h => ?_) inf_le_left
+  have h2 : supportSpace (PointedCone.hull ℝ ((T' : Set (realified V)))) σ =
+      supportSpace (PointedCone.hull ℝ ((T' : Set (realified V)))
+        ⊓ PointedCone.ofSubmodule (LinearMap.ker w')) σ :=
+    supportSpace_eq_of_face_of_fg T' hwτ' hwσ' (fun m hm h => ?_) inf_le_left
+  · rw [h1, h2, ← hF, ← hF']
+  · exact ⟨PointedCone.subset_hull (by simpa using hm), by simpa [LinearMap.mem_ker] using h⟩
+  · exact ⟨PointedCone.subset_hull (by simpa using hm), by simpa [LinearMap.mem_ker] using h⟩
+
+/-- **The `Σ`-support space of Lemma-Definition 4.5 is the common value**: if the support space of
+every member of `Σ` that lies above `σ` and meets `C` agrees with one of them, the intersection
+over them — the `sigmaSupportSpace` carried in this file — is that value. -/
+theorem sigmaSupportSpace_eq_of_forall_eq {C : PointedCone ℝ (realified V)}
+    {S : Set (PointedCone ℝ (realified V))} {σ : PointedCone ℝ (realified V)}
+    (τ₀ : supportIndex C S σ) {L : Submodule ℝ (realified V)}
+    (h : ∀ τ : supportIndex C S σ, supportSpace τ.1 σ = L) :
+    sigmaSupportSpace C S σ = L := by
+  rw [sigmaSupportSpace]
+  exact le_antisymm ((iInf_le _ τ₀).trans (h τ₀).le) (le_iInf fun τ => (h τ).ge)
+
+/-- **Lemma-Definition 4.5, the `Σ`-support space**: the support space of a member of `Σ` above
+`σ` meeting `C` is the `Σ`-support space `L_σ`, once the independence from the member is known
+(`supportSpace_eq_of_common_face`). -/
+theorem sigmaSupportSpace_eq_supportSpace {C : PointedCone ℝ (realified V)}
+    {S : Set (PointedCone ℝ (realified V))} {σ : PointedCone ℝ (realified V)}
+    (τ₀ : supportIndex C S σ)
+    (h : ∀ τ : supportIndex C S σ, supportSpace τ.1 σ = supportSpace τ₀.1 σ) :
+    sigmaSupportSpace C S σ = supportSpace τ₀.1 σ :=
+  sigmaSupportSpace_eq_of_forall_eq τ₀ h
+
+end SupportSpaceIndependenceGeneral
 
 
 /-! ## The decomposition attached to an arrangement of hyperplanes
