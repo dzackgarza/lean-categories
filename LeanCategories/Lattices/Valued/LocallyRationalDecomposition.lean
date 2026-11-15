@@ -2917,21 +2917,24 @@ end PointedConeExposure
 
 /-- Looijenga, Lemma-Definition 4.5, p. 19: the real linear forms that are nonnegative on
 `τ` and zero on `σ`. -/
-def supportForms (τ σ : PointedCone ℝ (realified V)) : Set ((realified V) →ₗ[ℝ] ℝ) :=
+def supportForms {E : Type*} [AddCommGroup E] [Module ℝ E]
+    (τ σ : PointedCone ℝ E) : Set (E →ₗ[ℝ] ℝ) :=
   {φ | (∀ x ∈ τ, 0 ≤ φ x) ∧ (∀ x ∈ σ, φ x = 0)}
 
-theorem mem_supportForms {τ σ : PointedCone ℝ (realified V)} {φ : (realified V) →ₗ[ℝ] ℝ} :
+theorem mem_supportForms {E : Type*} [AddCommGroup E] [Module ℝ E]
+    {τ σ : PointedCone ℝ E} {φ : E →ₗ[ℝ] ℝ} :
     φ ∈ supportForms τ σ ↔ (∀ x ∈ τ, 0 ≤ φ x) ∧ (∀ x ∈ σ, φ x = 0) :=
   Iff.rfl
 
 /-- Looijenga, Lemma-Definition 4.5, p. 19 (text version
 `.tmp-sources/looijenga-math0201218v2.md:519`): the common zero set of the real linear forms on
 `L(ℝ)` that are nonnegative on `τ` and zero on `σ`. -/
-noncomputable def supportSpace (τ σ : PointedCone ℝ (realified V)) :
-    Submodule ℝ (realified V) :=
-  ⨅ (φ : supportForms τ σ), LinearMap.ker (φ : (realified V) →ₗ[ℝ] ℝ)
+noncomputable def supportSpace {E : Type*} [AddCommGroup E] [Module ℝ E]
+    (τ σ : PointedCone ℝ E) : Submodule ℝ E :=
+  ⨅ (φ : supportForms τ σ), LinearMap.ker (φ : E →ₗ[ℝ] ℝ)
 
-theorem mem_supportSpace {τ σ : PointedCone ℝ (realified V)} {x : realified V} :
+theorem mem_supportSpace {E : Type*} [AddCommGroup E] [Module ℝ E]
+    {τ σ : PointedCone ℝ E} {x : E} :
     x ∈ supportSpace τ σ ↔ ∀ φ ∈ supportForms τ σ, φ x = 0 := by
   rw [supportSpace, Submodule.mem_iInf]
   exact ⟨fun h φ hφ => h ⟨φ, hφ⟩, fun h φ => h φ.1 φ.2⟩
@@ -3080,6 +3083,52 @@ theorem supportSpace_bot_eq_topologicalClosure_lineal [Module.Finite ℚ V]
     have hneg := next hf.1 hx.2
     rw [map_neg] at hneg
     linarith
+
+/-- **Support space descends along the quotient by the span of `σ`.** A form on `τ` zero on
+`σ` descends because it vanishes on `span σ`; conversely every quotient form pulls back. The two
+constructions are inverse for purposes of support-space membership, with no topological input. -/
+theorem supportSpace_map_mkQ_bot {τ σ : PointedCone ℝ (realified V)} :
+    let N := Submodule.span ℝ (σ : Set (realified V))
+    (supportSpace (τ.map N.mkQ) ⊥).comap N.mkQ = supportSpace τ σ := by
+  let N := Submodule.span ℝ (σ : Set (realified V))
+  let D := τ.map N.mkQ
+  change (supportSpace D ⊥).comap N.mkQ = supportSpace τ σ
+  have hdesc (φ : supportForms τ σ) :
+      N.liftQ φ.1 (by
+        apply Submodule.span_le.2
+        intro y hy
+        exact φ.2.2 y hy) ∈ supportForms D ⊥ := by
+    refine ⟨?_, by simp⟩
+    intro z hz
+    obtain ⟨y, hy, rfl⟩ := hz
+    change 0 ≤ φ.1 y
+    exact φ.2.1 y hy
+  apply le_antisymm
+  · intro x hx
+    change N.mkQ x ∈ supportSpace D ⊥ at hx
+    apply mem_supportSpace.2
+    intro φ hφ
+    have hf : (N.liftQ φ (by
+        apply Submodule.span_le.2
+        intro y hy
+        exact hφ.2 y hy)) ∈ supportForms D ⊥ := by
+      simpa using hdesc ⟨φ, hφ⟩
+    have hz := mem_supportSpace.1 hx _ hf
+    simpa only [Submodule.mkQ_apply, Submodule.liftQ_apply] using hz
+  · intro x hx
+    change N.mkQ x ∈ supportSpace D ⊥
+    apply mem_supportSpace.2
+    intro f hf
+    apply mem_supportSpace.1 hx (f.comp N.mkQ)
+    refine ⟨?_, ?_⟩
+    · intro y hy
+      exact hf.1 (N.mkQ y) ⟨y, hy, rfl⟩
+    · intro y hy
+      change f (N.mkQ y) = 0
+      have hzero : N.mkQ y = 0 := (Submodule.Quotient.mk_eq_zero N).mpr
+        (Submodule.subset_span hy)
+      rw [hzero]
+      exact f.map_zero
 
 /-- **Locality of the supporting forms at a point of `σ`.** If `K` is a neighbourhood of
 `x ∈ σ`, then the cone `τ` and its trace `τ ⊓ K` have the same forms nonnegative on them and zero
