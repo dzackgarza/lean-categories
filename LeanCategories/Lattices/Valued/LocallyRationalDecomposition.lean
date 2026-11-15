@@ -4148,100 +4148,32 @@ independence holds for every pair of members meeting `C` (`supportSpace_eq_of_lo
   `U`; it is not a consequence of the decomposition axioms.
 -/
 
-/-! ## Remaining isotropic obligation after the locality and quotient steps
+/-! ## Completion of support-space independence
 
-The following status supersedes the older provisional wording in this document. The interior
-case is now `supportSpace_eq_of_mem_open_of_locallyRational`, with no `hexp`, using
-`supportSpace_inf_eq_of_mem_nhds`, the rational neighbourhood from
-`exists_rationalCone_mem_nhds_subset_of_ne_zero`, and the exposed common faces of its finite
-rational traces. The zero-cone case is `supportSpace_bot_of_isClosed_of_salient`. For the
-quotient by `span σ`, `supportSpace_map_mkQ_bot_eq_topologicalClosure_lineal` identifies the
-remaining isotropic object with projected closed-cone lineality. The projected adjacency and
-chain steps are now proved: `lineal_topologicalClosure_map_le_of_hull_singleton` transfers every
-lineality direction across one adjacent pair, and
-`lineal_topologicalClosure_map_eq_of_reflTransGen_of_hull_singleton` propagates the equality along
-an isotropic common-face chain. `map_inf_eq_inf_map_of_span_singleton` supplies projection of
-intersections.
+The independence assertion of Looijenga's Lemma-Definition 4.5 is now carried in all cases,
+with no hypothesis beyond the source's. The three parts are:
 
-The exact conclusion still owed for an isotropic member of a locally rational decomposition is
-the following statement (written here as a handoff specification, not asserted as a proved
-declaration). The handoff at `aca6d70a1b` was not well-typed: `positiveCone.upper` is a set and
-omits zero, whereas `rationalClosure` takes a pointed cone retaining zero. The corrected carrier
-is `rationalClosure (closedSheet Q hpos ht)`, with the source's hyperbolic hypotheses made explicit.
+* If `σ` meets the upper sheet, a rational neighbourhood gives the finite rational traces and
+  exposed common faces used by `supportSpace_eq_of_rational_neighborhood`.
+* If `σ = ⊥`, `supportSpace_bot_eq_bot_of_mem` applies: a member's closure lies in the closed
+  salient sheet.
+* Otherwise `eq_bot_or_isotropicHalfLine_of_not_mem_upper` makes `σ` an isotropic half line, and
+  `supportSpace_eq_of_isotropicHalfLine_of_locallyRational` applies.
 
-```
-theorem supportSpace_eq_of_isotropicHalfLine_of_locallyRational
-    [Module.Finite ℚ V]
-    {Q : QuadraticForm ℝ (realified V)} {t : realified V}
-    (hpos : sigPos Q = 1) (hnd : Q.Nondegenerate) {ht : 0 < Q t}
-    {S : Set (PointedCone ℝ (realified V))}
-    (hS : IsLocallyRationalDecomposition (rationalClosure (closedSheet Q hpos ht)) S)
-    {σ τ τ' : PointedCone ℝ (realified V)}
-    (hσ : IsIsotropicHalfLine Q σ)
-    (hστ : σ ≤ τ) (hστ' : σ ≤ τ')
-    (hτ : τ ∈ S) (hτ' : τ' ∈ S)
-    (hτC : ((τ : Set (realified V)) ∩
-      (positiveCone.upper Q t : Set (realified V))).Nonempty)
-    (hτ'C : ((τ' : Set (realified V)) ∩
-      (positiveCone.upper Q t : Set (realified V))).Nonempty) :
-    supportSpace τ σ = supportSpace τ' σ
-```
+For the isotropic step, the members above the ray project to a family on the open quotient
+half-space. `mem_map_of_mem_topologicalClosure_of_isotropicHalfspace` proves relative closedness;
+`exists_mem_map_star_of_isotropicHalfspace` proves cover; and
+`locallyFinite_map_star_of_isotropicHalfspace` proves local finiteness from finite projected
+rational traces and relative-interior injectivity. Since these assertions are false at the
+half-space boundary, `reflTransGen_inf_nonempty_of_convex_set_of_relative` assumes closedness and
+local finiteness only on the convex set. The resulting chain is lifted by
+`reflTransGen_star_of_isotropicHalfspace`: `map_inf_eq_inf_map_of_span_singleton` projects common
+faces, and `exists_mem_inf_upper_of_mem_map_inf` supplies an upper-sheet common point in each
+lift. Existing projected closure-lineality propagation then proves endpoint support-space equality.
 
-The proof still stops at **lineality of the projected closures through the projected half-space**
-along the existing common-face chain. The following inputs are now proved and must be retained
-for the next attempt:
-
-* finite generation is preserved by linear images (`PointedCone.FG.map`);
-* in the finite-dimensional module topology, finitely generated cones are closed
-  (`PointedCone.FG.isClosed_of_moduleTopology`);
-* a face containing the isotropic generator projects to a face
-  (`PointedCone.IsFaceOf.map_mkQ_span_singleton`);
-* a projected neighborhood localizes closure membership to its intersection with a cone
-  (`mem_topologicalClosure_map_inf_of_mem_nhds`);
-* the upper sheet is open by direct finite-dimensional computation
-  (`isOpen_positiveCone_upper_of_moduleTopology`), and the set-level chain theorem is
-  `reflTransGen_inf_nonempty_of_convex_set`.
-
-The affine/recession step itself is now carried, without asserting that closure commutes with
-faces. The isotropic ray is a face of its carrier
-(`IsIsotropicHalfLine.isFaceOf_rationalClosure`) and is rational on locally rational traces
-(`IsIsotropicHalfLine.isRationalCone_of_le_of_mem`). For `z` in a common projected cell and `x`
-in one closure's lineality, the isotropic functional is nonnegative on both `x` and `-x`, so
-`β x = 0` and every `z + r x` lifts to the open sheet. A common rational cone neighbourhood of
-lifts of `z`, `z + r x`, and `z - r x` is supplied by
-`exists_rationalCone_sup_mem_nhds_of_isotropic_three`. Closedness of the finitely generated trace
-then lets the common projected face transfer `z + r x` through their midpoint `z`. The limit
-lemma `mem_topologicalClosure_of_forall_add_smul_mem` gives both signs of `x` in the other
-projected closure.
-
-What remains for the exact statement is the **star-chain input**: between two members above the
-same isotropic ray, construct a reflexive-transitive chain in which every node contains that ray
-and consecutive intersections meet the upper sheet. This is precisely the relation consumed by
-`lineal_topologicalClosure_map_eq_of_reflTransGen_of_hull_singleton`. The older generic chain
-`reflTransGen_inf_nonempty_of_convex_set` does not by itself prove this: its intermediate nodes
-can lie outside the `σ`-star, and the adjacency theorem intentionally requires the ray at every
-node. Once this chain is supplied, `supportSpace_map_mkQ_bot_eq_topologicalClosure_lineal`
-finishes the isotropic statement. No `hexp`, no `sorry` and no new axiom is to be introduced.
-
-The trace-injectivity part of the affine argument is now carried:
-`nonempty_intrinsicInterior_of_convex_moduleTopology` transports nonemptiness of the relative
-interior through `Module.finBasis`; `Convex.exists_mem_intrinsicInterior_inter_of_isOpen` puts
-such a point in the given open set; `face_eq_of_mem_intrinsicInterior` turns it into equality of a
-face and its carrier; and `eq_of_inf_eq_of_isLocallyRationalDecomposition` proves that two
-members with the same neighbourhood trace coincide. For the projected affine chain, the traces
-must be compared **after** applying `mkQ`: `map_inf_eq_inf_map_of_span_singleton` identifies these
-with intersections of projected cones, and `PointedCone.IsFaceOf.map_mkQ_span_singleton` supplies
-their common-face law. Still to be written from these inputs are the closedness, cover and local
-finiteness of the set of projected star members on the open quotient half-space, application of
-`reflTransGen_inf_nonempty_of_convex_set` to that set, and choice of lifts containing the ray for
-its nodes. No missing local-finiteness axiom is asserted: both its derivation and the subsequent
-chain lift remain proof obligations. The exact target statement above is unchanged.
-
-The earlier recession-cone draft remains unexported at
-`.scratch/wt159b-isotropic-draft/RecessionCone.lean`; it was read and does not elaborate. The
-`upperZero` wrapper and the pointwise bridge `subset_rationalClosure_of_mem` above supply the
-upper-sheet side of the eventual combined theorem: the open upper sheet is in the interior of its
-pointed version and lies in the rational closure of the closed sheet.
+`supportSpace_eq_of_locallyRational` combines these cases. The separate explicit description of of
+an isotropic support space as an intersection of hyperplanes and member spans remains a distinct
+assertion; proving independence does not claim that description.
 -/
 
 section SupportSpaceIndependenceGeneral
