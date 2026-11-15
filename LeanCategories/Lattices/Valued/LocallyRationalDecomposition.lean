@@ -143,36 +143,34 @@ decomposition
   cuts `P` exactly when `q` takes both signs on `s`, so `L(ℝ)` leaves the statement.
   `finite_span_int_of_pairings_bounded`: on the `ℤ`-span of a `ℚ`-basis a vector's coordinate
   against `b j` is its pairing with the dual vector `B.dualBasis hB b j` (Mathlib's
-  `LinearMap.BilinForm.dualBasis`), so bounded
-  pairings leave
-  finitely many lattice points — finiteness from integrality, where `ZSpan.setFinite_inter` would
-  need a `ProperSpace` instance that `realified V` has not. What is owed is the bound itself, per
-  pair of generators of `P`, with `sigPos Q = 1` and nondegeneracy: both generators timelike (the
-  form on their span is hyperbolic there, its orthogonal complement negative definite, and the
-  cutting functional's representative in that plane is spacelike with `Q u = Q ℓ - Q w' ≥ -m`, which
-  bounds both pairings through the Gram data of the pair); one generator isotropic (the pairing with
-  it is a nonzero rational of bounded denominator — the step that fails over `ℝ`, where
-  `ℓ = (N, N + 1/N, 0)` keeps the norm and cuts for every `N`); or both isotropic (their pairing is
-  nonnegative, being in the same sheet, and `2ab` times it is `-m - Q w' ≤ 0`).
-  The route is a case analysis on
-  the pair of generators witnessing the two signs. Two timelike generators span a hyperbolic plane
-  `W`, on which the cutting functional is spacelike and its value is bounded below by `-m`; the
-  orthogonal complement of `W` is negative definite, where `ℓ² = -m` bounds the rest. An isotropic
-  generator `w` is either paired with `ℓ` nontrivially — an integral value bounded away from `0`,
-  which with `ℓ² = -m` bounds `ℓ` — or `ℓ ∈ w^⊥`, where the class of `ℓ` in the negative definite
-  `w^⊥/w` is bounded by the other generators: that quotient is negative definite because it is
-  `w^⊥` modulo its radical, with `sigPos = sigPos Q - 1 = 0` (`sigPos_isotropicQuotientForm`,
-  `IsotropicQuotientSignature.lean:513`). What makes the second sub-case of the isotropic branch
-  impossible for a *cut* is `nonneg_associated_of_quadratic_eq_zero_of_mem_closedSheet` below: a
-  null direction is one-signed on the closed sheet, so it separates no two points of `C₊`.
-  `ZSpan.setFinite_inter` (`Mathlib/Algebra/Module/ZLattice/Basic.lean:328`) with the bounded set
-  closes each case — on a topological real form; `realified V` here carries no `ProperSpace`
-  instance (see the hyperbolic section's note), which is why the counting lemma is owed and not
-  carried.
+  `LinearMap.BilinForm.dualBasis`), so bounded pairings leave finitely many lattice points —
+  finiteness from integrality, where `ZSpan.setFinite_inter` would
+  need a `ProperSpace` instance that `realified V` has not.
 
-  What is not carried is the bound of (ii)'s three cases, and step (i)'s lattice and orbit layer:
-  this file has no `Λ`, no `Γ` and no primitive-vector reduction, so the hypothesis stays a
-  hypothesis. The source's own ground for it
+  What bounds the pairings is not analysis on `L(ℝ)` either, and it is now carried: with
+  `sigPos Q = 1`, `pairing_quadratic_bound` gives the quadratic relation among the two pairings
+  `x = ℓ · a` and `y = ℓ · b` of a pair of generators of `C₊`,
+  `Q b · x² - 2 (a · b) x y + Q a · y² ≤ m (a · b² - Q a · Q b)`, from `Q u ≥ -m` at the component
+  `u` of `ℓ` in the plane of the pair — that plane is hyperbolic, its orthogonal complement is
+  negative semidefinite by `mul_self_le_associated_sq` alone
+  (`quadratic_nonpos_of_associated_eq_zero`) — and the three cases of the case analysis are
+  `abs_associated_le_of_both_timelike` (both timelike: both pairings bounded by the Gram data of the
+  pair), `abs_associated_le_of_isotropic` (one isotropic: the pairing with the isotropic generator
+  bounded by `a · b · sqrt (m / Q a)`, and the *product* of the two pairings bounded — the hyperbola
+  that over `ℝ` is no box, `ℓ = (N, N + 1/N, 0)` keeping the norm and cutting for every `N`), and
+  `abs_associated_mul_le_of_both_isotropic` (both isotropic: the product only). Integrality supplies
+  what the product cannot: the pairing of `ℓ` with a generator is a nonzero rational of bounded
+  denominator, hence bounded away from `0`, and `abs_le_of_abs_mul_le_of_one_div_le` turns the
+  product bound into a bound on the other pairing.
+
+  What remains of (ii) is then the assembly, in two steps, and step (i)'s orbit layer. The `Λ`-layer
+  has to supply those denominators and the primitive normal; and the bound established is on the
+  pairings with the pair, while `finite_span_int_of_pairings_bounded` consumes bounds on the
+  pairings with a fixed dual basis — the component of `ℓ` in the orthogonal complement of the
+  plane of the pair is bounded by `Q ℓ = -m` together with the negative definiteness there, and
+  turning that bound into bounds on the pairings with a fixed family spanning `L(ℚ)` is the
+  missing step. For (i): this file has no `Λ`, no `Γ` and no primitive-vector reduction, so the
+  hypothesis stays a hypothesis. The source's own ground for it
   ("this collection is locally finite on `C`", p. 18) does not supply it either: local finiteness on
   `C` is a statement about compact pieces of the open cone, while cutting is a statement about the
   sign pattern of a form on a whole rational cone, and a locally finite family can have infinitely
@@ -351,15 +349,17 @@ TauCeti `Algebra/Lie/Dual.lean` and `Algebra/Lie/Sl2/Killing.lean` (the `B`-dual
 the *linear* dual); none of them a dual family for a nondegenerate bilinear form.
 `content:BilinForm dual basis nondegenerate`: 134 files, 9031 matches, none returned as a file.
 `content:apply_dualBasis_left`: 16 files, 3 returned — facebookresearch/atlas-lean
-`MathlibExt/Algebra/Lie/LeviDecomposition.lean` and `v1/Atlas/NumberTheoryI/code/PairingsTheorems.lean`,
-whose `prop_5_7_existence` is exactly the statement the retired declaration carried
+`MathlibExt/Algebra/Lie/LeviDecomposition.lean` and
+`v1/Atlas/NumberTheoryI/code/PairingsTheorems.lean`, whose `prop_5_7_existence` is exactly the
+statement the retired declaration carried
 (`∃ b' : Basis ι K V, ∀ i j, B (b' i) (b j) = if j = i then 1 else 0`, with
 `fun i j => BilinForm.apply_dualBasis_left hB b i j` as its proof — i.e. already a two-line
 corollary of Mathlib, and the same entries for `prop_5_7_uniqueness` and `cor_5_14`), and TauCeti
 `LinearAlgebra/BilinearForm/Basic.lean` (the same rewrite). `content:Gram matrix inverse dual basis
 delta`: 22 files, 5699 matches, no file returned. Nothing to port: Mathlib owns the statement, at
 `LinearMap.BilinForm.dualBasis` / `apply_dualBasis_left` / `apply_dualBasis_right` /
-`dualBasis_repr_apply` / `dualBasis_dualBasis` (`Mathlib/LinearAlgebra/BilinearForm/Properties.lean`,
+`dualBasis_repr_apply` / `dualBasis_dualBasis`
+(`Mathlib/LinearAlgebra/BilinearForm/Properties.lean`,
 the `DualBasis` section), and the hand-rolled injective-implies-surjective derivation that stood in
 this file was that lemma with more work. The retired declaration is gone; `apply_dualBasis_right`
 supplies the `δ` pairings and `dualBasis_repr_apply` read through `dualBasis_dualBasis` supplies the
@@ -3300,6 +3300,276 @@ theorem cutsOn_iff_generators (P : PointedCone ℝ (realified V)) {s : Finset V}
       ⟨rationalPoint w, ?_, by rw [hq w]; exact_mod_cast hwneg⟩⟩
     · exact hP ▸ PointedCone.subset_hull (Set.mem_image_of_mem _ (by exact_mod_cast hv))
     · exact hP ▸ PointedCone.subset_hull (Set.mem_image_of_mem _ (by exact_mod_cast hw))
+
+/-! ## The bound per pair of generators: the three cases of the counting lemma
+
+The counting lemma's finiteness is not analytic: on a rational cone `P` of `C₊` a spacelike normal
+`ℓ` of fixed value `Q ℓ = -m` that *cuts* `P` takes both signs on the generators of `P`
+(`cutsOn_iff_generators`), and the pair of generators on which the two signs are taken bounds `ℓ`
+in the two cases that are pure linear algebra over the form, with integrality needed only in the
+third. Looijenga, Example 4.3 (b), p. 18, is where the arithmeticity of `Γ` enters: it fixes the
+values `ℓ²`, and these bounds then leave finitely many lattices vectors per value.
+
+The three cases, on a pair `a`, `b` of generators with `ℓ · a > 0 > ℓ · b`:
+
+* both timelike (`0 < Q a`, `0 < Q b`): the plane of the pair is hyperbolic, its orthogonal
+  complement is negative definite, and the pairing form of the pair bounds both pairings by the Gram
+  data alone (`abs_associated_le_of_both_timelike`);
+* one isotropic (`Q b = 0`): the relation is a hyperbola, so what is bounded is the *product* of the
+  two pairings plus the pairing with the isotropic generator (`abs_associated_le_of_isotropic`);
+* both isotropic (`Q a = Q b = 0`): only the product is bounded
+  (`abs_associated_mul_le_of_both_isotropic`).
+
+In the last two the product bounds neither pairing by itself, and that is where the lattice enters:
+the pairing of `ℓ` with a generator is a nonzero rational whose denominator is bounded, so it is
+bounded *away* from `0`, and `abs_le_of_abs_mul_le_of_one_div_le` converts the product bound into a
+bound on the other pairing. Over `ℝ` this fails, which is why the statement is not a statement about
+`L(ℝ)`: the module docstring's family `ℓ_N = (N, N + 1/N, 0)` is exactly a cut whose pairing with
+the isotropic generator goes to `0` while its value stays `-m`.
+
+All statements are general in the form and in the pair: the cone enters only through the sheet
+hypotheses `0 ≤ Q a`, `0 ≤ Q b` and `0 < a · b`, which hold for the generators of `C₊`
+(`nonneg_associated_of_mem_closedSheet`), and no coordinates of a chosen lattice appear.
+
+## LC-09 search record for these bounds (2026-11-15, #161, fourth unit)
+
+The six queries of this unit, with every hit. `content:hyperbolic plane metric signature`: 20 files,
+752 matches, none returned as a file for the pairing bound. `content:negative definite orthogonal
+complement positive index`: 48 files, 3254 matches, 1 returned — QudeLeap `QuantumAlg/Util/Matrix/
+Trace/Norm.lean`, positive semidefinite matrices and trace norms, unrelated (the statement it was
+meant to find, that the orthogonal complement of a positive vector in a form of positive index `1`
+is negative semidefinite, is `mul_self_le_associated_sq` in this repository's
+`PositiveCone.lean:125`, one line away). `content:reverse Cauchy-Schwarz Lorentzian`: the client's
+time limit, no result. `content:spacelike vector pairing bound timelike`: 1 file, 108 matches, the
+physlib import list — the `Relativity/Causality` files are light cones, not signature-form pairings.
+`content:Gram matrix determinant signature two timelike`: 0 files. `content:isotropic quotient
+negative definite`: 11 files, 475 matches, nothing on the quotient's definiteness (that statement
+this repository owns at `sigPos_isotropicQuotientForm`, `IsotropicQuotientSignature.lean:513`, and
+the isotropy case below does not need it). Nothing to port: the engine and the three cases are
+residue, built on Mathlib's `quadratic_expand`-shaped polarization and this repository's
+`mul_self_le_associated_sq`.
+
+-/
+
+section PairingBounds
+
+variable [Module.Finite ℚ V]
+
+/-- **The orthogonal complement of a positive vector is negative semidefinite**, in one line from
+the key inequality of signature `(1, n)` (`mul_self_le_associated_sq`, `PositiveCone.lean:125`):
+`Q w · Q a ≤ (w · a)²`, so a vector orthogonal to a vector of positive value has nonpositive
+value. This is what makes the plane spanned by two generators of `C₊` split into a hyperbolic part
+and a negative definite part. -/
+theorem quadratic_nonpos_of_associated_eq_zero {Q : QuadraticForm ℝ (realified V)}
+    (hpos : sigPos Q = 1) {a w : realified V} (ha : 0 < Q a)
+    (h : (associated Q) w a = 0) : Q w ≤ 0 := by
+  have h1 := mul_self_le_associated_sq (Q := Q) hpos ha w
+  rw [h] at h1
+  nlinarith
+
+/-- **The quadratic relation at a pair of generators of the sheet.** For `a`, `b` in the closed
+sheet (`0 ≤ Q a`, `0 ≤ Q b`, `a · b > 0`) spanning a hyperbolic plane (`a · b² > Q a · Q b`), and a
+spacelike `ℓ` (`Q ℓ = -m`), the pairings `x = ℓ · a`, `y = ℓ · b` satisfy
+
+`Q b · x² - 2 (a · b) x y + Q a · y² ≤ m (a · b² - Q a · Q b)`.
+
+That is the pairing form of `Q u ≥ -m`, where `u` is the component of `ℓ` in the plane of the pair:
+`u` is the combination of `a`, `b` whose pairings are `x` and `y`, `w = ℓ - u` is orthogonal to
+both, hence to `a + b`, whose value is `Q a + 2 (a · b) + Q b > 0`, so `Q w ≤ 0` and
+`Q u = Q ℓ - Q w ≥ -m`; and the quadratic form of `u` in terms of `x`, `y` has matrix the inverse
+of the Gram matrix of the pair, which is `K = a · b² - Q a · Q b` times the displayed form. Both
+steps are division-free in the statement and the case analysis below only uses the displayed
+inequality. -/
+theorem pairing_quadratic_bound {Q : QuadraticForm ℝ (realified V)} (hpos : sigPos Q = 1)
+    {a b l : realified V} {m : ℝ}
+    (ha : 0 ≤ Q a) (hb : 0 ≤ Q b) (hab : 0 < (associated Q) a b)
+    (hKh : 0 < (associated Q) a b ^ 2 - Q a * Q b) (hQl : Q l = -m) :
+    Q b * (associated Q) l a ^ 2
+        - 2 * (associated Q) a b * ((associated Q) l a * (associated Q) l b)
+        + Q a * (associated Q) l b ^ 2
+      ≤ m * ((associated Q) a b ^ 2 - Q a * Q b) := by
+  set A : ℝ := Q a with hA
+  set B : ℝ := Q b with hB
+  set c : ℝ := (associated Q) a b with hc
+  set x : ℝ := (associated Q) l a with hx
+  set y : ℝ := (associated Q) l b with hy
+  set K : ℝ := c ^ 2 - A * B with hK
+  have hKpos : 0 < K := by rw [hK]; exact hKh
+  set al : ℝ := (c * y - B * x) / K with hal
+  set be : ℝ := (c * x - A * y) / K with hbe
+  have hKne : K ≠ 0 := hKpos.ne'
+  have hKN : c ^ 2 - A * B ≠ 0 := by rw [← hK]; exact hKne
+  have hrel1 : A * al + c * be = x := by
+    rw [hal, hbe, hK, mul_div_assoc', mul_div_assoc', ← add_div, div_eq_iff hKN]
+    ring
+  have hrel2 : c * al + B * be = y := by
+    rw [hal, hbe, hK, mul_div_assoc', mul_div_assoc', ← add_div, div_eq_iff hKN]
+    ring
+  set u : realified V := al • a + be • b with hu
+  set w : realified V := l - u with hw
+  have huA : (associated Q) u a = A * al + c * be := by
+    rw [hu, map_add, LinearMap.add_apply, map_smul, LinearMap.smul_apply, smul_eq_mul]
+    rw [map_smul, LinearMap.smul_apply, smul_eq_mul, associated_self_apply,
+      associated_comm (Q := Q) b a]
+    rw [← hA, ← hc]
+    ring
+  have huB : (associated Q) u b = c * al + B * be := by
+    rw [hu, map_add, LinearMap.add_apply, map_smul, LinearMap.smul_apply, smul_eq_mul]
+    rw [map_smul, LinearMap.smul_apply, smul_eq_mul, associated_self_apply]
+    rw [← hB, ← hc]
+    ring
+  have hwa : (associated Q) w a = 0 := by
+    rw [hw, map_sub, LinearMap.sub_apply, huA, hrel1, ← hx, sub_self]
+  have hwb : (associated Q) w b = 0 := by
+    rw [hw, map_sub, LinearMap.sub_apply, huB, hrel2, ← hy, sub_self]
+  have hta : 0 < Q (a + b) := by
+    rw [show a + b = (1 : ℝ) • a + (1 : ℝ) • b by simp, quadratic_expand]
+    rw [← hA, ← hB, ← hc]
+    nlinarith
+  have htw : (associated Q) w (a + b) = 0 := by
+    simp only [map_add, hwa, hwb, add_zero]
+  have hQw : Q w ≤ 0 := quadratic_nonpos_of_associated_eq_zero hpos hta htw
+  have hQu : -m ≤ Q u := by
+    have huw : (associated Q) u w = 0 := by
+      rw [hu, map_add, LinearMap.add_apply, map_smul, LinearMap.smul_apply, smul_eq_mul,
+        map_smul, LinearMap.smul_apply, smul_eq_mul,
+        associated_comm (Q := Q) a w, associated_comm (Q := Q) b w, hwa, hwb]
+      ring
+    have hl : l = u + w := by rw [hw]; abel
+    have hexp : Q l = Q u + Q w := by
+      conv_lhs => rw [hl]
+      rw [show u + w = (1 : ℝ) • u + (1 : ℝ) • w by simp, quadratic_expand, huw]
+      ring
+    rw [hQl] at hexp
+    linarith
+  have hQu' : Q u = A * al ^ 2 + 2 * al * be * c + B * be ^ 2 := by
+    rw [hu, quadratic_expand]
+    rw [← hA, ← hB, ← hc]
+    ring
+  have hide : B * x ^ 2 - 2 * c * (x * y) + A * y ^ 2
+      = -(K * (A * al ^ 2 + 2 * al * be * c + B * be ^ 2)) := by
+    rw [← hrel1, ← hrel2, hK]
+    ring
+  rw [hide, ← hQu']
+  nlinarith [hQu, hKpos]
+
+/-- **The bound of the counting lemma, both generators timelike**: the hyperbola
+`Q b · x² - 2 (a · b) x y + Q a · y² ≤ m K` of `pairing_quadratic_bound` has all three terms
+nonpositive for `x > 0 > y` (because `a · b > 0`), so both pairings of `ℓ` with the pair are
+bounded by the Gram data of the pair alone — no integrality, no denominator. -/
+theorem abs_associated_le_of_both_timelike {Q : QuadraticForm ℝ (realified V)}
+    (hpos : sigPos Q = 1) {a b l : realified V} {m : ℝ}
+    (ha : 0 < Q a) (hb : 0 < Q b) (hab : 0 < (associated Q) a b)
+    (hK : 0 < (associated Q) a b ^ 2 - Q a * Q b)
+    (hQl : Q l = -m) (hx : 0 < (associated Q) l a) (hy : (associated Q) l b < 0) :
+    |(associated Q) l a| ≤ Real.sqrt (m * ((associated Q) a b ^ 2 - Q a * Q b) / Q b) ∧
+      |(associated Q) l b| ≤ Real.sqrt (m * ((associated Q) a b ^ 2 - Q a * Q b) / Q a) := by
+  set A : ℝ := Q a with hA
+  set B : ℝ := Q b with hB
+  set c : ℝ := (associated Q) a b with hc
+  set x : ℝ := (associated Q) l a with hxd
+  set y : ℝ := (associated Q) l b with hyd
+  set K : ℝ := c ^ 2 - A * B with hKd
+  have hmain : B * x ^ 2 - 2 * c * (x * y) + A * y ^ 2 ≤ m * K := by
+    rw [hxd, hyd, hA, hB, hc, hKd]
+    exact pairing_quadratic_bound hpos ha.le hb.le hab (by rw [← hKd]; exact hK) hQl
+  have hxy : x * y < 0 := mul_neg_of_pos_of_neg hx hy
+  have hcx : c * (x * y) < 0 := mul_neg_of_pos_of_neg hab hxy
+  have hy2 : 0 < y ^ 2 := sq_pos_of_ne_zero hy.ne
+  constructor
+  · have h1 : x ^ 2 < m * K / B := by
+      rw [lt_div_iff₀ hb]
+      nlinarith [hmain, hcx, hy2]
+    calc |x| = Real.sqrt (x ^ 2) := (Real.sqrt_sq_eq_abs x).symm
+      _ ≤ Real.sqrt (m * K / B) := Real.sqrt_le_sqrt h1.le
+  · have h1 : y ^ 2 < m * K / A := by
+      rw [lt_div_iff₀ ha]
+      nlinarith [hmain, hcx, hy2]
+    calc |y| = Real.sqrt (y ^ 2) := (Real.sqrt_sq_eq_abs y).symm
+      _ ≤ Real.sqrt (m * K / A) := Real.sqrt_le_sqrt h1.le
+
+/-- **The bound of the counting lemma, one generator isotropic**: with `Q b = 0` the relation of
+`pairing_quadratic_bound` reads `2 (a · b) x |y| + Q a · y² ≤ m (a · b)²`, a hyperbola rather than a
+box: the pairing with `b` is bounded by `a · b · sqrt (m / Q a)` and the *product* of the two
+pairings by `m (a · b) / 2`. This is the case that fails over `ℝ`: the family
+`ℓ_N = (N, N + 1/N, 0)` of the module docstring keeps `Q ℓ = -m` and cuts for every `N` by
+letting the pairing with the isotropic generator tend to `0`, which is why the finiteness of the
+counting lemma needs the integrality of that pairing — `abs_le_of_abs_mul_le_of_one_div_le` below
+turns a lower bound `1/D` on it into an upper bound on the other pairing. -/
+theorem abs_associated_le_of_isotropic {Q : QuadraticForm ℝ (realified V)}
+    (hpos : sigPos Q = 1) {a b l : realified V} {m : ℝ}
+    (ha : 0 < Q a) (hb : Q b = 0) (hab : 0 < (associated Q) a b)
+    (hQl : Q l = -m) (hx : 0 < (associated Q) l a) (hy : (associated Q) l b < 0) :
+    |(associated Q) l b| ≤ (associated Q) a b * Real.sqrt (m / Q a) ∧
+      |(associated Q) l a| * |(associated Q) l b| ≤ m * (associated Q) a b / 2 := by
+  set A : ℝ := Q a with hA
+  set c : ℝ := (associated Q) a b with hc
+  set x : ℝ := (associated Q) l a with hxd
+  set y : ℝ := (associated Q) l b with hyd
+  have hB0 : Q b = 0 := hb
+  have hmain : -(2 * c * (x * y)) + A * y ^ 2 ≤ m * c ^ 2 := by
+    have h := pairing_quadratic_bound (Q := Q) hpos (a := a) (b := b) (l := l) (m := m)
+      ha.le hb.ge hab (by rw [hb]; nlinarith) hQl
+    rw [hb] at h
+    simpa [hxd, hyd, hA, hc] using h
+  have hc0 : 0 < c := hc ▸ hab
+  have hA0 : 0 < A := hA ▸ ha
+  have hxy : x * y < 0 := mul_neg_of_pos_of_neg (hxd ▸ hx) (hyd ▸ hy)
+  have hcx : c * (x * y) < 0 := mul_neg_of_pos_of_neg hc0 hxy
+  have hy2 : 0 < y ^ 2 := sq_pos_of_ne_zero (hyd ▸ hy).ne
+  constructor
+  · have h1 : y ^ 2 ≤ m * c ^ 2 / A := by
+      rw [le_div_iff₀ hA0]
+      nlinarith [hmain, hcx]
+    have h3 : Real.sqrt (m * c ^ 2 / A) = c * Real.sqrt (m / A) := by
+      rw [show m * c ^ 2 / A = c ^ 2 * (m / A) by field_simp]
+      rw [Real.sqrt_mul (by positivity), Real.sqrt_sq hc0.le]
+    rw [(Real.sqrt_sq_eq_abs y).symm, ← h3]
+    exact Real.sqrt_le_sqrt h1
+  · rw [abs_of_pos (hxd ▸ hx), abs_of_neg (hyd ▸ hy)]
+    have h2 : 2 * c * (x * -y) ≤ m * c ^ 2 := by nlinarith [hmain, hy2]
+    rw [show x * -y = -(x * y) by ring]
+    nlinarith [h2, hc0]
+
+/-- **The bound of the counting lemma, both generators isotropic**: with `Q a = Q b = 0` only the
+mixed term survives, so the relation of `pairing_quadratic_bound` is `2 (a · b) x |y| ≤ m (a · b)²`
+and the product of the two pairings is bounded by `m (a · b) / 2`. Both the pairing with `a` and the
+pairing with `b` have to be bounded away from `0` by integrality for the product to bound either. -/
+theorem abs_associated_mul_le_of_both_isotropic {Q : QuadraticForm ℝ (realified V)}
+    (hpos : sigPos Q = 1) {a b l : realified V} {m : ℝ}
+    (ha : Q a = 0) (hb : Q b = 0) (hab : 0 < (associated Q) a b)
+    (hQl : Q l = -m) (hx : 0 < (associated Q) l a) (hy : (associated Q) l b < 0) :
+    |(associated Q) l a| * |(associated Q) l b| ≤ m * (associated Q) a b / 2 := by
+  set c : ℝ := (associated Q) a b with hc
+  set x : ℝ := (associated Q) l a with hxd
+  set y : ℝ := (associated Q) l b with hyd
+  have hmain : -(2 * c * (x * y)) ≤ m * c ^ 2 := by
+    have h := pairing_quadratic_bound (Q := Q) hpos (a := a) (b := b) (l := l) (m := m)
+      ha.ge hb.ge hab (by rw [ha, hb]; nlinarith) hQl
+    rw [ha, hb] at h
+    simpa [hxd, hyd, hc] using h
+  have hc0 : 0 < c := hc ▸ hab
+  rw [abs_of_pos (hxd ▸ hx), abs_of_neg (hyd ▸ hy)]
+  have h2 : 2 * c * (x * -y) ≤ m * c ^ 2 := by nlinarith [hmain]
+  rw [show x * -y = -(x * y) by ring]
+  nlinarith [h2, hc0]
+
+/-- **Integrality in place of compactness**: a lower bound `1/D` on one pairing turns a bound on
+the product of two pairings into an upper bound on the other pairing. This is the step that fails
+over `ℝ` — where `1/D` is replaced by `|y| > 0` and `C / |y|` is unbounded — and the reason the
+counting lemma is a statement about a lattice `Λ` and not about `L(ℝ)`. -/
+theorem abs_le_of_abs_mul_le_of_one_div_le {x y C D : ℝ} (hC : 0 ≤ C) (hD : 0 < D)
+    (hy : 1 / D ≤ |y|) (h : |x| * |y| ≤ C) : |x| ≤ C * D := by
+  have hy0 : 0 < |y| := lt_of_lt_of_le (by positivity) hy
+  have hCD : 0 ≤ C * D := mul_nonneg hC hD.le
+  have h1 : |x| ≤ C / |y| := (le_div_iff₀ hy0).mpr h
+  have h2 : C / |y| ≤ C * D := by
+    rw [div_le_iff₀ hy0]
+    calc C = C * D * (1 / D) := by field_simp
+      _ ≤ C * D * |y| := by nlinarith [hy, hCD]
+  linarith
+
+end PairingBounds
 
 section Lattice
 
