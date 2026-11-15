@@ -68,6 +68,17 @@ an `ℝ`-vector space with no extra structure.
 * Lemma-Definition 4.5 (p. 19): the forms nonnegative on `τ` and zero on `σ`, their common zero
   set, the two inclusions `span σ ≤ L_σ ≤ span τ` that pin the support space between the span
   of `σ` and the span of the cone above it, and `L_σ = span σ` for the cones that meet `C`.
+* **The isotropic case of Lemma-Definition 4.5** (the proof at p. 19): `σ` spanning an isotropic
+  half line (`IsIsotropicHalfLine`), the functional `β` induced on `L(ℝ)/I` by an isotropic
+  generator (`isotropicHalfspaceForm`), and the source's first observation there — that `π_I`
+  carries the open cone `C` *onto* the open half-space `{u | 0 < β u}` bounded by
+  `(I^⊥/I)(ℝ)` (`image_mkQ_upper_eq`), together with the inclusion of `π_I(C₊)` in the closed
+  half-space (`image_mkQ_rationalClosure_subset`). The step it rests on is that a timelike point
+  of the open sheet pairs positively with every nonzero point of the closed sheet
+  (`associated_pos_of_mem_upper_of_mem_closedSheet`). What the source then does with the
+  half-space — the cones of `Σ` above `σ` projecting to polyhedra, their minimal members, and
+  the translation space `U` with `L_σ` its preimage — is not carried; see the section on the
+  independence of `L_σ`.
 
 ## Example 4.3 (b): the cells of `Σ(H)` are rational cones, and `Σ(H)` is a locally rational
 decomposition
@@ -85,11 +96,37 @@ decomposition
   sign pattern refines it (`isFaceOf_arrangementCone_commonSignPattern`); and `Σ(H)` is a locally
   rational decomposition of `C₊` (`arrangementDecomposition_isLocallyRational`). That is item (b)
   of Example 4.3, pp. 17-18.
-* Carried as a hypothesis: the local finiteness of `H` on the rational subcones of `C₊`
-  (`LocallyFiniteOnRational`). The source gets it from `H` being a finite union of `Γ`-orbits and
-  the action of `Γ` on `C` being proper (Setting 4.4, p. 19), which rests on the discreteness of
-  the arithmetic subgroup; this repository carries no discreteness statement, so it enters the
-  same way as the continuity hypothesis `hcl` of the hyperbolic section.
+* **Carried as a hypothesis, and not the source's statement: `LocallyFiniteOnRational`.** The
+  source's ground for local finiteness is that `H` is a finite union of `Γ`-orbits and that the
+  action of `Γ` on `C` is proper (Setting 4.4, p. 19), which rests on the discreteness of the
+  arithmetic subgroup; that is a statement about *compact pieces of `C`* and about *hyperplanes*.
+  The declaration `LocallyFiniteOnRational` below says something else, and its body is the thing
+  to read: `{i : ι | ∃ x ∈ P, φ i x ≠ 0}.Finite` — for every rational cone `P`, all but finitely
+  many of the forms **vanish on all of `P`**. For an infinite `H` and a rational cone `P` whose
+  relative interior meets the open cone `C` that is false, by the source's own local finiteness:
+  finitely many members of `H` cannot cover `P ∩ C` (their traces are hyperplane sections, and a
+  finite union of hyperplanes meets `P ∩ C` in a set with empty interior), so infinitely many
+  `h = ker (φ i)` meet `P`, and such a `φ i` is nonzero at a point of `P` unless `P ⊆ ker (φ i)`,
+  which holds for finitely many members of `H` only (a form vanishing on `P` has `P` in its
+  kernel, and the normals of such members are bounded because `P` has a timelike point, so they
+  lie in a lattice intersected with a bounded set). So `LocallyFiniteOnRational` cannot be
+  discharged from discreteness and properness: what those give is local finiteness *on `C`*, which
+  admits infinitely many forms nonzero on a whole rational cone. The consequence for this section
+  is that the hypothesis of `arrangementDecomposition_isLocallyRational` is not satisfied in
+  Example 4.3's setting by any infinite `H`, so that theorem is vacuous there, and the finite
+  reading of the restriction clause of Definition 4.2 (p. 17) cannot hold for `Σ(H)` at all: the
+  traces of an infinite arrangement on a rational cone of positive dimension are infinite. What
+  local finiteness on `C` does give is the local finiteness of the traces on `C` — the property
+  the semitoric construction of §4-5 uses. The predicate `HasLocallyFiniteTraces` below is the
+  nearest declaration to it, and it is stronger than what local finiteness on `C` gives: it asks
+  for `LocallyFinite` in all of `L(ℝ)`, and on the boundary of `C₊` every neighbourhood of a point
+  meets infinitely many members of `Σ(bb)` (the isotropic rays) and of `Σ(H)`, so it fails there
+  even in the source's setting. It is stated, not used, and its boundary clause is a defect of
+  the same kind as the one above. Reading the
+  restriction clause as local finiteness rather than finiteness changes
+  `IsLocallyRationalDecomposition` and every statement resting on it, so it is recorded here and
+  left to the owner of the unit rather than made: this file proves nothing from
+  `LocallyFiniteOnRational` except conditionally.
 
 ## Lemma-Definition 4.5: the independence of `L_σ` from `τ`
 
@@ -102,11 +139,19 @@ decomposition
   sub-combination that is timelike (`exists_pos_pair_sum`), cut off one term at a time with the
   two-term quadratic expansion. A face containing that sub-combination contains a rational point
   of the open sheet, and the rational case applies.
-* Not carried: the source's argument for a general `Σ` when `σ` spans an isotropic half line
-  (p. 19), through the projection `π_I` on `I^⊥/I`, the induced decomposition of the affine space
-  `A_I` and its minimal members; and the identification of the support spaces of `Σ(bb)` as `V`,
-  `{0}` and the hyperplanes orthogonal to the `ℚ`-isotropic lines (p. 19). What is proved here is
-  the independence, not that description.
+* Carried of the isotropic case: its first step only, in the section "Lemma-Definition 4.5, the
+  isotropic case" — the projection `π_I : L → L/I` of an isotropic line, and the theorem that it
+  carries the open cone onto the open half-space `{u | 0 < β u}` of the quotient
+  (`image_mkQ_upper_eq`). The half-space is the affine space `A_I(ℝ)` of the source's proof
+  ("we prefer to think of this image as a cone over a real affine space", p. 19).
+* Not carried: the rest of that proof. The cones `τ > σ` of a general locally rational `Σ` are
+  not projected to polyhedra of `A_I(ℝ)`, no minimal member of that decomposition is taken, and
+  the translation space `U` whose complexification gives `L_σ` (the last sentence of the proof,
+  p. 19) is not constructed; so the independence of `L_σ` from `τ` is proved here for `Σ(bb)`
+  only (`supportSpace_eq_of_meets_openSheet`), and `σ` spanning an isotropic half line is exactly
+  the case in which that argument does not apply. Also not carried: the identification of the
+  support spaces of `Σ(bb)` as `V`, `{0}` and the hyperplanes orthogonal to the `ℚ`-isotropic
+  lines (p. 19). What is proved here is the independence, not that description.
 
 ## The arrangement cells are a port
 
@@ -153,6 +198,40 @@ client's time limit with no result. On the Mathlib side (`Mathlib/Geometry/Conve
 searched on disk) there is no `PointedCone.IsRational` or `ConvexCone.IsRational`, so the
 statement is not in Mathlib under those names either. Nothing to port; it is to be proved
 here.
+
+### LC-09 record for discreteness and properness (2026-11-16)
+
+The five queries the unit names for the discreteness of an arithmetic subgroup and the properness
+of its action on hyperbolic space, run against the corpus API, with every hit listed.
+`content:IsDiscrete orthogonalGroup`: no file (0 files, 0 matches) — no discreteness statement for
+an orthogonal group anywhere in the corpus. `content:ProperlyDiscontinuous`: 143 files, 344
+matches; the relevant ones are Mathlib's `ProperlyDiscontinuousSMul` API
+(`Topology/Algebra/ConstMulAction.lean`, and
+`Mathlib/NumberTheory/ModularForms/ProperlyDiscontinuous.lean` for the action of `SL(2,ℤ)` on the
+upper half plane) and qinz1yang/differential-geometry
+`DifferentialGeometry/Topology/Manifold/Quotient.lean` and `Geometry/Thurston/Descent.lean`
+(`properlyDiscontinuousSMul_of_affine`: an affine action with a discrete translation group is
+properly discontinuous, and the quotient is a covering map). Those are actions of a group on a
+space *given* as properly discontinuous; none of them derives properness from discreteness in an
+isometry group. `content:properlyDiscontinuousSMul`: the same API — the consequences for the
+quotient (local diffeomorphism, covering map), nothing on `O(L)`. `content:arithmetic subgroup
+discrete`: one hit, TauCeti `Topology/MetricSpace/DiscreteAddSubgroup.lean` —
+`AddSubgroup.finite_inter`, a discrete additive subgroup of a proper metric group meets a bounded
+set in a finite set, proved from Mathlib's `Metric.finite_isBounded_inter_isClosed`
+(`Mathlib/Topology/MetricSpace/Bounded.lean:627`). That is the *second* half of the local
+finiteness argument (bounded and discrete implies finite), not the discreteness of an arithmetic
+subgroup; since the substance is Mathlib's own lemma, nothing is ported for it.
+`content:Lorentz hyperbolic space proper`: 7 files, 551 matches, all of them qinz1yang's
+hyperbolic-geometry development (cusps, universal covers, covering spaces) — no statement that an
+arithmetic subgroup of `O(L)` acts properly on the positive cone.
+
+Nothing to port for either discreteness or properness. The Mathlib material the argument would
+use, should it be carried out, is: `Metric.finite_isBounded_inter_isClosed` together with
+`ZSpan.setFinite_inter` (`Mathlib/Algebra/Module/ZLattice/Basic.lean:328`: the `ℤ`-span of a basis
+meets a bounded set in a finite set) for the discreteness half, and for the properness half the
+boundedness of `{v | v · v = c, v ⊥ p}` for a fixed timelike `p`, which is the definiteness of the
+form on `p^⊥` and is not in the corpus. Note that what these give is local finiteness on `C`, not
+`LocallyFiniteOnRational`; see the section on Example 4.3 (b) above for why the two differ.
 
 ## References
 
@@ -2097,6 +2176,263 @@ theorem supportSpace_eq_of_meets_openSheet (hpos : sigPos Q = 1)
 
 end SupportSpaceIndependence
 
+/-! ## Lemma-Definition 4.5, the isotropic case: the projection by the line `I`
+
+Looijenga, the proof of Lemma-Definition 4.5, p. 19 (text version
+`.tmp-sources/looijenga-math0201218v2.md:521`): "So let us assume that `σ` spans an isotropic
+line `I`. We observe that the image of `C` under the projection `π_I : L → L/I` is a real
+half-space bounded by `(I^⊥/I)(ℝ)`. The image of `C₊` under this projection is the union of
+that half-space plus the origin; we prefer to think of this image as a cone over a real affine
+space `A_I(ℝ)` over `(I ⊗ I^⊥/I)(ℝ)`."
+
+This section carries that first observation: the functional `x ↦ e · x` of an isotropic vector
+kills the line `ℝ e` (`e · e = 0`), so it descends to a functional `β` on `L(ℝ)/I`, and the
+open sheet `C` maps *onto* the open half-space `{u | 0 < β u}`. The affine space `A_I(ℝ)` is an
+affine space over `I^⊥/I`, whose form is the business of
+`LeanCategories/Lattices/Valued/IsotropicQuotientSignature.lean` (its `isotropicQuotientForm`
+is the quadratic form on that subquotient, not the functional `β` here). The half-space is the
+space `A_I(ℝ)` that the rest of the source's argument decomposes into polyhedra; the
+decomposition itself — the cones of `Σ` above `σ` projected to polyhedra, their minimal members,
+and the translation space `U` whose preimage is `L_σ` — is not carried, and is named in the
+module docstring as the remaining gap of Lemma-Definition 4.5.
+
+The proof of the image statement is in two halves. A point of the open sheet pairs positively
+with every nonzero point of the closed sheet (`associated_pos_of_mem_upper_of_mem_closedSheet`),
+which is `associated_pos_of_mem_upper` when the second point is timelike and otherwise a limit
+along `t` together with `eq_zero_of_perp_of_quadratic_eq_zero`; that gives the inclusion
+`π_I(C) ⊆ {0 < β}`. For the reverse inclusion, `Q` and `x ↦ x · t` are both unbounded above
+along `y + a • e` (because `e` is isotropic and pairs positively with `t`), so every class with
+`0 < β` has a timelike representative. -/
+
+section IsotropicProjection
+
+variable {Q : QuadraticForm ℝ (realified V)} {t e : realified V}
+
+/-- **`σ` spans an isotropic half line** (Looijenga, Lemma-Definition 4.5, p. 19): it is the ray
+through a nonzero isotropic vector. This is the case in which the support space of `σ` is not
+the span of `σ`, and the one the proof of Lemma-Definition 4.5 is about. -/
+def IsIsotropicHalfLine (Q : QuadraticForm ℝ (realified V))
+    (σ : PointedCone ℝ (realified V)) : Prop :=
+  ∃ e : realified V, e ≠ 0 ∧ Q e = 0 ∧ σ = PointedCone.hull ℝ ({e} : Set (realified V))
+
+/-- The generator of an isotropic half line lies on it. -/
+theorem IsIsotropicHalfLine.subset (hσ : IsIsotropicHalfLine Q σ) :
+    ∃ e : realified V, e ≠ 0 ∧ Q e = 0 ∧ e ∈ σ := by
+  obtain ⟨e, he0, he, rfl⟩ := hσ
+  exact ⟨e, he0, he, PointedCone.subset_hull (Set.mem_singleton e)⟩
+
+/-- The isotropic line `I` that an isotropic half line spans: the span of the ray is the span of
+its generator. -/
+theorem IsIsotropicHalfLine.span_eq (hσ : IsIsotropicHalfLine Q σ) :
+    ∃ e : realified V, e ≠ 0 ∧ Q e = 0 ∧
+      Submodule.span ℝ (σ : Set (realified V)) = Submodule.span ℝ ({e} : Set (realified V)) := by
+  obtain ⟨e, he0, he, rfl⟩ := hσ
+  refine ⟨e, he0, he, le_antisymm ?_ ?_⟩
+  · refine Submodule.span_le.2 fun x hx => ?_
+    exact PointedCone.hull_le_span ℝ _ hx
+  · refine Submodule.span_le.2 fun x hx => ?_
+    exact Submodule.subset_span (PointedCone.subset_hull (Set.mem_singleton_iff.2 hx))
+
+/-- The functional `x ↦ e · x` of an isotropic vector `e` kills the line `ℝ e`, so it descends to
+the quotient `L(ℝ)/I`: the functional `β` of the proof of Lemma-Definition 4.5, p. 19. -/
+noncomputable def isotropicHalfspaceForm (Q : QuadraticForm ℝ (realified V)) {e : realified V}
+    (he : Q e = 0) :
+    (realified V ⧸ Submodule.span ℝ ({e} : Set (realified V))) →ₗ[ℝ] ℝ :=
+  Submodule.liftQ (p := Submodule.span ℝ ({e} : Set (realified V))) ((associated Q) e) (by
+    rw [Submodule.span_singleton_le_iff_mem, LinearMap.mem_ker, associated_self_apply]
+    exact he)
+
+/-- The functional of the quotient at a class is the pairing with `e` at a representative. -/
+theorem isotropicHalfspaceForm_mkQ (Q : QuadraticForm ℝ (realified V)) {e : realified V}
+    (he : Q e = 0) (x : realified V) :
+    isotropicHalfspaceForm Q he ((Submodule.span ℝ ({e} : Set (realified V))).mkQ x)
+      = (associated Q) e x := by
+  rw [isotropicHalfspaceForm, Submodule.mkQ_apply, Submodule.liftQ_apply]
+
+variable [Module.Finite ℚ V]
+
+/-- **A timelike point of the open sheet pairs positively with every nonzero point of the closed
+sheet.** The timelike case is `associated_pos_of_mem_upper`; the isotropic one is a limit along
+the positive vector `t`, and a vanishing pairing would make the point perpendicular to a
+timelike vector with `Q = 0`, hence zero. -/
+theorem associated_pos_of_mem_upper_of_mem_closedSheet (Q : QuadraticForm ℝ (realified V))
+    (hpos : sigPos Q = 1) (hnd : Q.Nondegenerate) {t x y : realified V} (ht : 0 < Q t)
+    (hx : x ∈ positiveCone.upper Q t) (hy : y ∈ closedSheet Q hpos ht) (hy0 : y ≠ 0) :
+    0 < (associated Q) x y := by
+  have hQx : 0 < Q x := hx.1
+  have hxt : 0 < (associated Q) x t := hx.2
+  have hQy : 0 ≤ Q y := hy.1
+  have hyt : 0 ≤ (associated Q) y t := hy.2
+  have hyt' : 0 < (associated Q) y t := by
+    rcases lt_or_eq_of_le hyt with h | h
+    · exact h
+    · exfalso
+      rcases lt_or_eq_of_le hQy with hQ | hQ
+      · have hkey := mul_self_le_associated_sq (Q := Q) hpos ht y
+        rw [← h] at hkey
+        nlinarith
+      · exact hy0 (eq_zero_of_perp_of_quadratic_eq_zero hpos hnd ht h.symm hQ.symm)
+  rcases lt_or_eq_of_le hQy with hQ | hQ
+  · exact associated_pos_of_mem_upper Q hpos ht hx ⟨hQ, hyt'⟩
+  · by_cases hB : 0 ≤ (associated Q) x y
+    · rcases lt_or_eq_of_le hB with h | h
+      · exact h
+      · exfalso
+        have hyx : (associated Q) y x = 0 := by rw [associated_comm]; exact h.symm
+        exact hy0 (eq_zero_of_perp_of_quadratic_eq_zero hpos hnd hQx hyx hQ.symm)
+    · push Not at hB
+      set eps : ℝ := -(associated Q) x y / (2 * (associated Q) x t) with heps
+      have hepspos : 0 < eps := by
+        rw [heps]
+        exact div_pos (by linarith) (by linarith)
+      have hmem : y + eps • t ∈ positiveCone.upper Q t := by
+        refine ⟨?_, ?_⟩
+        · rw [show y + eps • t = (1 : ℝ) • y + eps • t by rw [one_smul]]
+          rw [quadratic_expand, hQ]
+          nlinarith [mul_pos hepspos hyt', mul_pos (mul_pos hepspos hepspos) ht]
+        · have h1 : (associated Q) (y + eps • t) t
+              = (associated Q) y t + eps * (associated Q) t t := by
+            rw [associated_comm (Q := Q) (y + eps • t) t, map_add, map_smul, smul_eq_mul,
+              associated_comm (Q := Q) y t]
+          rw [h1, associated_self_apply]
+          nlinarith [mul_pos hepspos ht]
+      have hpos' := associated_pos_of_mem_upper Q hpos ht hx hmem
+      have h2 : (associated Q) x (y + eps • t)
+          = (associated Q) x y + eps * (associated Q) x t := by
+        simp only [map_add, map_smul, smul_eq_mul]
+      rw [h2] at hpos'
+      have h3 : eps * (associated Q) x t = -(associated Q) x y / 2 := by
+        rw [heps]; field_simp
+      rw [h3] at hpos'
+      linarith
+
+/-- **The image of the open cone under `π_I` is a real half-space**: Looijenga's observation in
+the proof of Lemma-Definition 4.5, p. 19, that the image of `C` under `π_I : L → L/I` is the
+half-space bounded by `(I^⊥/I)(ℝ)` — here the half-space `{u | 0 < e · u}` of the quotient by
+the isotropic line `ℝ e`. -/
+theorem image_mkQ_upper_eq (Q : QuadraticForm ℝ (realified V)) (hpos : sigPos Q = 1)
+    (hnd : Q.Nondegenerate) {t e : realified V} (ht : 0 < Q t) (he0 : e ≠ 0) (he : Q e = 0)
+    (het : 0 ≤ (associated Q) e t) :
+    (Submodule.span ℝ ({e} : Set (realified V))).mkQ '' (positiveCone.upper Q t) =
+      {u | 0 < isotropicHalfspaceForm Q he u} := by
+  ext u
+  constructor
+  · rintro ⟨x, hx, rfl⟩
+    show 0 < isotropicHalfspaceForm Q he ((Submodule.span ℝ ({e} : Set (realified V))).mkQ x)
+    rw [isotropicHalfspaceForm_mkQ, associated_comm]
+    exact associated_pos_of_mem_upper_of_mem_closedSheet Q hpos hnd ht hx ⟨he.ge, het⟩ he0
+  · rintro hu
+    obtain ⟨y, hy⟩ := Submodule.mkQ_surjective (Submodule.span ℝ ({e} : Set (realified V))) u
+    have hBy : 0 < (associated Q) y e := by
+      have h1 : 0 < isotropicHalfspaceForm Q he
+          ((Submodule.span ℝ ({e} : Set (realified V))).mkQ y) := by
+        rw [hy]; exact hu
+      rwa [isotropicHalfspaceForm_mkQ, associated_comm] at h1
+    have het' : 0 < (associated Q) e t := by
+      rcases lt_or_eq_of_le het with h | h
+      · exact h
+      · exact absurd (eq_zero_of_perp_of_quadratic_eq_zero hpos hnd ht h.symm he) he0
+    -- a shift along `e` far enough out on both sides
+    obtain ⟨N₁, hN₁⟩ := exists_nat_gt (-(Q y) / (2 * (associated Q) y e))
+    obtain ⟨N₂, hN₂⟩ := exists_nat_gt (-((associated Q) y t) / (associated Q) e t)
+    set a : ℝ := ((max N₁ N₂ : ℕ) : ℝ) with ha
+    have hNa1 : (N₁ : ℝ) ≤ a := by
+      rw [ha]; exact_mod_cast le_max_left N₁ N₂
+    have hNa2 : (N₂ : ℝ) ≤ a := by
+      rw [ha]; exact_mod_cast le_max_right N₁ N₂
+    have ha1 : -(Q y) / (2 * (associated Q) y e) < a := lt_of_lt_of_le hN₁ hNa1
+    have ha2 : -((associated Q) y t) / (associated Q) e t < a := lt_of_lt_of_le hN₂ hNa2
+    have haQ : 0 < Q y + 2 * a * (associated Q) y e := by
+      have h1 : -(Q y) < a * (2 * (associated Q) y e) := by
+        rw [div_lt_iff₀ (show (0 : ℝ) < 2 * (associated Q) y e by positivity)] at ha1
+        linarith
+      linarith
+    have hat : 0 < (associated Q) y t + a * (associated Q) e t := by
+      have h1 : -((associated Q) y t) < a * (associated Q) e t := by
+        rw [div_lt_iff₀ het'] at ha2
+        linarith
+      linarith
+    refine ⟨y + a • e, ⟨?_, ?_⟩, ?_⟩
+    · rw [show y + a • e = (1 : ℝ) • y + a • e by rw [one_smul]]
+      rw [quadratic_expand, he]
+      nlinarith [haQ]
+    · have h2 : (associated Q) (y + a • e) t
+          = (associated Q) y t + a * (associated Q) e t := by
+        rw [associated_comm (Q := Q) (y + a • e) t, map_add, map_smul, smul_eq_mul,
+          associated_comm (Q := Q) y t, ← associated_comm (Q := Q) t e]
+      rw [h2]
+      exact hat
+    · have hzero : (Submodule.span ℝ ({e} : Set (realified V))).mkQ e = 0 := by
+        rw [Submodule.mkQ_apply, Submodule.Quotient.mk_eq_zero]
+        exact Submodule.subset_span (Set.mem_singleton e)
+      rw [map_add, map_smul, hzero, smul_zero, add_zero]
+      exact hy
+
+/-- **The image of `C₊` under `π_I` lies in the closed half-space**: the "plus the origin" of
+Looijenga's description (the proof of Lemma-Definition 4.5, p. 19). `C₊` is spanned by the
+rational points of the closure of `C`, where the pairing with `e` is nonnegative by the
+continuity input `hbe` — the counterpart, for this pairing, of the hypothesis `hcl` of the
+hyperbolic section. -/
+theorem image_mkQ_rationalClosure_subset (Q : QuadraticForm ℝ (realified V)) (hpos : sigPos Q = 1)
+    {t e : realified V} (ht : 0 < Q t) (he : Q e = 0)
+    (hbe : ∀ v : V, rationalPoint v ∈ (closedSheet Q hpos ht).closure →
+      0 ≤ (associated Q) e (rationalPoint v)) :
+    (Submodule.span ℝ ({e} : Set (realified V))).mkQ ''
+        (rationalClosure (closedSheet Q hpos ht) : Set (realified V))
+      ⊆ {u | 0 ≤ isotropicHalfspaceForm Q he u} := by
+  rintro _ ⟨x, hx, rfl⟩
+  rw [rationalClosure_eq_hull] at hx
+  induction hx using Submodule.span_induction with
+  | mem z hz =>
+    obtain ⟨⟨v, -, rfl⟩, hvcl⟩ := hz
+    show 0 ≤ isotropicHalfspaceForm Q he ((Submodule.span ℝ ({e} : Set (realified V))).mkQ
+      (rationalPoint v))
+    rw [isotropicHalfspaceForm_mkQ]
+    exact hbe v hvcl
+  | zero =>
+    show 0 ≤ isotropicHalfspaceForm Q he
+      ((Submodule.span ℝ ({e} : Set (realified V))).mkQ 0)
+    rw [map_zero, map_zero]
+  | add u w _ _ hu hw =>
+    show 0 ≤ isotropicHalfspaceForm Q he
+      ((Submodule.span ℝ ({e} : Set (realified V))).mkQ (u + w))
+    have hu' : 0 ≤ isotropicHalfspaceForm Q he
+        ((Submodule.span ℝ ({e} : Set (realified V))).mkQ u) := by simpa using hu
+    have hw' : 0 ≤ isotropicHalfspaceForm Q he
+        ((Submodule.span ℝ ({e} : Set (realified V))).mkQ w) := by simpa using hw
+    have hmap : isotropicHalfspaceForm Q he
+          ((Submodule.span ℝ ({e} : Set (realified V))).mkQ u
+            + (Submodule.span ℝ ({e} : Set (realified V))).mkQ w)
+        = isotropicHalfspaceForm Q he ((Submodule.span ℝ ({e} : Set (realified V))).mkQ u)
+          + isotropicHalfspaceForm Q he ((Submodule.span ℝ ({e} : Set (realified V))).mkQ w) :=
+      map_add _ _ _
+    have hsplit : (Submodule.span ℝ ({e} : Set (realified V))).mkQ (u + w)
+        = (Submodule.span ℝ ({e} : Set (realified V))).mkQ u
+          + (Submodule.span ℝ ({e} : Set (realified V))).mkQ w := map_add _ _ _
+    rw [hsplit, hmap]
+    exact add_nonneg hu' hw'
+  | smul c u _ hu =>
+    show 0 ≤ isotropicHalfspaceForm Q he
+      ((Submodule.span ℝ ({e} : Set (realified V))).mkQ (c • u))
+    rw [show c • u = c.1 • u from rfl, map_smul, map_smul, smul_eq_mul]
+    exact mul_nonneg c.2 (by simpa using hu)
+
+/-- **A cone of `C₊` projects into the closed half-space**: "any `τ ∈ Σ` with `σ < τ` maps under
+`π_I` to a (possibly degenerate) convex cone in `π_I(C₊)`" (Looijenga, the proof of
+Lemma-Definition 4.5, p. 19). -/
+theorem image_mkQ_subset_of_le_rationalClosure (Q : QuadraticForm ℝ (realified V))
+    (hpos : sigPos Q = 1) {t e : realified V} (ht : 0 < Q t) (he : Q e = 0)
+    (hbe : ∀ v : V, rationalPoint v ∈ (closedSheet Q hpos ht).closure →
+      0 ≤ (associated Q) e (rationalPoint v))
+    {τ : PointedCone ℝ (realified V)} (hτ : τ ≤ rationalClosure (closedSheet Q hpos ht)) :
+    (Submodule.span ℝ ({e} : Set (realified V))).mkQ '' (τ : Set (realified V))
+      ⊆ {u | 0 ≤ isotropicHalfspaceForm Q he u} :=
+  Set.Subset.trans (Set.image_mono hτ)
+    (image_mkQ_rationalClosure_subset Q hpos ht he hbe)
+
+end IsotropicProjection
+
+
 /-! ## The decomposition attached to an arrangement of hyperplanes
 
 Looijenga, Example 4.3 (b), pp. 17-18: a collection `H` of hyperplanes through the origin
@@ -2203,11 +2539,13 @@ elimination one form at a time, `isRationalCone_inf_halfspace`), that the cells 
 another along the common sign pattern (`isFaceOf_arrangementCone_commonSignPattern`), and hence
 that `Σ(H)` is a locally rational decomposition (`arrangementDecomposition_isLocallyRational`).
 
-`Γ`-finiteness enters only through local finiteness on the rational subcones of `C₊`
-(`LocallyFiniteOnRational`): the source's ground for it is that the action of `Γ` on `C` is
-proper (Setting 4.4, p. 19), so that `H` is locally finite on `C`; the discreteness of the
-arithmetic group that this rests on is not carried in this repository, so local finiteness is a
-named hypothesis here, as `hcl` is in the hyperbolic section. -/
+`Γ`-finiteness enters only through the hypothesis `LocallyFiniteOnRational`, which says that on
+every rational cone all but finitely many of the forms vanish. That is not the source's local
+finiteness of `H` on `C` (whose ground is the properness of the action of `Γ`, Setting 4.4,
+p. 19) and it is not satisfied by an infinite `H`; the module docstring's section on Example
+4.3 (b) shows why, and records the consequence: the finite reading of Definition 4.2's
+restriction clause cannot hold for `Σ(H)`, so `arrangementDecomposition_isLocallyRational` is
+conditional on a hypothesis that Example 4.3's setting does not satisfy. -/
 
 section ArrangementRational
 
@@ -2357,10 +2695,11 @@ theorem isFaceOf_inf_right {F C P : PointedCone ℝ (realified V)} (hF : F.IsFac
     intro x y a hx hy ha hxy
     exact ⟨hF.mem_of_smul_add_mem hx.1 hy.1 ha hxy.1, hx.2⟩
 
-/-- **The hyperplanes of `H` meet only finitely many rational subcones of `C₊`**: Looijenga,
-Example 4.3 (b), p. 18, where `H` is a finite union of `Γ`-orbits and the collection is locally
-finite on `C` because the action of `Γ` on `C` is proper (Setting 4.4, p. 19). This is that
-statement at the rational subcones, where the decomposition uses it. -/
+/-- **All but finitely many of the forms vanish on every rational cone.** This is *not*
+Looijenga's local finiteness of `H` on `C` (Example 4.3 (b), p. 18), which is a statement about
+compact pieces of `C`; it is the property the finiteness argument of this section consumes, and
+the section and module docstrings record that an infinite `H` does not have it. It is kept under
+this name because the theorems below are stated with it, and it is not discharged anywhere. -/
 def LocallyFiniteOnRational (φ : ι → (realified V) →L[ℝ] ℝ) : Prop :=
   ∀ P : PointedCone ℝ (realified V), IsRationalCone P → {i : ι | ∃ x ∈ P, φ i x ≠ 0}.Finite
 
