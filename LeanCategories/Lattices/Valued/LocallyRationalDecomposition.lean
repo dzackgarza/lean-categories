@@ -10,6 +10,7 @@ public import LeanCategories.Lattices.Valued.RationalPolyhedralCone
 public import LeanCategories.Lattices.Valued.PositiveCone
 public import LeanCategories.Analysis.Convex.SignCell
 public import Mathlib.Analysis.Convex.Cone.Basic
+public import Mathlib.Analysis.Convex.Cone.Dual
 public import Mathlib.Analysis.Convex.Topology
 public import Mathlib.LinearAlgebra.TensorProduct.Defs
 public import Mathlib.Topology.Algebra.Module.ModuleTopology
@@ -2883,6 +2884,48 @@ theorem supportSpace_mono {σ τ τ' : PointedCone ℝ (realified V)} (hτ : τ 
   intro x hx
   refine mem_supportSpace.2 fun φ hφ => ?_
   exact mem_supportSpace.1 hx φ ⟨fun y hy => hφ.1 y (hτ hy), hφ.2⟩
+
+/-- **A closed pointed cone has zero support space over the zero cone.** If `x ∈ τ` is nonzero,
+salience gives `-x ∉ τ`; if `x ∉ τ`, use `x` itself. In either case
+`ProperCone.hyperplane_separation_point` supplies a continuous form nonnegative on `τ` and
+negative on the separated point. If `x` lay in `supportSpace τ ⊥`, every such form would vanish
+at `x`, a contradiction. -/
+theorem supportSpace_bot_of_isClosed_of_salient [Module.Finite ℚ V]
+    {τ : PointedCone ℝ (realified V)} (hclosed : IsClosed (τ : Set (realified V)))
+    (hsal : (τ : ConvexCone ℝ (realified V)).Salient) : supportSpace τ ⊥ = ⊥ := by
+  let e : realified V ≃ₗ[ℝ] (Fin (Module.finrank ℝ (realified V)) → ℝ) :=
+    (Module.finBasis ℝ (realified V)).equivFun
+  have h1 : Continuous e := IsModuleTopology.continuous_of_linearMap e.toLinearMap
+  have h2 : Continuous e.symm := IsModuleTopology.continuous_of_linearMap e.symm.toLinearMap
+  let E' : realified V ≃L[ℝ] (Fin (Module.finrank ℝ (realified V)) → ℝ) :=
+    { e with continuous_toFun := h1, continuous_invFun := h2 }
+  let P : ProperCone ℝ (Fin (Module.finrank ℝ (realified V)) → ℝ) :=
+    { toSubmodule := τ.map E'.toLinearMap
+      isClosed' := by
+        change IsClosed (E' '' (τ : Set (realified V)))
+        exact E'.toHomeomorph.isClosedMap _ hclosed }
+  have hseparate (x : realified V) (hx : x ∉ τ) :
+      ∃ f : (realified V) →ₗ[ℝ] ℝ, (∀ y ∈ τ, 0 ≤ f y) ∧ f x ≠ 0 := by
+    have hxmap : E' x ∉ E' '' (τ : Set (realified V)) := by
+      intro himage
+      obtain ⟨y, hy, hyx⟩ := himage
+      exact hx (E'.injective hyx ▸ hy)
+    obtain ⟨f, hfP, hfx⟩ := P.hyperplane_separation_point (x₀ := E' x) hxmap
+    refine ⟨(f.comp E'.toContinuousLinearMap).toLinearMap, ?_, hfx.ne⟩
+    intro y hy
+    exact hfP (E' y) ⟨y, hy, rfl⟩
+  apply le_antisymm ?_ bot_le
+  intro x hx
+  show x = 0
+  by_contra hx0
+  by_cases hxτ : x ∈ τ
+  · obtain ⟨f, hfτ, hfx⟩ := hseparate (-x) (hsal x hxτ hx0)
+    have hz : f x = 0 := mem_supportSpace.1 hx f ⟨fun y hy => hfτ y hy, by simp⟩
+    rw [map_neg] at hfx
+    exact hfx (by simp only [hz, neg_zero])
+  · obtain ⟨f, hfτ, hfx⟩ := hseparate x hxτ
+    have hz : f x = 0 := mem_supportSpace.1 hx f ⟨fun y hy => hfτ y hy, by simp⟩
+    exact hfx (by simp only [hz])
 
 /-- **Locality of the supporting forms at a point of `σ`.** If `K` is a neighbourhood of
 `x ∈ σ`, then the cone `τ` and its trace `τ ⊓ K` have the same forms nonnegative on them and zero
