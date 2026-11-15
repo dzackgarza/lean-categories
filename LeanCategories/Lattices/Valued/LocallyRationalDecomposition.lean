@@ -2923,6 +2923,33 @@ theorem supportSpace_inf_eq_of_mem_nhds {τ σ K : PointedCone ℝ (realified V)
     supportSpace (τ ⊓ K) σ = supportSpace τ σ := by
   rw [supportSpace, supportSpace, supportForms_inf_eq_of_mem_nhds hστ hxσ hK]
 
+/-- **Vanishing on a local common trace forces vanishing on the whole cone.** If `x ∈ σ`
+and `K` is a neighbourhood of `x`, then a form vanishing on the common trace `A ⊓ B ⊓ K`
+vanishes on `σ` whenever `σ ≤ A` and `σ ≤ B`. At `x` and at `x + t • y` for small positive `t`
+it takes the same zero value; subtracting the two linear equations gives `t • w y = 0`. -/
+theorem forall_mem_cone_eq_zero_of_zero_on_inf_of_mem_nhds
+    {σ A B K : PointedCone ℝ (realified V)} {w : (realified V) →ₗ[ℝ] ℝ}
+    {x : realified V} (hxσ : x ∈ σ) (hσA : σ ≤ A) (hσB : σ ≤ B)
+    (hK : (K : Set (realified V)) ∈ 𝓝 x) (hw : ∀ z ∈ A ⊓ B ⊓ K, w z = 0) :
+    ∀ y ∈ σ, w y = 0 := by
+  intro y hy
+  have hxK : x ∈ K := mem_of_mem_nhds hK
+  have hxABK : x ∈ A ⊓ B ⊓ K := ⟨⟨hσA hxσ, hσB hxσ⟩, hxK⟩
+  have hwx : w x = 0 := hw x hxABK
+  have htend : Filter.Tendsto (fun t : ℝ => x + t • y) (𝓝 0) (𝓝 x) := by
+    have hcont : Continuous (fun t : ℝ => x + t • y) :=
+      continuous_const.add (continuous_id.smul continuous_const)
+    simpa only [zero_smul, add_zero] using hcont.tendsto (0 : ℝ)
+  have hev : ∀ᶠ t in 𝓝[>] (0 : ℝ), x + t • y ∈ (K : Set (realified V)) :=
+    mem_nhdsWithin_of_mem_nhds (htend.eventually hK)
+  obtain ⟨t, htK, ht⟩ := (hev.and self_mem_nhdsWithin).exists
+  have hmem : x + t • y ∈ A ⊓ B ⊓ K := by
+    refine ⟨⟨A.add_mem (hσA hxσ) (A.smul_mem (Set.mem_Ioi.1 ht).le (hσA hy)),
+      B.add_mem (hσB hxσ) (B.smul_mem (Set.mem_Ioi.1 ht).le (hσB hy))⟩, htK⟩
+  have hzero := hw (x + t • y) hmem
+  rw [map_add, map_smul, hwx, smul_eq_mul, zero_add] at hzero
+  exact (mul_eq_zero.1 hzero).resolve_left (Set.mem_Ioi.1 ht).ne'
+
 /-- The members of a decomposition that contain `σ` and meet the open cone `C`:
 the cones `τ` over which Looijenga, Lemma-Definition 4.5, p. 19, states the support space. -/
 def supportIndex (C : PointedCone ℝ (realified V)) (S : Set (PointedCone ℝ (realified V)))
