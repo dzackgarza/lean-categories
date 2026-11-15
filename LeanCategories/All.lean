@@ -351,6 +351,7 @@ public import LeanCategories.Lattices.Valued.CarrierIntActionTests
 public import LeanCategories.Lattices.Valued.PrimitiveReduction
 public import LeanCategories.Lattices.Valued.RationalPolyhedralCone
 public import LeanCategories.Lattices.Valued.RationalConeDuality
+public import LeanCategories.Lattices.Valued.LocallyRationalDecomposition
 public import LeanCategories.Lattices.Valued.EvenReduction
 public import LeanCategories.Lattices.Valued.DiscriminantIsotropic
 public import LeanCategories.Lattices.Valued.DiscriminantQuotient
