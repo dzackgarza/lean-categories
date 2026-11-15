@@ -8623,6 +8623,70 @@ theorem eq_of_inf_eq_of_isLocallyRationalDecomposition {C K a b : PointedCone �
   · rw [← hright]
     exact inf_le_right
 
+/-- **A projected star member is closed at points of the open isotropic half-space.** Lift the
+point to the upper sheet, choose a rational neighbourhood containing the isotropic ray, and
+localize closure membership to the finitely generated trace. LC-09 (2026-11-19):
+`content:LocallyFinite content:quotient content:convex cone` and
+`content:PointedCone.FG.map content:isClosed` found no competing projected-closedness theorem;
+the proof reuses `mem_topologicalClosure_map_inf_of_mem_nhds`. -/
+theorem mem_map_of_mem_topologicalClosure_of_isotropicHalfspace (hpos : sigPos Q = 1)
+    (hnd : Q.Nondegenerate) {ht : 0 < Q t}
+    {S : Set (PointedCone ℝ (realified V))}
+    (hS : IsLocallyRationalDecomposition (rationalClosure (closedSheet Q hpos ht)) S)
+    {e : realified V} (he0 : e ≠ 0) (heQ : Q e = 0)
+    {a : PointedCone ℝ (realified V)}
+    (hea : PointedCone.hull ℝ ({e} : Set (realified V)) ≤ a) (ha : a ∈ S) :
+    let N := Submodule.span ℝ ({e} : Set (realified V))
+    let _ : ContinuousAdd (realified V ⧸ N) := IsModuleTopology.toContinuousAdd ℝ _
+    ∀ {z : realified V ⧸ N}, z ∈ (a.map N.mkQ).topologicalClosure →
+      0 < isotropicHalfspaceForm Q heQ z → z ∈ a.map N.mkQ := by
+  classical
+  let N := Submodule.span ℝ ({e} : Set (realified V))
+  let _ : ContinuousAdd (realified V ⧸ N) := IsModuleTopology.toContinuousAdd ℝ _
+  change ∀ {z : realified V ⧸ N}, z ∈ (a.map N.mkQ).topologicalClosure →
+    0 < isotropicHalfspaceForm Q heQ z → z ∈ a.map N.mkQ
+  intro z hz hzβ
+  have hea' : e ∈ a := hea (PointedCone.subset_hull (Set.mem_singleton e))
+  have hrayle : PointedCone.hull ℝ ({e} : Set (realified V)) ≤
+      rationalClosure (closedSheet Q hpos ht) := hea.trans (hS.le ha)
+  have heC : e ∈ rationalClosure (closedSheet Q hpos ht) :=
+    hrayle (PointedCone.subset_hull (Set.mem_singleton e))
+  have heSheet : e ∈ closedSheet Q hpos ht := rationalClosure_le_closedSheet hpos heC
+  have hrayrat : IsRationalCone (PointedCone.hull ℝ ({e} : Set (realified V))) :=
+    IsIsotropicHalfLine.isRationalCone_of_le_of_mem hpos hnd hS
+      ⟨e, he0, heQ, rfl⟩ ha hea
+  have hbe : ∀ v : V, rationalPoint v ∈ (closedSheet Q hpos ht).closure →
+      0 ≤ (associated Q) e (rationalPoint v) := by
+    intro v hv
+    have hclosed := isClosed_closedSheet_of_moduleTopology Q hpos ht
+    have hvS : rationalPoint v ∈ closedSheet Q hpos ht := by
+      rw [← hclosed.submodule_topologicalClosure_eq]
+      exact hv
+    exact nonneg_associated_of_mem_closedSheet hpos ht heSheet.1 heSheet.2 hvS.1 hvS.2
+  have him : z ∈ N.mkQ '' (positiveCone.upper Q t) := by
+    rw [image_mkQ_upper_eq Q hpos hnd ht he0 heQ heSheet.2]
+    exact hzβ
+  obtain ⟨x, hxC, hxq⟩ := him
+  obtain ⟨K, hKrat, hKle, hrayK, hKx, -⟩ :=
+    exists_rationalCone_sup_mem_nhds_of_isotropic hpos hrayle hrayrat hxC hxC
+  have heK : e ∈ K := hrayK (PointedCone.subset_hull (Set.mem_singleton e))
+  have hmapK : (K.map N.mkQ : Set (realified V ⧸ N)) ∈ 𝓝 z := by
+    rw [← hxq]
+    exact N.isOpenMap_mkQ.image_mem_nhds hKx
+  obtain ⟨sG, hsG⟩ := hS.isLocallyRational a ha K hKrat hKle
+  let T := sG.image rationalPoint
+  have hAT : a ⊓ K = PointedCone.hull ℝ (T : Set (realified V)) := by
+    simpa [T] using hsG
+  have hFG : (a ⊓ K).FG := ⟨T, hAT.symm⟩
+  have hclosed : IsClosed (((a ⊓ K).map N.mkQ : PointedCone ℝ (realified V ⧸ N)) :
+      Set (realified V ⧸ N)) :=
+    PointedCone.FG.isClosed_of_moduleTopology (PointedCone.FG.map hFG N.mkQ)
+  have hmem := mem_topologicalClosure_map_inf_of_mem_nhds N (e := e)
+    (A := a) (K := K) rfl hea' heK hmapK hz
+  rw [hclosed.closure_eq] at hmem
+  obtain ⟨w, hw, hq⟩ := hmem
+  exact ⟨w, hw.1, hq⟩
+
 end IsotropicRationalTraces
 
 end LeanCategories.Lattices.Valued
