@@ -12,7 +12,10 @@ public import LeanCategories.Lattices.Valued.PositiveCone
 public import LeanCategories.Analysis.Convex.SignCell
 public import Mathlib.Analysis.Convex.Cone.Basic
 public import Mathlib.Analysis.Convex.Cone.Dual
+public import Mathlib.Analysis.Convex.Intrinsic
 public import Mathlib.Analysis.Convex.Topology
+public import Mathlib.Analysis.LocallyConvex.HahnBanach
+public import Mathlib.Analysis.LocallyConvex.Separation
 public import Mathlib.LinearAlgebra.TensorProduct.Defs
 public import Mathlib.Topology.Algebra.Module.ModuleTopology
 public import Mathlib.Topology.Connected.Clopen
@@ -121,7 +124,12 @@ an `ℝ`-vector space with no extra structure.
   carried and which are not; of the description of `L_σ` itself the upper bound `L_σ ⊆ I^⊥` is
   carried in the section "The two descriptions of `L_σ`"
   (`sigmaSupportSpace_le_ker_associated_of_isotropic`), and the reverse inclusion, which is what
-  the affine model over `A_I(ℝ)` supplies, is not. For the facial decomposition `Σ(bb)` the
+  the affine model over `A_I(ℝ)` supplies, is also carried. Section separation is proved at every
+  projected star member (`hasSectionSeparatingFunctional_map_of_isotropicHalfspace`) by supporting
+  the closed section of its closure and using relative closedness on the open half-space; at a
+  projected-minimal member this gives the reverse inclusion with no extra hypothesis
+  (`inf_ker_iInf_span_le_sigmaSupportSpace_of_projectedMinimal`). For the facial decomposition
+  `Σ(bb)` the
   description is carried in full, both inclusions and the strict inequality: the only face of
   `C₊` meeting the open cone is `C₊` itself, the closed sheet and its rational closure carry the
   same forms, and self-duality of the closed sheet gives `L_σ = I^⊥ ≠ ⟨σ⟩`
@@ -10080,14 +10088,18 @@ functional nonnegative on a minimal member's projection that vanishes at one poi
 vanishes on all of it (`projectedPolyhedron_apply_eq_zero_of_projectedMinimal`), because the face it
 cuts is a member whose polyhedron is a nonempty part of this one.
 
-Not carried: that a minimal member's polyhedron *is* an affine subspace, the source's next sentence.
-By `projectedPolyhedron_affine_iff` that is affineness inside the projection, so what is missing is
-the existence of a supporting functional: for `C = π_I τmin` with section `P = C ⊓ {β = 1}` not
-affinely closed, a `φ` nonnegative on `C` vanishing at a point of `P` and positive somewhere on `P`.
-The engine above then forces `φ = 0` on `P`, a contradiction. Producing `φ` is separation of a point
-of `span C ∖ C` from `C`, and the separation available in this file
-(`exists_dual_nonneg_lt_of_isClosed`) needs `C` closed, which `IsLocallyRationalDecomposition` does
-not give for its members. -/
+The minimal member's polyhedron *is* an affine subspace, the source's next sentence. The needed
+supporting functional is obtained in two steps. First, at an intrinsic-frontier point of a closed
+convex section, separation in its affine span gives a linear functional supporting it there and
+strictly larger at another section point
+(`exists_dual_le_and_lt_of_mem_intrinsicFrontier`). Second, relative closedness of a projected star
+member on the open half-space supplies the original section's part of its closure, so this support
+restricts to the original member (`hasSectionSeparatingFunctional_map_of_isotropicHalfspace`).
+Neither global closedness nor finite generation of a projected member is needed, and neither is an
+assumption of `IsLocallyRationalDecomposition`. Using `projectedPolyhedron_affine_iff`, the
+section-separation property makes the minimal member's projected polyhedron an affine subspace,
+and the reverse inclusion follows without an external separation hypothesis
+(`inf_ker_iInf_span_le_sigmaSupportSpace_of_projectedMinimal`). -/
 
 section AffineModel
 
@@ -10654,10 +10666,10 @@ omit [Module.Finite ℚ V] in
 omit [Module.Finite ℚ V] in
 /-- **The separation input the affineness needs**, named: for a cone `C` in `{0 ≤ β}` and two
 points of its section whose affine combination leaves `C`, a functional nonnegative on `C` that
-vanishes at a point of the section and is positive somewhere on it. In this file's terms this is
-separation of a point of `span C ∖ C` from `C`; the only tool for that here
-(`exists_dual_nonneg_lt_of_isClosed`) needs `C` closed, which `IsLocallyRationalDecomposition` does
-not supply for its members.
+vanishes at a point of the section and is positive somewhere on it. This is proved below when the
+section is closed relative to `C`, without assuming global closedness or finite generation
+(`hasSectionSeparatingFunctional_of_relativeClosed`). At the isotropic quotient the relative
+condition is furnished by `mem_map_of_mem_topologicalClosure_of_isotropicHalfspace`.
 
 The input is not vacuous: for the quadrant `C = ⟨(1,0), (0,1)⟩` in `ℝ × ℝ` with `β = snd`, its
 section is the segment `{(t,1) | 0 ≤ t ≤ 1}`, which is not affinely closed, and `φ = fst` is
@@ -10686,6 +10698,298 @@ theorem hasSectionSeparatingFunctional_of_affine_section {E : Type*} [AddCommGro
   intro u hu hβu v hv hβv ⟨c, hc⟩
   exact absurd (haff u hu hβu v hv hβv c) hc
 
+/-- **A supporting functional at an intrinsic-frontier point.** Work in the affine span of the
+closed convex set. Its intrinsic interior is nonempty; separation of that interior from the
+frontier point gives a continuous functional maximizing at the point, nonzero somewhere in the set.
+Extension to the ambient space turns this into a linear functional with the stated inequalities.
+
+LC-09 (2026-11-22): the queries `content:supporting content:hyperplane content:boundary`,
+`content:intrinsicFrontier content:support content:linear` and
+`content:geometric_hahn_banach_of_nonempty_interior_point content:intrinsicInterior` found no
+standalone declaration with this conclusion. The nearest reference implementation is
+`Vilin97/lean-pool`, `LeanPool/ErdosGinzburgZiv/EGZ/Convex/LeastFaceInterior.lean`,
+`EGZ.RationalPolytope.Face.IsLeastFaceAt.mem_relInterior`, commit
+`01db1d7049cf9668bda1e9e106875ee1278b43e6` (Apache 2.0). The affine-span separation,
+strictness and ambient-extension steps here are adapted from that proof; the finite-dimensional
+exposed-face comparison that follows it is not needed. Mathlib searches covered
+`Analysis/Convex/Exposed.lean`, `Analysis/Convex/Intrinsic.lean` and
+`Analysis/LocallyConvex/Separation.lean`. -/
+theorem exists_dual_le_and_lt_of_mem_intrinsicFrontier
+    {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
+    {P : Set E} (hP : Convex ℝ P) (hPclosed : IsClosed P)
+    {p : E} (hp : p ∈ intrinsicFrontier ℝ P) :
+    ∃ φ : E →ₗ[ℝ] ℝ, (∀ x ∈ P, φ p ≤ φ x) ∧ ∃ q ∈ P, φ p < φ q := by
+  classical
+  have hpP : p ∈ P := intrinsicFrontier_subset hPclosed hp
+  obtain ⟨pA, hpA, rfl⟩ := mem_intrinsicFrontier.1 hp
+  let A : AffineSubspace ℝ E := affineSpan ℝ P
+  let C : Set A := ((↑) : A → E) ⁻¹' P
+  let : Nonempty A := ⟨pA⟩
+  let : Nonempty P := ⟨⟨pA, hpP⟩⟩
+  have hPne : P.Nonempty := ⟨pA, hpP⟩
+  have hCint : (interior C).Nonempty := by
+    obtain ⟨r, hr⟩ := hPne.intrinsicInterior hP
+    rw [mem_intrinsicInterior] at hr
+    exact ⟨hr.choose, hr.choose_spec.1⟩
+  let e : A.direction ≃ᵃⁱ[ℝ] A := AffineIsometryEquiv.vaddConst ℝ pA
+  let S : Set A.direction := e ⁻¹' C
+  have hSconvex : Convex ℝ S := by
+    change Convex ℝ ((A.subtype.comp e.toAffineEquiv.toAffineMap) ⁻¹' P)
+    exact hP.affine_preimage (A.subtype.comp e.toAffineEquiv.toAffineMap)
+  have hpreInterior : e ⁻¹' interior C = interior (e ⁻¹' C) := by
+    simpa only [AffineIsometryEquiv.coe_toHomeomorph] using
+      e.toHomeomorph.preimage_interior C
+  have hSint : (interior S).Nonempty := by
+    obtain ⟨y, hy⟩ := hCint
+    refine ⟨e.symm y, ?_⟩
+    have hy' : e.symm y ∈ e ⁻¹' interior C := by simpa
+    rw [hpreInterior] at hy'
+    exact hy'
+  have h0not : (0 : A.direction) ∉ interior S := by
+    intro h0
+    apply hpA.2
+    have h0' : (0 : A.direction) ∈ e ⁻¹' interior C := by
+      rw [hpreInterior]
+      exact h0
+    have he0 : e 0 = pA := by simp [e]
+    change e 0 ∈ interior C at h0'
+    rwa [he0] at h0'
+  obtain ⟨g, hgne, hgmax⟩ :=
+    geometric_hahn_banach_of_nonempty_interior_point hSconvex h0not hSint
+  have hSspan : affineSpan ℝ S = ⊤ :=
+    (hSconvex.interior_nonempty_iff_affineSpan_eq_top).1 hSint
+  have hstrict : ∃ u ∈ S, g u < 0 := by
+    by_contra hnone
+    have hzeroMap : g.toLinearMap.toAffineMap = (0 : A.direction →ᵃ[ℝ] ℝ) := by
+      apply AffineMap.ext_on hSspan
+      intro u hu
+      have hle : g u ≤ 0 := by simpa using hgmax u hu
+      have hge : 0 ≤ g u := not_lt.mp (fun hlt ↦ hnone ⟨u, hu, hlt⟩)
+      change g u = 0
+      exact le_antisymm hle hge
+    apply hgne
+    apply ContinuousLinearMap.ext
+    intro u
+    have hu := DFunLike.congr_fun hzeroMap u
+    simpa using hu
+  obtain ⟨u, huS, hgu⟩ := hstrict
+  let xA : A := e u
+  let x : E := xA
+  have hxP : x ∈ P := by
+    change (e u : E) ∈ P at huS
+    exact huS
+  obtain ⟨gext, hgext⟩ := StrongDual.exists_extension A.direction g
+  have hg_le (y : E) (hyP : y ∈ P) : gext y ≤ gext pA := by
+    let yA : A := ⟨y, subset_affineSpan ℝ P hyP⟩
+    let v : A.direction := yA -ᵥ pA
+    have hvS : v ∈ S := by
+      change e v ∈ C
+      have hev : e v = yA := by simp [e, v]
+      rw [hev]
+      exact hyP
+    have hgv : g v ≤ 0 := by simpa using hgmax v hvS
+    have hvcoe : ((v : A.direction) : E) = y - pA := by
+      simp [v, yA]
+    have hdiff : gext (y - pA) ≤ 0 := by
+      rw [← hvcoe, hgext v]
+      exact hgv
+    simpa only [map_sub, sub_nonpos] using hdiff
+  have hg_strict : gext x < gext pA := by
+    have hxsub : x - pA = ((u : A.direction) : E) := by
+      simp [x, xA, e]
+    have hdiff : gext (x - pA) < 0 := by
+      rw [hxsub, hgext u]
+      exact hgu
+    simpa only [map_sub, sub_neg] using hdiff
+  refine ⟨-gext.toLinearMap, ?_, ?_⟩
+  · intro y hy
+    change -gext pA ≤ -gext y
+    exact neg_le_neg (hg_le y hy)
+  · refine ⟨x, hxP, ?_⟩
+    change -gext pA < -gext x
+    exact neg_lt_neg hg_strict
+
+/-- **The separation input holds for a cone that is closed on its section.** Let `D = closure C`
+and let `P` be `D`'s section `β = 1`. If an affine combination of two section points of `C` leaves
+`C`, relative closedness puts it outside `D`, hence outside `P`. Since it lies in `affineSpan P`,
+the closed convex `P` has a frontier point. The supporting functional `φ` there is normalized to
+`Φ = φ - φ(p) • β`: on `P` it is nonnegative, it vanishes at `p`, and it is positive at another
+section point. Nonnegativity passes to every `x ∈ D`: if `β x = 0`, use `p + x ∈ P`; otherwise
+rescale `x` by `(β x)⁻¹`. Relative closedness finally puts both witnesses back in `C`.
+
+This is the finite-dimensional supporting-hyperplane argument of Looijenga, Lemma-Definition 4.5,
+p. 19, without assuming that `C` itself is closed or finitely generated. LC-09: the section and
+quotient searches are recorded at the supporting lemma above and at the projected application
+below; the nearest direct cone results were `geometric_hahn_banach_point_closed`, which separates
+a point but need not support it on `P`, and `PointedCone.IsFaceOf.exists_nonneg_linear_inf_ker`,
+which requires finite generation. Neither supplies this statement. -/
+theorem hasSectionSeparatingFunctional_of_relativeClosed
+    {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
+    (β : E →ₗ[ℝ] ℝ) (C : PointedCone ℝ E)
+    (hβ : ∀ x ∈ C, 0 ≤ β x)
+    (hrel : ∀ x ∈ C.topologicalClosure, β x = 1 → x ∈ C) :
+    HasSectionSeparatingFunctional β C := by
+  classical
+  intro u hu hβu v hv hβv ⟨c, hc⟩
+  let D : PointedCone ℝ E := C.topologicalClosure
+  let P : Set E := {x | x ∈ D ∧ β x = 1}
+  have hβcont : Continuous β := LinearMap.continuous_of_finiteDimensional β
+  have hβw : β (c • u + (1 - c) • v) = 1 := by
+    rw [map_add, map_smul, map_smul, hβu, hβv, smul_eq_mul, smul_eq_mul,
+      mul_one, mul_one]
+    ring
+  have hwD : c • u + (1 - c) • v ∉ D := by
+    intro hw
+    exact hc (hrel _ hw hβw)
+  have huP : u ∈ P := ⟨Submodule.le_topologicalClosure C hu, hβu⟩
+  have hvP : v ∈ P := ⟨Submodule.le_topologicalClosure C hv, hβv⟩
+  have hPconv : Convex ℝ P := by
+    intro x hx y hy a b ha hb hab
+    refine ⟨C.convex.closure hx.1 hy.1 ha hb hab, ?_⟩
+    rw [map_add, map_smul, map_smul, hx.2, hy.2, smul_eq_mul, smul_eq_mul,
+      mul_one, mul_one]
+    exact hab
+  have hPclosed : IsClosed P := by
+    exact (Submodule.isClosed_topologicalClosure C).inter
+      (isClosed_singleton.preimage hβcont)
+  have hβD : ∀ x ∈ D, 0 ≤ β x := by
+    intro x hx
+    exact closure_minimal (s := (C : Set E)) (t := {y | 0 ≤ β y}) hβ
+      (isClosed_le continuous_const hβcont) hx
+  have hwA : c • u + (1 - c) • v ∈ affineSpan ℝ P := by
+    have hmem := AffineMap.lineMap_mem (Q := affineSpan ℝ P) c
+      (subset_affineSpan ℝ P hvP) (subset_affineSpan ℝ P huP)
+    simpa [AffineMap.lineMap_apply_module, add_comm] using hmem
+  let A : AffineSubspace ℝ E := affineSpan ℝ P
+  let P₀ : Set A := ((↑) : A → E) ⁻¹' P
+  let : PreconnectedSpace A := Subtype.preconnectedSpace A.convex.isPreconnected
+  have hP₀ne : P₀.Nonempty := ⟨⟨u, subset_affineSpan ℝ P huP⟩, huP⟩
+  have hP₀ne_univ : P₀ ≠ Set.univ := by
+    intro heq
+    have hw₀ : (⟨c • u + (1 - c) • v, hwA⟩ : A) ∈ P₀ := by
+      rw [heq]
+      exact Set.mem_univ _
+    exact hwD hw₀.1
+  obtain ⟨pA, hpA⟩ := nonempty_frontier_iff.2 ⟨hP₀ne, hP₀ne_univ⟩
+  have hp : (pA : E) ∈ intrinsicFrontier ℝ P := mem_intrinsicFrontier.2 ⟨pA, hpA, rfl⟩
+  obtain ⟨φ, hφ, q, hqP, hφq⟩ :=
+    exists_dual_le_and_lt_of_mem_intrinsicFrontier hPconv hPclosed hp
+  let Φ : E →ₗ[ℝ] ℝ := φ - (φ pA) • β
+  have hpP : (pA : E) ∈ P := intrinsicFrontier_subset hPclosed hp
+  have hΦP : ∀ x ∈ P, 0 ≤ Φ x := by
+    intro x hx
+    change 0 ≤ φ x - φ pA * β x
+    rw [hx.2, mul_one]
+    exact sub_nonneg.2 (hφ x hx)
+  have hΦp : Φ pA = 0 := by
+    change φ pA - φ pA * β pA = 0
+    rw [hpP.2, mul_one, sub_self]
+  have hΦD : ∀ x ∈ D, 0 ≤ Φ x := by
+    intro x hx
+    rcases eq_or_ne (β x) 0 with hβx | hβx
+    · by_contra hneg
+      have hΦx : Φ x < 0 := lt_of_not_ge hneg
+      have hpxD : pA + x ∈ D := D.add_mem hpP.1 hx
+      have hpxP : pA + x ∈ P := by
+        refine ⟨hpxD, ?_⟩
+        rw [map_add, hpP.2, hβx, add_zero]
+      have hnonneg := hΦP _ hpxP
+      rw [map_add, hΦp] at hnonneg
+      simp only [zero_add] at hnonneg
+      exact (not_le_of_gt hΦx) hnonneg
+    · have hpos : 0 < β x := lt_of_le_of_ne (hβD x hx) (Ne.symm hβx)
+      let y : E := (β x)⁻¹ • x
+      have hyP : y ∈ P := by
+        refine ⟨D.smul_mem (inv_nonneg.2 hpos.le) hx, ?_⟩
+        dsimp only [y]
+        rw [map_smul, smul_eq_mul, inv_mul_cancel₀ hpos.ne']
+      have hnonneg := hΦP y hyP
+      dsimp only [y] at hnonneg
+      rw [map_smul, smul_eq_mul] at hnonneg
+      exact (mul_nonneg_iff_of_pos_left (inv_pos.2 hpos)).1 hnonneg
+  have hpC : (pA : E) ∈ C := hrel _ hpP.1 hpP.2
+  have hqC : q ∈ C := hrel _ hqP.1 hqP.2
+  refine ⟨pA, hpC, hpP.2, Φ, fun x hx => hΦD x (Submodule.le_topologicalClosure C hx), ?_,
+    q, hqC, hqP.2, ?_⟩
+  · exact hΦp
+  · change 0 < φ q - φ pA * β q
+    rw [hqP.2, mul_one]
+    exact sub_pos.2 hφq
+
+/-- **Section separation pulls back along a linear equivalence.** -/
+theorem hasSectionSeparatingFunctional_comp_of_map
+    {E F : Type*} [AddCommGroup E] [Module ℝ E] [AddCommGroup F] [Module ℝ F]
+    (e : E ≃ₗ[ℝ] F) (β : E →ₗ[ℝ] ℝ) (C : PointedCone ℝ E)
+    (hsep : HasSectionSeparatingFunctional (β.comp e.symm.toLinearMap)
+      (C.map e.toLinearMap)) :
+    HasSectionSeparatingFunctional β C := by
+  intro u hu hβu v hv hβv ⟨c, hc⟩
+  have hu' : e u ∈ C.map e.toLinearMap := PointedCone.mem_map.2 ⟨u, hu, rfl⟩
+  have hv' : e v ∈ C.map e.toLinearMap := PointedCone.mem_map.2 ⟨v, hv, rfl⟩
+  have hβu' : (β.comp e.symm.toLinearMap) (e u) = 1 := by simpa using hβu
+  have hβv' : (β.comp e.symm.toLinearMap) (e v) = 1 := by simpa using hβv
+  have hc' : c • e u + (1 - c) • e v ∉ C.map e.toLinearMap := by
+    intro hmem
+    obtain ⟨z, hz, heq⟩ := PointedCone.mem_map.1 hmem
+    apply hc
+    have hzeq : z = c • u + (1 - c) • v := by
+      apply (show Function.Injective (e.toLinearMap : E → F) from e.injective)
+      change (e.toLinearMap) z = c • (e.toLinearMap) u + (1 - c) • (e.toLinearMap) v at heq
+      simpa only [map_add, map_smul] using heq
+    rwa [← hzeq]
+  obtain ⟨p', hp', hβp', φ, hφ, hφp', q', hq', hβq', hφq'⟩ :=
+    hsep (e u) hu' hβu' (e v) hv' hβv' ⟨c, hc'⟩
+  obtain ⟨p, hp, hpEq⟩ := PointedCone.mem_map.1 hp'
+  obtain ⟨q, hq, hqEq⟩ := PointedCone.mem_map.1 hq'
+  refine ⟨p, hp, ?_, φ.comp e.toLinearMap, ?_, ?_, q, hq, ?_, ?_⟩
+  · simpa [← hpEq] using hβp'
+  · intro x hx
+    exact hφ (e x) (PointedCone.mem_map.2 ⟨x, hx, rfl⟩)
+  · simpa [← hpEq] using hφp'
+  · simpa [← hqEq] using hβq'
+  · simpa [← hqEq] using hφq'
+
+/-- **The module-topology form of section separation**, transported through basis coordinates.
+The topology is used only to identify the closure of `C` with the closure of its coordinate image;
+all supporting-hyperplane work happens in the normed model. -/
+theorem hasSectionSeparatingFunctional_of_relativeClosed_of_moduleTopology
+    {E : Type*} [AddCommGroup E] [Module ℝ E] [TopologicalSpace E]
+    [ContinuousAdd E] [IsModuleTopology ℝ E] [Module.Finite ℝ E]
+    (β : E →ₗ[ℝ] ℝ) (C : PointedCone ℝ E)
+    (hβ : ∀ x ∈ C, 0 ≤ β x)
+    (hrel : ∀ x ∈ C.topologicalClosure, β x = 1 → x ∈ C) :
+    HasSectionSeparatingFunctional β C := by
+  let e : E ≃ₗ[ℝ] (Fin (Module.finrank ℝ E) → ℝ) := (Module.finBasis ℝ E).equivFun
+  have h1 : Continuous e := IsModuleTopology.continuous_of_linearMap e.toLinearMap
+  have h2 : Continuous e.symm := IsModuleTopology.continuous_of_linearMap e.symm.toLinearMap
+  let E' : E ≃L[ℝ] (Fin (Module.finrank ℝ E) → ℝ) :=
+    { e with continuous_toFun := h1, continuous_invFun := h2 }
+  let C' : PointedCone ℝ (Fin (Module.finrank ℝ E) → ℝ) := C.map e.toLinearMap
+  have hβ' : ∀ x ∈ C', 0 ≤ (β.comp e.symm.toLinearMap) x := by
+    intro x hx
+    obtain ⟨y, hy, rfl⟩ := PointedCone.mem_map.1 hx
+    simpa using hβ y hy
+  have hrel' : ∀ x ∈ C'.topologicalClosure, (β.comp e.symm.toLinearMap) x = 1 → x ∈ C' := by
+    intro x hx hβx
+    have hcarrier : (C' : Set (Fin (Module.finrank ℝ E) → ℝ)) = e '' (C : Set E) := by
+      ext y
+      exact PointedCone.mem_map
+    have hx' : x ∈ closure (e '' (C : Set E)) := by
+      rw [← hcarrier]
+      exact hx
+    change x ∈ closure (E' '' (C : Set E)) at hx'
+    have himage : E' '' closure (C : Set E) = closure (E' '' (C : Set E)) :=
+      E'.toHomeomorph.image_closure (C : Set E)
+    rw [← himage] at hx'
+    obtain ⟨y, hy, rfl⟩ := hx'
+    apply PointedCone.mem_map.2
+    refine ⟨y, hrel y hy ?_, rfl⟩
+    change β (e.symm (e y)) = 1 at hβx
+    simpa using hβx
+  exact hasSectionSeparatingFunctional_comp_of_map e β C
+    (hasSectionSeparatingFunctional_of_relativeClosed (β.comp e.symm.toLinearMap) C'
+      hβ' hrel')
+
 /-- **The section is affinely closed, from the separation input and the engine.** The engine says a
 functional nonnegative on `C` that vanishes at a point of the section vanishes on all of it; the
 separation input produces one that is positive somewhere on it, exactly when the section is not
@@ -10702,6 +11006,7 @@ theorem affine_section_of_separating {E : Type*} [AddCommGroup E] [Module ℝ E]
     hsep u hu hβu v hv hβv ⟨c, hw⟩
   exact absurd (hzero φ hφ ⟨p, hpC, hβp, hφp⟩ q hqC hβq) (ne_of_gt hφq)
 
+omit [Module.Finite ℚ V] in
 /-- **Affineness of the projected polyhedron is affineness inside the projection**: since `β` is `1`
 on the polyhedron and affine combinations preserve `β`, an affine combination of polyhedron points
 lies on the polyhedron exactly when it lies in the projected cone. The form on the right is the one
@@ -10722,6 +11027,41 @@ theorem projectedPolyhedron_affine_iff {Q : QuadraticForm ℝ (realified V)} {e 
     obtain ⟨-, hv1⟩ := hv
     rw [mem_affineModel, map_add, map_smul, map_smul, smul_eq_mul, smul_eq_mul, hu1, hv1]
     ring
+
+/-- **Every projected star member has the section-separation input.** Nonnegativity of `β` comes
+from the closed sheet. Relative closedness on `β = 1` is exactly
+`mem_map_of_mem_topologicalClosure_of_isotropicHalfspace`, so the general supporting-hyperplane
+theorem applies directly; neither closedness nor finite generation of the whole projected member
+is assumed. LC-09 for the projected statement: `affine subspace quotient vector space polyhedron
+minimal decomposition`, `polyhedral cone finite dimensional separation supporting hyperplane`,
+`minimal convex polyhedron locally finite decomposition affine subspace`,
+`content:image content:quotient content:cone content:halfspace`,
+`content:affine content:minimal content:PointedCone` and their Mathlib-style refinements found no
+competing theorem; the quotient cone bridge is the repository's, while the supporting ingredient
+is the LeanPool-adapted `exists_dual_le_and_lt_of_mem_intrinsicFrontier`. -/
+theorem hasSectionSeparatingFunctional_map_of_isotropicHalfspace
+    {Q : QuadraticForm ℝ (realified V)} {t e : realified V} (hpos : sigPos Q = 1)
+    (hnd : Q.Nondegenerate) {ht : 0 < Q t} (he0 : e ≠ 0) (he : Q e = 0)
+    {S : Set (PointedCone ℝ (realified V))}
+    (hS : IsLocallyRationalDecomposition (rationalClosure (closedSheet Q hpos ht)) S)
+    {a : PointedCone ℝ (realified V)}
+    (hea : PointedCone.hull ℝ ({e} : Set (realified V)) ≤ a) (ha : a ∈ S) :
+    HasSectionSeparatingFunctional (isotropicHalfspaceForm Q he)
+      (a.map (Submodule.span ℝ ({e} : Set (realified V))).mkQ) := by
+  let _ : ContinuousAdd (realified V ⧸ Submodule.span ℝ ({e} : Set (realified V))) :=
+    IsModuleTopology.toContinuousAdd ℝ _
+  have heC : e ∈ rationalClosure (closedSheet Q hpos ht) :=
+    (hea.trans (hS.le ha)) (PointedCone.subset_hull (Set.mem_singleton e))
+  have heSheet : e ∈ closedSheet Q hpos ht := rationalClosure_le_closedSheet hpos heC
+  apply hasSectionSeparatingFunctional_of_relativeClosed_of_moduleTopology
+  · intro x hx
+    obtain ⟨y, hy, rfl⟩ := PointedCone.mem_map.1 hx
+    rw [isotropicHalfspaceForm_mkQ]
+    exact nonneg_associated_of_quadratic_eq_zero_of_mem_closedSheet hpos ht he heSheet.2
+      (rationalClosure_le_closedSheet hpos (hS.le ha hy))
+  · intro x hx hβx
+    exact mem_map_of_mem_topologicalClosure_of_isotropicHalfspace hpos hnd hS he0 he hea ha hx
+      (by rw [hβx]; exact zero_lt_one)
 
 /-- **The reverse inclusion from the named separation input**: Looijenga's
 `L_σ = I^⊥ ⊓ ⨅_{τ ⊋ σ} ⟨τ⟩` for an isotropic half line, given that a non-affine section of the
@@ -10770,6 +11110,29 @@ theorem inf_ker_iInf_span_le_sigmaSupportSpace_of_separating
     rw [mem_affineModel, map_add, map_smul, map_smul, smul_eq_mul, smul_eq_mul, hu1, hv1]
     ring
   exact inf_ker_iInf_span_le_sigmaSupportSpace_of_affine hpos hnd he0 he het hS τmin haff
+
+/-- **The reverse inclusion, with the source's separation input derived.** For a projected-minimal
+member, `hasSectionSeparatingFunctional_map_of_isotropicHalfspace` supplies the input that the
+previous form took separately. Thus the only remaining inputs from the affine model are the
+locally rational decomposition and the minimal member itself. -/
+theorem inf_ker_iInf_span_le_sigmaSupportSpace_of_projectedMinimal
+    {Q : QuadraticForm ℝ (realified V)} {t e : realified V} (hpos : sigPos Q = 1)
+    (hnd : Q.Nondegenerate) {ht : 0 < Q t}
+    (he0 : e ≠ 0) (he : Q e = 0) (het : 0 ≤ (associated Q) e t)
+    {S : Set (PointedCone ℝ (realified V))}
+    (hS : IsLocallyRationalDecomposition (rationalClosure (closedSheet Q hpos ht)) S)
+    (τmin : supportIndex (positiveCone.upper Q t) S
+      (PointedCone.hull ℝ ({e} : Set (realified V))))
+    (hmin : IsProjectedMinimal Q he S (PointedCone.hull ℝ ({e} : Set (realified V))) τmin.1) :
+    LinearMap.ker (associated Q e) ⊓
+        (⨅ τ : supportIndex (positiveCone.upper Q t) S
+          (PointedCone.hull ℝ ({e} : Set (realified V))),
+          Submodule.span ℝ (τ.1 : Set (realified V))) ≤
+      sigmaSupportSpace (positiveCone.upper Q t) S
+        (PointedCone.hull ℝ ({e} : Set (realified V))) :=
+  inf_ker_iInf_span_le_sigmaSupportSpace_of_separating hpos hnd he0 he het hS τmin hmin
+    (hasSectionSeparatingFunctional_map_of_isotropicHalfspace hpos hnd he0 he hS
+      τmin.2.2.1 τmin.2.1)
 end AffineModel
 
 end LeanCategories.Lattices.Valued

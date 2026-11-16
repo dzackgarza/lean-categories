@@ -2676,3 +2676,31 @@ downstream assertions, computational observations, or downstream diagnostics.
   declarations are `LeanCategories.Topology.RelativePiOne.{boundary_eq_base_iff,
   zerothHomotopyMk_eq_iff}` and the two five-lemma theorems in that module; they stay here as an
   upstream candidate until Mathlib or the corpus owns a relative homotopy-group API.
+
+### `HasSectionSeparatingFunctional` needs a support theorem at intrinsic frontiers (#163)
+
+- **Need:** Looijenga's Lemma-Definition 4.5 proof needs, on a non-affine section of a convex cone in
+  finite dimension, a linear functional nonnegative on the cone, zero at a section point and positive at
+  another section point. The crucial analytic prerequisite is a supporting functional at a point of the
+  intrinsic frontier of a general closed convex set, not only at a face of a finitely generated cone or
+  polytope.
+- **Evidence:** `Mathlib.Analysis.LocallyConvex.Separation.geometric_hahn_banach_point_closed` separates
+  an external point but need not produce a zero on the set, and
+  `PointedCone.IsFaceOf.exists_nonneg_linear_inf_ker` needs finite generation.
+- **Coverage:** LC-09 searched the formalization corpus for `supporting hyperplane boundary`,
+  `intrinsicFrontier support linear`,
+  `geometric_hahn_banach_of_nonempty_interior_point intrinsicInterior`, affine quotient/polyhedron
+  formulations and the corresponding Mathlib modules. No standalone supporting-frontier theorem or
+  section-separation theorem was found. The nearest reference implementation was
+  `Vilin97/lean-pool@01db1d7049cf9668bda1e9e106875ee1278b43e6`,
+  `LeanPool/ErdosGinzburgZiv/EGZ/Convex/LeastFaceInterior.lean`'s
+  `IsLeastFaceAt.mem_relInterior` (Apache 2.0), whose affine-span support construction was read in full.
+- **Gap and impact:** this is the analytic input needed by
+  `LeanCategories/Lattices/Valued/LocallyRationalDecomposition.lean` for the general reverse inclusion
+  of the isotropic case. The source already has relative closedness on the isotropic half-space, so no
+  extra decomposition hypothesis is required.
+- **Repair link:** resolved in this batch by
+  `exists_dual_le_and_lt_of_mem_intrinsicFrontier`, with the normalized section-to-cone argument
+  `hasSectionSeparatingFunctional_of_relativeClosed`, its module-topology transport, and
+  `hasSectionSeparatingFunctional_map_of_isotropicHalfspace`. The first declaration remains a candidate
+  for Mathlib's `Analysis.Convex.Intrinsic` / `LocallyConvex.Separation` boundary.
