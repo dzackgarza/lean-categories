@@ -87,8 +87,8 @@ E. Looijenga, *Compactifications defined by arrangements II: locally symmetric v
   is spanned by the forms nonnegative on the closed sheet and zero at the ray together with the
   traces through the ray. The closed-sheet half of that span is proved here
   (`supportForms_closedSheet_apply_eq_zero_of_isotropic`: such a form kills the hyperplane
-  orthogonal to the ray, Looijenga p. 19); the description of the cell's dual cone by its walls is
-  `COMPLAINTS.md`.
+  orthogonal to the ray, Looijenga p. 19); the reverse inclusion is now taken on the primal side,
+  where the members of `Σ(ℋ)` span the common kernel of their walls (`fibreJH_le_span_of_member`).
 * **the counting hypothesis at a fibre**, transported from the ambient cone:
   `cutsFinitelyOnRational_of_map_realifyMap` (a rational cone of the fibre maps to a rational cone
   of `V(ℝ)` — `isRationalCone_map_realifyMap`, `map_hull_eq` — and a trace cuts it exactly when its
@@ -1633,8 +1633,9 @@ form nonnegative on the closed sheet and zero at `r` and of the traces of the wa
 hypothesis: a form nonnegative on the fibre's closed sheet and vanishing at an isotropic vector
 `r` kills `r^⊥` (`supportForms_closedSheet_apply_eq_zero_of_isotropic`), because the only such
 forms are the multiples of the metric dual of `r` (Looijenga, p. 19,
-`supportSpace_closedSheet_hull_eq_ker`). The remaining step — that the traces of the walls through
-the ray span the dual cone of the cell modulo that form — is recorded in `COMPLAINTS.md`.
+`supportSpace_closedSheet_hull_eq_ker`). The gap that leaves — that the traces of the walls through
+the ray span the dual cone of the cell modulo that form — is not filled here; the inclusion it was
+serving is proved on the primal side instead (`fibreJH_le_span_of_member`).
 -/
 
 section HalfLineSupportGe
@@ -1686,8 +1687,9 @@ nonnegative on `τ` and zero on `⟨r⟩`, provided those forms are spanned by t
 the closed sheet and zero at `r` together with the traces vanishing at `r`.
 
 The first family kills `w` by `supportForms_closedSheet_apply_eq_zero_of_isotropic`; the second is
-the hypothesis on the traces. What remains is the description of the dual cone of a cell of the
-arrangement by its walls, which is recorded in `COMPLAINTS.md`. -/
+the hypothesis on the traces. The description of the dual cone of a cell by its walls that this
+asks for is not used: the same inclusion is proved on the primal side, where a member of `Σ(ℋ)`
+spans the common kernel of the walls that vanish on it (`fibreJH_le_span_of_member`). -/
 theorem mem_supportSpace_halfLine_of_supportForms_span
     {F : ConicalLine BQ Q} {ι : Type*} (φ : ι → (realified ↥F.space) →L[ℝ] ℝ)
     {τ σ : PointedCone ℝ (realified ↥F.space)} {e : realified ↥F.space}
@@ -1745,8 +1747,8 @@ hyperplanes containing `I`, and their faces. The sign pattern of the ray `r` of 
 plane `J` uses the *weak* sign conditions, so `r` itself lies in the cell of its own sign pattern,
 and that cell is a member of `Σ(ℋ)` above the half line `⟨r⟩`. This cell need not meet the open
 cone `C_I`: walls accumulating at the ray keep every member through the ray off it. The member that
-does meet `C_I` is the cell of the sign pattern of a nearby point of the cone (`COMPLAINTS.md`,
-`exists_mem_semifanArrangement_halfLine_meets`).
+does meet `C_I` is the cell of the sign pattern of a nearby point of the cone
+(`exists_mem_semifanArrangement_halfLine_meets`).
 -/
 
 section HalfLineCell
@@ -1788,7 +1790,8 @@ theorem hull_fibreRay_le_cell {ι : Type*} (ψ : ι → V →ₗ[ℚ] ℚ) (hBsy
 /-- **The half line lies in a member of `Σ(ℋ)`**: the cell of its own sign pattern is a member
 (`mem_semifanArrangement_cell`) and contains the ray (`hull_fibreRay_le_cell`). What item (2) of the
 issue adds is that some member above the ray *meets the open cone* `C_I`, which needs the walls
-off the ray to keep their signs between `r` and a nearby point of `C_I` — `COMPLAINTS.md`. -/
+off the ray to keep their signs between `r` and a nearby point of `C_I`
+(`exists_mem_semifanArrangement_halfLine_meets`). -/
 theorem exists_mem_semifanArrangement_halfLine_le {ι : Type*} (ψ : ι → V →ₗ[ℚ] ℚ)
     (hBsym : BQ.IsSymm) (F : ConicalLine BQ Q) (G : ConicalPlane BQ) (h : F.line ≤ G.plane)
     (hBQ : ∀ u w : V, (associated Q) (rationalPoint u) (rationalPoint w) = (BQ u w : ℝ))
@@ -1845,7 +1848,7 @@ Looijenga, Example 6.4, p. 29, and the hypothesis of Lemma-Definition 4.5, p. 19
 (`.tmp-sources/looijenga-math0201218v2.md:519`): the support space of the half line `C_{J,+}` is
 computed over the members of the decomposition above it that meet the **open** cone `C_I`. The half
 line itself is an isotropic boundary ray of `C_{I,+}`, so this does not follow from the cover of
-`C_{I,+}` alone (`COMPLAINTS.md`, "The member of `Σ(ℋ)` above the half line").
+`C_{I,+}` alone.
 
 Let `r` be the class of the plane's ray in the fibre and `v` a rational point of the open cone. Only
 finitely many walls cut the rational cone `P = ⟨r, v⟩` (`CutsFinitelyOnRational`, the count of
@@ -2306,10 +2309,12 @@ support space of `C_{J,+}` not depend on the line `I ⊆ J` whose fibre computes
 The two halves. `vSigmaPlane_semifanArrangement_le_JH` is the inclusion `J_{Σ(ℋ)} ⊆ J_ℋ`. The
 reverse asks that every vector `w` of the fibre that is orthogonal to the half line `⟨r⟩` and killed
 by the trace of every wall through it lie in `Σ`-support space of the half line; through
-`fibreJH_le_sigmaSupportSpace` that reduces to one statement about the members of `Σ(ℋ)` — that the
-span of every member above the half line meeting the open cone contains `w` (`hspan`), i.e. that the
-walls cut the member out. See `COMPLAINTS.md` for why that statement is the geometric input of the
-source's proof of Lemma-Definition 4.5 and is not derived here. -/
+`fibreJH_le_sigmaSupportSpace` that reduces to the members of `Σ(ℋ)`: by
+`fibreJH_le_span_of_member` the span of every member above the half line meeting the open cone
+contains `w`, because the walls cut the member out — the primal form of the description of the cell
+by its walls, proved from the finiteness of the cutting traces and the face relation, with no
+hypothesis beyond `CutsFinitelyOnRational`. The dual-cone reading that this replaces is kept below
+for its own sake (`mem_supportSpace_halfLine_of_supportForms_span`), not as an input. -/
 
 section Example64
 
@@ -2493,37 +2498,76 @@ theorem JH_le_lineSpan_sup_fibreJH {ι : Type*} (ψ : ι → V →ₗ[ℚ] ℚ)
   · refine Submodule.mem_sup_left ?_
     exact Submodule.smul_mem _ _ (Submodule.subset_span (Set.mem_singleton _))
 
-omit [Module.Finite ℚ V] in
-/-- **The geometric form of the span hypothesis**: if the walls through the half line cut the member
-`τ` out — the common kernel of their traces lies in `⟨τ⟩` — then the fibre's `J_ℋ` lies in `⟨τ⟩`.
-This is the hypothesis of `fibreJH_le_sigmaSupportSpace` in the form the source's proof of
-Lemma-Definition 4.5 produces; the orthogonality to the ray is dropped because it is not needed. -/
-theorem fibreJH_le_span_of_wallsThrough {ι : Type*} (ψ : ι → V →ₗ[ℚ] ℚ) (hBsym : BQ.IsSymm)
+/-- **The fibre inclusion of the `≥` half of Example 6.4, p. 29, with no hypothesis left over**: a
+member of `Σ(ℋ)` above the half line of `J` that meets the open cone spans the common kernel of the
+walls through that half line, hence contains the fibre's `J_ℋ`.
+
+The proof runs on the primal side. Take `y` in `τ ∩ C` and a rational cone `P₀` around `y` whose
+points other than the apex lie on `C` (`exists_rationalCone_mem_nhds_sdiff_subset_of_ne_zero`); the
+walls cutting `P₀` are finitely many (`CutsFinitelyOnRational`). Perturb `y` in the direction of the
+sum `w` of witnesses in `τ` of those cutting walls that do not vanish on `τ`: each such wall is
+one-signed on `τ` (`hsign`), so its value at the sum is strictly signed. For `t > 0` small and away
+from the finitely many values at which some `φ i` vanishes at `y + t • w`, the point
+`x = y + t • w` lies in `τ ∩ C`, in the interior of `P₀`, and no wall that fails to vanish on `τ`
+vanishes at it. A rational cone `P ⊆ int P₀` around `x` cuts `P` only along walls that do vanish on
+`τ` — at which `z` vanishes by hypothesis — so for small `t'` both `x + t' • z` and `x - t' • z` lie
+in the sign cell of `x` and in `C₊`; the face relation `τ ⊴ cell` applied to their half sum `x ∈ τ`
+then puts `z` in `τ` (`PointedCone.IsFaceOf.mem_of_smul_add_mem`).
+
+LC-09: `content:weakSignCell content:intrinsicInterior`, `content:isFaceOf content:span content:ker`,
+`content:SignCell content:span content:hyperplane` and `content:intrinsicInterior content:openSegment`
+found the ported sign-cell machine, TauCeti `Analysis/Convex/Polyhedron/SignCell/Interior.lean` and
+TauCeti `Geometry/Convex/Cone/Face/Exposed.lean`; none carries this statement, and the primal route
+here needs none of them. -/
+theorem fibreJH_le_span_of_member {ι : Type*} (ψ : ι → V →ₗ[ℚ] ℚ) (hBsym : BQ.IsSymm)
     (F : ConicalLine BQ Q) (G : ConicalPlane BQ)
-    {τ : PointedCone ℝ (realified ↥F.space)}
-    (h : (⨅ i : {i : fibreWalls ψ F //
+    (hpos : sigPos (fibreForm Q F.space) = 1)
+    (hcut : CutsFinitelyOnRational F.closure (fun i : fibreWalls ψ F => fibreFormC F (ψ i)))
+    (τ : supportIndex (positiveCone.upper (fibreForm Q F.space) F.sheet)
+      (semifanArrangement ψ F)
+      (PointedCone.hull ℝ ({rationalPoint (fibreRay hBsym F G)} : Set (realified ↥F.space)))) :
+    fibreJH (Q := Q) ψ hBsym F G ≤ Submodule.span ℝ (τ.1 : Set (realified ↥F.space)) := by
+  classical
+  obtain ⟨σ, ⟨s, rfl⟩, hτσ⟩ := τ.2.1
+  have hCsub : (positiveCone.upper (fibreForm Q F.space) F.sheet : Set (realified ↥F.space)) ⊆
+      (F.closure : Set (realified ↥F.space)) := by
+    rw [ConicalLine.closure_eq_closedSheet F hpos]
+    exact upper_subset_rationalClosure_closedSheet hpos F.sheet_pos
+  have hgen := le_span_of_isFaceOf_arrangementCone
+    (φ := fun i : fibreWalls ψ F => fibreFormC F (ψ i))
+    (C := (positiveCone.upper (fibreForm Q F.space) F.sheet : Set (realified ↥F.space)))
+    (isOpen_positiveCone_upper_of_moduleTopology (fibreForm Q F.space) F.sheet)
+    (fun c hc x hx => positiveCone.smul_mem_upper (Q := fibreForm Q F.space) (t := F.sheet) hc hx)
+    (zero_notMem_upper (fibreForm Q F.space) F.sheet) hCsub hcut hτσ τ.2.2.2
+  have hBA : (⨅ i : {i : fibreWalls ψ F //
         fibreFormC F (ψ ↑i) (rationalPoint (fibreRay hBsym F G)) = 0},
         LinearMap.ker (fibreFormC F (ψ ↑i)).toLinearMap) ≤
-      Submodule.span ℝ (τ : Set (realified ↥F.space))) :
-    fibreJH (Q := Q) ψ hBsym F G ≤ Submodule.span ℝ (τ : Set (realified ↥F.space)) :=
-  inf_le_right.trans h
+      (⨅ i : {i : fibreWalls ψ F // τ.1 ≤ LinearMap.ker (fibreFormC F (ψ ↑i)).toLinearMap},
+        LinearMap.ker (fibreFormC F (ψ ↑i)).toLinearMap) := by
+    refine le_iInf fun j => ?_
+    have hrayτ : rationalPoint (fibreRay hBsym F G) ∈ τ.1 :=
+      τ.2.2.1 (Submodule.subset_span (Set.mem_singleton _))
+    refine iInf_le_of_le ⟨j.1, ?_⟩ le_rfl
+    have := j.2 hrayτ
+    simpa [LinearMap.mem_ker] using this
+  have hfib : fibreJH (Q := Q) ψ hBsym F G ≤
+      (⨅ i : {i : fibreWalls ψ F //
+        fibreFormC F (ψ ↑i) (rationalPoint (fibreRay hBsym F G)) = 0},
+        LinearMap.ker (fibreFormC F (ψ ↑i)).toLinearMap) := inf_le_right
+  exact hfib.trans (hBA.trans hgen)
 
 /-- **The fibre inclusion of the `≥` half**: a vector of the fibre orthogonal to the half line and
-killed by every wall through it lies in the `Σ`-support space of the half line, provided the span of
-every member above the half line meeting the open cone contains it. The last hypothesis is the one
-that remains open — see `COMPLAINTS.md`; the step from it is the reverse inclusion of
-Lemma-Definition 4.5 (`inf_ker_iInf_span_le_sigmaSupportSpace`). -/
+killed by every wall through it lies in the `Σ`-support space of the half line. The span of every
+member above the half line meeting the open cone contains it (`fibreJH_le_span_of_member`), and the
+step from there is the reverse inclusion of Lemma-Definition 4.5
+(`inf_ker_iInf_span_le_sigmaSupportSpace`). -/
 theorem fibreJH_le_sigmaSupportSpace {ι : Type*} (ψ : ι → V →ₗ[ℚ] ℚ)
     (hBQ : ∀ u w : V, (associated Q) (rationalPoint u) (rationalPoint w) = (BQ u w : ℝ))
     (hBsym : BQ.IsSymm) (F : ConicalLine BQ Q) (G : ConicalPlane BQ) (h : F.line ≤ G.plane)
     (hpos : sigPos (fibreForm Q F.space) = 1)
     (hnd : (fibreForm Q F.space).Nondegenerate)
-    (hS : IsLocallyRationalDecomposition F.closure (semifanArrangement ψ F))
-    (hspan : ∀ τ : supportIndex (positiveCone.upper (fibreForm Q F.space) F.sheet)
-        (semifanArrangement ψ F)
-        (PointedCone.hull ℝ ({rationalPoint (fibreRay hBsym F G)} : Set (realified ↥F.space))),
-      fibreJH (Q := Q) ψ hBsym F G ≤
-        Submodule.span ℝ (τ.1 : Set (realified ↥F.space))) :
+    (hcut : CutsFinitelyOnRational F.closure (fun i : fibreWalls ψ F => fibreFormC F (ψ i)))
+    (hS : IsLocallyRationalDecomposition F.closure (semifanArrangement ψ F)) :
     fibreJH (Q := Q) ψ hBsym F G ≤
       sigmaSupportSpace (positiveCone.upper (fibreForm Q F.space) F.sheet)
         (semifanArrangement ψ F)
@@ -2550,22 +2594,19 @@ theorem fibreJH_le_sigmaSupportSpace {ι : Type*} (ψ : ι → V →ₗ[ℚ] ℚ
   refine inf_ker_iInf_span_le_sigmaSupportSpace (Q := fibreForm Q F.space) (t := F.sheet)
     (ht := F.sheet_pos) hpos hnd hrne hQr hsheetC hS' (Submodule.mem_inf.2 ⟨hyker, ?_⟩)
   rw [Submodule.mem_iInf]
-  exact fun τ => hspan τ hy
+  intro τ
+  exact fibreJH_le_span_of_member ψ hBsym F G hpos hcut τ hy
 
-/-- **Example 6.4: `J_{Σ(ℋ)} = J_ℋ`** — the support space of a plane's half line is the subspace the
-source attaches to the plane, from the span hypothesis of `fibreJH_le_sigmaSupportSpace`. -/
+/-- **Example 6.4, p. 29: `J_{Σ(ℋ)} = J_ℋ`** — the support space of a plane's half line is the
+subspace the source attaches to the plane, with no hypothesis beyond the counting lemma at the
+fibre (`CutsFinitelyOnRational`). -/
 theorem vSigmaPlane_semifanArrangement_eq_JH {ι : Type*} (ψ : ι → V →ₗ[ℚ] ℚ)
     (hBQ : ∀ u w : V, (associated Q) (rationalPoint u) (rationalPoint w) = (BQ u w : ℝ))
     (hBsym : BQ.IsSymm) (F : ConicalLine BQ Q) (G : ConicalPlane BQ) (h : F.line ≤ G.plane)
     (hpos : sigPos (fibreForm Q F.space) = 1)
     (hnd : (fibreForm Q F.space).Nondegenerate)
     (hcut : CutsFinitelyOnRational F.closure (fun i : fibreWalls ψ F => fibreFormC F (ψ ↑i)))
-    (hS : IsLocallyRationalDecomposition F.closure (semifanArrangement ψ F))
-    (hspan : ∀ τ : supportIndex (positiveCone.upper (fibreForm Q F.space) F.sheet)
-        (semifanArrangement ψ F)
-        (PointedCone.hull ℝ ({rationalPoint (fibreRay hBsym F G)} : Set (realified ↥F.space))),
-      fibreJH (Q := Q) ψ hBsym F G ≤
-        Submodule.span ℝ (τ.1 : Set (realified ↥F.space))) :
+    (hS : IsLocallyRationalDecomposition F.closure (semifanArrangement ψ F)) :
     vSigmaPlane hBsym F (semifanArrangement ψ F) G h = JH (Q := Q) ψ G := by
   refine le_antisymm (vSigmaPlane_semifanArrangement_le_JHspace ψ hBsym F G h hBQ hpos hnd hcut) ?_
   refine (JH_le_lineSpan_sup_fibreJH ψ hBQ hBsym F G h).trans ?_
@@ -2574,7 +2615,7 @@ theorem vSigmaPlane_semifanArrangement_eq_JH {ι : Type*} (ψ : ι → V →ₗ[
     exact Submodule.span_le.2 fun x hx => Submodule.mem_sup_left (Submodule.subset_span hx)
   · rw [vSigmaPlane]
     exact (Submodule.map_mono
-      (fibreJH_le_sigmaSupportSpace ψ hBQ hBsym F G h hpos hnd hS hspan)).trans le_sup_right
+      (fibreJH_le_sigmaSupportSpace ψ hBQ hBsym F G h hpos hnd hcut hS)).trans le_sup_right
 
 /-- **Example 6.4, p. 29, modulo its geometric input**: `Σ(ℋ)` is an admissible decomposition of the
 conical locus in the sense of Definition 6.1, with `J_{Σ(ℋ)} = J_ℋ` for every `ℚ`-isotropic plane,
@@ -2587,22 +2628,14 @@ theorem isAdmissibleDecomposition_semifanArrangement {ι : Type*} (ψ : ι → V
     (hnd : ∀ F : ConicalLine BQ Q, (fibreForm Q F.space).Nondegenerate)
     (hcut : ∀ F : ConicalLine BQ Q,
       CutsFinitelyOnRational F.closure (fun i : fibreWalls ψ F => fibreFormC F (ψ ↑i)))
-    (hgamma : IsGammaInvariantLocus BQ Q Γ (semifanArrangement ψ))
-    (hspan : ∀ (hBsym : BQ.IsSymm) (F : ConicalLine BQ Q) (G : ConicalPlane BQ)
-      (_ : F.line ≤ G.plane),
-      ∀ τ : supportIndex (positiveCone.upper (fibreForm Q F.space) F.sheet)
-        (semifanArrangement ψ F)
-        (PointedCone.hull ℝ ({rationalPoint (fibreRay hBsym F G)} : Set (realified ↥F.space))),
-      fibreJH (Q := Q) ψ hBsym F G ≤
-        Submodule.span ℝ (τ.1 : Set (realified ↥F.space))) :
+    (hgamma : IsGammaInvariantLocus BQ Q Γ (semifanArrangement ψ)) :
     IsAdmissibleDecomposition BQ Q Γ (semifanArrangement ψ) :=
   isAdmissibleDecomposition_of_vSigmaPlane_eq hgamma
     (fun F => semifanArrangement_isLocallyRational_of_sigPos ψ F (hpos F) (hnd F) (hcut F))
     (JH (Q := Q) ψ)
     (fun hBsym F G h =>
       vSigmaPlane_semifanArrangement_eq_JH ψ hBQ hBsym F G h (hpos F) (hnd F) (hcut F)
-        (semifanArrangement_isLocallyRational_of_sigPos ψ F (hpos F) (hnd F) (hcut F))
-        (hspan hBsym F G h))
+        (semifanArrangement_isLocallyRational_of_sigPos ψ F (hpos F) (hnd F) (hcut F)))
 
 end Example64
 

@@ -3211,3 +3211,20 @@ downstream assertions, computational observations, or downstream diagnostics.
 - **Repair link:** the four ingredients above, in that order (the port's intrinsic-interior lemmas
   first, since ingredient (3) is stated with them); `hspan` is then discharged and every
   declaration in the list above becomes unconditional.
+- **Closed (this unit).** `hspan` is proved, on the primal side and without any of the four
+  ingredients listed above: `fibreJH_le_span_of_member` (in `SemifanArrangement.lean`) states that a
+  member `τ` of `Σ(ℋ)` above the half line that meets the open cone spans the common kernel of its
+  own walls, through the general statement `le_span_of_isFaceOf_arrangementCone` (in
+  `LocallyRationalDecomposition.lean`). The proof does not need the germ at an intrinsic interior
+  point nor the rational-density reduction: it perturbs `y ∈ τ ∩ C` in the direction of the sum `w`
+  of witnesses, inside `τ`, of the finitely many walls that cut a rational cone `P₀` around `y`
+  without vanishing on `τ`, which makes each such wall strictly signed at the sum
+  (`φ i` is one-signed on `τ` because `τ` lies in a sign cell). A rational cone `P ⊆ int P₀` around
+  the perturbed point `x` then cuts `P` only along walls that do vanish on `τ`, so both
+  `x ± t' • z` lie in the sign cell and in `C₊` for small `t'`, and the face relation applied to
+  their half sum `x ∈ τ` puts `z` in `τ`. The dual-cone description of a cell by its walls is not
+  needed, and `mem_supportSpace_halfLine_of_supportForms_span` keeps its hypothesis: it is a
+  different (dual) route to the same inclusion.
+- **What this costs, for the record.** The statement that a ℚ-rational subspace of a realified space
+  is spanned by its rational points (ingredient (1) above) is not formalized here and is not needed;
+  the LC-09 queries listed above remain the search record for the dual route.
