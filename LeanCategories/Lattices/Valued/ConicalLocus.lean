@@ -52,7 +52,9 @@ decompositions of §6 live on.
   `SemifanArrangement.semifanArrangement` and the `≤` half of `J_{Σ(ℋ)} = J_ℋ` is
   `SemifanArrangement.vSigmaPlane_semifanArrangement_le_JH` — `J^⊥` through both generators of the
   plane, `⟨gen⟩^⊥ ∩ ⟨ray⟩^⊥`, and the traces of the hyperplanes containing the plane; the `≥` half
-  still needs the description of a cell's dual cone by its walls (`COMPLAINTS.md`).
+  is `SemifanArrangement.fibreJH_le_span_of_member`, on the primal side — a member of `Σ(ℋ)` above
+  the half line meeting the open cone spans the common kernel of its own walls — and the two
+  halves assemble into `SemifanArrangement.vSigmaPlane_semifanArrangement_eq_JH`.
 * The `Γ`-invariance in `IsGammaInvariantLocus` is stated at the level of the images of members in
   `V(ℝ)`, and it takes the image *under the isometry*: `γ` carries the fibre of `I` to the fibre of
   `γI` (§1B, p. 11), so the members of the second are the images of the members of the first.
@@ -576,9 +578,10 @@ support space is a subspace `J_H` depending only on the plane, the condition is 
 
 This is the assembly step of Example 6.4, p. 29: the source computes `J_{Σ(ℋ)}` as "the common
 intersection of `J^⊥` and the hyperplanes `H ∈ ℋ` containing `J`", a subspace attached to `J` alone,
-and condition (ii) then follows for `Σ(ℋ)` — what remains for that example is the identity itself
-(`J_{Σ(ℋ)} ⊆ J_ℋ` is `SemifanArrangement.supportSpace_halfLine_le_ker`, and `J_ℋ ⊆ J_{Σ(ℋ)}` is
-`SemifanArrangement.mem_supportSpace_halfLine_of_supportForms_span`). -/
+and condition (ii) then follows for `Σ(ℋ)`. The identity is
+`SemifanArrangement.vSigmaPlane_semifanArrangement_eq_JH`: `J_{Σ(ℋ)} ⊆ J_ℋ` is
+`SemifanArrangement.supportSpace_halfLine_le_ker`, and `J_ℋ ⊆ J_{Σ(ℋ)}` is
+`SemifanArrangement.fibreJH_le_span_of_member` together with Lemma-Definition 4.5. -/
 theorem isAdmissibleDecomposition_of_vSigmaPlane_eq
     {BQ : LinearMap.BilinForm ℚ V} {Q : QuadraticForm ℝ (realified V)}
     {Γ : Set (V ≃ₗ[ℚ] V)}
