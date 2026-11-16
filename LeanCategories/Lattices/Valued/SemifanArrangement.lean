@@ -1747,6 +1747,43 @@ theorem exists_mem_semifanArrangement_halfLine_le {ι : Type*} (ψ : ι → V �
         (rationalPoint (fibreRay hBsym F G))),
     hull_fibreRay_le_cell ψ hBsym F G h hBQ hpos⟩
 
+omit [Module.Finite ℚ V] in
+/-- **When one point lies in the cell of another's sign pattern.** The cell of `u` contains `r`
+exactly when every wall through `u` passes through `r` and every other wall has the same sign at
+`u` as at `r`. A wall through `r` imposes nothing at `r`: `sign (φ i r) = 0` satisfies either side
+of the weak sign condition. This is what governs the members of `Σ(ℋ)` above the half line of a
+plane — they are cut by the walls *off* it — and it reduces item (2) of the issue to the geometry of
+the fibre. -/
+theorem mem_arrangementCone_signPattern_iff {ι : Type*} {φ : ι → (realified V) →L[ℝ] ℝ}
+    {r u : realified V} :
+    r ∈ arrangementCone φ (signPattern φ u) ↔
+      ∀ i, (φ i u = 0 → φ i r = 0) ∧
+        (φ i r ≠ 0 → SignType.sign (φ i u) = SignType.sign (φ i r)) := by
+  rw [mem_arrangementCone_iff_specializes]
+  simp only [signPattern]
+  refine forall_congr' fun i => ?_
+  constructor
+  · rintro (h | h)
+    · exact ⟨fun _ => sign_eq_zero_iff.1 h,
+        fun hr => absurd h fun h0 => hr (sign_eq_zero_iff.1 h0)⟩
+    · exact ⟨fun hu0 => sign_eq_zero_iff.1 (h.trans (by rw [hu0, sign_zero])),
+        fun _ => h.symm⟩
+  · rintro ⟨h1, h2⟩
+    by_cases hr : φ i r = 0
+    · exact Or.inl (sign_eq_zero_iff.2 hr)
+    · exact Or.inr (h2 hr).symm
+
+omit [Module.Finite ℚ V] in
+/-- **A point of the fibre lies in the cell of `u`'s sign pattern** from the two clauses the fibre's
+geometry supplies: every wall through `u` passes through `r`, and every wall off `r` has the same
+sign at `u`. -/
+theorem mem_arrangementCone_signPattern_of_sign_eq {ι : Type*} {φ : ι → (realified V) →L[ℝ] ℝ}
+    {r u : realified V}
+    (hoff : ∀ i, φ i u = 0 → φ i r = 0)
+    (hsame : ∀ i, φ i r ≠ 0 → SignType.sign (φ i u) = SignType.sign (φ i r)) :
+    r ∈ arrangementCone φ (signPattern φ u) :=
+  mem_arrangementCone_signPattern_iff.2 fun i => ⟨hoff i, hsame i⟩
+
 end HalfLineCell
 
 end LeanCategories.Lattices.Valued

@@ -3038,4 +3038,16 @@ downstream assertions, computational observations, or downstream diagnostics.
   isotropic ray of the closed sheet with `0 ≤ r · t`), so `hull_fibreRay_le_cell` no longer takes that
   as a hypothesis, and `exists_mem_semifanArrangement_halfLine_le` states the easy half
   unconditionally: the cell of the ray's own sign pattern is a member of `Σ(ℋ)` containing the ray.
-  The member *meeting the open cone* is what remains, with clauses (a) and (b) above.
+  `mem_arrangementCone_signPattern_iff` is the reduction to geometry: `r` lies in the cell of `u`'s
+  sign pattern exactly when every wall through `u` passes through `r` and every wall off `r` has the
+  same sign at `u` — clause (a) is *not* "`u` is off the walls through `r`" but "`u` is on no wall
+  that misses `r`", and `mem_arrangementCone_signPattern_of_sign_eq` packages the two clauses.
+- **What is missing for the member meeting `C_I`.** Two things. (1) The point `u`: a point of the
+  open cone off every wall that misses `r` and on the right side of the finitely many cutting walls
+  (clauses (a) and (b) above), which needs the rational cone `P = hull{r, v}` through `r`, a rational
+  `v ∈ C_I` and the relative interior of `P`. (2) `C_I ⊆ C_{I,+}` at a fibre, i.e.
+  `positiveCone.upper (fibreForm Q F.space) F.sheet ⊆ F.closure`. That is true — the rational points
+  of the closed sheet are dense in it and their convex hull is its interior — but this repository has
+  it only for a `PointedCone` that is open as a set (`subset_rationalClosure`), and the upper sheet
+  carries `0`, so the instance does not apply. An argument through a rational cone inside the sheet
+  (or a density lemma for `rationalClosure` of a cone with nonempty interior) supplies it.
