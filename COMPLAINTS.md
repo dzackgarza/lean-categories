@@ -2704,3 +2704,51 @@ downstream assertions, computational observations, or downstream diagnostics.
   `hasSectionSeparatingFunctional_of_relativeClosed`, its module-topology transport, and
   `hasSectionSeparatingFunctional_map_of_isotropicHalfspace`. The first declaration remains a candidate
   for Mathlib's `Analysis.Convex.Intrinsic` / `LocallyConvex.Separation` boundary.
+
+### Definition 4.2 does not supply `hloc` at an isotropic boundary point (#163)
+
+- **Need:** the final source-strength reverse inclusion must use only Looijenga's hypotheses, without
+  the additional ambient local-finiteness assumption at the isotropic generator used by
+  `exists_isProjectedMinimal_of_locallyFiniteAt` and
+  `inf_ker_iInf_span_le_sigmaSupportSpace_of_locallyFiniteAt`.
+- **Evidence:** Definition 4.2, `.tmp-sources/looijenga-math0201218v2.md:481`, requires that the union
+  be `C₊` and that restriction to every rational subcone be a finite rational cone system. It has no
+  ambient-neighbourhood finiteness clause. The proof of Lemma-Definition 4.5 instead says at line 521:
+  "These cones decompose $A_I(\mathbb R)$ in a locally finite ... manner"; that is local finiteness of
+  the *projected* affine-space decomposition, already carried by
+  `locallyFinite_map_star_of_isotropicHalfspace`. Example 4.3(b), line 491, likewise says "locally
+  finite on $C$", not at the isotropic boundary of `C₊` where 4.5 projects along `I`.
+- **Gap and impact:** `hloc` is the stronger statement that finitely many members of `S` meet some
+  ambient neighbourhood of `e`. It makes every member containing `e` part of that locally finite set,
+  which is exactly what the finite-preorder proof uses. The source's projected finiteness has `0`
+  outside the affine section `β = 1` and supplies no such global finite candidate set. Adding `hloc` to
+  `IsLocallyRationalDecomposition` would strengthen the definition, not repair it against line 481.
+  Therefore #163's fully source-general reverse inclusion still resists; the exact target without
+  `τmin`, `hmin`, or `hloc` is
+  ```lean
+  theorem reverse_inclusion_source_strength
+      {Q : QuadraticForm ℝ (realified V)} {t e : realified V} (hpos : sigPos Q = 1)
+      (hnd : Q.Nondegenerate) {ht : 0 < Q t} (he0 : e ≠ 0) (he : Q e = 0)
+      (heC : e ∈ rationalClosure (closedSheet Q hpos ht))
+      {S : Set (PointedCone ℝ (realified V))}
+      (hS : IsLocallyRationalDecomposition (rationalClosure (closedSheet Q hpos ht)) S) :
+      LinearMap.ker (associated Q e) ⊓
+          (⨅ τ : supportIndex (positiveCone.upper Q t) S
+            (PointedCone.hull ℝ ({e} : Set (realified V))),
+            Submodule.span ℝ (τ.1 : Set (realified V))) ≤
+        sigmaSupportSpace (positiveCone.upper Q t) S
+          (PointedCone.hull ℝ ({e} : Set (realified V)))
+  ```
+- **Coverage:** Definition 4.2, Setting 4.4, Example 4.3(b), the complete proof of 4.5, the Lean
+  structure fields and the existing finite-trace/projected-local-finiteness declarations were compared.
+  LC-09 queries covered locally rational/polyhedral decompositions, local finiteness and boundary
+  rational cones; no existing declaration upgrades the restriction clause to ambient finiteness at `e`.
+  No counterexample to `hloc` for an arbitrary locally rational decomposition is asserted here. What is
+  established is that `hloc` is not stated by the cited definition and is not the local finiteness
+  asserted in the 4.5 passage; only an explicit proof from the rational-restriction clause could
+  justify removing it, and none is available in this development.
+- **Repair link:** establish the projected-minimal member from the projected `A_I` local finiteness
+  (rather than from finite ambient candidates), or produce a complete example in which `hloc` fails and
+  hence settle whether the source's general assertion needs that extra hypothesis. Keep the current
+  explicitly named `..._of_locallyFiniteAt` theorems for applications that do supply `hloc`; do not
+  relabel them as the unrestricted source statement.

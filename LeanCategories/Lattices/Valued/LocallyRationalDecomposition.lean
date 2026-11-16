@@ -124,13 +124,19 @@ an `ℝ`-vector space with no extra structure.
   carried and which are not; of the description of `L_σ` itself the upper bound `L_σ ⊆ I^⊥` is
   carried in the section "The two descriptions of `L_σ`"
   (`sigmaSupportSpace_le_ker_associated_of_isotropic`), and the reverse inclusion, which is what
-  the affine model over `A_I(ℝ)` supplies, is also carried. Section separation is proved at every
-  projected star member (`hasSectionSeparatingFunctional_map_of_isotropicHalfspace`) by supporting
-  the closed section of its closure and using relative closedness on the open half-space. Local
-  finiteness at the isotropic point constructs a projected-minimal member
+  the affine model over `A_I(ℝ)` supplies, is carried under an explicit ambient local-finiteness
+  hypothesis. Section separation is proved at every projected star member
+  (`hasSectionSeparatingFunctional_map_of_isotropicHalfspace`), and local finiteness at the
+  isotropic point constructs a projected-minimal member
   (`exists_isProjectedMinimal_of_locallyFiniteAt`), so the reverse inclusion carries neither a
   minimal-member witness nor a minimality premise
-  (`inf_ker_iInf_span_le_sigmaSupportSpace_of_locallyFiniteAt`). For the facial decomposition
+  (`inf_ker_iInf_span_le_sigmaSupportSpace_of_locallyFiniteAt`). That ambient finiteness hypothesis
+  is additional, not a clause of Definition 4.2 (line 481): finite restriction to rational subcones
+  is not the same as topological local finiteness at an isotropic boundary point. The local
+  finiteness in the proof of Lemma-Definition 4.5 (line 521) belongs to the projected decomposition
+  of `A_I(ℝ)`, already carried by `locallyFinite_map_star_of_isotropicHalfspace`, not to the ambient
+  space near `e`. Thus the theorem carries neither premise *under the stated finiteness hypothesis*,
+  and does not yet claim the source's unrestricted statement. For the facial decomposition
   `Σ(bb)` the
   description is carried in full, both inclusions and the strict inequality: the only face of
   `C₊` meeting the open cone is `C₊` itself, the closed sheet and its rational closure carry the
@@ -10238,7 +10244,12 @@ machinery (`Mathlib/Order/WellFoundedSet.lean`) and the direct consumer
 `Set.Finite.exists_minimalFor` (`Mathlib/Order/Preorder/Finite.lean`), also used in a commented
 Matroid precedent for finding an inclusion-minimal witness. That direct owner supplies exactly the
 required finite-preorder argument; only the quotient-cover and candidate-packaging steps are local.
-This is the existence part of Looijenga's "a minimal member of this decomposition" at p. 19. -/
+This is the existence part of Looijenga's "a minimal member of this decomposition" at p. 19, under
+an ambient finiteness assumption at `e`. Definition 4.2 (line 481) states no such ambient
+assumption: its local finiteness is finite restriction to rational subcones. The local finiteness
+stated in the proof of 4.5 (line 521) is in `A_I(ℝ)`, not in `L(ℝ)` near `e`; see
+`locallyFinite_map_star_of_isotropicHalfspace`. This hypothesis must therefore not be read as an
+automatic consequence of `IsLocallyRationalDecomposition`. -/
 theorem exists_isProjectedMinimal_of_locallyFiniteAt
     {Q : QuadraticForm ℝ (realified V)} {t e : realified V} (hpos : sigPos Q = 1)
     (hnd : Q.Nondegenerate) {ht : 0 < Q t} (he0 : e ≠ 0) (he : Q e = 0)
@@ -11218,9 +11229,11 @@ theorem inf_ker_iInf_span_le_sigmaSupportSpace_of_projectedMinimal
 
 /-- **The reverse inclusion with neither a minimal-member witness nor a minimality premise.**
 Local finiteness at `e` constructs both by `exists_isProjectedMinimal_of_locallyFiniteAt`, and
-membership of `e` in `C₊` supplies `0 ≤ e · t`. This is the isotropic-half-line part of
-Looijenga's reverse inclusion at Lemma-Definition 4.5, p. 19, over the affine model
-`A_I(ℝ)`. -/
+membership of `e` in `C₊` supplies `0 ≤ e · t`. This is an ambient-neighbourhood-finite version of
+the isotropic-half-line reverse inclusion at Lemma-Definition 4.5, p. 19, over `A_I(ℝ)`. The
+source's Definition 4.2 (line 481) does not include that finiteness hypothesis; its local-finiteness
+statement in the 4.5 proof (line 521) is in the projected affine space, not at `e` in the ambient
+space. The version with only those source hypotheses is tracked separately as unfinished. -/
 theorem inf_ker_iInf_span_le_sigmaSupportSpace_of_locallyFiniteAt
     {Q : QuadraticForm ℝ (realified V)} {t e : realified V} (hpos : sigPos Q = 1)
     (hnd : Q.Nondegenerate) {ht : 0 < Q t} (he0 : e ≠ 0) (he : Q e = 0)
