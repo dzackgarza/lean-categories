@@ -70,6 +70,15 @@ E. Looijenga, *Compactifications defined by arrangements II: locally symmetric v
   of `Σ(H)` above the half line that meets the open cone `C_I` (Lemma-Definition 4.5, p. 19). A
   member of an arrangement decomposition is a face of a sign cell, so every trace is one-signed on
   it, and it vanishes on the half line exactly for the hyperplanes containing `J`.
+* **the reverse inclusion of Example 6.4**: `mem_supportSpace_halfLine_of_supportForms_span` (and
+  its form at the walls of `Σ(H)`,
+  `mem_supportSpace_halfLine_of_supportForms_span_semifanArrangement`): `J_H ⊆ J_{Σ(H)}` is a
+  statement about the dual cone of the member — every form nonnegative on `τ` and zero on the ray
+  is spanned by the forms nonnegative on the closed sheet and zero at the ray together with the
+  traces through the ray. The closed-sheet half of that span is proved here
+  (`supportForms_closedSheet_apply_eq_zero_of_isotropic`: such a form kills the hyperplane
+  orthogonal to the ray, Looijenga p. 19); the description of the cell's dual cone by its walls is
+  `COMPLAINTS.md`.
 * **the counting hypothesis at a fibre**, transported from the ambient cone:
   `cutsFinitelyOnRational_of_map_realifyMap` (a rational cone of the fibre maps to a rational cone
   of `V(ℝ)` — `isRationalCone_map_realifyMap`, `map_hull_eq` — and a trace cuts it exactly when its
@@ -944,8 +953,10 @@ hyperplane contains `J`. The support space of `σ` (Lemma-Definition 4.5, p. 19)
 the trace of every such hyperplane — the inclusion `J_{Σ(H)} ⊆ J_H`.
 
 `supportSpace_halfLine_le_ker` takes the member `τ` above `σ` meeting the open cone as an argument:
-without one the index set of the intersection is empty and the support space is `⊤`. Its existence
-for the `H` of the source is recorded in `COMPLAINTS.md`.
+without one the index set of the intersection is empty and the support space is `⊤`. A member above
+the half line is the cell of the ray's own sign pattern (`hull_fibreRay_le_cell`,
+`mem_semifanArrangement_cell`), so what its existence needs is that this cell meet the open cone;
+that is recorded in `COMPLAINTS.md`.
 -/
 
 section HalfLineSupport
@@ -1148,5 +1159,175 @@ theorem cutsFinitelyOnRational_semifanArrangement (F : ConicalLine BQ Q)
   exact fibreFormC_apply F (ψ i) x
 
 end CountingAtFibre
+
+/-! ## Example 6.4: the `≥` half of `J_{Σ(ℋ)} = J_ℋ`
+
+Looijenga, Example 6.4, p. 29 (text line 791): "the space `J_ℋ` associated to a `ℚ`-isotropic
+plane `J` is the common intersection of `J^⊥` and the hyperplanes `H ∈ ℋ` containing `J`".
+
+`supportSpace_halfLine_le_ker` is the inclusion `J_{Σ(ℋ)} ⊆ J_ℋ` at a member `τ` of `Σ(ℋ)` above
+the half line of `J` meeting the open cone. The reverse inclusion asks that every vector `w` of the
+fibre that is orthogonal to the ray `r` of `J` and lies in the trace of every wall through `J` be
+killed by every form nonnegative on `τ` and zero on `⟨r⟩` — that is, that it lie in
+`supportSpace τ ⟨r⟩`.
+
+The forms in question are described by the dual cone of the cell `τ`: such a form is a sum of a
+form nonnegative on the closed sheet and zero at `r` and of the traces of the walls through `r`
+(`hspan` of `mem_supportSpace_halfLine_of_supportForms_span`). The closed-sheet part is not a
+hypothesis: a form nonnegative on the fibre's closed sheet and vanishing at an isotropic vector
+`r` kills `r^⊥` (`supportForms_closedSheet_apply_eq_zero_of_isotropic`), because the only such
+forms are the multiples of the metric dual of `r` (Looijenga, p. 19,
+`supportSpace_closedSheet_hull_eq_ker`). The remaining step — that the traces of the walls through
+the ray span the dual cone of the cell modulo that form — is recorded in `COMPLAINTS.md`.
+-/
+
+section HalfLineSupportGe
+
+variable {BQ : LinearMap.BilinForm ℚ V} {Q : QuadraticForm ℝ (realified V)}
+
+omit [Module.Finite ℚ V] in
+/-- **A generating set for the support space**: a vector killed by a set of forms whose span
+contains the forms nonnegative on `τ` and zero on `σ` lies in the support space (Looijenga,
+Lemma-Definition 4.5, p. 19). -/
+theorem mem_supportSpace_of_supportForms_subset_span
+    {σ τ : PointedCone ℝ (realified V)} {T : Set ((realified V) →ₗ[ℝ] ℝ)}
+    (hsub : supportForms τ σ ⊆ Submodule.span ℝ T) {w : realified V}
+    (hw : ∀ ψ ∈ T, ψ w = 0) : w ∈ supportSpace τ σ :=
+  mem_supportSpace.2 fun φ hφ => forall_apply_eq_zero_span.1 hw φ (hsub hφ)
+
+/-- **A form nonnegative on the fibre's closed sheet and zero at an isotropic vector kills the
+orthogonal complement of that vector.** By Looijenga, p. 19, the support space of an isotropic ray
+relative to the closed sheet is the hyperplane orthogonal to the ray, so the common zero set of
+those forms contains it. -/
+theorem supportForms_closedSheet_apply_eq_zero_of_isotropic
+    (F : ConicalLine BQ Q)
+    (hpos : sigPos (fibreForm Q F.space) = 1)
+    (hnd : (fibreForm Q F.space).Nondegenerate)
+    {e : realified ↥F.space} (he : fibreForm Q F.space e = 0) (he0 : e ≠ 0)
+    (het : 0 ≤ (associated (fibreForm Q F.space)) e F.sheet) :
+    ∀ ψ : (realified ↥F.space) →ₗ[ℝ] ℝ,
+      (∀ x ∈ closedSheet (fibreForm Q F.space) hpos F.sheet_pos, 0 ≤ ψ x) → ψ e = 0 →
+      ∀ w : realified ↥F.space, (associated (fibreForm Q F.space)) e w = 0 → ψ w = 0 := by
+  intro ψ hψ hψe w hw
+  have hψ' : ψ ∈ supportForms (closedSheet (fibreForm Q F.space) hpos F.sheet_pos)
+      (PointedCone.hull ℝ ({e} : Set (realified ↥F.space))) := by
+    refine mem_supportForms.2 ⟨hψ, ?_⟩
+    intro x hx
+    obtain ⟨c, -, rfl⟩ := PointedCone.mem_hull_singleton.1 hx
+    rw [map_smul, smul_eq_mul, hψe, mul_zero]
+  have hmem : w ∈ supportSpace (closedSheet (fibreForm Q F.space) hpos F.sheet_pos)
+      (PointedCone.hull ℝ ({e} : Set (realified ↥F.space))) := by
+    rw [supportSpace_closedSheet_hull_eq_ker hpos hnd F.sheet_pos he he0 het]
+    exact hw
+  exact mem_supportSpace.1 hmem ψ hψ'
+
+/-- **Example 6.4, the `≥` half of `J_{Σ(ℋ)} = J_ℋ`, reduced to the dual cone of the cell.**
+
+Let `σ = ⟨r⟩` be the half line of a `ℚ`-isotropic plane in the fibre of `I` and `τ` a member of
+`Σ(ℋ)` above it. A vector `w` orthogonal to `r` and lying in the kernel of every trace that
+vanishes on `r` — the trace of every wall of `Σ(ℋ)` containing `J` — is killed by every form
+nonnegative on `τ` and zero on `⟨r⟩`, provided those forms are spanned by the forms nonnegative on
+the closed sheet and zero at `r` together with the traces vanishing at `r`.
+
+The first family kills `w` by `supportForms_closedSheet_apply_eq_zero_of_isotropic`; the second is
+the hypothesis on the traces. What remains is the description of the dual cone of a cell of the
+arrangement by its walls, which is recorded in `COMPLAINTS.md`. -/
+theorem mem_supportSpace_halfLine_of_supportForms_span
+    {F : ConicalLine BQ Q} {ι : Type*} (φ : ι → (realified ↥F.space) →L[ℝ] ℝ)
+    {τ σ : PointedCone ℝ (realified ↥F.space)} {e : realified ↥F.space}
+    (hσ : σ = PointedCone.hull ℝ ({e} : Set (realified ↥F.space)))
+    (hpos : sigPos (fibreForm Q F.space) = 1)
+    (hnd : (fibreForm Q F.space).Nondegenerate)
+    (he : fibreForm Q F.space e = 0) (he0 : e ≠ 0)
+    (het : 0 ≤ (associated (fibreForm Q F.space)) e F.sheet)
+    (hspan : supportForms τ σ ⊆ Submodule.span ℝ
+      ({ψ : (realified ↥F.space) →ₗ[ℝ] ℝ |
+          (∀ x ∈ closedSheet (fibreForm Q F.space) hpos F.sheet_pos, 0 ≤ ψ x) ∧ ψ e = 0} ∪
+        {ψ : (realified ↥F.space) →ₗ[ℝ] ℝ | ∃ i : ι, ψ = (φ i).toLinearMap ∧ ψ e = 0}))
+    {w : realified ↥F.space}
+    (hw : (associated (fibreForm Q F.space)) e w = 0)
+    (hwφ : ∀ i : ι, φ i e = 0 → φ i w = 0) :
+    w ∈ supportSpace τ σ := by
+  subst hσ
+  refine mem_supportSpace_of_supportForms_subset_span hspan fun ψ hψ => ?_
+  rcases hψ with hψ | ⟨i, rfl, hψe⟩
+  · exact supportForms_closedSheet_apply_eq_zero_of_isotropic F hpos hnd he he0 het ψ hψ.1 hψ.2 w hw
+  · exact hwφ i hψe
+
+/-- **Example 6.4, the `≥` half of `J_{Σ(ℋ)} = J_ℋ`, at the walls of `Σ(ℋ)`.** The generic
+`mem_supportSpace_halfLine_of_supportForms_span` at the traces `fibreFormC F (ψ i)` of the walls of
+`ℋ` containing `I` (`fibreWalls ψ F`): a vector of the fibre orthogonal to the ray of `J` and lying
+in the trace of every wall through `J` lies in the support space of the half line relative to a
+member `τ` of `Σ(ℋ)`, once the forms nonnegative on `τ` and zero on the ray are spanned by the
+closed-sheet forms vanishing at the ray and the traces through the ray. -/
+theorem mem_supportSpace_halfLine_of_supportForms_span_semifanArrangement
+    (F : ConicalLine BQ Q) {ι : Type*} (ψ : ι → V →ₗ[ℚ] ℚ)
+    {τ : PointedCone ℝ (realified ↥F.space)} {r : realified ↥F.space}
+    (hpos : sigPos (fibreForm Q F.space) = 1)
+    (hnd : (fibreForm Q F.space).Nondegenerate)
+    (hr : fibreForm Q F.space r = 0) (hr0 : r ≠ 0)
+    (hrt : 0 ≤ (associated (fibreForm Q F.space)) r F.sheet)
+    (hspan : supportForms τ (PointedCone.hull ℝ ({r} : Set (realified ↥F.space))) ⊆
+      Submodule.span ℝ
+        ({ψ' : (realified ↥F.space) →ₗ[ℝ] ℝ |
+            (∀ x ∈ closedSheet (fibreForm Q F.space) hpos F.sheet_pos, 0 ≤ ψ' x) ∧ ψ' r = 0} ∪
+          {ψ' : (realified ↥F.space) →ₗ[ℝ] ℝ |
+            ∃ i : fibreWalls ψ F, ψ' = (fibreFormC F (ψ ↑i)).toLinearMap ∧ ψ' r = 0}))
+    {w : realified ↥F.space}
+    (hw : (associated (fibreForm Q F.space)) r w = 0)
+    (hwφ : ∀ i : fibreWalls ψ F, fibreFormC F (ψ ↑i) r = 0 → fibreFormC F (ψ ↑i) w = 0) :
+    w ∈ supportSpace τ (PointedCone.hull ℝ ({r} : Set (realified ↥F.space))) :=
+  mem_supportSpace_halfLine_of_supportForms_span (F := F)
+    (fun i : fibreWalls ψ F => fibreFormC F (ψ ↑i)) rfl hpos hnd hr hr0 hrt hspan hw hwφ
+
+end HalfLineSupportGe
+
+/-! ## The cell of the half line is a member of `Σ(ℋ)`
+
+Example 6.4, p. 29: the members of `Σ(ℋ)` in the fibre of `I` are the cells of the traces of the
+hyperplanes containing `I`, and their faces. The sign pattern of the ray `r` of a `ℚ`-isotropic
+plane `J` uses the *weak* sign conditions, so `r` itself lies in the cell of its own sign pattern,
+and that cell is a member of `Σ(ℋ)` above the half line `⟨r⟩`. What item (a) of the issue adds is
+that this cell meets the open cone `C_I`: walls accumulating at the ray keep every member through
+the ray off it (`COMPLAINTS.md`).
+-/
+
+section HalfLineCell
+
+variable {BQ : LinearMap.BilinForm ℚ V} {Q : QuadraticForm ℝ (realified V)}
+
+omit [Module.Finite ℚ V] in
+/-- **The cell of a sign pattern is a member of `Σ(ℋ)`**: it is a cell of the arrangement, and a
+cell is a face of itself. -/
+theorem mem_semifanArrangement_cell {ι : Type*} (ψ : ι → V →ₗ[ℚ] ℚ) (F : ConicalLine BQ Q)
+    (s : fibreWalls ψ F → SignType) :
+    arrangementCone (fun i : fibreWalls ψ F => fibreFormC F (ψ ↑i)) s ⊓ F.closure ∈
+      semifanArrangement ψ F :=
+  mem_faceClosure.2 ⟨_, ⟨s, rfl⟩, PointedCone.IsFaceOf.rfl⟩
+
+omit [Module.Finite ℚ V] in
+/-- **The half line of a `ℚ`-isotropic plane lies in the cell of its own sign pattern**: the weak
+sign conditions of `arrangementCone` hold at the ray itself, and the ray lies in `C_{I,+}`
+(`hr`). -/
+theorem hull_fibreRay_le_cell {ι : Type*} (ψ : ι → V →ₗ[ℚ] ℚ) (hBsym : BQ.IsSymm)
+    (F : ConicalLine BQ Q) (G : ConicalPlane BQ)
+    (hr : rationalPoint (fibreRay hBsym F G) ∈ F.closure) :
+    PointedCone.hull ℝ ({rationalPoint (fibreRay hBsym F G)} : Set (realified ↥F.space)) ≤
+      arrangementCone (fun i : fibreWalls ψ F => fibreFormC F (ψ ↑i))
+          (signPattern (fun i : fibreWalls ψ F => fibreFormC F (ψ ↑i))
+            (rationalPoint (fibreRay hBsym F G))) ⊓ F.closure := by
+  refine le_inf ?_ ?_
+  · refine Submodule.span_le.2 ?_
+    rintro x hx
+    rw [Set.mem_singleton_iff] at hx
+    subst hx
+    exact mem_arrangementCone_signPattern _ _
+  · exact Submodule.span_le.2 (by
+      rintro x hx
+      rw [Set.mem_singleton_iff] at hx
+      subst hx
+      exact hr)
+
+end HalfLineCell
 
 end LeanCategories.Lattices.Valued

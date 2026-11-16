@@ -2812,8 +2812,32 @@ downstream assertions, computational observations, or downstream diagnostics.
   closed upper half plane, the walls `{y = x/n}` (`n ≥ 1`) and the ray `{(x,0) | x ≥ 0}`. For the
   `H` of the source it is the local finiteness of `H` on `D` at the ray that supplies `τ`. What this
   unit supplies is the `≤` half with `τ` in hand (`supportSpace_halfLine_le_ker`,
-  `LeanCategories/Lattices/Valued/SemifanArrangement.lean`), i.e. `J_{Σ(H)} ⊆ J_H`. The `≥` half
-  (`⟨arrangementCone φ s ⊓ C₊⟩₊ = ⋂_{s i = 0} ker (φ i)`) and the existence of `τ` are open.
+  `LeanCategories/Lattices/Valued/SemifanArrangement.lean`), i.e. `J_{Σ(H)} ⊆ J_H`. The existence
+  of `τ` is open, and is now reduced to one geometric statement: the cell of the ray's own sign
+  pattern is a member of `Σ(H)` above the half line (`hull_fibreRay_le_cell`,
+  `mem_semifanArrangement_cell`), so `τ` exists **iff** that cell meets the open cone `C_I` — and
+  the cell of the ray is `arrangementCone φ s ⊓ C_{I,+}` with `s = signPattern φ r`, so this is
+  exactly the assertion that the walls through the ray do not cover its germ in `C_I`. The
+  examples in the previous bullet show that this can fail once walls accumulate at the ray; what
+  is missing for the `H` of the source is a proof that they do not (local finiteness of `H` on `D`
+  is local finiteness *on `D`*, at the boundary of the compactified domain it is the locally
+  rational — not locally finite — property that holds, so the source's own hypothesis does not
+  immediately give it).
+- **The `≥` half, reduced:** `J_H ⊆ J_{Σ(H)}` asks that every form `ψ` nonnegative on `τ` and zero
+  on the ray `⟨r⟩` kill `w`, where `w` is orthogonal to `r` and lies in the trace of every wall
+  through `J`. `mem_supportSpace_halfLine_of_supportForms_span` proves this from one statement
+  about the cell's dual cone — that such a `ψ` is spanned by the forms nonnegative on the closed
+  sheet and zero at `r` together with the traces through `r` —
+  and `supportForms_closedSheet_apply_eq_zero_of_isotropic` proves the closed-sheet half of that
+  span with no hypothesis, by `supportSpace_closedSheet_hull_eq_ker` (p. 19): a form nonnegative
+  on the closed sheet and zero at the isotropic `r` kills `r^⊥`, hence `w`. What remains is the
+  conic-duality step `⟨arrangementCone φ s ⊓ C₊⟩₊ = ⋂_{s i = 0} ker (φ i)` for a sign cell, i.e.
+  the description of the cell's dual cone by the closed sheet and its walls. That step is not
+  formal: the dual cone of an intersection of closed cones is the *closure* of the sum of the dual
+  cones, so an approximation argument would have to show that the closed-sheet part vanishes in
+  the limit — in the formulation above, if `ψ = lim (c n + ∑ λ i n • s i φ i)` with `c n ∈ C₊`,
+  then `c n r → 0` follows from `ψ r = 0` but `c n w → 0` does not follow from `c n r → 0` without
+  a bound on `|c n w|` in terms of `c n r`.
 - **Coverage:** LC-09 queries `closed sheet`, `arrangement cell closure`, `fan locally finite
   boundary ray`, `weakSignCellCone`; the cells are the ported TauCeti sign-cell machine
   (`arrangementCone`, #159) and no declaration there or in Mathlib places a member over a boundary
