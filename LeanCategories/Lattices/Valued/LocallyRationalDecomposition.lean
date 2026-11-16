@@ -10074,16 +10074,20 @@ cone over a real affine space `A_I(ℝ)` over `(I ⊗ I^⊥/I)(ℝ)`", and the m
 rational polyhedron" in it, so that "these cones decompose `A_I(ℝ)`".
 
 Carried here: the affine space as the hyperplane `{β = 1}` of the quotient, the functional `β` being
-`isotropicHalfspaceForm`; the polyhedron a member cuts on it; and minimality of one of those
-polyhedra under inclusion, the projected order. Not carried: that a minimal member's polyhedron *is*
-an affine subspace, which is the source's next sentence and the step the reverse inclusion needs.
-Read on the hyperplane `{β = 1}`, affineness of that polyhedron gives exactly the one inequality the
-reverse inclusion is missing — every point of the member is a nonnegative multiple of a point of the
-polyhedron, so the member's span is the polyhedron's direction plus one ray, and the part of the
-span that `e ·` kills is that direction. The span form
-`iInf_span_le_sigmaSupportSpace_of_isotropicHalfLine` names a stronger hypothesis (`haffine`) that
-the half-space over a proper affine subspace refutes: its span is the direction plus the ray, not
-the preimage of the direction. What is awaited is the source's own step, not that one. -/
+`isotropicHalfspaceForm`; the polyhedron a member cuts on it; minimality of one of those polyhedra
+under inclusion, the projected order; and the way that minimality constrains the polyhedron — a
+functional nonnegative on a minimal member's projection that vanishes at one point of the polyhedron
+vanishes on all of it (`projectedPolyhedron_apply_eq_zero_of_projectedMinimal`), because the face it
+cuts is a member whose polyhedron is a nonempty part of this one.
+
+Not carried: that a minimal member's polyhedron *is* an affine subspace, the source's next sentence.
+By `projectedPolyhedron_affine_iff` that is affineness inside the projection, so what is missing is
+the existence of a supporting functional: for `C = π_I τmin` with section `P = C ⊓ {β = 1}` not
+affinely closed, a `φ` nonnegative on `C` vanishing at a point of `P` and positive somewhere on `P`.
+The engine above then forces `φ = 0` on `P`, a contradiction. Producing `φ` is separation of a point
+of `span C ∖ C` from `C`, and the separation available in this file
+(`exists_dual_nonneg_lt_of_isClosed`) needs `C` closed, which `IsLocallyRationalDecomposition` does
+not give for its members. -/
 
 section AffineModel
 
@@ -10633,6 +10637,28 @@ theorem projectedPolyhedron_apply_eq_zero_of_projectedMinimal
   obtain ⟨hxF, -⟩ := hback hu
   obtain ⟨y, hy, rfl⟩ := PointedCone.mem_map.1 hxF
   exact hy.2
+omit [Module.Finite ℚ V] in
+/-- **Affineness of the projected polyhedron is affineness inside the projection**: since `β` is `1`
+on the polyhedron and affine combinations preserve `β`, an affine combination of polyhedron points
+lies on the polyhedron exactly when it lies in the projected cone. The form on the right is the one
+the separation argument produces points in. -/
+theorem projectedPolyhedron_affine_iff {Q : QuadraticForm ℝ (realified V)} {e : realified V}
+    (he : Q e = 0) (τ : PointedCone ℝ (realified V)) :
+    (∀ u ∈ projectedPolyhedron Q he τ, ∀ v ∈ projectedPolyhedron Q he τ, ∀ c : ℝ,
+        c • u + (1 - c) • v ∈ projectedPolyhedron Q he τ) ↔
+      (∀ u ∈ projectedPolyhedron Q he τ, ∀ v ∈ projectedPolyhedron Q he τ, ∀ c : ℝ,
+        c • u + (1 - c) • v ∈ ((τ.map (Submodule.span ℝ ({e} : Set (realified V))).mkQ :
+          PointedCone ℝ (realified V ⧸ Submodule.span ℝ ({e} : Set (realified V)))) : Set _)) := by
+  constructor
+  · intro haff u hu v hv c
+    exact (haff u hu v hv c).1
+  · intro haff u hu v hv c
+    refine ⟨haff u hu v hv c, ?_⟩
+    obtain ⟨-, hu1⟩ := hu
+    obtain ⟨-, hv1⟩ := hv
+    show isotropicHalfspaceForm Q he (c • u + (1 - c) • v) = 1
+    rw [map_add, map_smul, map_smul, smul_eq_mul, smul_eq_mul, hu1, hv1]
+    ring
 end AffineModel
 
 end LeanCategories.Lattices.Valued
