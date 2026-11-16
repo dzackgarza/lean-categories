@@ -2514,11 +2514,12 @@ vanishes at it. A rational cone `P ⊆ int P₀` around `x` cuts `P` only along 
 in the sign cell of `x` and in `C₊`; the face relation `τ ⊴ cell` applied to their half sum `x ∈ τ`
 then puts `z` in `τ` (`PointedCone.IsFaceOf.mem_of_smul_add_mem`).
 
-LC-09: `content:weakSignCell content:intrinsicInterior`, `content:isFaceOf content:span content:ker`,
-`content:SignCell content:span content:hyperplane` and `content:intrinsicInterior content:openSegment`
-found the ported sign-cell machine, TauCeti `Analysis/Convex/Polyhedron/SignCell/Interior.lean` and
-TauCeti `Geometry/Convex/Cone/Face/Exposed.lean`; none carries this statement, and the primal route
-here needs none of them. -/
+LC-09: `content:weakSignCell content:intrinsicInterior`,
+`content:isFaceOf content:span content:ker`, `content:SignCell content:span
+content:hyperplane` and `content:intrinsicInterior content:openSegment` found the
+ported sign-cell machine, TauCeti `Analysis/Convex/Polyhedron/SignCell/Interior.lean`
+and TauCeti `Geometry/Convex/Cone/Face/Exposed.lean`; none carries this statement,
+and the primal route here needs none of them. -/
 theorem fibreJH_le_span_of_member {ι : Type*} (ψ : ι → V →ₗ[ℚ] ℚ) (hBsym : BQ.IsSymm)
     (F : ConicalLine BQ Q) (G : ConicalPlane BQ)
     (hpos : sigPos (fibreForm Q F.space) = 1)
