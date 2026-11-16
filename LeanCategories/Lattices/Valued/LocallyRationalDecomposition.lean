@@ -10150,6 +10150,45 @@ theorem projectedPolyhedron_mono {Q : QuadraticForm ℝ (realified V)} {e : real
   obtain ⟨y, hy, rfl⟩ := PointedCone.mem_map.1 hu
   exact PointedCone.mem_map.2 ⟨y, h hy, rfl⟩
 
+/-- **The isotropic kernel descends to `A_I(ℝ)`'s direction**: the image of `I^⊥ = ker (e ·)` under
+`π_I` is the kernel of the descended functional `β` (Lemma-Definition 4.5, p. 19). -/
+theorem map_ker_associated_eq_ker_isotropicHalfspaceForm
+    {Q : QuadraticForm ℝ (realified V)} {e : realified V} (he : Q e = 0) :
+    (LinearMap.ker (associated Q e)).map
+        (Submodule.span ℝ ({e} : Set (realified V))).mkQ =
+      LinearMap.ker (isotropicHalfspaceForm Q he) := by
+  apply le_antisymm
+  · rintro u ⟨y, hy, rfl⟩
+    have hy' : (associated Q) e y = 0 := hy
+    rw [LinearMap.mem_ker, isotropicHalfspaceForm_mkQ, hy']
+  · intro u hu
+    rw [LinearMap.mem_ker] at hu
+    obtain ⟨y, hy⟩ := Submodule.mkQ_surjective
+      (Submodule.span ℝ ({e} : Set (realified V))) u
+    refine ⟨y, ?_, hy⟩
+    have hu' : isotropicHalfspaceForm Q he u = 0 := hu
+    rw [← hy, isotropicHalfspaceForm_mkQ] at hu'
+    exact hu'
+
+/-- **A member meeting the open cone cuts a nonempty polyhedron**: `π_I z` pairs positively with
+`e`, and rescaling by its inverse puts it on `β = 1` without leaving a cone. -/
+theorem projectedPolyhedron_nonempty {Q : QuadraticForm ℝ (realified V)} {t e : realified V}
+    (hpos : sigPos Q = 1) (hnd : Q.Nondegenerate) (ht : 0 < Q t) (he0 : e ≠ 0) (he : Q e = 0)
+    (het : 0 ≤ (associated Q) e t) {τ : PointedCone ℝ (realified V)}
+    (hC : ((τ : Set (realified V)) ∩ positiveCone.upper Q t).Nonempty) :
+    (projectedPolyhedron Q he τ).Nonempty := by
+  obtain ⟨z, hzτ, hzC⟩ := hC
+  have hβ : 0 < isotropicHalfspaceForm Q he
+      ((Submodule.span ℝ ({e} : Set (realified V))).mkQ z) := by
+    rw [isotropicHalfspaceForm_mkQ, associated_comm]
+    exact associated_pos_of_mem_upper_of_mem_closedSheet Q hpos hnd ht hzC ⟨he.ge, het⟩ he0
+  refine ⟨(isotropicHalfspaceForm Q he
+      ((Submodule.span ℝ ({e} : Set (realified V))).mkQ z))⁻¹ •
+      (Submodule.span ℝ ({e} : Set (realified V))).mkQ z, ⟨?_, ?_⟩⟩
+  · refine PointedCone.mem_map.2 ⟨_, τ.smul_mem (inv_nonneg.2 hβ.le) hzτ, ?_⟩
+    rw [map_smul]
+  · rw [mem_affineModel, map_smul, smul_eq_mul, inv_mul_cancel₀ hβ.ne']
+
 /-- Minimality in the projected order: no member of the decomposition above `σ` cuts a strictly
 smaller polyhedron on `A_I(ℝ)`, so `τmin`'s polyhedron is an element of the induced decomposition
 minimal under inclusion. -/
