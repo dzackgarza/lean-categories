@@ -107,6 +107,19 @@ an `ℝ`-vector space with no extra structure.
   carried in the section "The two descriptions of `L_σ`"
   (`sigmaSupportSpace_le_ker_associated_of_isotropic`), and the reverse inclusion, which is what
   the affine model over `A_I(ℝ)` supplies, is not.
+* **`sigmaSupportSpace` ranges over the open cone.** The index of Lemma-Definition 4.5
+  (`.tmp-sources/looijenga-math0201218v2.md:519`) is the set of members `τ ≥ σ` with `τ ∩ C ≠ ∅`
+  for the *open* cone `C`; over the closed cone `C.closure` every pointed cone `τ` meets it in `0`,
+  so `τ = σ` is always in range and the intersection is `⟨σ⟩` for every `σ`
+  (`sigmaSupportSpace_eq_span_of_meets`, which is now what its hypothesis says). The parameter is
+  therefore a set of points, and the uses pass the open sheet `positiveCone.upper Q t` — the cone
+  `supportSpace_eq_of_locallyRational` ranges over — and, in `ConicalLocus.lean`, the open cone
+  `C_I` of the conical fibre. On a locally rational decomposition the intersection is then a
+  single one of its terms (`sigmaSupportSpace_eq_supportSpace_of_locallyRational`), for an
+  isotropic half line it lies in `I^⊥ ⊓ ⟨τ⟩ ⊓ ⟨τ'⟩` and is strictly smaller than `⟨τ⟩` and than
+  `⟨τ'⟩` (`sigmaSupportSpace_le_inf_span_of_isotropic`, `sigmaSupportSpace_lt_span_of_isotropic`),
+  and it is `⟨τ⟩ ⊓ ⟨τ'⟩` when those two spans meet in `⟨σ⟩`
+  (`sigmaSupportSpace_eq_inf_span_of_isotropic_of_inf_eq`).
 * **Lemma-Definition 4.5 for every locally rational `Σ`** (p. 19, the proof at line 521):
   `supportSpace_eq_of_locallyRational` proves that the support space of `σ` is the same for every
   member `τ ≥ σ` meeting `C`, with no hypothesis beyond the source's. The upper-sheet case uses a
@@ -3633,42 +3646,52 @@ theorem forall_mem_cone_eq_zero_of_zero_on_inf_of_mem_nhds
   rw [map_add, map_smul, hwx, smul_eq_mul, zero_add] at hzero
   exact (mul_eq_zero.1 hzero).resolve_left (Set.mem_Ioi.1 ht).ne'
 
-/-- The members of a decomposition that contain `σ` and meet the open cone `C`:
-the cones `τ` over which Looijenga, Lemma-Definition 4.5, p. 19, states the support space. -/
-def supportIndex (C : PointedCone ℝ (realified V)) (S : Set (PointedCone ℝ (realified V)))
+/-- The members of a decomposition that contain `σ` and meet the **open** cone `C`: the cones `τ`
+over which Looijenga, Lemma-Definition 4.5, p. 19, states the support space
+(`.tmp-sources/looijenga-math0201218v2.md:519`, "`τ ≥ σ` and `τ ∩ C ≠ ∅`"). `C` is a set of
+points, and the source's `C` is the open cone: for a closed cone `C` every pointed cone `τ` meets
+it in `0`, so `τ = σ` is always in the index, and the intersection below is `⟨σ⟩` for every `σ`
+(`sigmaSupportSpace_eq_span_of_meets`), which is not the source's `L_σ`. The locally rational
+decompositions of this file are over `C₊ = rationalClosure C`, and the open cone of the setting of
+Example 4.3 is the open sheet `positiveCone.upper Q t`. -/
+def supportIndex (C : Set (realified V)) (S : Set (PointedCone ℝ (realified V)))
     (σ : PointedCone ℝ (realified V)) : Type u :=
   {τ : PointedCone ℝ (realified V) // τ ∈ S ∧ σ ≤ τ ∧
-    ((τ : Set (realified V)) ∩ (C : Set (realified V))).Nonempty}
+    ((τ : Set (realified V)) ∩ C).Nonempty}
 
-/-- The support space of `σ` in a decomposition. Looijenga's Lemma-Definition 4.5, p. 19,
-gives `L_σ` as the common value of `supportSpace τ σ` over the members `τ ≥ σ` meeting `C`;
-that common value is carried here as their intersection. -/
-noncomputable def sigmaSupportSpace (C : PointedCone ℝ (realified V))
+/-- The support space `L_σ` of `σ` in a decomposition: Looijenga's Lemma-Definition 4.5, p. 19.
+The source gives it as the common zero set of the forms nonnegative on a member `τ ≥ σ` and zero
+on `σ`, a subspace *independent of* `τ`, and that common value is carried here as the intersection
+of those common zero sets over the members `τ ≥ σ` meeting the open cone `C`. On a locally
+rational decomposition the intersection is a single one of its terms
+(`sigmaSupportSpace_eq_supportSpace_of_locallyRational`), which is the content of the lemma. -/
+noncomputable def sigmaSupportSpace (C : Set (realified V))
     (S : Set (PointedCone ℝ (realified V))) (σ : PointedCone ℝ (realified V)) :
     Submodule ℝ (realified V) :=
   ⨅ (τ : supportIndex C S σ), supportSpace τ.1 σ
 
 /-- The support space of `σ` is contained in the space of every member above it. -/
-theorem sigmaSupportSpace_le {C : PointedCone ℝ (realified V)}
+theorem sigmaSupportSpace_le {C : Set (realified V)}
     {S : Set (PointedCone ℝ (realified V))} {σ τ : PointedCone ℝ (realified V)}
     (hτ : τ ∈ S) (hστ : σ ≤ τ)
-    (hC : ((τ : Set (realified V)) ∩ (C : Set (realified V))).Nonempty) :
+    (hC : ((τ : Set (realified V)) ∩ C).Nonempty) :
     sigmaSupportSpace C S σ ≤ supportSpace τ σ :=
   iInf_le (fun τ : supportIndex C S σ => supportSpace τ.1 σ) ⟨τ, hτ, hστ, hC⟩
 
 /-- The support space of `σ` contains the span of `σ`. -/
-theorem span_le_sigmaSupportSpace {C : PointedCone ℝ (realified V)}
+theorem span_le_sigmaSupportSpace {C : Set (realified V)}
     {S : Set (PointedCone ℝ (realified V))} {σ : PointedCone ℝ (realified V)}
     (_τ : supportIndex C S σ) :
     Submodule.span ℝ (σ : Set (realified V)) ≤ sigmaSupportSpace C S σ :=
   le_iInf fun τ' => span_le_supportSpace τ'.2.2.1
 
-/-- **The support space of a cone that meets the open cone is the span of that cone**: the
-member `σ` itself is one of the cones over which the intersection is taken, and its space is
-`span σ` (Looijenga, Lemma-Definition 4.5, p. 19). -/
-theorem sigmaSupportSpace_eq_span_of_meets {C : PointedCone ℝ (realified V)}
+/-- **The support space of a cone that meets the open cone is the span of that cone**: the member
+`σ` itself is one of the cones over which the intersection is taken, and its space is `span σ`
+(Looijenga, Lemma-Definition 4.5, p. 19). For a *closed* cone `C` the hypothesis holds for every
+member and the intersection is the span of `σ` for every `σ`, which is why `C` is the open cone. -/
+theorem sigmaSupportSpace_eq_span_of_meets {C : Set (realified V)}
     {S : Set (PointedCone ℝ (realified V))} {σ : PointedCone ℝ (realified V)}
-    (hσ : σ ∈ S) (hC : ((σ : Set (realified V)) ∩ (C : Set (realified V))).Nonempty) :
+    (hσ : σ ∈ S) (hC : ((σ : Set (realified V)) ∩ C).Nonempty) :
     sigmaSupportSpace C S σ = Submodule.span ℝ (σ : Set (realified V)) := by
   refine le_antisymm ?_ (span_le_sigmaSupportSpace ⟨σ, hσ, le_rfl, hC⟩)
   exact (sigmaSupportSpace_le (σ := σ) (τ := σ) hσ le_rfl hC).trans_eq (supportSpace_self σ)
@@ -4541,7 +4564,7 @@ theorem supportSpace_eq_of_mem_open_of_locallyRational {C : PointedCone ℝ (rea
 /-- **The `Σ`-support space of Lemma-Definition 4.5 is the common value**: if the support space of
 every member of `Σ` that lies above `σ` and meets `C` agrees with one of them, the intersection
 over them — the `sigmaSupportSpace` carried in this file — is that value. -/
-theorem sigmaSupportSpace_eq_of_forall_eq {C : PointedCone ℝ (realified V)}
+theorem sigmaSupportSpace_eq_of_forall_eq {C : Set (realified V)}
     {S : Set (PointedCone ℝ (realified V))} {σ : PointedCone ℝ (realified V)}
     (τ₀ : supportIndex C S σ) {L : Submodule ℝ (realified V)}
     (h : ∀ τ : supportIndex C S σ, supportSpace τ.1 σ = L) :
@@ -4552,7 +4575,7 @@ theorem sigmaSupportSpace_eq_of_forall_eq {C : PointedCone ℝ (realified V)}
 /-- **Lemma-Definition 4.5, the `Σ`-support space**: the support space of a member of `Σ` above
 `σ` meeting `C` is the `Σ`-support space `L_σ`, once the independence from the member is known
 (`supportSpace_eq_of_common_face`). -/
-theorem sigmaSupportSpace_eq_supportSpace {C : PointedCone ℝ (realified V)}
+theorem sigmaSupportSpace_eq_supportSpace {C : Set (realified V)}
     {S : Set (PointedCone ℝ (realified V))} {σ : PointedCone ℝ (realified V)}
     (τ₀ : supportIndex C S σ)
     (h : ∀ τ : supportIndex C S σ, supportSpace τ.1 σ = supportSpace τ₀.1 σ) :
@@ -4931,8 +4954,8 @@ theorem sigmaSupportSpace_eq_supportSpace_of_locallyFinite {C : PointedCone ℝ 
       (((a ⊓ b : PointedCone ℝ (realified V)) : Set (realified V)) ∩
         (C : Set (realified V))).Nonempty →
       ∃ w w' : (realified V) →ₗ[ℝ] ℝ, Dominates σ a (a ⊓ b) w ∧ Dominates σ b (a ⊓ b) w')
-    (τ₀ : supportIndex C S σ) :
-    sigmaSupportSpace C S σ = supportSpace τ₀.1 σ :=
+    (τ₀ : supportIndex (C : Set (realified V)) S σ) :
+    sigmaSupportSpace (C : Set (realified V)) S σ = supportSpace τ₀.1 σ :=
   sigmaSupportSpace_eq_supportSpace τ₀ fun τ =>
     supportSpace_eq_of_locallyFinite hconv hclosed hcover hloc hexp τ.2.1 τ₀.2.1 τ.2.2.2 τ₀.2.2.2
 
@@ -4977,8 +5000,8 @@ theorem sigmaSupportSpace_eq_supportSpace_of_locallyFinite_of_cover_rationalClos
       (((a ⊓ b : PointedCone ℝ (realified V)) : Set (realified V)) ∩
         (C : Set (realified V))).Nonempty →
       ∃ w w' : (realified V) →ₗ[ℝ] ℝ, Dominates σ a (a ⊓ b) w ∧ Dominates σ b (a ⊓ b) w')
-    (τ₀ : supportIndex C S σ) :
-    sigmaSupportSpace C S σ = supportSpace τ₀.1 σ :=
+    (τ₀ : supportIndex (C : Set (realified V)) S σ) :
+    sigmaSupportSpace (C : Set (realified V)) S σ = supportSpace τ₀.1 σ :=
   sigmaSupportSpace_eq_supportSpace τ₀ fun τ =>
     supportSpace_eq_of_locallyFinite_of_cover_rationalClosure hconv hclosed hCopen hCplus hloc
       hexp τ.2.1 τ₀.2.1 τ.2.2.2 τ₀.2.2.2
@@ -5032,7 +5055,7 @@ theorem supportSpace_eq_span_of_ker_eq {σ τ : PointedCone ℝ (realified V)}
 if every member `τ` above `σ` meeting `C` has `⟨σ⟩` as the kernel of a form nonnegative on `τ`,
 then the `Σ`-support space of `σ` is `⟨σ⟩`. This is the independence from `τ` that the lemma
 asserts, and it needs neither the cutting forms `hexp` at pairs of members nor the cover of `C`. -/
-theorem sigmaSupportSpace_eq_span_of_forall_ker_eq {C : PointedCone ℝ (realified V)}
+theorem sigmaSupportSpace_eq_span_of_forall_ker_eq {C : Set (realified V)}
     {S : Set (PointedCone ℝ (realified V))} {σ : PointedCone ℝ (realified V)}
     (τ₀ : supportIndex C S σ)
     (h : ∀ τ : supportIndex C S σ, ∃ lam : (realified V) →ₗ[ℝ] ℝ,
@@ -5074,7 +5097,8 @@ source's description of `L_σ` in the isotropic case, as an upper bound. -/
 theorem sigmaSupportSpace_le_ker_associated_of_isotropic {Q : QuadraticForm ℝ (realified V)}
     [Module.Finite ℚ V] (hpos : sigPos Q = 1) {t : realified V} (ht : 0 < Q t)
     {e : realified V} (he : Q e = 0) (het : 0 ≤ (associated Q) e t)
-    {C σ : PointedCone ℝ (realified V)} {S : Set (PointedCone ℝ (realified V))}
+    {C : Set (realified V)} {σ : PointedCone ℝ (realified V)}
+    {S : Set (PointedCone ℝ (realified V))}
     (τ₀ : supportIndex C S σ)
     (hσ : σ = PointedCone.hull ℝ ({e} : Set (realified V)))
     (hτ : ∀ τ : supportIndex C S σ, τ.1 ≤ closedSheet Q hpos ht) :
@@ -9342,6 +9366,163 @@ theorem supportSpace_eq_of_locallyRational
         supportSpace_bot_eq_bot_of_mem hpos hnd hS hτ']
     · exact supportSpace_eq_of_isotropicHalfLine_of_locallyRational hpos hnd hS hσ
         hστ hστ' hτ hτ' hτC hτ'C
+
+/-! ## Lemma-Definition 4.5 for the open cone: `L_σ` and the spans of the members above `σ`
+
+`sigmaSupportSpace` ranges over the members `τ ≥ σ` that meet the open cone (`supportIndex`). On a
+locally rational decomposition that intersection is a single one of its terms
+(`sigmaSupportSpace_eq_supportSpace_of_locallyRational`), which is the source's assertion that the
+common zero set does not depend on `τ`; for `σ` an isotropic half line it is contained in `I^⊥` and
+in the span of every member above it, and strictly smaller than the span of each of them. -/
+
+/-- **Lemma-Definition 4.5: `L_σ` does not depend on `τ`.** The intersection of the support spaces
+over the members `τ ≥ σ` that meet the open cone is the support space of any one of them, on a
+locally rational decomposition of `C₊` — the source's "the common zero set ... is a subspace that
+is independent of `τ`" (`.tmp-sources/looijenga-math0201218v2.md:519`).
+
+LC-09 (2026-11-19): the formulations `content:supportSpace eq_iInf supportSpace span cone`,
+`content:common zero set of nonnegative linear forms cone`,
+`content:support space of an isotropic line semitoric embedding`,
+`content:lineal cone quotient lineality` and `content:sInf spans of cones common face independence`
+were run against the corpus API. The only file returned was TauCeti
+`Geometry/Toric/Analytic/Cone/Orbit/Basic.lean`, the orbit strata of a regular affine toric cone,
+which stratifies a cone by its faces and states nothing about a common zero set of forms or about
+an intersection of spans, so nothing is ported. The theorem is
+`supportSpace_eq_of_locallyRational` (this file) applied to the definition of the intersection. -/
+theorem sigmaSupportSpace_eq_supportSpace_of_locallyRational
+    {Q : QuadraticForm ℝ (realified V)} {t : realified V}
+    (hpos : sigPos Q = 1) (hnd : Q.Nondegenerate) {ht : 0 < Q t}
+    {S : Set (PointedCone ℝ (realified V))}
+    (hS : IsLocallyRationalDecomposition (rationalClosure (closedSheet Q hpos ht)) S)
+    {σ : PointedCone ℝ (realified V)}
+    (τ₀ : supportIndex (positiveCone.upper Q t) S σ) :
+    sigmaSupportSpace (positiveCone.upper Q t) S σ = supportSpace τ₀.1 σ :=
+  sigmaSupportSpace_eq_supportSpace τ₀ fun τ =>
+    supportSpace_eq_of_locallyRational hpos hnd hS τ.2.2.1 τ₀.2.2.1 τ.2.1 τ₀.2.1
+      τ.2.2.2 τ₀.2.2.2
+
+/-- **The two descriptions of `L_σ` for an isotropic half line, as upper bounds** (Looijenga,
+Lemma-Definition 4.5, p. 19): `L_σ` is contained in the span of every member `τ ≥ σ` meeting the
+open cone, and in `I^⊥` for `I` the isotropic line that `σ` spans — the projection `π_I` of the
+source's proof (`supportSpace_le_ker_associated_of_isotropic`) together with
+`supportSpace_le_span`. -/
+theorem sigmaSupportSpace_le_inf_span_of_isotropic
+    {Q : QuadraticForm ℝ (realified V)} {t : realified V}
+    (hpos : sigPos Q = 1) {ht : 0 < Q t}
+    {S : Set (PointedCone ℝ (realified V))}
+    (hS : IsLocallyRationalDecomposition (rationalClosure (closedSheet Q hpos ht)) S)
+    {e : realified V} (he : Q e = 0)
+    {σ τ τ' : PointedCone ℝ (realified V)}
+    (hσ : σ = PointedCone.hull ℝ ({e} : Set (realified V)))
+    (hστ : σ ≤ τ) (hστ' : σ ≤ τ')
+    (hτ : τ ∈ S) (hτ' : τ' ∈ S)
+    (hτC : ((τ : Set (realified V)) ∩ positiveCone.upper Q t).Nonempty)
+    (hτ'C : ((τ' : Set (realified V)) ∩ positiveCone.upper Q t).Nonempty) :
+    sigmaSupportSpace (positiveCone.upper Q t) S σ ≤
+      Submodule.span ℝ (τ : Set (realified V)) ⊓ Submodule.span ℝ (τ' : Set (realified V)) ⊓
+        LinearMap.ker (associated Q e) := by
+  subst hσ
+  have hτs : τ ≤ closedSheet Q hpos ht :=
+    (hS.le hτ).trans (rationalClosure_le_closedSheet hpos)
+  have heσ : e ∈ PointedCone.hull ℝ ({e} : Set (realified V)) :=
+    PointedCone.subset_hull (Set.mem_singleton e)
+  have het : 0 ≤ (associated Q) e t := (hτs (hστ heσ)).2
+  refine le_inf (le_inf ?_ ?_) ?_
+  · exact (sigmaSupportSpace_le hτ hστ hτC).trans (supportSpace_le_span hστ)
+  · exact (sigmaSupportSpace_le hτ' hστ' hτ'C).trans (supportSpace_le_span hστ')
+  · refine sigmaSupportSpace_le_ker_associated_of_isotropic hpos ht he het
+      ⟨τ, hτ, hστ, hτC⟩ rfl fun τi => ?_
+    exact (hS.le τi.2.1).trans (rationalClosure_le_closedSheet hpos)
+
+/-- **`L_σ` is strictly smaller than the span of either member above an isotropic half line that
+meets the open cone.** Such a member contains a timelike point `z`, which is not orthogonal to the
+generator `e` of `σ` (`associated_pos_of_mem_upper_of_mem_closedSheet`), so its span is not
+contained in `I^⊥`, while `L_σ` is. -/
+theorem sigmaSupportSpace_lt_span_of_isotropic
+    {Q : QuadraticForm ℝ (realified V)} {t : realified V}
+    (hpos : sigPos Q = 1) (hnd : Q.Nondegenerate) {ht : 0 < Q t}
+    {S : Set (PointedCone ℝ (realified V))}
+    (hS : IsLocallyRationalDecomposition (rationalClosure (closedSheet Q hpos ht)) S)
+    {σ τ τ' : PointedCone ℝ (realified V)} (hσ : IsIsotropicHalfLine Q σ)
+    (hστ : σ ≤ τ) (hστ' : σ ≤ τ')
+    (hτ : τ ∈ S) (hτ' : τ' ∈ S)
+    (hτC : ((τ : Set (realified V)) ∩ positiveCone.upper Q t).Nonempty)
+    (hτ'C : ((τ' : Set (realified V)) ∩ positiveCone.upper Q t).Nonempty) :
+    sigmaSupportSpace (positiveCone.upper Q t) S σ < Submodule.span ℝ (τ : Set (realified V)) ∧
+      sigmaSupportSpace (positiveCone.upper Q t) S σ <
+        Submodule.span ℝ (τ' : Set (realified V)) := by
+  obtain ⟨e, he0, heQ, rfl⟩ := hσ
+  have key (a : PointedCone ℝ (realified V)) (haS : a ∈ S)
+      (hale : PointedCone.hull ℝ ({e} : Set (realified V)) ≤ a)
+      (ham : ((a : Set (realified V)) ∩ positiveCone.upper Q t).Nonempty) :
+      sigmaSupportSpace (positiveCone.upper Q t) S
+          (PointedCone.hull ℝ ({e} : Set (realified V))) <
+        Submodule.span ℝ (a : Set (realified V)) := by
+    obtain ⟨z, hza, hzup⟩ := ham
+    have hasheet : a ≤ closedSheet Q hpos ht :=
+      (hS.le haS).trans (rationalClosure_le_closedSheet hpos)
+    have hesheet : e ∈ closedSheet Q hpos ht :=
+      hasheet (hale (PointedCone.subset_hull (Set.mem_singleton e)))
+    have hzpos : 0 < (associated Q) z e :=
+      associated_pos_of_mem_upper_of_mem_closedSheet Q hpos hnd ht hzup hesheet he0
+    have hzker : (associated Q e) z ≠ 0 := by
+      rw [associated_comm (Q := Q) e z]
+      exact ne_of_gt hzpos
+    have hXker := sigmaSupportSpace_le_ker_associated_of_isotropic (C := positiveCone.upper Q t)
+      hpos ht heQ hesheet.2 ⟨a, haS, hale, ⟨z, hza, hzup⟩⟩ rfl fun τi =>
+        (hS.le τi.2.1).trans (rationalClosure_le_closedSheet hpos)
+    refine lt_of_le_of_ne
+      ((sigmaSupportSpace_le haS hale ⟨z, hza, hzup⟩).trans (supportSpace_le_span hale)) ?_
+    intro heq
+    have hzX : z ∈ sigmaSupportSpace (positiveCone.upper Q t) S
+        (PointedCone.hull ℝ ({e} : Set (realified V))) := by
+      rw [heq]
+      exact Submodule.subset_span hza
+    exact hzker (LinearMap.mem_ker.1 (hXker hzX))
+  exact ⟨key τ hτ hστ hτC, key τ' hτ' hστ' hτ'C⟩
+
+/-- **`L_σ` is the intersection of the spans of two members above `σ` that meet the open cone and
+whose spans meet only in `σ`** (Looijenga, Lemma-Definition 4.5, p. 19, for an isotropic half
+line; `.tmp-sources/looijenga-math0201218v2.md:519`): `L_σ` lies in `⟨τ⟩ ⊓ ⟨τ'⟩`
+(`supportSpace_le_span`) and contains `⟨σ⟩` (`span_le_supportSpace`), and the hypothesis makes
+those two bounds meet.
+
+The hypothesis `⟨τ⟩ ⊓ ⟨τ'⟩ = ⟨σ⟩` is not redundant, and `⟨τ⟩ ⊓ ⟨τ'⟩ ≤ L_σ` is not a consequence
+of the other hypotheses. The hand-check recorded in this module's docstring under "Lemma-Definition
+4.5: the independence of `L_σ` from `τ`", in signature `(1, 3)` with the single `ℚ`-hyperplane
+`{z₁ = 0}` through `σ = ℝ_{≥0}e`, has every member above `σ` with support space `I^⊥ ⊓ ⟨τ⟩`, and a
+member meeting the open cone has a timelike point, so its span is not contained in `I^⊥` and
+`⟨τ⟩ ⊓ ⟨τ'⟩` exceeds `L_σ` whenever the two spans meet outside `I^⊥`. What holds unconditionally is
+the upper bound and the strictness (`sigmaSupportSpace_le_inf_span_of_isotropic`,
+`sigmaSupportSpace_lt_span_of_isotropic`); the reverse inclusion is what the affine model over
+`A_I(ℝ)` supplies and the section "The two descriptions of `L_σ`" records as not carried. -/
+theorem sigmaSupportSpace_eq_inf_span_of_isotropic_of_inf_eq
+    {Q : QuadraticForm ℝ (realified V)} {t : realified V}
+    (hpos : sigPos Q = 1) (hnd : Q.Nondegenerate) {ht : 0 < Q t}
+    {S : Set (PointedCone ℝ (realified V))}
+    (hS : IsLocallyRationalDecomposition (rationalClosure (closedSheet Q hpos ht)) S)
+    {σ τ τ' : PointedCone ℝ (realified V)} (hσ : IsIsotropicHalfLine Q σ)
+    (hστ : σ ≤ τ) (hστ' : σ ≤ τ')
+    (hτ : τ ∈ S) (hτ' : τ' ∈ S)
+    (hτC : ((τ : Set (realified V)) ∩ positiveCone.upper Q t).Nonempty)
+    (hτ'C : ((τ' : Set (realified V)) ∩ positiveCone.upper Q t).Nonempty)
+    (hinf : Submodule.span ℝ (τ : Set (realified V)) ⊓ Submodule.span ℝ (τ' : Set (realified V)) =
+      Submodule.span ℝ (σ : Set (realified V))) :
+    sigmaSupportSpace (positiveCone.upper Q t) S σ =
+        Submodule.span ℝ (τ : Set (realified V)) ⊓ Submodule.span ℝ (τ' : Set (realified V)) ∧
+      sigmaSupportSpace (positiveCone.upper Q t) S σ < Submodule.span ℝ (τ : Set (realified V)) ∧
+      sigmaSupportSpace (positiveCone.upper Q t) S σ <
+        Submodule.span ℝ (τ' : Set (realified V)) := by
+  have hXle : sigmaSupportSpace (positiveCone.upper Q t) S σ ≤
+      Submodule.span ℝ (τ : Set (realified V)) ⊓ Submodule.span ℝ (τ' : Set (realified V)) :=
+    le_inf ((sigmaSupportSpace_le hτ hστ hτC).trans (supportSpace_le_span hστ))
+      ((sigmaSupportSpace_le hτ' hστ' hτ'C).trans (supportSpace_le_span hστ'))
+  have hXge : Submodule.span ℝ (σ : Set (realified V)) ≤
+      sigmaSupportSpace (positiveCone.upper Q t) S σ :=
+    span_le_sigmaSupportSpace ⟨τ, hτ, hστ, hτC⟩
+  obtain ⟨hlt, hlt'⟩ :=
+    sigmaSupportSpace_lt_span_of_isotropic hpos hnd hS hσ hστ hστ' hτ hτ' hτC hτ'C
+  exact ⟨le_antisymm hXle (by rw [hinf]; exact hXge), hlt, hlt'⟩
 
 end IsotropicRationalTraces
 

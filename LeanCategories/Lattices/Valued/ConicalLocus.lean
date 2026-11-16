@@ -38,7 +38,8 @@ decompositions of §6 live on.
 * **the `Σ`-support space `V_σ`** of every member: `vSigma` for the members of a fibre (case (i) of
   the source's definition, the subspace of `I^⊥` containing `I` corresponding to the span of `σ`),
   `vSigmaPlane` for the plane members (case (ii), through Lemma-Definition 4.5's
-  `sigmaSupportSpace`), and the **isotropic center** `I(σ) = V_σ ∩ V_σ^⊥` as `isotropicCenter`.
+  `sigmaSupportSpace`, whose `C` is the open cone `C_I` of the fibre and not its closure), and the
+  **isotropic center** `I(σ) = V_σ ∩ V_σ^⊥` as `isotropicCenter`.
 * **Lemma 6.6, p. 30** (text line 821), the inclusion `V_σ ⊂ V_{σ'}`: `vSigma_mono`.
 
 ## What is not here
@@ -433,13 +434,17 @@ noncomputable def vSigma (F : ConicalLine BQ Q)
 
 /-- **the Σ-support space `V_σ` of a plane member**, Definition 6.1, p. 28, case (ii): the support
 space of the half-line `C_{J,+}` in the fibre of a line `I ≤ J`, computed by
-Lemma-Definition 4.5 relative to the decomposition, and carried to `V`. Condition (ii) of
-Definition 6.1 is precisely that this is independent of `I`. -/
+Lemma-Definition 4.5 relative to the decomposition, and carried to `V`. The cones of the
+intersection are the members of the decomposition above the half-line that meet the **open**
+cone `C_I` of the fibre (`positiveCone.upper (fibreForm Q F.space) F.sheet`), as the source has
+them (`.tmp-sources/looijenga-math0201218v2.md:519`); the closed closure `F.closure` puts the
+half-line itself in the range and makes the answer its span. Condition (ii) of Definition 6.1 is
+precisely that this is independent of `I`. -/
 noncomputable def vSigmaPlane {BQ : LinearMap.BilinForm ℚ V} {Q : QuadraticForm ℝ (realified V)}
     (hBsym : BQ.IsSymm) (F : ConicalLine BQ Q)
     (S : Set (PointedCone ℝ (realified ↥F.space)))
     (G : ConicalPlane BQ) (_h : F.line ≤ G.plane) : Submodule ℝ (realified V) :=
-  lineSpan F ⊔ (sigmaSupportSpace F.closure S
+  lineSpan F ⊔ (sigmaSupportSpace (positiveCone.upper (fibreForm Q F.space) F.sheet) S
     (PointedCone.hull ℝ ({rationalPoint (fibreRay hBsym F G)} :
       Set (realified ↥F.space)))).map (realifyMap F.space)
 
