@@ -512,6 +512,31 @@ structure IsAdmissibleDecomposition (BQ : LinearMap.BilinForm ℚ V)
     (h : F.line ≤ G.plane) (h' : F'.line ≤ G.plane),
     vSigmaPlane hBsym F (locus F) G h = vSigmaPlane hBsym F' (locus F') G h'
 
+omit [Module.Finite ℚ V] in
+/-- **Definition 6.1 (ii) from the pointwise identity `V_σ = J_Σ`**: condition (ii) asks that the
+support space of a plane's half line be the same for every `ℚ`-isotropic line `I ⊆ J`; if that
+support space is a subspace `J_H` depending only on the plane, the condition is transitivity.
+
+This is the assembly step of Example 6.4, p. 29: the source computes `J_{Σ(ℋ)}` as "the common
+intersection of `J^⊥` and the hyperplanes `H ∈ ℋ` containing `J`", a subspace attached to `J` alone,
+and condition (ii) then follows for `Σ(ℋ)` — what remains for that example is the identity itself
+(`J_{Σ(ℋ)} ⊆ J_ℋ` is `SemifanArrangement.supportSpace_halfLine_le_ker`, and `J_ℋ ⊆ J_{Σ(ℋ)}` is
+`SemifanArrangement.mem_supportSpace_halfLine_of_supportForms_span`). -/
+theorem isAdmissibleDecomposition_of_vSigmaPlane_eq
+    {BQ : LinearMap.BilinForm ℚ V} {Q : QuadraticForm ℝ (realified V)}
+    {Γ : Set (V ≃ₗ[ℚ] V)}
+    {locus : ∀ F : ConicalLine BQ Q, Set (PointedCone ℝ (realified ↥F.space))}
+    (hgamma : IsGammaInvariantLocus BQ Q Γ locus)
+    (hcond_i : ∀ F : ConicalLine BQ Q, IsLocallyRationalDecomposition F.closure (locus F))
+    (J : ConicalPlane BQ → Submodule ℝ (realified V))
+    (hJ : ∀ (hBsym : BQ.IsSymm) (F : ConicalLine BQ Q) (G : ConicalPlane BQ)
+      (h : F.line ≤ G.plane), vSigmaPlane hBsym F (locus F) G h = J G) :
+    IsAdmissibleDecomposition BQ Q Γ locus :=
+  { gammaInvariant := hgamma
+    condition_i := hcond_i
+    condition_ii := fun hBsym F F' G h h' => by
+      rw [hJ hBsym F G h, hJ hBsym F' G h'] }
+
 end Definition61
 
 /-! ## Lemma 6.6: a refinement shrinks the Σ-support space -/
