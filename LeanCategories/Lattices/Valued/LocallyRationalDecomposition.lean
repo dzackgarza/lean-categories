@@ -7688,6 +7688,113 @@ theorem finite_pairSet_of_cutSigns {ι : Type*} [Fintype ι] [DecidableEq ι]
         exact hzero
 
 set_option maxHeartbeats 1000000 in
+/-- **The counting lemma of Example 4.3 (b) with a finite set of norms in place of the group
+action.** The source's `H` is a finite union of `Γ`-orbits, and it enters the argument exactly
+twice: through the finiteness of the norms of the primitive generators (`hM`, which
+`finite_form_values_of_orbitFamily` supplies for an orbit family) and through the primitivity of
+the cut of each hyperplane with the lattice (`hg`). With those two as hypotheses, no group is
+needed — which is what makes the lemma applicable at the reduced lattice
+`(Λ ⊓ I^⊥)/(Λ ⊓ I)` of a conical fibre, where the elements of `Γ` fixing `I` do not act on the one
+carrier `⟨e, f⟩^⊥` (`Semifan.fibreCarrierEquiv` carries the fibre of `I` to the fibre of `gI`, whose
+hyperbolic partner is `g f`). Everything else in the proof is the argument of
+`cutsFinitelyOnRational_of_finiteOrbits`. -/
+theorem cutsFinitelyOnRational_of_finiteNormValues {Q : QuadraticForm ℝ (realified V)}
+    (hpos : sigPos Q = 1) (hnd : Q.Nondegenerate) {BQ : LinearMap.BilinForm ℚ V}
+    (hBQsym : BQ.IsSymm) (hBQnd : BQ.Nondegenerate)
+    (hBQ : ∀ u w : V, (associated Q) (rationalPoint u) (rationalPoint w) = (BQ u w : ℝ))
+    {Cplus : PointedCone ℝ (realified V)}
+    (hsal : (Cplus : ConvexCone ℝ (realified V)).Salient) {t : realified V} (ht : 0 < Q t)
+    (hsheet : ∀ v : V, rationalPoint v ∈ Cplus →
+      0 ≤ Q (rationalPoint v) ∧ 0 ≤ (associated Q) (rationalPoint v) t)
+    {ι : Type*} [Fintype ι] [DecidableEq ι] {bs : Module.Basis ι ℚ V}
+    {S : Set (Submodule ℚ V)} {M : Finset ℚ}
+    (hM : ∀ ℓ : ↥S, ∀ v : V, v ≠ 0 →
+      Submodule.span ℤ (Set.range bs) ⊓ ℓ.1.restrictScalars ℤ = Submodule.span ℤ ({v} : Set V) →
+      BQ v v ∈ M)
+    (hint : ∀ x ∈ Submodule.span ℤ (Set.range bs), ∀ y ∈ Submodule.span ℤ (Set.range bs),
+      ∃ n : ℤ, BQ x y = (n : ℚ))
+    (g : ↥S → V)
+    (hg : ∀ ℓ : ↥S, g ℓ ≠ 0 ∧
+      Submodule.span ℤ (Set.range bs) ⊓ ℓ.1.restrictScalars ℤ = Submodule.span ℤ ({g ℓ} : Set V)) :
+    CutsFinitelyOnRational Cplus (fun ℓ : ↥S => normalForm Q (g ℓ)):= by
+  classical
+  intro P hP hPle
+  obtain ⟨s, rfl⟩ := hP
+  -- a common denominator for the generators of the cone
+  choose Dg hDg using fun a : V => exists_nat_smul_mem_span bs a
+  set D : ℕ := ∏ a ∈ s, Dg a with hDdef
+  have hDpos : 0 < D := Finset.prod_pos fun a _ => (hDg a).1
+  have hDs : ∀ a ∈ s, (D : ℤ) • a ∈ Submodule.span ℤ (Set.range bs) := by
+    intro a ha
+    obtain ⟨k, hk⟩ := Finset.dvd_prod_of_mem (f := fun a => Dg a) ha
+    have hDcast : (D : ℤ) = (k : ℤ) * (Dg a : ℤ) := by
+      rw [hDdef, hk]
+      push_cast
+      ring
+    rw [hDcast, mul_zsmul]
+    exact Submodule.smul_mem _ _ (hDg a).2
+  -- per value of the norm
+  have hval : ∀ m ∈ M, {v : V | v ∈ Submodule.span ℤ (Set.range bs) ∧
+      Q (rationalPoint v) = (m : ℝ) ∧ ∃ a ∈ s, ∃ b ∈ s, 0 < (BQ v a : ℝ) ∧
+        (BQ v b : ℝ) < 0}.Finite := by
+    intro m hm
+    by_cases hmneg : m < 0
+    · have hmpos : 0 < -(m : ℝ) := by
+        have : (m : ℝ) < 0 := by exact_mod_cast hmneg
+        linarith
+      have hmain := finite_cutters_of_pair_bounds (Q := Q) (BQ := BQ) (m := -(m : ℝ))
+        (Submodule.span ℤ (Set.range bs)) s (fun a ha b hb =>
+          finite_pairSet_of_cutSigns (Q := Q) hpos hnd hBQsym hBQnd hBQ hsal ht hsheet hPle rfl
+            hmpos hDpos hDs hint ha hb)
+      simpa using hmain
+    · refine Set.Finite.subset Set.finite_empty ?_
+      rintro v ⟨hv, hQ, a, ha, b, hb, hx, hy⟩
+      have hQv : 0 ≤ Q (rationalPoint v) := by
+        rw [hQ]
+        exact_mod_cast (not_lt.mp hmneg : (0:ℚ) ≤ m)
+      have haP : rationalPoint a ∈ PointedCone.hull ℝ (rationalPoint '' (s : Set V)) :=
+        PointedCone.subset_hull (Set.mem_image_of_mem _ (by exact_mod_cast ha))
+      have hbP : rationalPoint b ∈ PointedCone.hull ℝ (rationalPoint '' (s : Set V)) :=
+        PointedCone.subset_hull (Set.mem_image_of_mem _ (by exact_mod_cast hb))
+      rcases one_signed_of_nonneg_quadratic (Q := Q) hpos hBQ ht hsheet hQv with hpos' | hneg'
+      · exact absurd (hpos' b (hPle hbP)) (not_le.mpr hy)
+      · exact absurd (hneg' a (hPle haP)) (not_le.mpr hx)
+  -- the cutters inject into the union of those sets
+  have hinj : Set.InjOn g
+      {ℓ : ↥S | CutsOn (normalForm Q (g ℓ)).toLinearMap
+        (PointedCone.hull ℝ (rationalPoint '' (s : Set V)))} := by
+    intro ℓ _ ℓ' _ h
+    have h1 : ℓ.1 = Submodule.span ℚ ({g ℓ} : Set V) :=
+      span_singleton_of_inf_span_eq bs (hg ℓ).2
+    have h2 : ℓ'.1 = Submodule.span ℚ ({g ℓ'} : Set V) :=
+      span_singleton_of_inf_span_eq bs (hg ℓ').2
+    exact Subtype.ext (by rw [h1, h2, h])
+  refine Set.Finite.of_finite_image ?_ hinj
+  refine (Set.Finite.biUnion M.finite_toSet fun m hm => hval m hm).subset ?_
+  rintro v ⟨ℓ, hℓ, rfl⟩
+  have hℓeq : ℓ.1 = Submodule.span ℚ ({g ℓ} : Set V) :=
+    span_singleton_of_inf_span_eq bs (hg ℓ).2
+  have hcuts : CutsOn ((associated Q) (rationalPoint (g ℓ)))
+      (PointedCone.hull ℝ (rationalPoint '' (s : Set V))) := by
+    rw [← normalForm_toLinearMap]
+    exact hℓ
+  have hpair := (hyperplaneCuts_iff_generators (Q := Q) hℓeq rfl hBQ).mp
+    ((hyperplaneCuts_iff_cutsOn (Q := Q) hℓeq _).mpr hcuts)
+  have hQv : Q (rationalPoint (g ℓ)) = ((BQ (g ℓ) (g ℓ) : ℚ) : ℝ) := by
+    rw [← associated_self_apply]
+    exact hBQ (g ℓ) (g ℓ)
+  have hmem : BQ (g ℓ) (g ℓ) ∈ M :=
+    hM ℓ (g ℓ) (hg ℓ).1 (hg ℓ).2
+  have hmemΛ : g ℓ ∈ Submodule.span ℤ (Set.range bs) := by
+    have h1 : g ℓ ∈ Submodule.span ℤ (Set.range bs) ⊓ ℓ.1.restrictScalars ℤ := by
+      rw [(hg ℓ).2]
+      exact Submodule.subset_span (Set.mem_singleton (g ℓ))
+    exact h1.1
+  obtain ⟨⟨a, ha, hx⟩, ⟨b, hb, hy⟩⟩ := hpair
+  exact Set.mem_iUnion₂.mpr ⟨_, hmem, hmemΛ, hQv, a, ha, b, hb, by exact_mod_cast hx,
+    by exact_mod_cast hy⟩
+
+set_option maxHeartbeats 1000000 in
 /-- **Example 4.3 (b), the hypothesis: a finite union of `Γ`-orbits of `ℚ`-hyperplanes cuts each
 rational subcone of `C₊` finitely often** (Looijenga, pp. 17-18).
 
@@ -7723,85 +7830,11 @@ theorem cutsFinitelyOnRational_of_finiteOrbits {Q : QuadraticForm ℝ (realified
     (hg : ∀ ℓ : ↥(orbitFamily H₀ Γ), g ℓ ≠ 0 ∧
       Submodule.span ℤ (Set.range bs) ⊓ ℓ.1.restrictScalars ℤ = Submodule.span ℤ ({g ℓ} : Set V)) :
     CutsFinitelyOnRational Cplus (fun ℓ : ↥(orbitFamily H₀ Γ) => normalForm Q (g ℓ)) := by
-  classical
-  intro P hP hPle
-  obtain ⟨s, rfl⟩ := hP
-  -- a common denominator for the generators of the cone
-  choose Dg hDg using fun a : V => exists_nat_smul_mem_span bs a
-  set D : ℕ := ∏ a ∈ s, Dg a with hDdef
-  have hDpos : 0 < D := Finset.prod_pos fun a _ => (hDg a).1
-  have hDs : ∀ a ∈ s, (D : ℤ) • a ∈ Submodule.span ℤ (Set.range bs) := by
-    intro a ha
-    obtain ⟨k, hk⟩ := Finset.dvd_prod_of_mem (f := fun a => Dg a) ha
-    have hDcast : (D : ℤ) = (k : ℤ) * (Dg a : ℤ) := by
-      rw [hDdef, hk]
-      push_cast
-      ring
-    rw [hDcast, mul_zsmul]
-    exact Submodule.smul_mem _ _ (hDg a).2
-  -- the values of the norm on `H`
   obtain ⟨M, hM⟩ := finite_form_values_of_orbitFamily (Λ := Submodule.span ℤ (Set.range bs))
     BQ H₀ Γ hΓΛ hΓiso hH₀
-  -- per value of the norm
-  have hval : ∀ m ∈ M, {v : V | v ∈ Submodule.span ℤ (Set.range bs) ∧
-      Q (rationalPoint v) = (m : ℝ) ∧ ∃ a ∈ s, ∃ b ∈ s, 0 < (BQ v a : ℝ) ∧
-        (BQ v b : ℝ) < 0}.Finite := by
-    intro m hm
-    by_cases hmneg : m < 0
-    · have hmpos : 0 < -(m : ℝ) := by
-        have : (m : ℝ) < 0 := by exact_mod_cast hmneg
-        linarith
-      have hmain := finite_cutters_of_pair_bounds (Q := Q) (BQ := BQ) (m := -(m : ℝ))
-        (Submodule.span ℤ (Set.range bs)) s (fun a ha b hb =>
-          finite_pairSet_of_cutSigns (Q := Q) hpos hnd hBQsym hBQnd hBQ hsal ht hsheet hPle rfl
-            hmpos hDpos hDs hint ha hb)
-      simpa using hmain
-    · refine Set.Finite.subset Set.finite_empty ?_
-      rintro v ⟨hv, hQ, a, ha, b, hb, hx, hy⟩
-      have hQv : 0 ≤ Q (rationalPoint v) := by
-        rw [hQ]
-        exact_mod_cast (not_lt.mp hmneg : (0:ℚ) ≤ m)
-      have haP : rationalPoint a ∈ PointedCone.hull ℝ (rationalPoint '' (s : Set V)) :=
-        PointedCone.subset_hull (Set.mem_image_of_mem _ (by exact_mod_cast ha))
-      have hbP : rationalPoint b ∈ PointedCone.hull ℝ (rationalPoint '' (s : Set V)) :=
-        PointedCone.subset_hull (Set.mem_image_of_mem _ (by exact_mod_cast hb))
-      rcases one_signed_of_nonneg_quadratic (Q := Q) hpos hBQ ht hsheet hQv with hpos' | hneg'
-      · exact absurd (hpos' b (hPle hbP)) (not_le.mpr hy)
-      · exact absurd (hneg' a (hPle haP)) (not_le.mpr hx)
-  -- the cutters inject into the union of those sets
-  have hinj : Set.InjOn g
-      {ℓ : ↥(orbitFamily H₀ Γ) | CutsOn (normalForm Q (g ℓ)).toLinearMap
-        (PointedCone.hull ℝ (rationalPoint '' (s : Set V)))} := by
-    intro ℓ _ ℓ' _ h
-    have h1 : ℓ.1 = Submodule.span ℚ ({g ℓ} : Set V) :=
-      span_singleton_of_inf_span_eq bs (hg ℓ).2
-    have h2 : ℓ'.1 = Submodule.span ℚ ({g ℓ'} : Set V) :=
-      span_singleton_of_inf_span_eq bs (hg ℓ').2
-    exact Subtype.ext (by rw [h1, h2, h])
-  refine Set.Finite.of_finite_image ?_ hinj
-  refine (Set.Finite.biUnion M.finite_toSet fun m hm => hval m hm).subset ?_
-  rintro v ⟨ℓ, hℓ, rfl⟩
-  have hℓeq : ℓ.1 = Submodule.span ℚ ({g ℓ} : Set V) :=
-    span_singleton_of_inf_span_eq bs (hg ℓ).2
-  have hcuts : CutsOn ((associated Q) (rationalPoint (g ℓ)))
-      (PointedCone.hull ℝ (rationalPoint '' (s : Set V))) := by
-    rw [← normalForm_toLinearMap]
-    exact hℓ
-  have hpair := (hyperplaneCuts_iff_generators (Q := Q) hℓeq rfl hBQ).mp
-    ((hyperplaneCuts_iff_cutsOn (Q := Q) hℓeq _).mpr hcuts)
-  have hQv : Q (rationalPoint (g ℓ)) = ((BQ (g ℓ) (g ℓ) : ℚ) : ℝ) := by
-    rw [← associated_self_apply]
-    exact hBQ (g ℓ) (g ℓ)
-  have hmem : BQ (g ℓ) (g ℓ) ∈ M :=
-    hM ℓ.1 ℓ.2 (g ℓ) (hg ℓ).1 (hg ℓ).2
-  have hmemΛ : g ℓ ∈ Submodule.span ℤ (Set.range bs) := by
-    have h1 : g ℓ ∈ Submodule.span ℤ (Set.range bs) ⊓ ℓ.1.restrictScalars ℤ := by
-      rw [(hg ℓ).2]
-      exact Submodule.subset_span (Set.mem_singleton (g ℓ))
-    exact h1.1
-  obtain ⟨⟨a, ha, hx⟩, ⟨b, hb, hy⟩⟩ := hpair
-  exact Set.mem_iUnion₂.mpr ⟨_, hmem, hmemΛ, hQv, a, ha, b, hb, by exact_mod_cast hx,
-    by exact_mod_cast hy⟩
+  exact cutsFinitelyOnRational_of_finiteNormValues (S := orbitFamily H₀ Γ) (M := M)
+    hpos hnd hBQsym hBQnd hBQ hsal ht hsheet
+    (fun ℓ v hv hℓ => hM ℓ.1 ℓ.2 v hv hℓ) hint g hg
 
 omit [Module.Finite ℚ V] in
 /-- **Every member of the orbit family has a primitive generator**: the generator of an orbit
