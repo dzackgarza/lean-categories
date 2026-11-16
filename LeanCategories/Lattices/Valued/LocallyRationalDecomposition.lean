@@ -10066,4 +10066,99 @@ theorem inf_ker_iInf_span_le_sigmaSupportSpace_of_isotropicHalfLine
 
 end IsotropicRationalTraces
 
+/-! ## `A_I(ℝ)` and the induced decomposition
+
+Looijenga, Lemma-Definition 4.5, p. 19 (text version `.tmp-sources/looijenga-math0201218v2.md:519`):
+the image of `C₊` under `π_I` is "the union of that half-space plus the origin", thought of as "a
+cone over a real affine space `A_I(ℝ)` over `(I ⊗ I^⊥/I)(ℝ)`", and the members `τ > σ` "determine a
+rational polyhedron" in it, so that "these cones decompose `A_I(ℝ)`".
+
+Carried here: the affine space as the hyperplane `{β = 1}` of the quotient, the functional `β` being
+`isotropicHalfspaceForm`; the polyhedron a member cuts on it; and minimality of one of those
+polyhedra under inclusion, the projected order. Not carried: that a minimal member's polyhedron *is*
+an affine subspace, which is the source's next sentence and the step the reverse inclusion needs.
+Read on the hyperplane `{β = 1}`, affineness of that polyhedron gives exactly the one inequality the
+reverse inclusion is missing — every point of the member is a nonnegative multiple of a point of the
+polyhedron, so the member's span is the polyhedron's direction plus one ray, and the part of the
+span that `e ·` kills is that direction. The span form
+`iInf_span_le_sigmaSupportSpace_of_isotropicHalfLine` names a stronger hypothesis (`haffine`) that
+the half-space over a proper affine subspace refutes: its span is the direction plus the ray, not
+the preimage of the direction. What is awaited is the source's own step, not that one. -/
+
+section AffineModel
+
+variable [Module.Finite ℚ V]
+
+/-- Looijenga's affine space `A_I(ℝ)` of Lemma-Definition 4.5, p. 19 (text version
+`.tmp-sources/looijenga-math0201218v2.md:519`), read in the quotient: the affine hyperplane
+`{u | β u = 1}` of `L(ℝ)/I`, where `β` is the functional `x ↦ e · x` descended to the quotient
+(`isotropicHalfspaceForm`). Its direction is `ker β` (`affineModel_sub_mem`), and it is nonempty
+whenever `e` is an isotropic vector with `0 ≤ e · t` (`affineModel_nonempty`): the image of the open
+sheet is the half-space `{0 < β}` (`image_mkQ_upper_eq`). -/
+noncomputable def affineModel (Q : QuadraticForm ℝ (realified V)) {e : realified V}
+    (he : Q e = 0) : Set (realified V ⧸ Submodule.span ℝ ({e} : Set (realified V))) :=
+  {u | isotropicHalfspaceForm Q he u = 1}
+
+omit [Module.Finite ℚ V] in
+/-- Membership in `A_I(ℝ)` is the equation `β u = 1`. -/
+theorem mem_affineModel {Q : QuadraticForm ℝ (realified V)} {e : realified V} (he : Q e = 0)
+    (u : realified V ⧸ Submodule.span ℝ ({e} : Set (realified V))) :
+    u ∈ affineModel Q he ↔ isotropicHalfspaceForm Q he u = 1 :=
+  Iff.rfl
+
+omit [Module.Finite ℚ V] in
+/-- The direction of `A_I(ℝ)` is `ker β`: the difference of two of its points is killed by `β`. -/
+theorem affineModel_sub_mem {Q : QuadraticForm ℝ (realified V)} {e : realified V} (he : Q e = 0)
+    {u v : realified V ⧸ Submodule.span ℝ ({e} : Set (realified V))}
+    (hu : u ∈ affineModel Q he) (hv : v ∈ affineModel Q he) :
+    v - u ∈ LinearMap.ker (isotropicHalfspaceForm Q he) := by
+  rw [mem_affineModel] at hu hv
+  simp [LinearMap.mem_ker, map_sub, hv, hu]
+
+/-- `A_I(ℝ)` is nonempty: `t` pairs positively with `e`, and rescaling puts it on `β = 1`. -/
+theorem affineModel_nonempty {Q : QuadraticForm ℝ (realified V)} {t e : realified V}
+    (hpos : sigPos Q = 1) (hnd : Q.Nondegenerate) (ht : 0 < Q t) (he0 : e ≠ 0) (he : Q e = 0)
+    (het : 0 ≤ (associated Q) e t) :
+    (affineModel Q he).Nonempty := by
+  have hxu : t ∈ positiveCone.upper Q t := by
+    refine ⟨ht, ?_⟩
+    rwa [associated_self_apply]
+  have hβ : 0 < isotropicHalfspaceForm Q he
+      ((Submodule.span ℝ ({e} : Set (realified V))).mkQ t) := by
+    rw [isotropicHalfspaceForm_mkQ, associated_comm]
+    exact associated_pos_of_mem_upper_of_mem_closedSheet Q hpos hnd ht hxu ⟨he.ge, het⟩ he0
+  refine ⟨(isotropicHalfspaceForm Q he
+      ((Submodule.span ℝ ({e} : Set (realified V))).mkQ t))⁻¹ •
+      (Submodule.span ℝ ({e} : Set (realified V))).mkQ t, ?_⟩
+  rw [mem_affineModel, map_smul, smul_eq_mul, inv_mul_cancel₀ hβ.ne']
+
+/-- The polyhedron a member cuts on `A_I(ℝ)`: `π_I τ ⊓ A_I(ℝ)`. The members `τ ⊋ σ` project to
+cones in the half-space `{0 ≤ β}`, and these cut it into polyhedra (Lemma-Definition 4.5, p. 19). -/
+noncomputable def projectedPolyhedron (Q : QuadraticForm ℝ (realified V)) {e : realified V}
+    (he : Q e = 0) (τ : PointedCone ℝ (realified V)) :
+    Set (realified V ⧸ Submodule.span ℝ ({e} : Set (realified V))) :=
+  ((τ.map (Submodule.span ℝ ({e} : Set (realified V))).mkQ : PointedCone ℝ _) : Set _) ∩
+    affineModel Q he
+
+omit [Module.Finite ℚ V] in
+/-- A larger member cuts a larger polyhedron. -/
+theorem projectedPolyhedron_mono {Q : QuadraticForm ℝ (realified V)} {e : realified V}
+    (he : Q e = 0) {τ τ' : PointedCone ℝ (realified V)} (h : τ ≤ τ') :
+    projectedPolyhedron Q he τ ⊆ projectedPolyhedron Q he τ' := by
+  rintro u ⟨hu, hA⟩
+  refine ⟨?_, hA⟩
+  obtain ⟨y, hy, rfl⟩ := PointedCone.mem_map.1 hu
+  exact PointedCone.mem_map.2 ⟨y, h hy, rfl⟩
+
+/-- Minimality in the projected order: no member of the decomposition above `σ` cuts a strictly
+smaller polyhedron on `A_I(ℝ)`, so `τmin`'s polyhedron is an element of the induced decomposition
+minimal under inclusion. -/
+def IsProjectedMinimal (Q : QuadraticForm ℝ (realified V)) {e : realified V} (he : Q e = 0)
+    (S : Set (PointedCone ℝ (realified V))) (σ τmin : PointedCone ℝ (realified V)) : Prop :=
+  τmin ∈ S ∧ σ ≤ τmin ∧ ∀ τ ∈ S, σ ≤ τ →
+    projectedPolyhedron Q he τ ⊆ projectedPolyhedron Q he τmin →
+      projectedPolyhedron Q he τmin ⊆ projectedPolyhedron Q he τ
+
+end AffineModel
+
 end LeanCategories.Lattices.Valued
