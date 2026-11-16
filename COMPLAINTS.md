@@ -2708,9 +2708,7 @@ downstream assertions, computational observations, or downstream diagnostics.
 ### Definition 4.2 does not supply `hloc` at an isotropic boundary point (#163)
 
 - **Need:** the final source-strength reverse inclusion must use only Looijenga's hypotheses, without
-  the additional ambient local-finiteness assumption at the isotropic generator used by
-  `exists_isProjectedMinimal_of_locallyFiniteAt` and
-  `inf_ker_iInf_span_le_sigmaSupportSpace_of_locallyFiniteAt`.
+  an additional ambient local-finiteness assumption at the isotropic generator.
 - **Evidence:** Definition 4.2, `.tmp-sources/looijenga-math0201218v2.md:481`, requires that the union
   be `C₊` and that restriction to every rational subcone be a finite rational cone system. It has no
   ambient-neighbourhood finiteness clause. The proof of Lemma-Definition 4.5 instead says at line 521:
@@ -2731,9 +2729,9 @@ downstream assertions, computational observations, or downstream diagnostics.
   dimensions, well-founded minima and level-one section spans. No counterexample to `hloc` is asserted:
   it is simply not needed by the new proof.
 - **Repair link:** resolved by `finrank_span_map_lt_of_projectedPolyhedron_ssubset`,
-  `exists_isProjectedMinimal`, and the canonical `inf_ker_iInf_span_le_sigmaSupportSpace`. The final
-  theorem has only `hpos`, `hnd`, `he0`, `he`, `heC`, and `hS`; the old `..._of_locallyFiniteAt`
-  declarations remain only as compatibility wrappers.
+  `exists_isProjectedMinimal`, and `inf_ker_iInf_span_le_sigmaSupportSpace`. The final theorem has
+  only `hpos`, `hnd`, `he0`, `he`, `heC`, and `hS`, and it is the single form of the reverse
+  inclusion: no variant carries an ambient-finiteness premise.
 
 ### Proper cone faces need a linear-span rank drop (#163)
 

@@ -100,7 +100,7 @@ an `ℝ`-vector space with no extra structure.
   decomposition there (`hyperbolicFacialDecomposition_isLocallyRational`). The topological input
   is proved, not hypothesized: `QuadraticMap.continuous_of_moduleTopology` and continuity of the
   pairing give `isClosed_closedSheet_of_moduleTopology`, which supplies the two defining
-  inequalities on the closure. None of these declarations has the former `hcl` hypothesis.
+  inequalities on the closure. None of these declarations takes an `hcl` hypothesis.
 * **The action of `Γ`** (Example 4.3, p. 17): a real linear equivalence of `L(ℝ)` defined over
   `ℚ` (`IsRationalEquiv`, the form an element of the arithmetic subgroup of `O(L(ℚ))` takes)
   carries rational cones to rational cones, rational cone systems to rational cone systems,
@@ -123,17 +123,15 @@ an `ℝ`-vector space with no extra structure.
   "Lemma-Definition 4.5, the general case" below, whose docstring says which of its steps are
   carried and which are not; of the description of `L_σ` itself the upper bound `L_σ ⊆ I^⊥` is
   carried in the section "The two descriptions of `L_σ`"
-  (`sigmaSupportSpace_le_ker_associated_of_isotropic`), and the reverse inclusion is the canonical
-  `inf_ker_iInf_span_le_sigmaSupportSpace`, with neither a minimal-member witness nor an ambient
-  local-finiteness premise. Section separation is proved at every projected star member
-  (`hasSectionSeparatingFunctional_map_of_isotropicHalfspace`). A projected-minimal member is
-  selected by least linear-span rank (`exists_isProjectedMinimal`): a strictly smaller nonempty
-  section determines a proper projected face and hence has strictly smaller rank. This replaces the
-  earlier ambient `hloc` argument, whose old call signatures remain as compatibility wrappers. The
-  local finiteness in the source's proof (line 521) belongs to the projected decomposition of
-  `A_I(ℝ)`, already carried by `locallyFinite_map_star_of_isotropicHalfspace`, not to the ambient
-  space near `e`; the rank proof uses the common-face structure directly and needs no such
-  additional ambient hypothesis. For the facial decomposition `Σ(bb)` the
+  (`sigmaSupportSpace_le_ker_associated_of_isotropic`), and the reverse inclusion is
+  `inf_ker_iInf_span_le_sigmaSupportSpace`, which takes no minimal-member witness and no
+  local-finiteness premise on the ambient space. Section separation is proved at every projected
+  star member (`hasSectionSeparatingFunctional_map_of_isotropicHalfspace`). A projected-minimal
+  member is selected by least linear-span rank (`exists_isProjectedMinimal`): a strictly smaller
+  nonempty section is a proper projected face of strictly smaller rank. The local finiteness in the
+  source's argument (line 521) is that of the projected decomposition of `A_I(ℝ)`, carried by
+  `locallyFinite_map_star_of_isotropicHalfspace`; the selection uses the projected cover and the
+  rank. For the facial decomposition `Σ(bb)` the
   description is carried in full, both inclusions and the strict inequality: the only face of
   `C₊` meeting the open cone is `C₊` itself, the closed sheet and its rational closure carry the
   same forms, and self-duality of the closed sheet gives `L_σ = I^⊥ ≠ ⟨σ⟩`
@@ -10385,15 +10383,15 @@ def IsProjectedMinimal (Q : QuadraticForm ℝ (realified V)) {e : realified V} (
       projectedPolyhedron Q he τ ⊆ projectedPolyhedron Q he τmin →
         projectedPolyhedron Q he τmin ⊆ projectedPolyhedron Q he τ
 
-/-- **A projected-minimal member exists, with no ambient-finiteness premise.** Choose a member
-whose projected cone has least linear-span rank, using well-foundedness of `ℕ`. If another nonempty
-section were strictly smaller, `finrank_span_map_lt_of_projectedPolyhedron_ssubset` would give a
-strictly smaller rank. The projected cover of the open half-space makes the candidate family
-nonempty.
+/-- **A projected-minimal member exists.** Some member of the decomposition above `σ` with a
+nonempty projected polyhedron has its projected polyhedron minimal under inclusion among the members
+above `σ` with nonempty projected polyhedron. The candidate family is nonempty:
+`affineModel_nonempty` gives a point of the affine section with form value `1`, and
+`exists_mem_map_star_of_isotropicHalfspace` places it in the projection of a member of `S` above the
+ray through `e`. The selection is by least linear-span rank, using well-foundedness of `ℕ`: a
+strictly smaller nonempty section is a proper projected face, and
+`finrank_span_map_lt_of_projectedPolyhedron_ssubset` gives strictly smaller rank.
 
-This global selection avoids the invalid step of minimizing only among cells containing a fixed
-point: a maximal cell can win that local comparison while having a proper face elsewhere. The proof
-of Looijenga's "a minimal member of this decomposition" at p. 19 is thereby carried without `hloc`.
 LC-09 (2026-11-22): `exists_minimal_wrt`, `IsProjectedMinimal`,
 `LocallyFinite PointedCone minimal`, and `locally finite polyhedral decomposition minimal affine`
 found no competing Lean theorem; `exists_minimalFor_of_wellFoundedLT` supplies the rank selection,
@@ -10471,22 +10469,6 @@ theorem exists_isProjectedMinimal
     hτmin (j := ⟨τ, hτS⟩) (show (⟨τ, hτS⟩ : {τ : PointedCone ℝ (realified V) // τ ∈ S}) ∈ T
       from ⟨hστ, hPne⟩) hrl.le
   omega
-
-/-- **Compatibility form with the former ambient-finiteness premise.** The stronger general
-selection `exists_isProjectedMinimal` no longer uses `hloc`; this declaration preserves the old
-call signature. -/
-theorem exists_isProjectedMinimal_of_locallyFiniteAt
-    {Q : QuadraticForm ℝ (realified V)} {t e : realified V} (hpos : sigPos Q = 1)
-    (hnd : Q.Nondegenerate) {ht : 0 < Q t} (he0 : e ≠ 0) (he : Q e = 0)
-    (heC : e ∈ rationalClosure (closedSheet Q hpos ht))
-    {S : Set (PointedCone ℝ (realified V))}
-    (hS : IsLocallyRationalDecomposition (rationalClosure (closedSheet Q hpos ht)) S)
-    (_hloc : ∃ U ∈ 𝓝 e, {τ : {τ : PointedCone ℝ (realified V) // τ ∈ S} |
-      ((τ.1 : Set (realified V)) ∩ U).Nonempty}.Finite) :
-    ∃ τmin : supportIndex (positiveCone.upper Q t) S
-      (PointedCone.hull ℝ ({e} : Set (realified V))),
-      IsProjectedMinimal Q he S (PointedCone.hull ℝ ({e} : Set (realified V))) τmin.1 :=
-  exists_isProjectedMinimal hpos hnd he0 he heC hS
 
 omit [Module.Finite ℚ V] in
 /-- Differences of two points of an affinely closed section, with the affineness stated on the
@@ -11421,25 +11403,6 @@ theorem inf_ker_iInf_span_le_sigmaSupportSpace
   obtain ⟨τmin, hmin⟩ := exists_isProjectedMinimal hpos hnd he0 he heC hS
   exact inf_ker_iInf_span_le_sigmaSupportSpace_of_projectedMinimal hpos hnd he0 he
     (rationalClosure_le_closedSheet hpos heC).2 hS τmin hmin
-
-/-- **Compatibility form with the former ambient-finiteness premise.** The canonical theorem
-`inf_ker_iInf_span_le_sigmaSupportSpace` needs no such premise; this declaration preserves the old
-call signature. -/
-theorem inf_ker_iInf_span_le_sigmaSupportSpace_of_locallyFiniteAt
-    {Q : QuadraticForm ℝ (realified V)} {t e : realified V} (hpos : sigPos Q = 1)
-    (hnd : Q.Nondegenerate) {ht : 0 < Q t} (he0 : e ≠ 0) (he : Q e = 0)
-    (heC : e ∈ rationalClosure (closedSheet Q hpos ht))
-    {S : Set (PointedCone ℝ (realified V))}
-    (hS : IsLocallyRationalDecomposition (rationalClosure (closedSheet Q hpos ht)) S)
-    (_hloc : ∃ U ∈ 𝓝 e, {τ : {τ : PointedCone ℝ (realified V) // τ ∈ S} |
-      ((τ.1 : Set (realified V)) ∩ U).Nonempty}.Finite) :
-    LinearMap.ker (associated Q e) ⊓
-        (⨅ τ : supportIndex (positiveCone.upper Q t) S
-          (PointedCone.hull ℝ ({e} : Set (realified V))),
-          Submodule.span ℝ (τ.1 : Set (realified V))) ≤
-      sigmaSupportSpace (positiveCone.upper Q t) S
-        (PointedCone.hull ℝ ({e} : Set (realified V))) :=
-  inf_ker_iInf_span_le_sigmaSupportSpace hpos hnd he0 he heC hS
 end AffineModel
 
 end LeanCategories.Lattices.Valued
