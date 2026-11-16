@@ -10292,6 +10292,88 @@ theorem span_eq_span_section_of_nonneg {E : Type*} [AddCommGroup E] [Module ℝ 
       exact Submodule.smul_mem _ _ (Submodule.subset_span hy)
   · exact Submodule.span_mono Set.inter_subset_left
 
+/-- **Strict inclusion of nonempty projected sections forces a linear-span rank drop.** The two
+projected members intersect in a face of the larger one. Their sections have the same span as their
+cones by `span_eq_span_section_of_nonneg`, and strictness of the smaller section makes that face
+proper, so `finrank_span_lt_of_isFaceOf_of_ne` applies. This global face argument is what lets us
+select by rank rather than by minimality only among members containing a fixed point. LC-09 and
+provenance are recorded on the two ingredients above; no competing projected declaration was found
+by the queries `IsProjectedMinimal`, `LocallyFinite PointedCone minimal`, and
+`locally finite polyhedral decomposition minimal affine`. -/
+theorem finrank_span_map_lt_of_projectedPolyhedron_ssubset
+    {Q : QuadraticForm ℝ (realified V)} {t e : realified V} (hpos : sigPos Q = 1)
+    {ht : 0 < Q t} (he : Q e = 0)
+    {S : Set (PointedCone ℝ (realified V))}
+    (hS : IsLocallyRationalDecomposition (rationalClosure (closedSheet Q hpos ht)) S)
+    {τ τmin : PointedCone ℝ (realified V)} (hτ : τ ∈ S) (hτmin : τmin ∈ S)
+    (heτ : PointedCone.hull ℝ ({e} : Set (realified V)) ≤ τ)
+    (heτmin : PointedCone.hull ℝ ({e} : Set (realified V)) ≤ τmin)
+    (hne : (projectedPolyhedron Q he τ).Nonempty)
+    (hss : projectedPolyhedron Q he τ ⊂ projectedPolyhedron Q he τmin) :
+    let N := Submodule.span ℝ ({e} : Set (realified V))
+    Module.finrank ℝ (Submodule.span ℝ
+      ((τ.map N.mkQ : PointedCone ℝ (realified V ⧸ N)) : Set (realified V ⧸ N))) <
+    Module.finrank ℝ (Submodule.span ℝ
+      ((τmin.map N.mkQ : PointedCone ℝ (realified V ⧸ N)) : Set (realified V ⧸ N))) := by
+  let N := Submodule.span ℝ ({e} : Set (realified V))
+  let _ : ContinuousAdd (realified V ⧸ N) := IsModuleTopology.toContinuousAdd ℝ _
+  change Module.finrank ℝ (Submodule.span ℝ
+    ((τ.map N.mkQ : PointedCone ℝ (realified V ⧸ N)) : Set (realified V ⧸ N))) <
+  Module.finrank ℝ (Submodule.span ℝ
+    ((τmin.map N.mkQ : PointedCone ℝ (realified V ⧸ N)) : Set (realified V ⧸ N)))
+  have heτ0 : e ∈ τ := heτ (PointedCone.subset_hull (Set.mem_singleton e))
+  have heτmin0 : e ∈ τmin := heτmin (PointedCone.subset_hull (Set.mem_singleton e))
+  have heC : e ∈ rationalClosure (closedSheet Q hpos ht) :=
+    (heτ.trans (hS.le hτ)) (PointedCone.subset_hull (Set.mem_singleton e))
+  have heSheet := rationalClosure_le_closedSheet hpos heC
+  have hnonneg (a : PointedCone ℝ (realified V)) (ha : a ∈ S) :
+      ∀ x ∈ a.map N.mkQ, 0 ≤ isotropicHalfspaceForm Q he x := by
+    intro x hx
+    obtain ⟨y, hy, rfl⟩ := PointedCone.mem_map.1 hx
+    exact image_mkQ_subset_of_le_rationalClosure Q hpos ht he heSheet.2 (hS.le ha)
+      ⟨y, hy, rfl⟩
+  have hspan_section (a : PointedCone ℝ (realified V)) (ha : a ∈ S)
+      (haP : (projectedPolyhedron Q he a).Nonempty) :
+      Submodule.span ℝ
+        ((a.map N.mkQ : PointedCone ℝ (realified V ⧸ N)) : Set (realified V ⧸ N)) =
+      Submodule.span ℝ (projectedPolyhedron Q he a) := by
+    apply span_eq_span_section_of_nonneg (isotropicHalfspaceForm Q he) (hnonneg a ha)
+    obtain ⟨p, hpA, hpβ⟩ := haP
+    exact ⟨p, hpA, hpβ⟩
+  have hface : ((τmin.map N.mkQ) ⊓ (τ.map N.mkQ)).IsFaceOf (τmin.map N.mkQ) := by
+    have hf := PointedCone.IsFaceOf.map_mkQ_span_singleton (e := e)
+      (F := τmin ⊓ τ) (C := τmin) (he := ⟨heτmin0, heτ0⟩)
+      (hF := inf_isFaceOf_of_isLocallyRationalDecomposition hS hτmin hτ)
+    dsimp only at hf
+    rwa [map_inf_eq_inf_map_of_span_singleton heτmin0 heτ0] at hf
+  have hsection : projectedPolyhedron Q he (τmin ⊓ τ) = projectedPolyhedron Q he τ := by
+    unfold projectedPolyhedron
+    rw [map_inf_eq_inf_map_of_span_singleton heτmin0 heτ0]
+    ext x
+    constructor
+    · rintro ⟨⟨hxmin, hxτ⟩, hxA⟩
+      exact ⟨hxτ, hxA⟩
+    · rintro ⟨hxτ, hxA⟩
+      refine ⟨⟨?_, hxτ⟩, hxA⟩
+      exact (hss.1 ⟨hxτ, hxA⟩).1
+  have hface_ne : (τmin.map N.mkQ) ⊓ (τ.map N.mkQ) ≠ τmin.map N.mkQ := by
+    intro heq
+    apply hss.ne
+    rw [← hsection]
+    unfold projectedPolyhedron
+    rw [map_inf_eq_inf_map_of_span_singleton heτmin0 heτ0, heq]
+  have hspanAF : Submodule.span ℝ
+      ((τ.map N.mkQ : PointedCone ℝ (realified V ⧸ N)) : Set (realified V ⧸ N)) =
+      Submodule.span ℝ (((τmin.map N.mkQ ⊓ τ.map N.mkQ :
+        PointedCone ℝ (realified V ⧸ N)) : Set (realified V ⧸ N))) := by
+    rw [hspan_section τ hτ hne,
+      ← map_inf_eq_inf_map_of_span_singleton heτmin0 heτ0,
+      hspan_section (τmin ⊓ τ) (hS.mem_of_isFaceOf hτmin
+        (inf_isFaceOf_of_isLocallyRationalDecomposition hS hτmin hτ))
+        (hsection.symm ▸ hne), hsection]
+  rw [hspanAF]
+  exact finrank_span_lt_of_isFaceOf_of_ne hface hface_ne
+
 /-- Minimality in the projected order: no member of the decomposition above `σ` cuts a *nonempty*
 polyhedron strictly smaller than `τmin`'s, so `τmin`'s polyhedron is an element of the induced
 decomposition of `A_I(ℝ)` minimal under inclusion.
