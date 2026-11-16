@@ -10479,6 +10479,76 @@ theorem map_inf_ker_span_eq_lineal
     refine Submodule.mem_inf.2 ⟨?_, hxspan⟩
     rw [LinearMap.mem_ker, ← isotropicHalfspaceForm_mkQ (Q := Q) he x, hxu]
     exact hβu
+/-- **The reverse inclusion, from the affineness of the minimal member's polyhedron.** -/
+theorem inf_ker_iInf_span_le_sigmaSupportSpace_of_affine
+    {Q : QuadraticForm ℝ (realified V)} {t e : realified V}
+    (hpos : sigPos Q = 1) (hnd : Q.Nondegenerate) {ht : 0 < Q t}
+    (he0 : e ≠ 0) (he : Q e = 0) (het : 0 ≤ (associated Q) e t)
+    {S : Set (PointedCone ℝ (realified V))}
+    (hS : IsLocallyRationalDecomposition (rationalClosure (closedSheet Q hpos ht)) S)
+    (τmin : supportIndex (positiveCone.upper Q t) S
+      (PointedCone.hull ℝ ({e} : Set (realified V))))
+    (haff : ∀ u ∈ projectedPolyhedron Q he τmin.1, ∀ v ∈ projectedPolyhedron Q he τmin.1,
+      ∀ c : ℝ, c • u + (1 - c) • v ∈ projectedPolyhedron Q he τmin.1) :
+    LinearMap.ker (associated Q e) ⊓
+        (⨅ τ : supportIndex (positiveCone.upper Q t) S
+          (PointedCone.hull ℝ ({e} : Set (realified V))),
+          Submodule.span ℝ (τ.1 : Set (realified V))) ≤
+      sigmaSupportSpace (positiveCone.upper Q t) S
+        (PointedCone.hull ℝ ({e} : Set (realified V))) := by
+  classical
+  letI : ContinuousAdd (realified V ⧸ Submodule.span ℝ ({e} : Set (realified V))) :=
+    IsModuleTopology.toContinuousAdd ℝ _
+  have hσiso : IsIsotropicHalfLine Q
+      (PointedCone.hull ℝ ({e} : Set (realified V))) := ⟨e, he0, he, rfl⟩
+  -- β ≥ 0 on the projection of any member of the index
+  have hβ : ∀ x ∈ (τmin.1.map (Submodule.span ℝ ({e} : Set (realified V))).mkQ :
+      PointedCone ℝ (realified V ⧸ Submodule.span ℝ ({e} : Set (realified V)))), 0 ≤
+        isotropicHalfspaceForm Q he x := by
+    intro x hx
+    obtain ⟨y, hyτ, rfl⟩ := PointedCone.mem_map.1 hx
+    have hysheet : y ∈ closedSheet Q hpos ht :=
+      rationalClosure_le_closedSheet hpos (hS.le τmin.2.1 hyτ)
+    rw [isotropicHalfspaceForm_mkQ]
+    exact nonneg_associated_of_quadratic_eq_zero_of_mem_closedSheet hpos ht he het hysheet
+  have hne : (projectedPolyhedron Q he τmin.1).Nonempty :=
+    projectedPolyhedron_nonempty hpos hnd ht he0 he het τmin.2.2.2
+  have hbridge := map_inf_ker_span_eq_lineal (Q := Q) (e := e) he τmin.1 hβ hne haff
+  intro x hx
+  obtain ⟨hxker, hxinf⟩ := Submodule.mem_inf.1 hx
+  refine (Submodule.mem_iInf (fun τ : supportIndex (positiveCone.upper Q t) S
+    (PointedCone.hull ℝ ({e} : Set (realified V))) => supportSpace τ.1
+      (PointedCone.hull ℝ ({e} : Set (realified V))))).2 fun τ => ?_
+  have hindep : supportSpace τ.1 (PointedCone.hull ℝ ({e} : Set (realified V))) =
+      supportSpace τmin.1 (PointedCone.hull ℝ ({e} : Set (realified V))) :=
+    supportSpace_eq_of_isotropicHalfLine_of_locallyRational (τ := τ.1) (τ' := τmin.1)
+      hpos hnd hS hσiso τ.2.2.1 τmin.2.2.1 τ.2.1 τmin.2.1 τ.2.2.2 τmin.2.2.2
+  rw [hindep]
+  have hxmin : x ∈ Submodule.span ℝ (τmin.1 : Set (realified V)) :=
+    (Submodule.mem_iInf (fun τ : supportIndex (positiveCone.upper Q t) S
+      (PointedCone.hull ℝ ({e} : Set (realified V))) =>
+      Submodule.span ℝ (τ.1 : Set (realified V)))).1 hxinf τmin
+  have hxU : (Submodule.span ℝ ({e} : Set (realified V))).mkQ x ∈
+      PointedCone.lineal
+        ((τmin.1.map (Submodule.span ℝ ({e} : Set (realified V))).mkQ).topologicalClosure) := by
+    rw [← hbridge]
+    exact Submodule.mem_map.2 ⟨x, Submodule.mem_inf.2 ⟨hxker, hxmin⟩, rfl⟩
+  have hspace : supportSpace τmin.1 (PointedCone.hull ℝ ({e} : Set (realified V))) =
+      (PointedCone.lineal
+        ((τmin.1.map (Submodule.span ℝ ({e} : Set (realified V))).mkQ).topologicalClosure)).comap
+        (Submodule.span ℝ ({e} : Set (realified V))).mkQ := by
+    have hN : Submodule.span ℝ
+        ((PointedCone.hull ℝ ({e} : Set (realified V))) : Set (realified V)) =
+        Submodule.span ℝ ({e} : Set (realified V)) := by
+      exact le_antisymm (Submodule.span_le.2 fun x hx => PointedCone.hull_le_span ℝ {e} hx)
+        (Submodule.span_mono PointedCone.subset_hull)
+    have h := supportSpace_map_mkQ_bot_eq_topologicalClosure_lineal (τ := τmin.1)
+      (σ := PointedCone.hull ℝ ({e} : Set (realified V)))
+    dsimp only at h
+    rw [hN] at h
+    exact h.symm
+  rw [hspace, Submodule.mem_comap]
+  exact hxU
 end AffineModel
 
 end LeanCategories.Lattices.Valued
