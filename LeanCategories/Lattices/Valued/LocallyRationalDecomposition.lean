@@ -5738,6 +5738,339 @@ theorem le_or_le_of_not_cutsOn {ψ : (realified V) →ₗ[ℝ] ℝ} {P : Pointed
     by_contra hlt
     exact h x ⟨hx, not_le.1 hlt⟩
 
+/-- The interior of a cone is stable under positive scaling. -/
+theorem smul_mem_interior_of_pos {P : PointedCone ℝ (realified V)} {c : ℝ} (hc : 0 < c)
+    {x : realified V} (hx : x ∈ interior (P : Set (realified V))) :
+    c • x ∈ interior (P : Set (realified V)) := by
+  have hinv : Continuous (fun y : realified V => c⁻¹ • y) := by fun_prop
+  have hopen : IsOpen ((fun y : realified V => c⁻¹ • y) ⁻¹' interior (P : Set (realified V))) :=
+    isOpen_interior.preimage hinv
+  have hx' : c • x ∈ (fun y : realified V => c⁻¹ • y) ⁻¹' interior (P : Set (realified V)) := by
+    simp only [Set.mem_preimage]
+    rw [smul_smul, inv_mul_cancel₀ hc.ne', one_smul]
+    exact hx
+  have hsub : (fun y : realified V => c⁻¹ • y) ⁻¹' interior (P : Set (realified V)) ⊆
+      (P : Set (realified V)) := by
+    intro y hy
+    have hy' : c⁻¹ • y ∈ interior (P : Set (realified V)) := hy
+    have hmem : c • (c⁻¹ • y) ∈ P := P.smul_mem hc.le (interior_subset hy')
+    rwa [smul_smul, mul_inv_cancel₀ hc.ne', one_smul] at hmem
+  exact interior_maximal hsub hopen hx'
+
+/-- A linear form one-signed on a cone and vanishing at an interior point vanishes on the cone. -/
+theorem eq_zero_on_of_mem_interior_of_le_or_le {ψ : (realified V) →L[ℝ] ℝ}
+    {P : PointedCone ℝ (realified V)} {x : realified V}
+    (hx : x ∈ interior (P : Set (realified V)))
+    (hsign : (∀ y ∈ P, 0 ≤ ψ y) ∨ ∀ y ∈ P, ψ y ≤ 0) (hx0 : ψ x = 0) :
+    ∀ y ∈ P, ψ y = 0 := by
+  have hmem : ∀ v ∈ P, ∃ ε : ℝ, 0 < ε ∧ ∀ t : ℝ, |t| < ε → x + t • v ∈ P := by
+    intro v hv
+    have htend : Filter.Tendsto (fun t : ℝ => x + t • v) (𝓝 0) (𝓝 x) := by
+      have hcont : Continuous fun t : ℝ => x + t • v :=
+        continuous_const.add (continuous_id.smul continuous_const)
+      simpa only [zero_smul, add_zero] using hcont.tendsto (0 : ℝ)
+    have hev : ∀ᶠ t : ℝ in 𝓝 (0 : ℝ), x + t • v ∈ interior (P : Set (realified V)) :=
+      htend.eventually (isOpen_interior.mem_nhds hx)
+    obtain ⟨ε, hεpos, hε⟩ := (nhds_basis_Ioo_pos (0 : ℝ)).eventually_iff.1 hev
+    refine ⟨ε, hεpos, fun t ht => interior_subset (hε ?_)⟩
+    simp only [Set.mem_Ioo, zero_sub, zero_add]
+    have := abs_lt.1 ht
+    constructor <;> linarith [this.1, this.2]
+  intro y hy
+  obtain ⟨ε, hεpos, hε⟩ := hmem y hy
+  have ha : |ε / 2| < ε := by rw [abs_of_pos (by linarith)]; linarith
+  have hb : |-ε / 2| < ε := by rw [abs_of_neg (by linarith)]; linarith
+  have hva : ψ (x + (ε / 2) • y) = (ε / 2) * ψ y := by
+    rw [map_add, map_smul, smul_eq_mul, hx0, zero_add]
+  have hvb : ψ (x + (-ε / 2) • y) = (-ε / 2) * ψ y := by
+    rw [map_add, map_smul, smul_eq_mul, hx0, zero_add]
+  rcases hsign with h | h
+  · have h1 : 0 ≤ (ε / 2) * ψ y := by rw [← hva]; exact h _ (hε _ ha)
+    have h2 : 0 ≤ (-ε / 2) * ψ y := by rw [← hvb]; exact h _ (hε _ hb)
+    nlinarith
+  · have h1 : (ε / 2) * ψ y ≤ 0 := by rw [← hva]; exact h _ (hε _ ha)
+    have h2 : (-ε / 2) * ψ y ≤ 0 := by rw [← hvb]; exact h _ (hε _ hb)
+    nlinarith
+
+/-- `CutsOn` is monotone in the cone. -/
+theorem cutsOn_mono {ψ : (realified V) →L[ℝ] ℝ} {P Q : PointedCone ℝ (realified V)}
+    (hPQ : P ≤ Q) (h : CutsOn ψ.toLinearMap P) : CutsOn ψ.toLinearMap Q := by
+  obtain ⟨⟨p, hp, hpp⟩, q, hq, hqq⟩ := h
+  exact ⟨⟨p, hPQ hp, hpp⟩, q, hPQ hq, hqq⟩
+
+/-- A sign condition transfers along a point at which every row keeps its (weak) sign. -/
+theorem mem_arrangementCone_of_le_sign {s : ι → SignType} {x p : realified V}
+    (hx : x ∈ arrangementCone φ s)
+    (h : ∀ i, (0 ≤ φ i x → 0 ≤ φ i p) ∧ (φ i x ≤ 0 → φ i p ≤ 0)) :
+    p ∈ arrangementCone φ s := by
+  rw [mem_arrangementCone] at hx ⊢
+  intro i
+  cases hs : s i with
+  | zero =>
+      have hi : φ i x = 0 := by have := hx i; simpa only [hs] using this
+      exact le_antisymm ((h i).2 hi.le) ((h i).1 hi.ge)
+  | pos =>
+      have hi : 0 ≤ φ i x := by have := hx i; simpa only [hs] using this
+      exact (h i).1 hi
+  | neg =>
+      have hi : φ i x ≤ 0 := by have := hx i; simpa only [hs] using this
+      exact (h i).2 hi
+
+/-- **A member of an arrangement meeting the open cone spans the common kernel of the walls that
+vanish on it.** -/
+theorem le_span_of_isFaceOf_arrangementCone [Module.Finite ℚ V]
+    {C : Set (realified V)} (hCopen : IsOpen C)
+    (hCsmul : ∀ ⦃c : ℝ⦄, 0 < c → ∀ ⦃x : realified V⦄, x ∈ C → c • x ∈ C)
+    (hC0 : (0 : realified V) ∉ C)
+    {Cplus : PointedCone ℝ (realified V)} (hCsub : C ⊆ (Cplus : Set (realified V)))
+    (hcut : CutsFinitelyOnRational Cplus φ)
+    {s : ι → SignType} {τ : PointedCone ℝ (realified V)}
+    (hτ : τ.IsFaceOf (arrangementCone φ s ⊓ Cplus))
+    (hmeet : ((τ : Set (realified V)) ∩ C).Nonempty) :
+    (⨅ i : {i : ι // τ ≤ LinearMap.ker (φ i).toLinearMap}, LinearMap.ker (φ i).toLinearMap) ≤
+      Submodule.span ℝ (τ : Set (realified V)) := by
+  classical
+  intro z hz
+  rw [Submodule.mem_iInf] at hz
+  obtain ⟨y, hyτ, hyC⟩ := hmeet
+  have hy0 : y ≠ 0 := fun h => hC0 (h ▸ hyC)
+  have hτcell : τ ≤ arrangementCone φ s := hτ.le.trans inf_le_left
+  have hxτcell : ∀ x ∈ τ, x ∈ arrangementCone φ s := fun x hx => hτcell hx
+  have hsign : ∀ i : ι, (∀ x ∈ τ, 0 ≤ φ i x) ∨ ∀ x ∈ τ, φ i x ≤ 0 := by
+    intro i
+    cases hs : s i with
+    | zero =>
+        exact Or.inl fun x hx => by
+          have h0 : φ i x = 0 := by
+            have := (mem_arrangementCone φ).1 (hxτcell x hx) i
+            simpa only [hs] using this
+          exact h0.ge
+    | neg =>
+        exact Or.inr fun x hx => by
+          have := (mem_arrangementCone φ).1 (hxτcell x hx) i
+          simpa only [hs] using this
+    | pos =>
+        exact Or.inl fun x hx => by
+          have := (mem_arrangementCone φ).1 (hxτcell x hx) i
+          simpa only [hs] using this
+  obtain ⟨P₀, hP₀rat, hP₀n, hP₀sdiff⟩ :=
+    exists_rationalCone_mem_nhds_sdiff_subset_of_ne_zero hCopen hCsmul hyC hy0
+  have hP₀le : P₀ ≤ Cplus := by
+    intro v hv
+    by_cases hv0 : v = 0
+    · rw [hv0]; exact Cplus.zero_mem
+    · exact hCsub (hP₀sdiff ⟨hv, by simpa using hv0⟩)
+  have hyint : y ∈ interior (P₀ : Set (realified V)) := mem_interior_iff_mem_nhds.2 hP₀n
+  have hP₀fin : ({i | CutsOn (φ i).toLinearMap P₀} : Set ι).Finite := hcut P₀ hP₀rat hP₀le
+  set K : Finset ι := hP₀fin.toFinset.filter
+    (fun i => ¬ τ ≤ LinearMap.ker (φ i).toLinearMap) with hKdef
+  have hKmem : ∀ i, i ∈ K ↔ CutsOn (φ i).toLinearMap P₀ ∧
+      ¬ τ ≤ LinearMap.ker (φ i).toLinearMap := by
+    intro i
+    simp [hKdef, hP₀fin.mem_toFinset]
+  have hex : ∀ i, ¬ τ ≤ LinearMap.ker (φ i).toLinearMap → ∃ v ∈ τ, φ i v ≠ 0 := by
+    intro i hi
+    by_contra hcon
+    push Not at hcon
+    exact hi fun v hv => LinearMap.mem_ker.2 (by simpa using hcon v hv)
+  set wit : ι → realified V := fun i =>
+    if h : ∃ v ∈ τ, φ i v ≠ 0 then h.choose else 0 with hwitdef
+  have hwit : ∀ i, (∃ v ∈ τ, φ i v ≠ 0) → wit i ∈ τ ∧ φ i (wit i) ≠ 0 := by
+    intro i h
+    have hw : wit i = h.choose := by rw [hwitdef]; simp only [dite_eq_left h]
+    rw [hw]
+    exact h.choose_spec
+  set w : realified V := ∑ i ∈ K, wit i with hwdef
+  have hwτ : w ∈ τ := by
+    refine Submodule.sum_mem _ fun i hi => ?_
+    exact (hwit i (hex i ((hKmem i).1 hi).2)).1
+  have hwval : ∀ i ∈ K, φ i w ≠ 0 := by
+    intro i hi
+    have hiK := (hKmem i).1 hi
+    have hwitτ : ∀ j ∈ K, wit j ∈ τ := fun j hj => (hwit j (hex j ((hKmem j).1 hj).2)).1
+    have hne := (hwit i (hex i hiK.2)).2
+    have hsum : φ i w = ∑ j ∈ K, φ i (wit j) := by rw [hwdef, map_sum]
+    rcases hsign i with hle | hle
+    · have hpos : 0 < ∑ j ∈ K, φ i (wit j) := by
+        refine Finset.sum_pos' (fun j hj => hle _ (hwitτ j hj)) ⟨i, hi, ?_⟩
+        exact lt_of_le_of_ne (hle _ (hwitτ i hi)) (Ne.symm hne)
+      rw [hsum]
+      exact hpos.ne'
+    · have hneg : ∑ j ∈ K, φ i (wit j) < 0 := by
+        have hpos : 0 < ∑ j ∈ K, -(φ i (wit j)) := by
+          refine Finset.sum_pos' (fun j hj => ?_) ⟨i, hi, ?_⟩
+          · simpa using hle _ (hwitτ j hj)
+          · have h0 : φ i (wit i) ≤ 0 := hle _ (hwitτ i hi)
+            have := lt_of_le_of_ne h0 hne
+            simpa using this
+        rw [Finset.sum_neg_distrib] at hpos
+        linarith
+      rw [hsum]
+      exact hneg.ne
+  set bad : Finset ℝ := K.image (fun i => -φ i y / φ i w) with hbaddef
+  obtain ⟨t, htpos, htbad, htxC, htxint⟩ :
+      ∃ t : ℝ, 0 < t ∧ t ∉ bad ∧ y + t • w ∈ C ∧
+        y + t • w ∈ interior (P₀ : Set (realified V)) := by
+    have hcont : Continuous fun t : ℝ => y + t • w :=
+      continuous_const.add (continuous_id.smul continuous_const)
+    have htend : Filter.Tendsto (fun t : ℝ => y + t • w) (𝓝 0) (𝓝 y) := by
+      simpa only [zero_smul, add_zero] using hcont.tendsto (0 : ℝ)
+    have hev : ∀ᶠ t : ℝ in 𝓝 (0 : ℝ),
+        y + t • w ∈ C ∧ y + t • w ∈ interior (P₀ : Set (realified V)) :=
+      (htend.eventually (hCopen.mem_nhds hyC)).and
+        (htend.eventually (isOpen_interior.mem_nhds hyint))
+    obtain ⟨ε, hεpos, hε⟩ := (nhds_basis_Ioo_pos (0 : ℝ)).eventually_iff.1 hev
+    obtain ⟨t, htI, htbad⟩ :=
+      (Set.Ioo_infinite (a := (0 : ℝ)) (b := ε) hεpos).exists_notMem_finset bad
+    obtain ⟨ht0, htε⟩ := htI
+    have hgood : y + t • w ∈ C ∧ y + t • w ∈ interior (P₀ : Set (realified V)) :=
+      hε (by simp only [Set.mem_Ioo, zero_sub, zero_add]; constructor <;> linarith)
+    exact ⟨t, ht0, htbad, hgood.1, hgood.2⟩
+  set x : realified V := y + t • w with hxdef
+  have hxτ : x ∈ τ := τ.add_mem hyτ (τ.smul_mem htpos.le hwτ)
+  have hxneK : ∀ i ∈ K, φ i x ≠ 0 := by
+    intro i hi
+    have hwne := hwval i hi
+    have hxe : φ i x = φ i y + t * φ i w := by rw [hxdef, map_add, map_smul, smul_eq_mul]
+    intro h0
+    apply htbad
+    refine Finset.mem_image.2 ⟨i, hi, ?_⟩
+    rw [hxe] at h0
+    rw [div_eq_iff hwne]
+    linarith
+  have hx0 : x ≠ 0 := fun h => hC0 (h ▸ htxC)
+  obtain ⟨P, hPrat, hPn, hPsdiff⟩ :=
+    exists_rationalCone_mem_nhds_sdiff_subset_of_ne_zero (C := interior (P₀ : Set (realified V)))
+      isOpen_interior (fun c hc v hv => smul_mem_interior_of_pos hc hv) htxint hx0
+  have hPleP₀ : P ≤ P₀ := by
+    intro v hv
+    by_cases hv0 : v = 0
+    · rw [hv0]; exact P₀.zero_mem
+    · exact interior_subset (hPsdiff ⟨hv, by simpa using hv0⟩)
+  have hPle : P ≤ Cplus := hPleP₀.trans hP₀le
+  have hxP : x ∈ interior (P : Set (realified V)) := mem_interior_iff_mem_nhds.2 hPn
+  have hxP' : x ∈ P := interior_subset hxP
+  have hJfin : ({i | CutsOn (φ i).toLinearMap P} : Set ι).Finite := hcut P hPrat hPle
+  have hxne : ∀ i, CutsOn (φ i).toLinearMap P → φ i x = 0 →
+      τ ≤ LinearMap.ker (φ i).toLinearMap := by
+    intro i hiJ h0
+    by_contra hnotle
+    exact hxneK i ((hKmem i).2 ⟨cutsOn_mono hPleP₀ hiJ, hnotle⟩) h0
+  set K' : Finset ι := hJfin.toFinset.filter (fun i => φ i x ≠ 0) with hK'def
+  have hK'mem : ∀ i, i ∈ K' ↔ CutsOn (φ i).toLinearMap P ∧ φ i x ≠ 0 := by
+    intro i
+    simp [hK'def, hJfin.mem_toFinset]
+  obtain ⟨t', ht'pos, ht'good⟩ : ∃ t' : ℝ, 0 < t' ∧
+      (x + t' • z ∈ P ∧ x - t' • z ∈ P ∧ ∀ i ∈ K', |t' * φ i z| < |φ i x|) := by
+    have h1 : ∀ᶠ t' : ℝ in 𝓝 (0 : ℝ), x + t' • z ∈ P := by
+      have hcont : Continuous fun t' : ℝ => x + t' • z :=
+        continuous_const.add (continuous_id.smul continuous_const)
+      have htend : Filter.Tendsto (fun t' : ℝ => x + t' • z) (𝓝 0) (𝓝 x) := by
+        simpa only [zero_smul, add_zero] using hcont.tendsto (0 : ℝ)
+      exact htend.eventually hPn
+    have h2 : ∀ᶠ t' : ℝ in 𝓝 (0 : ℝ), x - t' • z ∈ P := by
+      have hcont : Continuous fun t' : ℝ => x + t' • (-z) :=
+        continuous_const.add (continuous_id.smul continuous_const)
+      have htend : Filter.Tendsto (fun t' : ℝ => x + t' • (-z)) (𝓝 0) (𝓝 x) := by
+        simpa only [zero_smul, add_zero] using hcont.tendsto (0 : ℝ)
+      refine (htend.eventually hPn).mono ?_
+      intro u hu
+      have h' : x + u • (-z) = x - u • z := by rw [smul_neg, sub_eq_add_neg]
+      rw [h'] at hu
+      exact hu
+    have h3 : ∀ᶠ t' : ℝ in 𝓝 (0 : ℝ), ∀ i ∈ K', |t' * φ i z| < |φ i x| := by
+      rw [Filter.eventually_all_finset]
+      intro i hi
+      have hpos : 0 < |φ i x| := abs_pos.2 ((hK'mem i).1 hi).2
+      have hcont : Continuous fun t' : ℝ => |t' * φ i z| := by fun_prop
+      have hzero : |(0 : ℝ) * φ i z| = 0 := by simp
+      have hlim : Filter.Tendsto (fun t' : ℝ => |t' * φ i z|) (𝓝 0) (𝓝 0) := by
+        simpa only [hzero] using hcont.tendsto 0
+      exact hlim.eventually (isOpen_Iio.mem_nhds hpos)
+    have hu : ∀ᶠ u : ℝ in 𝓝[>] (0 : ℝ), x + u • z ∈ P ∧ x - u • z ∈ P ∧
+        ∀ i ∈ K', |u * φ i z| < |φ i x| :=
+      (h1.and (h2.and h3)).filter_mono nhdsWithin_le_nhds
+    obtain ⟨u, hu, hu0⟩ := (hu.and self_mem_nhdsWithin).exists
+    exact ⟨u, hu0, hu.1, hu.2.1, hu.2.2⟩
+  have hcell : ∀ s' : ℝ, |s'| ≤ t' → x + s' • z ∈ P → x + s' • z ∈ arrangementCone φ s := by
+    intro s' hs' hs'P
+    refine mem_arrangementCone_of_le_sign (φ := φ) (hxτcell x hxτ) fun i => ?_
+    have hval : φ i (x + s' • z) = φ i x + s' * φ i z := by
+      rw [map_add, map_smul, smul_eq_mul]
+    have hbound : ∀ hx0i : φ i x ≠ 0, CutsOn (φ i).toLinearMap P →
+        |s' * φ i z| < |φ i x| := by
+      intro hx0i hiJ
+      have hb := ht'good.2.2 i ((hK'mem i).2 ⟨hiJ, hx0i⟩)
+      rw [abs_mul]
+      calc |s'| * |φ i z| ≤ t' * |φ i z| :=
+            mul_le_mul_of_nonneg_right hs' (abs_nonneg _)
+        _ = |t' * φ i z| := by rw [abs_mul, abs_of_pos ht'pos]
+        _ < |φ i x| := hb
+    have hzero : φ i x = 0 → φ i (x + s' • z) = 0 := by
+      intro hx0i
+      by_cases hiJ : CutsOn (φ i).toLinearMap P
+      · have hzi : φ i z = 0 := by
+          simpa [LinearMap.mem_ker] using hz ⟨i, hxne i hiJ hx0i⟩
+        rw [hval, hx0i, hzi, mul_zero, add_zero]
+      · rcases le_or_le_of_not_cutsOn hiJ with hle | hle
+        · exact eq_zero_on_of_mem_interior_of_le_or_le hxP (Or.inr hle) hx0i _ hs'P
+        · exact eq_zero_on_of_mem_interior_of_le_or_le hxP (Or.inl hle) hx0i _ hs'P
+    constructor
+    · intro hxi
+      by_cases hiJ : CutsOn (φ i).toLinearMap P
+      · by_cases hx0i : φ i x = 0
+        · rw [hzero hx0i]
+        · rw [hval]
+          have h1 := abs_lt.1 (hbound hx0i hiJ)
+          have h2 : |φ i x| = φ i x := abs_of_nonneg hxi
+          linarith [h1.1, h1.2, h2]
+      · rcases le_or_le_of_not_cutsOn hiJ with hle | hle
+        · rw [hzero (le_antisymm (hle _ hxP') hxi)]
+        · exact hval ▸ hle _ hs'P
+    · intro hxi
+      by_cases hiJ : CutsOn (φ i).toLinearMap P
+      · by_cases hx0i : φ i x = 0
+        · rw [hzero hx0i]
+        · rw [hval]
+          have h1 := abs_lt.1 (hbound hx0i hiJ)
+          have h2 : |φ i x| = -φ i x := abs_of_nonpos hxi
+          linarith [h1.1, h1.2, h2]
+      · rcases le_or_le_of_not_cutsOn hiJ with hle | hle
+        · exact hval ▸ hle _ hs'P
+        · rw [hzero (le_antisymm hxi (hle _ hxP'))]
+  have ht'abs : |t'| ≤ t' := by rw [abs_of_pos ht'pos]
+  have hnegabs : |-t'| ≤ t' := by rw [abs_neg, abs_of_pos ht'pos]
+  have hmem₁ : x + t' • z ∈ arrangementCone φ s := hcell t' ht'abs ht'good.1
+  have hmem₂ : x - t' • z ∈ arrangementCone φ s := by
+    have h := hcell (-t') hnegabs (by simpa only [neg_smul, sub_eq_add_neg] using ht'good.2.1)
+    simpa only [neg_smul, sub_eq_add_neg] using h
+  have hu : (2⁻¹ : ℝ) • (x + t' • z) ∈ (arrangementCone φ s ⊓ Cplus) :=
+    ⟨(arrangementCone φ s).smul_mem (by norm_num) hmem₁,
+      Cplus.smul_mem (by norm_num) (hPle ht'good.1)⟩
+  have hv : (2⁻¹ : ℝ) • (x - t' • z) ∈ (arrangementCone φ s ⊓ Cplus) :=
+    ⟨(arrangementCone φ s).smul_mem (by norm_num) hmem₂,
+      Cplus.smul_mem (by norm_num) (hPle ht'good.2.1)⟩
+  have hsum : (1 : ℝ) • ((2⁻¹ : ℝ) • (x + t' • z)) + (2⁻¹ : ℝ) • (x - t' • z) = x := by
+    match_scalars <;> ring
+  have hsumτ : (1 : ℝ) • ((2⁻¹ : ℝ) • (x + t' • z)) + (2⁻¹ : ℝ) • (x - t' • z) ∈ τ := by
+    rw [hsum]; exact hxτ
+  have hxτ' : (2⁻¹ : ℝ) • (x + t' • z) ∈ τ :=
+    hτ.mem_of_smul_add_mem hu hv one_pos hsumτ
+  have hxt : x + t' • z ∈ τ := by
+    have h := τ.smul_mem (show (0 : ℝ) ≤ 2 by norm_num) hxτ'
+    simpa only [smul_smul, mul_inv_cancel₀ (by norm_num : (2 : ℝ) ≠ 0), one_smul] using h
+  have hxspan : x ∈ Submodule.span ℝ (τ : Set (realified V)) := Submodule.subset_span hxτ
+  have hspan' : x + t' • z ∈ Submodule.span ℝ (τ : Set (realified V)) :=
+    Submodule.subset_span hxt
+  have htz : t' • z ∈ Submodule.span ℝ (τ : Set (realified V)) := by
+    have h := Submodule.sub_mem (p := Submodule.span ℝ (τ : Set (realified V))) hspan' hxspan
+    simpa using h
+  have hzspan : z ∈ Submodule.span ℝ (τ : Set (realified V)) := by
+    have h : t'⁻¹ • (t' • z) ∈ Submodule.span ℝ (τ : Set (realified V)) :=
+      Submodule.smul_mem (Submodule.span ℝ (τ : Set (realified V))) t'⁻¹ htz
+    simpa only [smul_smul, inv_mul_cancel₀ ht'pos.ne', one_smul] using h
+  exact hzspan
+
 /-- The sign of a form on `P` that imposes nothing on it: `pos` for a form that is nonnegative on
 `P`, `neg` for one that is nonpositive on it. -/
 noncomputable def weakPattern (φ : ι → (realified V) →L[ℝ] ℝ) (P : PointedCone ℝ (realified V)) :
