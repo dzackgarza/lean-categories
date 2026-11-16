@@ -5680,6 +5680,52 @@ def CutsFinitelyOnRational (Cplus : PointedCone ℝ (realified V))
   ∀ P : PointedCone ℝ (realified V), IsRationalCone P → P ≤ Cplus →
     {i : ι | CutsOn (φ i).toLinearMap P}.Finite
 
+/-- **Local finiteness on the interior of a rational subcone, from `CutsFinitelyOnRational`**: a wall
+that passes through an interior point of `P` leaves points of `P` on both of its sides, so it cuts
+`P`. This turns the counting hypothesis of Example 4.3 (b), p. 18
+(`.tmp-sources/looijenga-math0201218v2.md:491`: "Then this collection is locally finite on `C`"),
+into the form the geometric arguments use: only finitely many walls pass through a point of the open
+cone. -/
+theorem finite_setOf_apply_eq_zero_of_cutsFinitelyOnRational
+    {Cplus : PointedCone ℝ (realified V)} {φ : ι → (realified V) →L[ℝ] ℝ}
+    (hcut : CutsFinitelyOnRational Cplus φ) (hne : ∀ i, φ i ≠ 0)
+    {P : PointedCone ℝ (realified V)} (hP : IsRationalCone P) (hPle : P ≤ Cplus)
+    {x : realified V} (hx : x ∈ interior (P : Set (realified V))) :
+    {i : ι | φ i x = 0}.Finite := by
+  refine (hcut P hP hPle).subset ?_
+  rintro i hi
+  have hz : ∃ z : realified V, φ i z ≠ 0 := by
+    by_contra h
+    push Not at h
+    exact hne i (ContinuousLinearMap.ext h)
+  obtain ⟨z, hz⟩ := hz
+  have hval : ∀ t : ℝ, (φ i).toLinearMap (x + t • z) = t * φ i z := by
+    intro t
+    rw [map_add, map_smul, smul_eq_mul, show (φ i).toLinearMap x = 0 from hi, zero_add]
+    rfl
+  have htend : Filter.Tendsto (fun t : ℝ => x + t • z) (𝓝 0) (𝓝 x) := by
+    have hcont : Continuous fun t : ℝ => x + t • z :=
+      continuous_const.add (continuous_id.smul continuous_const)
+    simpa using hcont.tendsto 0
+  have hpos : ∃ t : ℝ, 0 < t ∧ x + t • z ∈ (P : Set (realified V)) := by
+    have h1 : ∀ᶠ t in 𝓝[>] (0 : ℝ), x + t • z ∈ interior (P : Set (realified V)) :=
+      Filter.Tendsto.eventually (Filter.Tendsto.mono_left htend nhdsWithin_le_nhds)
+        (isOpen_interior.mem_nhds hx)
+    obtain ⟨t, ht1, ht2⟩ := (Filter.Eventually.and h1 self_mem_nhdsWithin).exists
+    exact ⟨t, ht2, interior_subset ht1⟩
+  have hneg : ∃ t : ℝ, t < 0 ∧ x + t • z ∈ (P : Set (realified V)) := by
+    have h1 : ∀ᶠ t in 𝓝[<] (0 : ℝ), x + t • z ∈ interior (P : Set (realified V)) :=
+      Filter.Tendsto.eventually (Filter.Tendsto.mono_left htend nhdsWithin_le_nhds)
+        (isOpen_interior.mem_nhds hx)
+    obtain ⟨t, ht1, ht2⟩ := (Filter.Eventually.and h1 self_mem_nhdsWithin).exists
+    exact ⟨t, ht2, interior_subset ht1⟩
+  obtain ⟨t₁, ht₁, h₁⟩ := hpos
+  obtain ⟨t₂, ht₂, h₂⟩ := hneg
+  unfold CutsOn
+  rcases lt_or_gt_of_ne hz with hzn | hzp
+  · exact ⟨⟨_, h₂, by rw [hval]; nlinarith⟩, ⟨_, h₁, by rw [hval]; nlinarith⟩⟩
+  · exact ⟨⟨_, h₁, by rw [hval]; nlinarith⟩, ⟨_, h₂, by rw [hval]; nlinarith⟩⟩
+
 /-- A form that does not cut a cone is one-signed on it. -/
 theorem le_or_le_of_not_cutsOn {ψ : (realified V) →ₗ[ℝ] ℝ} {P : PointedCone ℝ (realified V)}
     (h : ¬ CutsOn ψ P) : (∀ x ∈ P, ψ x ≤ 0) ∨ ∀ x ∈ P, 0 ≤ ψ x := by

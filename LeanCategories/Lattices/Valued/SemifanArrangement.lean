@@ -549,4 +549,101 @@ theorem semifanArrangement_gammaInvariant
 
 end GammaInvarianceArrangement
 
+/-! ## The walls of `Σ(H)` at a fibre are the normal forms of the projected normals
+
+The counting lemma of #161 is stated for a family of `ℚ`-linear forms `BQ v` (the normal forms of
+the normals `v` of the hyperplanes) over a lattice `Λ`. Example 4.3 (b), p. 18
+(`.tmp-sources/looijenga-math0201218v2.md:491`), is applied at the fibre in Example 6.4, p. 29
+(`.tmp-sources/looijenga-math0201218v2.md:791`: "the `H ∈ H` containing `I` correspond to
+`ℚ`-hyperplanes in `I^⊥/I ⊗ I` of signature `(1, n-2)` and so according to example 4.3-b these
+decompose `C_{I,+}`"), so the family at the fibre has to be recognised as a family of normal forms
+over the reduced lattice `(Λ ⊓ I^⊥)/(Λ ⊓ I)`. What follows is that recognition:
+
+* `fibreFormC_bilinForm`: the trace on the fibre of the wall of `v` is the normal form of the
+  projection of `v` to the complement of the hyperbolic plane;
+* `fibreForm_fibreProj`: for `v ⊥ I` the *norm* of that projection in the fibre's form is the norm
+  of `v` in the ambient form — which is what lets the finite set of norms of the ambient orbit
+  family (`finite_form_values_of_orbitFamily`) serve at every fibre, since
+  `(v - (v·f) e)·(v - (v·f) e) = v·v` when `v·e = 0`.
+-/
+
+section FibreNormals
+
+variable {BQ : LinearMap.BilinForm ℚ V} {Q : QuadraticForm ℝ (realified V)}
+
+omit [Module.Finite ℚ V] in
+/-- The projection of a vector to the complement of the hyperbolic plane, written out. -/
+theorem fibreProj_val (hBsym : BQ.IsSymm) (F : ConicalLine BQ Q) (v : V) :
+    ((fibreProj hBsym F v : ↥F.space) : V)
+      = v - BQ v F.partner • F.gen - BQ v F.gen • F.partner := rfl
+
+omit [Module.Finite ℚ V] in
+/-- **The trace of the hyperplane of `BQ v` on a fibre is the normal form of the projected
+normal.** This is the identification which makes the walls of `Σ(H)` at a fibre the arrangement of
+the normals `fibreProj v` over the reduced lattice. -/
+theorem fibreFormC_bilinForm (hBsym : BQ.IsSymm)
+    (hBQ : ∀ u w : V, (associated Q) (rationalPoint u) (rationalPoint w) = (BQ u w : ℝ))
+    (F : ConicalLine BQ Q) (v : V) :
+    fibreFormC F (BQ v) =
+      normalForm (fibreForm Q F.space) (fibreProj hBsym F v) := by
+  refine ContinuousLinearMap.ext fun x => ?_
+  let L : realified ↥F.space →ₗ[ℝ] ℝ :=
+    (fibreFormC F (BQ v)).toLinearMap -
+      (normalForm (fibreForm Q F.space) (fibreProj hBsym F v)).toLinearMap
+  have hproj : ∀ w : ↥F.space,
+      BQ ((fibreProj hBsym F v : ↥F.space) : V) (w : V) = BQ v (w : V) := by
+    intro w
+    have hw := (ConicalLine.mem_space_iff (F := F)).1 w.2
+    rw [fibreProj_val hBsym F v]
+    simp only [map_sub, map_smul, LinearMap.sub_apply, LinearMap.smul_apply, smul_eq_mul,
+      hw.1, hw.2, mul_zero, sub_zero]
+  have hL : ∀ w : ↥F.space, L (rationalPoint w) = 0 := by
+    intro w
+    have h1 : fibreFormC F (BQ v) (rationalPoint w) = (BQ v (w : V) : ℝ) := by
+      rw [fibreFormC_apply, realifyMap_rationalPoint, realifiedForm_rationalPoint]
+    have h2 : normalForm (fibreForm Q F.space) (fibreProj hBsym F v) (rationalPoint w)
+        = (BQ v (w : V) : ℝ) := by
+      rw [normalForm_apply, associated_fibreForm, realifyMap_rationalPoint,
+        realifyMap_rationalPoint, hBQ, hproj]
+    change fibreFormC F (BQ v) (rationalPoint w)
+      - normalForm (fibreForm Q F.space) (fibreProj hBsym F v) (rationalPoint w) = 0
+    rw [h1, h2, sub_self]
+  have hzero : L = 0 := by
+    have hle : Submodule.span ℝ (Set.range (rationalPoint (V := ↥F.space))) ≤ L.ker := by
+      rw [Submodule.span_le]
+      rintro - ⟨w, rfl⟩
+      simpa using hL w
+    rw [span_range_rationalPoint, top_le_iff] at hle
+    exact LinearMap.ext fun z => by
+      have hz : z ∈ L.ker := by rw [hle]; exact Submodule.mem_top
+      simpa using hz
+  have := congrArg (fun f : realified ↥F.space →ₗ[ℝ] ℝ => f x) hzero
+  change fibreFormC F (BQ v) x
+    - normalForm (fibreForm Q F.space) (fibreProj hBsym F v) x = 0 at this
+  exact sub_eq_zero.1 this
+
+omit [Module.Finite ℚ V] in
+/-- **The norm of the projected normal is the ambient norm**, for a normal orthogonal to the
+isotropic line `I`: the projection `v - (v·f) e` differs from `v` by a vector in the radical of the
+form on `I^⊥`, so the fibre's form at it takes the value the ambient form takes at `v`. This is what
+lets the finite set of norms of `finite_form_values_of_orbitFamily` be used at every fibre. -/
+theorem fibreForm_fibreProj (hBsym : BQ.IsSymm)
+    (hBQ : ∀ u w : V, (associated Q) (rationalPoint u) (rationalPoint w) = (BQ u w : ℝ))
+    (F : ConicalLine BQ Q) {v : V} (hv : BQ F.gen v = 0) :
+    fibreForm Q F.space (rationalPoint (fibreProj hBsym F v)) = (BQ v v : ℝ) := by
+  rw [fibreForm_rationalPoint hBQ]
+  have hv' : BQ v F.gen = 0 := by rw [hBsym.eq]; exact hv
+  have hval : ((fibreProj hBsym F v : ↥F.space) : V)
+      = v - BQ v F.partner • F.gen := by
+    rw [fibreProj_val hBsym F v, hv', zero_smul, sub_zero]
+  have hcalc : BQ (v - BQ v F.partner • F.gen) (v - BQ v F.partner • F.gen) = BQ v v := by
+    have h1 : BQ (v - BQ v F.partner • F.gen) = BQ v - (BQ v F.partner) • BQ F.gen := by
+      rw [map_sub, map_smul]
+    rw [h1]
+    simp only [map_sub, map_smul, LinearMap.sub_apply, LinearMap.smul_apply, smul_eq_mul,
+      hv', hv, F.gen_iso, mul_zero, sub_zero]
+  rw [hval, hcalc]
+
+end FibreNormals
+
 end LeanCategories.Lattices.Valued
