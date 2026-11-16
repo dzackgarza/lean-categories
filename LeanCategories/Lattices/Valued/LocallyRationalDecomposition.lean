@@ -10389,35 +10389,25 @@ def IsProjectedMinimal (Q : QuadraticForm ℝ (realified V)) {e : realified V} (
       projectedPolyhedron Q he τ ⊆ projectedPolyhedron Q he τmin →
         projectedPolyhedron Q he τmin ⊆ projectedPolyhedron Q he τ
 
-/-- **A projected-minimal member exists when the decomposition is locally finite at `e`.**
-Every candidate contains `e`, so every candidate meets any neighbourhood of `e`. Hence the stated
-local-finiteness hypothesis makes the whole candidate family finite, not just its part near `e`.
-The candidates are exactly the members over the isotropic ray with a nonempty projected polyhedron;
-`Set.Finite.exists_minimalFor`, applied to the preorder of their projected polyhedra under
-inclusion, therefore supplies one for which every smaller inclusion is reversible. The projected
-cover of the open half-space makes this family nonempty.
+/-- **A projected-minimal member exists, with no ambient-finiteness premise.** Choose a member
+whose projected cone has least linear-span rank, using well-foundedness of `ℕ`. If another nonempty
+section were strictly smaller, `finrank_span_map_lt_of_projectedPolyhedron_ssubset` would give a
+strictly smaller rank. The projected cover of the open half-space makes the candidate family
+nonempty.
 
-LC-09 (2026-11-22): `content:minimal content:PointedCone content:projected` found no competing
-cone theorem. `content:Finite content:wellFoundedOn` and
-`content:WellFounded content:Finite content:minimal` located Mathlib's finite well-foundedness
-machinery (`Mathlib/Order/WellFoundedSet.lean`) and the direct consumer
-`Set.Finite.exists_minimalFor` (`Mathlib/Order/Preorder/Finite.lean`), also used in a commented
-Matroid precedent for finding an inclusion-minimal witness. That direct owner supplies exactly the
-required finite-preorder argument; only the quotient-cover and candidate-packaging steps are local.
-This is the existence part of Looijenga's "a minimal member of this decomposition" at p. 19, under
-an ambient finiteness assumption at `e`. Definition 4.2 (line 481) states no such ambient
-assumption: its local finiteness is finite restriction to rational subcones. The local finiteness
-stated in the proof of 4.5 (line 521) is in `A_I(ℝ)`, not in `L(ℝ)` near `e`; see
-`locallyFinite_map_star_of_isotropicHalfspace`. This hypothesis must therefore not be read as an
-automatic consequence of `IsLocallyRationalDecomposition`. -/
-theorem exists_isProjectedMinimal_of_locallyFiniteAt
+This global selection avoids the invalid step of minimizing only among cells containing a fixed
+point: a maximal cell can win that local comparison while having a proper face elsewhere. The proof
+of Looijenga's "a minimal member of this decomposition" at p. 19 is thereby carried without `hloc`.
+LC-09 (2026-11-22): `exists_minimal_wrt`, `IsProjectedMinimal`,
+`LocallyFinite PointedCone minimal`, and `locally finite polyhedral decomposition minimal affine`
+found no competing Lean theorem; `exists_minimalFor_of_wellFoundedLT` supplies the rank selection,
+and the HOL Light/Candle `FACE_OF_AFF_DIM_LT` is the reference for the face-dimension descent. -/
+theorem exists_isProjectedMinimal
     {Q : QuadraticForm ℝ (realified V)} {t e : realified V} (hpos : sigPos Q = 1)
     (hnd : Q.Nondegenerate) {ht : 0 < Q t} (he0 : e ≠ 0) (he : Q e = 0)
     (heC : e ∈ rationalClosure (closedSheet Q hpos ht))
     {S : Set (PointedCone ℝ (realified V))}
-    (hS : IsLocallyRationalDecomposition (rationalClosure (closedSheet Q hpos ht)) S)
-    (hloc : ∃ U ∈ 𝓝 e, {τ : {τ : PointedCone ℝ (realified V) // τ ∈ S} |
-      ((τ.1 : Set (realified V)) ∩ U).Nonempty}.Finite) :
+    (hS : IsLocallyRationalDecomposition (rationalClosure (closedSheet Q hpos ht)) S) :
     ∃ τmin : supportIndex (positiveCone.upper Q t) S
       (PointedCone.hull ℝ ({e} : Set (realified V))),
       IsProjectedMinimal Q he S (PointedCone.hull ℝ ({e} : Set (realified V))) τmin.1 := by
@@ -10440,19 +10430,18 @@ theorem exists_isProjectedMinimal_of_locallyFiniteAt
     exact zero_lt_one
   obtain ⟨a, haS, hea, huMap⟩ := exists_mem_map_star_of_isotropicHalfspace
     hpos hnd hS he0 he (hrayle hea₀) ha₀S hβu
+  let N := Submodule.span ℝ ({e} : Set (realified V))
   let T : Set {τ : PointedCone ℝ (realified V) // τ ∈ S} :=
     {τ | PointedCone.hull ℝ ({e} : Set (realified V)) ≤ τ.1 ∧
       (projectedPolyhedron Q he τ.1).Nonempty}
-  obtain ⟨U, hUn, hUfin⟩ := hloc
-  have hTfin : T.Finite := by
-    apply hUfin.subset
-    intro τ hτ
-    exact ⟨e, hτ.1 (PointedCone.subset_hull (Set.mem_singleton e)), mem_of_mem_nhds hUn⟩
+  let rank : {τ : PointedCone ℝ (realified V) // τ ∈ S} → ℕ := fun τ =>
+    Module.finrank ℝ (Submodule.span ℝ
+      ((τ.1.map N.mkQ : PointedCone ℝ (realified V ⧸ N)) : Set (realified V ⧸ N)))
   have hTne : T.Nonempty := by
     refine ⟨⟨a, haS⟩, hea, ?_⟩
     exact ⟨u, huMap, huA⟩
-  obtain ⟨τmin, hτminT, hτmin⟩ := hTfin.exists_minimalFor
-    (fun τ => projectedPolyhedron Q he τ.1) T hTne
+  obtain ⟨τmin, hτminT, hτmin⟩ :=
+    exists_minimalFor_of_wellFoundedLT (fun τ => τ ∈ T) rank hTne
   change PointedCone.hull ℝ ({e} : Set (realified V)) ≤ τmin.1 ∧
     (projectedPolyhedron Q he τmin.1).Nonempty at hτminT
   have heτ : e ∈ τmin.1 := hτminT.1 (PointedCone.subset_hull (Set.mem_singleton e))
@@ -10472,7 +10461,36 @@ theorem exists_isProjectedMinimal_of_locallyFiniteAt
     ⟨τmin.1, τmin.2, hτminT.1, hCτ⟩
   refine ⟨idx, idx.2.1, idx.2.2.1, hτminT.2, ?_⟩
   intro τ hτS hστ hPne hsub
-  exact hτmin (j := ⟨τ, hτS⟩) ⟨hστ, hPne⟩ hsub
+  by_contra hnot
+  have hss : projectedPolyhedron Q he τ ⊂ projectedPolyhedron Q he τmin.1 := by
+    apply Set.ssubset_iff_subset_ne.2
+    refine ⟨hsub, ?_⟩
+    intro heq
+    apply hnot
+    rw [heq]
+  have hrl : rank ⟨τ, hτS⟩ < rank τmin := by
+    exact finrank_span_map_lt_of_projectedPolyhedron_ssubset hpos he hS hτS τmin.2
+      hστ hτminT.1 hPne hss
+  have hge : rank τmin ≤ rank ⟨τ, hτS⟩ :=
+    hτmin (j := ⟨τ, hτS⟩) (show (⟨τ, hτS⟩ : {τ : PointedCone ℝ (realified V) // τ ∈ S}) ∈ T
+      from ⟨hστ, hPne⟩) hrl.le
+  omega
+
+/-- **Compatibility form with the former ambient-finiteness premise.** The stronger general
+selection `exists_isProjectedMinimal` no longer uses `hloc`; this declaration preserves the old
+call signature. -/
+theorem exists_isProjectedMinimal_of_locallyFiniteAt
+    {Q : QuadraticForm ℝ (realified V)} {t e : realified V} (hpos : sigPos Q = 1)
+    (hnd : Q.Nondegenerate) {ht : 0 < Q t} (he0 : e ≠ 0) (he : Q e = 0)
+    (heC : e ∈ rationalClosure (closedSheet Q hpos ht))
+    {S : Set (PointedCone ℝ (realified V))}
+    (hS : IsLocallyRationalDecomposition (rationalClosure (closedSheet Q hpos ht)) S)
+    (hloc : ∃ U ∈ 𝓝 e, {τ : {τ : PointedCone ℝ (realified V) // τ ∈ S} |
+      ((τ.1 : Set (realified V)) ∩ U).Nonempty}.Finite) :
+    ∃ τmin : supportIndex (positiveCone.upper Q t) S
+      (PointedCone.hull ℝ ({e} : Set (realified V))),
+      IsProjectedMinimal Q he S (PointedCone.hull ℝ ({e} : Set (realified V))) τmin.1 :=
+  exists_isProjectedMinimal hpos hnd he0 he heC hS
 
 omit [Module.Finite ℚ V] in
 /-- Differences of two points of an affinely closed section, with the affineness stated on the
