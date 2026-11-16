@@ -10651,6 +10651,38 @@ theorem projectedPolyhedron_nonempty_of_projectedMinimal
   hmin.2.2.1
 
 omit [Module.Finite ℚ V] in
+omit [Module.Finite ℚ V] in
+/-- **The separation input the affineness needs**, named: for a cone `C` in `{0 ≤ β}` and two
+points of its section whose affine combination leaves `C`, a functional nonnegative on `C` that
+vanishes at a point of the section and is positive somewhere on it. In this file's terms this is
+separation of a point of `span C ∖ C` from `C`; the only tool for that here
+(`exists_dual_nonneg_lt_of_isClosed`) needs `C` closed, which `IsLocallyRationalDecomposition` does
+not supply for its members. -/
+def HasSectionSeparatingFunctional {E : Type*} [AddCommGroup E] [Module ℝ E]
+    (β : E →ₗ[ℝ] ℝ) (C : PointedCone ℝ E) : Prop :=
+  ∀ u ∈ C, β u = 1 → ∀ v ∈ C, β v = 1 →
+    (∃ c : ℝ, c • u + (1 - c) • v ∉ C) →
+      ∃ p ∈ C, β p = 1 ∧ ∃ φ : E →ₗ[ℝ] ℝ,
+        (∀ x ∈ C, 0 ≤ φ x) ∧ φ p = 0 ∧ ∃ q ∈ C, β q = 1 ∧ 0 < φ q
+
+omit [Module.Finite ℚ V] in
+omit [Module.Finite ℚ V] in
+/-- **The section is affinely closed, from the separation input and the engine.** The engine says a
+functional nonnegative on `C` that vanishes at a point of the section vanishes on all of it; the
+separation input produces one that is positive somewhere on it, exactly when the section is not
+affinely closed. -/
+theorem affine_section_of_separating {E : Type*} [AddCommGroup E] [Module ℝ E]
+    {β : E →ₗ[ℝ] ℝ} {C : PointedCone ℝ E}
+    (hsep : HasSectionSeparatingFunctional β C)
+    (hzero : ∀ φ : E →ₗ[ℝ] ℝ, (∀ x ∈ C, 0 ≤ φ x) → (∃ p ∈ C, β p = 1 ∧ φ p = 0) →
+      ∀ q ∈ C, β q = 1 → φ q = 0) :
+    ∀ u ∈ C, β u = 1 → ∀ v ∈ C, β v = 1 → ∀ c : ℝ, c • u + (1 - c) • v ∈ C := by
+  intro u hu hβu v hv hβv c
+  by_contra hw
+  obtain ⟨p, hpC, hβp, φ, hφ, hφp, q, hqC, hβq, hφq⟩ :=
+    hsep u hu hβu v hv hβv ⟨c, hw⟩
+  exact absurd (hzero φ hφ ⟨p, hpC, hβp, hφp⟩ q hqC hβq) (ne_of_gt hφq)
+
 /-- **Affineness of the projected polyhedron is affineness inside the projection**: since `β` is `1`
 on the polyhedron and affine combinations preserve `β`, an affine combination of polyhedron points
 lies on the polyhedron exactly when it lies in the projected cone. The form on the right is the one
@@ -10669,8 +10701,7 @@ theorem projectedPolyhedron_affine_iff {Q : QuadraticForm ℝ (realified V)} {e 
     refine ⟨haff u hu v hv c, ?_⟩
     obtain ⟨-, hu1⟩ := hu
     obtain ⟨-, hv1⟩ := hv
-    show isotropicHalfspaceForm Q he (c • u + (1 - c) • v) = 1
-    rw [map_add, map_smul, map_smul, smul_eq_mul, smul_eq_mul, hu1, hv1]
+    rw [mem_affineModel, map_add, map_smul, map_smul, smul_eq_mul, smul_eq_mul, hu1, hv1]
     ring
 end AffineModel
 
