@@ -2902,3 +2902,45 @@ downstream assertions, computational observations, or downstream diagnostics.
   `arrangementDecomposition_reducedLattice_isLocallyRational` becomes `condition_i` for
   `Σ(ℋ)`. The generators `gen`/`hgen` of the orbit family are carried, not derived: they are the
   statement that the normals of `ℋ` are lattice vectors, i.e. the arithmetic input itself.
+
+### The cell of the half line's *own* sign pattern is not the member that Lemma-Definition 4.5 needs
+
+- **Need:** a member `τ ∈ Σ(ℋ)` above the half line `C_{J,+}` with `τ ∩ C_I ≠ ∅` — the hypothesis of
+  Lemma-Definition 4.5, p. 19 (`.tmp-sources/looijenga-math0201218v2.md:519`: "If `τ ∈ Σ` is such
+  that `τ ≥ σ` and `τ ∩ C ≠ ∅` then the common zero set of the real linear forms on `V` which are
+  nonnegative on `τ` and zero on `σ` is a subspace that is independent of `τ`"), applied to
+  `σ = C_{J,+}`.
+- **Evidence that the own-pattern cell does not serve.** `hull_fibreRay_le_cell` puts the ray in the
+  cell of its own sign pattern `signPattern φ r`, whose entries at the walls through the ray are
+  `0`, so that cell is contained in the common kernel of those walls. Two walls through the ray
+  already cut this down to the ray: in a fibre of signature `(1, 2)` — `V` of signature `(2, 3)`,
+  the smallest case of the source's setting — a hyperplane of the fibre spanned by the isotropic ray
+  `r` and a vector `w` with `⟨r, w⟩ ≠ 0` has associated matrix with determinant `−⟨r,w⟩² < 0`, hence
+  signature `(1, 1)`, which is the source's `(1, n-2)`; two such hyperplanes `span(r, w₁)`,
+  `span(r, w₂)` with `r, w₁, w₂` independent meet in `span(r)`. So the own-pattern cell meets
+  `C_{I,+}` in `span(r)`, and `span(r) ∩ C_I = ∅` because `r` is isotropic. **Item (2) as stated is
+  therefore false**, and `hull_fibreRay_le_cell` must not be read as reducing the existence of `τ`
+  to that cell.
+- **The object that does serve.** Cells with a *one-sided* value at a wall through the ray also
+  contain the ray (a weak sign cell contains every point at which the forms of its zero entries
+  vanish). Concretely, for `u ∈ C_I` close to `r` and `s := signPattern φ u`, the ray satisfies `s`
+  at the walls through the ray (their value is `0`, which satisfies either sign) and, at the walls
+  off the ray, `sign (φ i u) = sign (φ i r)` as long as `u` stays on the same side of each of them.
+  So `τ = arrangementCone φ s ⊓ C_{I,+}` contains the ray and contains `u`.
+- **What that last clause needs, and does not have.** "As long as `u` stays on the same side of each
+  of them" has to hold simultaneously for *infinitely many* walls: `|φ i (r + ε v) − φ i r| =
+  ε |φ i v|` is not dominated by `|φ i r|` uniformly in `i`. So the construction needs the walls off
+  the ray to keep a positive distance from `r`, i.e. local finiteness of `ℋ` at the ray — the
+  source's local finiteness of `ℋ` on `D`, taken at a boundary point of `D`. `CutsFinitelyOnRational`
+  at the fibre gives local finiteness on `C_{I,+}`, and quantifies over rational subcones `P ≤
+  C_{I,+}`, none of which has the boundary ray `r` in its interior: a cone through `r` is not cut by
+  the walls through `r` either (`P = hull(r, v)` has `φ i ≥ 0` on it when `φ i r = 0 ≤ φ i v`), so
+  the finiteness of cutters does not bound the walls through `r`.
+- **Coverage:** the `(1, 2)`-fibre computation is by hand and checkable in three lines (the Gram
+  matrix of `span(r, w)`); `mem_arrangementCone` and `signPattern` fix the pattern convention.
+  Confidence: high for the refutation, medium for the claim that only boundary local finiteness
+  closes the positive statement — no counterexample to the positive statement was constructed.
+- **Repair link:** restate the target as `∃ τ ∈ semifanArrangement ψ F, ray ⊆ τ ∧ (τ ∩ C_I).Nonempty`
+  with `τ` a one-sided cell as above, and supply the boundary local finiteness either as the named
+  hypothesis the source's `ℋ` supplies or from `CutsFinitelyOnRational` at a cone through `r` once
+  such a cone is available.
