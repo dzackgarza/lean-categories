@@ -10657,7 +10657,14 @@ points of its section whose affine combination leaves `C`, a functional nonnegat
 vanishes at a point of the section and is positive somewhere on it. In this file's terms this is
 separation of a point of `span C ∖ C` from `C`; the only tool for that here
 (`exists_dual_nonneg_lt_of_isClosed`) needs `C` closed, which `IsLocallyRationalDecomposition` does
-not supply for its members. -/
+not supply for its members.
+
+The input is not vacuous: for the quadrant `C = ⟨(1,0), (0,1)⟩` in `ℝ × ℝ` with `β = snd`, its
+section is the segment `{(t,1) | 0 ≤ t ≤ 1}`, which is not affinely closed, and `φ = fst` is
+nonnegative on `C`, vanishes at `(0,1) ∈ C` and is positive at `(1,1) ∈ C`. It is conservative in
+the other direction: a cone whose section is affinely closed satisfies it automatically
+(`hasSectionSeparatingFunctional_of_affine_section`), so it never excludes the members this file's
+examples actually use, whose sections are affine. -/
 def HasSectionSeparatingFunctional {E : Type*} [AddCommGroup E] [Module ℝ E]
     (β : E →ₗ[ℝ] ℝ) (C : PointedCone ℝ E) : Prop :=
   ∀ u ∈ C, β u = 1 → ∀ v ∈ C, β v = 1 →
@@ -10667,6 +10674,18 @@ def HasSectionSeparatingFunctional {E : Type*} [AddCommGroup E] [Module ℝ E]
 
 omit [Module.Finite ℚ V] in
 omit [Module.Finite ℚ V] in
+omit [Module.Finite ℚ V] in
+/-- **The separation input is conservative**: a cone whose section is affinely closed satisfies it
+vacuously, because then no affine combination of section points leaves the cone. So assuming
+`HasSectionSeparatingFunctional` never excludes a member with an affine section — it bears only on
+members whose section is not affinely closed, which is where the affineness has to be proved. -/
+theorem hasSectionSeparatingFunctional_of_affine_section {E : Type*} [AddCommGroup E] [Module ℝ E]
+    {β : E →ₗ[ℝ] ℝ} {C : PointedCone ℝ E}
+    (haff : ∀ u ∈ C, β u = 1 → ∀ v ∈ C, β v = 1 → ∀ c : ℝ, c • u + (1 - c) • v ∈ C) :
+    HasSectionSeparatingFunctional β C := by
+  intro u hu hβu v hv hβv ⟨c, hc⟩
+  exact absurd (haff u hu hβu v hv hβv c) hc
+
 /-- **The section is affinely closed, from the separation input and the engine.** The engine says a
 functional nonnegative on `C` that vanishes at a point of the section vanishes on all of it; the
 separation input produces one that is positive somewhere on it, exactly when the section is not
