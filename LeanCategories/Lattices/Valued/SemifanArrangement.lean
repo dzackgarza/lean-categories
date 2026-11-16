@@ -5,6 +5,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import LeanCategories.Lattices.Valued.Semifan
+public import Mathlib.Algebra.Module.Lattice.Full
 
 /-!
 # The arrangement decomposition `Σ(H)` on the conical locus
@@ -49,36 +50,35 @@ E. Looijenga, *Compactifications defined by arrangements II: locally symmetric v
   with `fibreWallsEquiv_coe` and `realifiedForm_equivariant`. The decomposition itself is
   `arrangementDecomposition_reindex`-invariant, so the two index sets — the walls of `H` containing
   `I` and those containing `gI` — may be compared along `ρ`.
+* **the reduced lattice `(Λ ⊓ I^⊥)/(Λ ⊓ I)` of Looijenga §1B, p. 11** as a `ℤ`-module:
+  `reducedLattice` is the image of `Λ ⊓ I^⊥` under the hyperbolic projection `fibreProjLinear` — the
+  projection kills exactly `I` on `I^⊥` (`span_inf_restrictScalars`), so the image is the quotient.
+  `isFullLattice_reducedLattice`: it is a `ℤ`-lattice in the fibre's carrier, and
+  `exists_basis_reducedLattice`: the fibre has a `ℚ`-basis whose `ℤ`-span *is* it, which is the form
+  in which the counting lemma of Example 4.3 (b) takes the lattice of a cone system.
+  `pairing_fibreProj` and `integral_reducedLattice`: the fibre's pairing of two projected normals is
+  the ambient pairing, so a form integral on `Λ` is integral on the reduced lattice.
 
 ## What is not here
 
 * **`CutsFinitelyOnRational` at the fibre**, and hence condition (i) of Definition 6.1 with no
-  hypothesis carried. What is in place: the counting lemma of Example 4.3 (b) with the group action
-  replaced by a finite set of norms (`cutsFinitelyOnRational_of_finiteNormValues`), the
-  identification of the fibre's walls with the normal forms of the projected normals
-  (`fibreFormC_bilinForm`), and the identity `fibreProj v · fibreProj v = v · v` for a normal
-  orthogonal to `I` (`fibreForm_fibreProj`), which is what lets the ambient finite set of norms
-  (`finite_form_values_of_orbitFamily`) serve at every fibre. What is missing is the reduced lattice
-  at the level of `ℤ`-modules: with `Λ` the ambient lattice, the fibre's lattice is the image of
-  `Λ ⊓ I^⊥` under `fibreProj`, and the counting lemma needs it as the `ℤ`-span of a `ℚ`-basis of the
-  fibre's carrier, together with
-  `Λ_F ⊓ ℚ·(fibreProj (gen ℓ)) = ℤ·fibreProj (gen ℓ)` for `ℓ ⊓ Λ = ℤ·gen ℓ` with `ℓ ≤ ker (BQ e)`.
-  Neither the reduction `(Λ ⊓ I^⊥)/(Λ ⊓ I)` as a `ℤ`-module nor that primitivity is in the
-  repository; the remaining step is
-  `∃ bs : Module.Basis κ ℚ ↥F.space, Submodule.span ℤ (Set.range bs) = Submodule.map
-  ((fibreProj hBsym F).restrictScalars ℤ) (Λ ⊓ (LinearMap.ker (BQ F.gen)).restrictScalars ℤ)`
-  together with the associated primitivity and integrality, after which
-  `cutsFinitelyOnRational_of_finiteNormValues` applies at `V := ↥F.space` with `M` the ambient norm
-  set and `g ℓ := fibreProj (gen ℓ)`. Two further notes on that last step. The fibre's form and its
-  restriction `fibreBilinForm` are nondegenerate together and the identification
-  `associated (fibreForm Q F.space) = (fibreBilinForm BQ F : _ → _ → ℚ)` holds on rational points,
-  so the *statement* halves of the instantiation are not the difficulty: applying
-  `cutsFinitelyOnRational_of_finiteNormValues` at `V := ↥F.space` makes the elaborator unfold
-  `ConicalLine.space`, `planeComplement` and the two realifications at every unification step, and
-  the application runs out of heartbeats (`whnf` timeout, 4 000 000) without an error in the
-  mathematics. The cheap model for the next attempt is a lemma stated over an abstract `W` with a
-  `ℚ`-linear equivalence `W ≃ ↥F.space` carrying `fibreForm` to a given form — i.e. the counting at
-  the reduced lattice itself, with the fibre's carrier reached only through that equivalence.
+  hypothesis carried. The reduced lattice it runs on is in place (`reducedLattice`, with a `ℚ`-basis
+  of the carrier whose `ℤ`-span it is, and the integrality of the form on it), as is the counting
+  lemma of Example 4.3 (b) with the group action replaced by a finite set of norms
+  (`cutsFinitelyOnRational_of_finiteNormValues`). What is missing is the instantiation of that lemma
+  at the fibre, and its `hg` hypothesis — a generator of `ℓ ⊓ Λ_F` for each wall line `ℓ` — is where
+  the obvious route fails: the cut of a `ℚ`-line with a lattice is cyclic, but its generator need
+  not be the projection of an ambient one, so the ambient finite set of norms
+  (`fibreForm_fibreProj`, `finite_form_values_of_orbitFamily`) does not bound the norms of the
+  generators the lemma needs.
+  For `Λ = ℤ(e + 2w) ⊕ ℤ f ⊕ ℤ(2e)` in `ℚ³ = ⟨e, f⟩ ⊥ ⟨w⟩` (`e·f = 1`, `w·w = 1`, the form
+  integral on `Λ`) and `ℓ = ℚ w` one has `ℓ ⊓ Λ = ℤ·4w` while `Λ_F = ℤ·2π(w)` and
+  `ℓ ⊓ Λ_F = ℤ·2π(w)` — the projection `π(4w) = 4w` is not primitive in the reduced lattice (a hand
+  computation, not a Lean statement). The counting at the fibre therefore needs a norm bound at the
+  reduced lattice itself, or the transfer of the ambient counting hypothesis along
+  `fibreProjLinear`, which is a statement about rational cones in the fibre and the ambient closed
+  sheet and is not in the repository either.
+
 * **Condition (ii) and `J_{Σ(H)} = J_H`** (the `Σ`-support space of a plane's half line is
   `J^⊥ ⊓ ⋂_{H ∋ J} H`). At the half line of `J`, `vSigmaPlane` is `sigmaSupportSpace` over the
   members `τ` of `Σ(H)` with `C_{J,+} ≤ τ` and `τ ∩ C_I ≠ ∅`, and *both* inclusions need such a
@@ -668,5 +668,224 @@ theorem fibreForm_fibreProj (hBsym : BQ.IsSymm)
   rw [hval, hcalc]
 
 end FibreNormals
+
+/-! ## The reduced lattice of a conical fibre
+
+Looijenga §1B, p. 11 (text line 251): for a `ℚ`-isotropic line `I` the reduction `I^⊥/I` carries the
+lattice `(Λ ⊓ I^⊥)/(Λ ⊓ I)`, and Example 4.3 (b) at the fibre — the input to condition (i) of
+Definition 6.1 for `Σ(H)` (Example 6.4, p. 29, text line 791) — runs on that lattice. This section
+is it, as a `ℤ`-module in the carrier `⟨e, f⟩^⊥` of `ConicalLine.space`:
+
+* `fibreProjLinear`: the hyperbolic projection `x ↦ x - (x·f) e - (x·e) f` as a `ℚ`-linear map, of
+  which `fibreProj` is the underlying function;
+* `reducedLattice`: the reduction `(Λ ⊓ I^⊥)/(Λ ⊓ I)` as the image of `Λ ⊓ I^⊥` under it — the
+  projection kills exactly `I` on `I^⊥` (`span_inf_restrictScalars`), so the image *is* the
+  quotient;
+* `isLattice_reducedLattice`: the reduced lattice is a `ℤ`-lattice in the fibre's carrier, hence
+  `exists_basis_reducedLattice`: the fibre has a `ℚ`-basis whose `ℤ`-span is the reduced lattice.
+  That basis is the one Example 4.3 (b) takes (`cutsFinitelyOnRational_of_finiteNormValues`);
+* `pairing_fibreProj` and `integral_reducedLattice`: the fibre's pairing of two projected normals is
+  the ambient pairing, so an ambient form integral on `Λ` is integral on the reduced lattice (and
+  `fibreForm_fibreProj` is the same statement for norms). -/
+
+section ReducedLattice
+
+variable {BQ : LinearMap.BilinForm ℚ V} {Q : QuadraticForm ℝ (realified V)}
+
+/-- **A lattice in a `ℚ`-vector space is the `ℤ`-span of a `ℚ`-basis.** On a `ℤ`-basis of the
+lattice
+(`Submodule.IsLattice.free`), `Module.Basis.extendOfIsLattice` is a `ℚ`-basis of the ambient space,
+and the `ℤ`-span of its values is the lattice. This is the form in which the counting lemma of
+Example 4.3 (b) takes its lattice (`cutsFinitelyOnRational_of_finiteNormValues`). -/
+theorem exists_basis_span_eq_of_isFullLattice {W : Type} [AddCommGroup W] [Module ℚ W]
+    (M : Submodule ℤ W) [Submodule.IsFullLattice ℚ M] :
+    ∃ (κ : Type) (_ : Fintype κ) (b : Module.Basis κ ℚ W),
+      Submodule.span ℤ (Set.range b) = M := by
+  classical
+  obtain ⟨b, hb⟩ := Submodule.IsLattice.exists_basis_linearIndependent (K := ℚ) (M := M)
+  have hrange : Set.range (fun i => (b i).val) = M.subtype '' Set.range b := by
+    ext x
+    constructor
+    · rintro ⟨i, rfl⟩
+      exact ⟨b i, ⟨i, rfl⟩, rfl⟩
+    · rintro ⟨y, ⟨i, rfl⟩, rfl⟩
+      exact ⟨i, rfl⟩
+  have hspan : Submodule.span ℤ (Set.range (fun i => (b i).val)) = M := by
+    rw [hrange, ← Submodule.map_span, b.span_eq, Submodule.map_subtype_top]
+  have hsp : (⊤ : Submodule ℚ W) ≤ Submodule.span ℚ (Set.range (fun i => (b i).val)) := by
+    rw [← Submodule.span_span_of_tower (R := ℤ) (S := ℚ)
+      (s := Set.range (fun i => (b i).val)), hspan, Submodule.IsFullLattice.span_eq_top]
+  refine ⟨Fin (Module.finrank ℤ ↥M), inferInstance,
+    Module.Basis.mk (v := fun i => (b i).val) hb hsp, ?_⟩
+  simpa using hspan
+
+omit [Module.Finite ℚ V] in
+/-- **A lattice meets every `ℚ`-subspace in a submodule whose rational span is the whole
+subspace**: an element of the subspace is a rational combination of lattice vectors, and clearing
+denominators puts it in the intersection. -/
+theorem span_inf_restrictScalars {κ : Type} [Finite κ] (bs : Module.Basis κ ℚ V)
+    (K : Submodule ℚ V) :
+    Submodule.span ℚ ((Submodule.span ℤ (Set.range bs) ⊓ K.restrictScalars ℤ :
+      Submodule ℤ V) : Set V) = K := by
+  classical
+  have hint : Fintype κ := Fintype.ofFinite κ
+  refine le_antisymm (Submodule.span_le.2 ?_) ?_
+  · rintro x ⟨-, hx⟩
+    exact hx
+  · intro x hx
+    obtain ⟨D, hDpos, hD⟩ := exists_nat_smul_mem_span bs x
+    have hmem : ((D : ℤ) • x : V) ∈
+        Submodule.span ℤ (Set.range bs) ⊓ K.restrictScalars ℤ :=
+      ⟨hD, Submodule.smul_mem _ _ hx⟩
+    have hcast : ((D : ℚ)⁻¹) • ((D : ℤ) • x) = x := by
+      rw [← Int.cast_smul_eq_zsmul (R := ℚ) (D : ℤ) x, smul_smul, Int.cast_natCast]
+      have hD' : ((D : ℚ)) ≠ 0 := by exact_mod_cast hDpos.ne'
+      rw [inv_mul_cancel₀ hD', one_smul]
+    rw [← hcast]
+    exact Submodule.smul_mem _ _ (Submodule.subset_span hmem)
+
+/-- The hyperbolic projection `x ↦ x - (x·f) e - (x·e) f` to the carrier of a conical fibre, as a
+`ℚ`-linear map: the linear structure of `fibreProj`. -/
+noncomputable def fibreProjLinear (hBsym : BQ.IsSymm) (F : ConicalLine BQ Q) :
+    V →ₗ[ℚ] ↥F.space :=
+  LinearMap.codRestrict _
+    ((LinearMap.id : V →ₗ[ℚ] V) - (BQ.flip F.partner).smulRight F.gen
+      - (BQ.flip F.gen).smulRight F.partner) fun v => by
+    have hval : ((LinearMap.id : V →ₗ[ℚ] V) - (BQ.flip F.partner).smulRight F.gen
+        - (BQ.flip F.gen).smulRight F.partner) v
+        = v - BQ v F.partner • F.gen - BQ v F.gen • F.partner := by
+      simp
+    rw [hval]
+    exact (fibreProj hBsym F v).2
+
+omit [Module.Finite ℚ V] in
+theorem fibreProjLinear_apply (hBsym : BQ.IsSymm) (F : ConicalLine BQ Q) (v : V) :
+    ((fibreProjLinear hBsym F v : ↥F.space) : V)
+      = v - BQ v F.partner • F.gen - BQ v F.gen • F.partner := by
+  simp [fibreProjLinear]
+
+omit [Module.Finite ℚ V] in
+/-- The linear projection is the function `fibreProj`. -/
+theorem fibreProjLinear_eq_fibreProj (hBsym : BQ.IsSymm) (F : ConicalLine BQ Q) (v : V) :
+    fibreProjLinear hBsym F v = fibreProj hBsym F v :=
+  Subtype.ext (by rw [fibreProjLinear_apply, fibreProj_val])
+
+omit [Module.Finite ℚ V] in
+/-- **The hyperbolic projection fixes the fibre's carrier pointwise**: a vector orthogonal to both
+`e` and `f` is not moved. -/
+theorem fibreProjLinear_self (hBsym : BQ.IsSymm) (F : ConicalLine BQ Q) (w : ↥F.space) :
+    fibreProjLinear hBsym F w = w := by
+  refine Subtype.ext ?_
+  rw [fibreProjLinear_apply]
+  have h1 : BQ F.gen (w : V) = 0 := ((ConicalLine.mem_space_iff (F := F)).1 w.2).1
+  have h2 : BQ F.partner (w : V) = 0 := ((ConicalLine.mem_space_iff (F := F)).1 w.2).2
+  have h3 : BQ (w : V) F.gen = 0 := by rw [hBsym.eq]; exact h1
+  have h4 : BQ (w : V) F.partner = 0 := by rw [hBsym.eq]; exact h2
+  rw [h3, h4, zero_smul, zero_smul, sub_zero, sub_zero]
+
+/-- **The reduced lattice of a conical fibre** — the reduction `(Λ ⊓ I^⊥)/(Λ ⊓ I)` of Looijenga
+§1B, p. 11, as the image of `Λ ⊓ I^⊥` under the hyperbolic projection. The projection kills `I` and
+nothing else on `I^⊥`, so the image is the quotient; `span_inf_restrictScalars` records that the
+intersection is not smaller than the lattice requires. -/
+noncomputable def reducedLattice (hBsym : BQ.IsSymm) (F : ConicalLine BQ Q)
+    (Λ : Submodule ℤ V) : Submodule ℤ ↥F.space :=
+  Submodule.map ((fibreProjLinear hBsym F).restrictScalars ℤ)
+    (Λ ⊓ (LinearMap.ker (BQ F.gen)).restrictScalars ℤ)
+
+omit [Module.Finite ℚ V] in
+theorem coe_reducedLattice (hBsym : BQ.IsSymm) (F : ConicalLine BQ Q) (Λ : Submodule ℤ V) :
+    (reducedLattice hBsym F Λ : Set ↥F.space) = fibreProjLinear hBsym F ''
+      (Λ ⊓ (LinearMap.ker (BQ F.gen)).restrictScalars ℤ : Set V) := rfl
+
+omit [Module.Finite ℚ V] in
+/-- **The reduced lattice is a full `ℤ`-lattice in the fibre's carrier** (Looijenga §1B, p. 11):
+it is finitely generated — the image of `Λ ⊓ I^⊥`, a submodule of a finitely generated
+`ℤ`-module — and it spans the carrier over `ℚ`, because `Λ ⊓ I^⊥` spans `I^⊥`
+(`span_inf_restrictScalars`) and the projection maps `I^⊥` onto the carrier. -/
+theorem isFullLattice_reducedLattice (hBsym : BQ.IsSymm) (F : ConicalLine BQ Q) {κ : Type}
+    [Finite κ] (bs : Module.Basis κ ℚ V) :
+    Submodule.IsFullLattice ℚ (reducedLattice hBsym F (Submodule.span ℤ (Set.range bs))) := by
+  have hΛ : Submodule.IsLattice ℚ (Submodule.span ℤ (Set.range bs)) :=
+    Submodule.IsLattice.of_fg (K := ℚ) (Submodule.fg_span (Set.finite_range bs))
+  have hfg : (reducedLattice hBsym F (Submodule.span ℤ (Set.range bs))).FG :=
+    Submodule.FG.map ((fibreProjLinear hBsym F).restrictScalars ℤ)
+      (Submodule.IsLattice.fg ℚ (Submodule.span ℤ (Set.range bs) ⊓
+        (LinearMap.ker (BQ F.gen)).restrictScalars ℤ))
+  have hlat := Submodule.IsLattice.of_fg (K := ℚ) hfg
+  refine { fg := hlat.fg, linearIndepOn := hlat.linearIndepOn, span_eq_top := ?_ }
+  · have hcoe : (reducedLattice hBsym F (Submodule.span ℤ (Set.range bs)) : Set ↥F.space) =
+        fibreProjLinear hBsym F ''
+          ((Submodule.span ℤ (Set.range bs) ⊓
+            (LinearMap.ker (BQ F.gen)).restrictScalars ℤ : Submodule ℤ V) : Set V) := rfl
+    have htop : Submodule.map (fibreProjLinear hBsym F)
+        (Submodule.span ℚ ((Submodule.span ℤ (Set.range bs) ⊓
+          (LinearMap.ker (BQ F.gen)).restrictScalars ℤ : Submodule ℤ V) : Set V)) = ⊤ := by
+      rw [span_inf_restrictScalars (V := V) bs (LinearMap.ker (BQ F.gen))]
+      refine eq_top_iff.2 fun w _ => ?_
+      have hw : (w : V) ∈ LinearMap.ker (BQ F.gen) :=
+        LinearMap.mem_ker.mpr (((ConicalLine.mem_space_iff (F := F)).1 w.2).1)
+      exact Submodule.mem_map.2 ⟨(w : V), hw, fibreProjLinear_self hBsym F w⟩
+    have hmap := Submodule.map_span (fibreProjLinear hBsym F)
+      ((Submodule.span ℤ (Set.range bs) ⊓
+        (LinearMap.ker (BQ F.gen)).restrictScalars ℤ : Submodule ℤ V) : Set V)
+    rw [hcoe]
+    exact hmap.symm.trans htop
+
+omit [Module.Finite ℚ V] in
+/-- **The fibre has a `ℚ`-basis whose `ℤ`-span is the reduced lattice** — the shape in which the
+counting lemma of Example 4.3 (b) takes the fibre's lattice
+(`cutsFinitelyOnRational_of_finiteNormValues`). -/
+theorem exists_basis_reducedLattice (hBsym : BQ.IsSymm) (F : ConicalLine BQ Q) {κ : Type}
+    [Finite κ] (bs : Module.Basis κ ℚ V) :
+    ∃ (κ' : Type) (_ : Fintype κ') (bs' : Module.Basis κ' ℚ ↥F.space),
+      Submodule.span ℤ (Set.range bs') =
+        reducedLattice hBsym F (Submodule.span ℤ (Set.range bs)) := by
+  have hfull : Submodule.IsFullLattice ℚ
+      (reducedLattice hBsym F (Submodule.span ℤ (Set.range bs))) :=
+    isFullLattice_reducedLattice hBsym F bs
+  exact exists_basis_span_eq_of_isFullLattice
+    (M := reducedLattice hBsym F (Submodule.span ℤ (Set.range bs)))
+
+omit [Module.Finite ℚ V] in
+/-- **The fibre's pairing of two projected normals is the ambient pairing**: for `u, w ⊥ I` the
+projection changes each by a multiple of the isotropic generator `e`, which pairs to zero with
+everything in `I^⊥`. -/
+theorem pairing_fibreProj (hBsym : BQ.IsSymm) (F : ConicalLine BQ Q) {u w : V}
+    (hu : BQ F.gen u = 0) (hw : BQ F.gen w = 0) :
+    BQ (fibreProjLinear hBsym F u : V) (fibreProjLinear hBsym F w : V) = BQ u w := by
+  have hu' : BQ u F.gen = 0 := by rw [hBsym.eq]; exact hu
+  have hw' : BQ w F.gen = 0 := by rw [hBsym.eq]; exact hw
+  have h1 : ((fibreProjLinear hBsym F u : ↥F.space) : V)
+      = u - BQ u F.partner • F.gen := by
+    rw [fibreProjLinear_apply, hu', zero_smul, sub_zero]
+  have h2 : ((fibreProjLinear hBsym F w : ↥F.space) : V)
+      = w - BQ w F.partner • F.gen := by
+    rw [fibreProjLinear_apply, hw', zero_smul, sub_zero]
+  have hexp : BQ (u - BQ u F.partner • F.gen)
+      = BQ u - (BQ u F.partner) • BQ F.gen := by
+    rw [map_sub, map_smul]
+  rw [h1, h2, hexp]
+  simp only [map_sub, map_smul, LinearMap.sub_apply, LinearMap.smul_apply, smul_eq_mul,
+    hu', hw, F.gen_iso, mul_zero, sub_zero]
+
+omit [Module.Finite ℚ V] in
+/-- **The fibre's form is integral on the reduced lattice**, when the ambient form is integral on
+`Λ`: the pairing of two lattice vectors of the fibre is the ambient pairing of their preimages
+(`pairing_fibreProj`). -/
+theorem integral_reducedLattice (hBsym : BQ.IsSymm) (F : ConicalLine BQ Q) {κ : Type}
+    [Finite κ] (bs : Module.Basis κ ℚ V)
+    (hint : ∀ x ∈ Submodule.span ℤ (Set.range bs), ∀ y ∈ Submodule.span ℤ (Set.range bs),
+      ∃ n : ℤ, BQ x y = (n : ℚ)) :
+    ∀ x ∈ reducedLattice hBsym F (Submodule.span ℤ (Set.range bs)),
+      ∀ y ∈ reducedLattice hBsym F (Submodule.span ℤ (Set.range bs)),
+        ∃ n : ℤ, BQ (x : V) (y : V) = (n : ℚ) := by
+  intro x hx y hy
+  rw [reducedLattice, Submodule.mem_map] at hx hy
+  obtain ⟨u, hu, rfl⟩ := hx
+  obtain ⟨w, hw, rfl⟩ := hy
+  obtain ⟨n, hn⟩ := hint u hu.1 w hw.1
+  exact ⟨n, by simpa using (pairing_fibreProj hBsym F hu.2 hw.2).trans hn⟩
+
+end ReducedLattice
 
 end LeanCategories.Lattices.Valued
