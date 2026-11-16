@@ -9910,7 +9910,8 @@ theorem sigmaSupportSpace_facialDecomposition_hull_ne_span (hpos : sigPos Q = 1)
   exact hw (hle hker)
 
 /-- **`L_σ` is contained in `I^⊥` and in the span of every member of the source's index** — the
-upper bound of Looijenga's description (Lemma-Definition 4.5, p. 19) over the whole index
+upper bound of Looijenga's description (Lemma-Definition 4.5, p. 19; text version
+`.tmp-sources/looijenga-math0201218v2.md:519`) over the whole index
 `supportIndex C S σ`, not over two members as in `sigmaSupportSpace_le_inf_span_of_isotropic`.
 `L_σ` is the intersection of the `supportSpace τ σ`, each of which lies in `⟨τ⟩`
 (`supportSpace_le_span`), and it lies in `I^⊥`
@@ -9981,6 +9982,87 @@ theorem sigmaSupportSpace_facialDecomposition_hull_ne_span_of_nondegenerate
   have het : 0 ≤ (associated Q) e t := (rationalClosure_le_closedSheet hpos heC).2
   obtain ⟨w, hwe, hw⟩ := exists_associated_eq_zero_notMem_span (Q := Q) he he0 hrank
   exact sigmaSupportSpace_facialDecomposition_hull_ne_span hpos hnd he he0 heC het hwe hw
+
+/-- The lineality of the closure of the projection `π_I τ` of a member `τ` under the quotient by the
+span of `σ`: the space `U` of Looijenga's affine space `A_I(ℝ)` (Lemma-Definition 4.5, p. 19; text
+version `.tmp-sources/looijenga-math0201218v2.md:519`), read in `L(ℝ)/I`. The support space of `τ`
+relative to `σ` is its preimage (`supportSpace_map_mkQ_bot_eq_topologicalClosure_lineal`), which is
+what makes the description of `L_σ` a statement about this space at all. LC-09: the queries
+`content:lineal content:translation-space content:affine`, "locally rational decomposition support
+space affine model isotropic" and "affine hull of a cone translation vector space lineal" returned
+no port target; the bridge used below is this file's own
+`supportSpace_map_mkQ_bot_eq_topologicalClosure_lineal`. -/
+noncomputable def quotientLineal (σ τ : PointedCone ℝ (realified V)) :
+    Submodule ℝ (realified V ⧸ Submodule.span ℝ (σ : Set (realified V))) :=
+  letI := IsModuleTopology.toContinuousAdd ℝ
+    (realified V ⧸ Submodule.span ℝ (σ : Set (realified V)))
+  PointedCone.lineal
+    ((τ.map (Submodule.span ℝ (σ : Set (realified V))).mkQ).topologicalClosure)
+
+/-- **The reverse inclusion of Looijenga's description, from the affine model's one geometric
+input.** The source projects along `I` and reads the description off `A_I(ℝ)`: "a minimal member of
+this decomposition must be an affine subspace of `A_I(ℝ)`" with translation space `U`, and `L_σ` is
+characterized by `L_σ / I ⊗ I` being the complexification of `U` (p. 19; text
+`.tmp-sources/looijenga-math0201218v2.md:519`). In the quotient that statement is `haffine` below:
+the minimal member's span is the preimage of its own lineality, i.e. its projection is an affine
+subspace, `I + U` in the source's notation.
+
+Everything after that input is here. The support space of `τ` relative to `σ` does not depend on
+`τ` over the index of the open cone (`supportSpace_eq_of_isotropicHalfLine_of_locallyRational`), and
+at the minimal member it is the preimage of `quotientLineal`
+(`supportSpace_map_mkQ_bot_eq_topologicalClosure_lineal`), so the intersection of the spans over the
+whole index lies in `L_σ`. The hypothesis is not derived here: `A_I(ℝ)`, the induced decomposition
+of it, and the minimal member are not reconstructed in this file. -/
+theorem iInf_span_le_sigmaSupportSpace_of_isotropicHalfLine
+    (hpos : sigPos Q = 1) (hnd : Q.Nondegenerate) {ht : 0 < Q t}
+    {S : Set (PointedCone ℝ (realified V))}
+    (hS : IsLocallyRationalDecomposition (rationalClosure (closedSheet Q hpos ht)) S)
+    {σ : PointedCone ℝ (realified V)} (hσ : IsIsotropicHalfLine Q σ)
+    (τmin : supportIndex (positiveCone.upper Q t) S σ)
+    (haffine : Submodule.span ℝ (τmin.1 : Set (realified V)) =
+      (quotientLineal σ τmin.1).comap (Submodule.span ℝ (σ : Set (realified V))).mkQ) :
+    (⨅ τ : supportIndex (positiveCone.upper Q t) S σ,
+        Submodule.span ℝ (τ.1 : Set (realified V))) ≤
+      sigmaSupportSpace (positiveCone.upper Q t) S σ := by
+  intro x hx
+  have hxmin : x ∈ Submodule.span ℝ (τmin.1 : Set (realified V)) :=
+    (Submodule.mem_iInf (fun τ : supportIndex (positiveCone.upper Q t) S σ =>
+      Submodule.span ℝ (τ.1 : Set (realified V)))).1 hx τmin
+  rw [haffine, Submodule.mem_comap] at hxmin
+  refine (Submodule.mem_iInf (fun τ : supportIndex (positiveCone.upper Q t) S σ =>
+    supportSpace τ.1 σ)).2 fun τ => ?_
+  have hEq : supportSpace τ.1 σ = supportSpace τmin.1 σ :=
+    supportSpace_eq_of_isotropicHalfLine_of_locallyRational (τ := τ.1) (τ' := τmin.1)
+      hpos hnd hS hσ τ.2.2.1 τmin.2.2.1 τ.2.1 τmin.2.1 τ.2.2.2 τmin.2.2.2
+  have hbridge : supportSpace τmin.1 σ =
+      (quotientLineal σ τmin.1).comap (Submodule.span ℝ (σ : Set (realified V))).mkQ :=
+    (supportSpace_map_mkQ_bot_eq_topologicalClosure_lineal (τ := τmin.1) (σ := σ)).symm
+  rw [hEq, hbridge, Submodule.mem_comap]
+  exact hxmin
+
+/-- **The reverse inclusion in the source's form**: `L_σ = I^⊥ ⊓ ⨅_{τ ⊋ σ} ⟨τ⟩` for an isotropic
+half line `σ` of a locally rational decomposition of `C₊`, where `I^⊥` is
+`LinearMap.ker (associated Q e)` at a generator `e` of `σ` (p. 19; text
+`.tmp-sources/looijenga-math0201218v2.md:519`). This is the inequality that completes the upper
+bound `sigmaSupportSpace_le_ker_inf_iInf_span`. It follows from the span form above, which is
+stronger — the intersection of the spans is already inside `L_σ` — so intersecting with `I^⊥`
+changes nothing; the hypothesis `haffine` is the one named there and is not derived. -/
+theorem inf_ker_iInf_span_le_sigmaSupportSpace_of_isotropicHalfLine
+    (hpos : sigPos Q = 1) (hnd : Q.Nondegenerate) {ht : 0 < Q t}
+    {S : Set (PointedCone ℝ (realified V))}
+    (hS : IsLocallyRationalDecomposition (rationalClosure (closedSheet Q hpos ht)) S)
+    {σ : PointedCone ℝ (realified V)} {e : realified V}
+    (he : Q e = 0) (he0 : e ≠ 0)
+    (hσ : σ = PointedCone.hull ℝ ({e} : Set (realified V)))
+    (τmin : supportIndex (positiveCone.upper Q t) S σ)
+    (haffine : Submodule.span ℝ (τmin.1 : Set (realified V)) =
+      (quotientLineal σ τmin.1).comap (Submodule.span ℝ (σ : Set (realified V))).mkQ) :
+    LinearMap.ker (associated Q e) ⊓
+        (⨅ τ : supportIndex (positiveCone.upper Q t) S σ,
+          Submodule.span ℝ (τ.1 : Set (realified V))) ≤
+      sigmaSupportSpace (positiveCone.upper Q t) S σ :=
+  inf_le_right.trans
+    (iInf_span_le_sigmaSupportSpace_of_isotropicHalfLine hpos hnd hS ⟨e, he0, he, hσ⟩ τmin haffine)
 
 end IsotropicRationalTraces
 
