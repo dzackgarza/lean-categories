@@ -10549,6 +10549,76 @@ theorem inf_ker_iInf_span_le_sigmaSupportSpace_of_affine
     exact h.symm
   rw [hspace, Submodule.mem_comap]
   exact hxU
+omit [Module.Finite ℚ V] in
+/-- **Faces pass through the quotient**: a face of `π_I τ` cut out by a functional `φ` is the image
+of the face of `τ` cut out by `φ ∘ π_I`. -/
+theorem map_inf_ker_comp_mkQ {e : realified V} (τ : PointedCone ℝ (realified V))
+    (φ : (realified V ⧸ Submodule.span ℝ ({e} : Set (realified V))) →ₗ[ℝ] ℝ) :
+    ((τ ⊓ PointedCone.ofSubmodule
+        (LinearMap.ker (φ.comp (Submodule.span ℝ ({e} : Set (realified V))).mkQ))).map
+          (Submodule.span ℝ ({e} : Set (realified V))).mkQ) =
+      τ.map (Submodule.span ℝ ({e} : Set (realified V))).mkQ ⊓
+        PointedCone.ofSubmodule (LinearMap.ker φ) := by
+  apply le_antisymm
+  · rintro x hx
+    obtain ⟨y, hy, rfl⟩ := PointedCone.mem_map.1 hx
+    refine ⟨PointedCone.mem_map.2 ⟨y, hy.1, rfl⟩, ?_⟩
+    have hy2 : φ ((Submodule.span ℝ ({e} : Set (realified V))).mkQ y) = 0 := hy.2
+    exact hy2
+  · rintro x ⟨hxτ, hxφ⟩
+    obtain ⟨y, hyτ, rfl⟩ := PointedCone.mem_map.1 hxτ
+    exact PointedCone.mem_map.2 ⟨y, ⟨hyτ, hxφ⟩, rfl⟩
+
+omit [Module.Finite ℚ V] in
+/-- **Minimality kills every nonnegative form on the section.** A functional nonnegative on a
+projected-minimal member's projection vanishes on all of its polyhedron: the face it cuts out is a
+member of the decomposition whose polyhedron is a part of this one. -/
+theorem projectedPolyhedron_apply_eq_zero_of_projectedMinimal
+    {Q : QuadraticForm ℝ (realified V)} {e : realified V} (he : Q e = 0)
+    {S : Set (PointedCone ℝ (realified V))} {σ τmin : PointedCone ℝ (realified V)}
+    (hσ : σ = PointedCone.hull ℝ ({e} : Set (realified V)))
+    (hface_mem : ∀ ⦃a b : PointedCone ℝ (realified V)⦄, a ∈ S → b.IsFaceOf a → b ∈ S)
+    (hmin : IsProjectedMinimal Q he S σ τmin)
+    (φ : (realified V ⧸ Submodule.span ℝ ({e} : Set (realified V))) →ₗ[ℝ] ℝ)
+    (hφ : ∀ x ∈ (τmin.map (Submodule.span ℝ ({e} : Set (realified V))).mkQ :
+      PointedCone ℝ (realified V ⧸ Submodule.span ℝ ({e} : Set (realified V)))), 0 ≤ φ x) :
+    ∀ u ∈ projectedPolyhedron Q he τmin, φ u = 0 := by
+  intro u hu
+  obtain ⟨hτS, hστ, hminimal⟩ := hmin
+  -- the functional pulled back to `L(ℝ)`
+  set ψ : realified V →ₗ[ℝ] ℝ :=
+    φ.comp (Submodule.span ℝ ({e} : Set (realified V))).mkQ with hψdef
+  have hψτ : ∀ y ∈ τmin, 0 ≤ ψ y := by
+    intro y hy
+    exact hφ _ (PointedCone.mem_map.2 ⟨y, hy, rfl⟩)
+  -- the face it cuts out is a member
+  have hface : (τmin ⊓ PointedCone.ofSubmodule (LinearMap.ker ψ)).IsFaceOf τmin :=
+    PointedCone.isFaceOf_inf_ker hψτ
+  have hF : (τmin ⊓ PointedCone.ofSubmodule (LinearMap.ker ψ)) ∈ S :=
+    hface_mem hτS hface
+  -- it contains `σ`, whose points are killed by `π_I`
+  have hσF : σ ≤ τmin ⊓ PointedCone.ofSubmodule (LinearMap.ker ψ) := by
+    refine le_inf hστ ?_
+    intro s hs
+    have hspan : s ∈ Submodule.span ℝ ({e} : Set (realified V)) := by
+      rw [hσ] at hs
+      exact PointedCone.hull_le_span ℝ ({e} : Set (realified V)) hs
+    have hq : (Submodule.span ℝ ({e} : Set (realified V))).mkQ s = 0 := by
+      rw [Submodule.mkQ_apply, Submodule.Quotient.mk_eq_zero]
+      exact hspan
+    have hzero : ψ s = 0 := by
+      rw [hψdef, LinearMap.comp_apply, hq, map_zero]
+    simpa using hzero
+  -- its polyhedron is a part of `P τmin`
+  have hsub : projectedPolyhedron Q he (τmin ⊓ PointedCone.ofSubmodule (LinearMap.ker ψ)) ⊆
+      projectedPolyhedron Q he τmin := by
+    rintro x ⟨hx, hxA⟩
+    obtain ⟨y, hy, rfl⟩ := PointedCone.mem_map.1 hx
+    exact ⟨PointedCone.mem_map.2 ⟨y, hy.1, rfl⟩, hxA⟩
+  have hback := hminimal _ hF hσF hsub
+  obtain ⟨hxF, -⟩ := hback hu
+  obtain ⟨y, hy, rfl⟩ := PointedCone.mem_map.1 hxF
+  exact hy.2
 end AffineModel
 
 end LeanCategories.Lattices.Valued
