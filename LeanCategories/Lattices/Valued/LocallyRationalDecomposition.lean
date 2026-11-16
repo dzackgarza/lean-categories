@@ -10221,6 +10221,86 @@ def IsProjectedMinimal (Q : QuadraticForm ℝ (realified V)) {e : realified V} (
       projectedPolyhedron Q he τ ⊆ projectedPolyhedron Q he τmin →
         projectedPolyhedron Q he τmin ⊆ projectedPolyhedron Q he τ
 
+/-- **A projected-minimal member exists when the decomposition is locally finite at `e`.**
+Every candidate contains `e`, so every candidate meets any neighbourhood of `e`. Hence the stated
+local-finiteness hypothesis makes the whole candidate family finite, not just its part near `e`.
+The candidates are exactly the members over the isotropic ray with a nonempty projected polyhedron;
+`Set.Finite.exists_minimalFor`, applied to the preorder of their projected polyhedra under
+inclusion, therefore supplies one for which every smaller inclusion is reversible. The projected
+cover of the open half-space makes this family nonempty.
+
+LC-09 (2026-11-22): `content:minimal content:PointedCone content:projected` found no competing
+cone theorem. `content:Finite content:wellFoundedOn` and
+`content:WellFounded content:Finite content:minimal` located Mathlib's finite well-foundedness
+machinery (`Mathlib/Order/WellFoundedSet.lean`) and the direct consumer
+`Set.Finite.exists_minimalFor` (`Mathlib/Order/Preorder/Finite.lean`), also used in a commented
+Matroid precedent for finding an inclusion-minimal witness. That direct owner supplies exactly the
+required finite-preorder argument; only the quotient-cover and candidate-packaging steps are local.
+This is the existence part of Looijenga's "a minimal member of this decomposition" at p. 19. -/
+theorem exists_isProjectedMinimal_of_locallyFiniteAt
+    {Q : QuadraticForm ℝ (realified V)} {t e : realified V} (hpos : sigPos Q = 1)
+    (hnd : Q.Nondegenerate) {ht : 0 < Q t} (he0 : e ≠ 0) (he : Q e = 0)
+    (heC : e ∈ rationalClosure (closedSheet Q hpos ht))
+    {S : Set (PointedCone ℝ (realified V))}
+    (hS : IsLocallyRationalDecomposition (rationalClosure (closedSheet Q hpos ht)) S)
+    (hloc : ∃ U ∈ 𝓝 e, {τ : {τ : PointedCone ℝ (realified V) // τ ∈ S} |
+      ((τ.1 : Set (realified V)) ∩ U).Nonempty}.Finite) :
+    ∃ τmin : supportIndex (positiveCone.upper Q t) S
+      (PointedCone.hull ℝ ({e} : Set (realified V))),
+      IsProjectedMinimal Q he S (PointedCone.hull ℝ ({e} : Set (realified V))) τmin.1 := by
+  classical
+  have hrayle {a : PointedCone ℝ (realified V)} (ha : e ∈ a) :
+      PointedCone.hull ℝ ({e} : Set (realified V)) ≤ a := by
+    intro y hy
+    obtain ⟨c, hc0, hc⟩ := PointedCone.mem_hull_singleton.1 hy
+    rw [← hc]
+    exact a.smul_mem hc0 ha
+  have heSheet : e ∈ closedSheet Q hpos ht := rationalClosure_le_closedSheet hpos heC
+  have heUnion : e ∈ ⋃ a ∈ S, (a : Set (realified V)) := by
+    rw [hS.union_eq]
+    exact heC
+  obtain ⟨a₀, ha₀⟩ := Set.mem_iUnion.1 heUnion
+  obtain ⟨ha₀S, hea₀⟩ := Set.mem_iUnion.1 ha₀
+  obtain ⟨u, huA⟩ := affineModel_nonempty hpos hnd ht he0 he heSheet.2
+  have hβu : 0 < isotropicHalfspaceForm Q he u := by
+    rw [show isotropicHalfspaceForm Q he u = 1 from huA]
+    exact zero_lt_one
+  obtain ⟨a, haS, hea, huMap⟩ := exists_mem_map_star_of_isotropicHalfspace
+    hpos hnd hS he0 he (hrayle hea₀) ha₀S hβu
+  let T : Set {τ : PointedCone ℝ (realified V) // τ ∈ S} :=
+    {τ | PointedCone.hull ℝ ({e} : Set (realified V)) ≤ τ.1 ∧
+      (projectedPolyhedron Q he τ.1).Nonempty}
+  obtain ⟨U, hUn, hUfin⟩ := hloc
+  have hTfin : T.Finite := by
+    apply hUfin.subset
+    intro τ hτ
+    exact ⟨e, hτ.1 (PointedCone.subset_hull (Set.mem_singleton e)), mem_of_mem_nhds hUn⟩
+  have hTne : T.Nonempty := by
+    refine ⟨⟨a, haS⟩, hea, ?_⟩
+    exact ⟨u, huMap, huA⟩
+  obtain ⟨τmin, hτminT, hτmin⟩ := hTfin.exists_minimalFor
+    (fun τ => projectedPolyhedron Q he τ.1) T hTne
+  change PointedCone.hull ℝ ({e} : Set (realified V)) ≤ τmin.1 ∧
+    (projectedPolyhedron Q he τmin.1).Nonempty at hτminT
+  have heτ : e ∈ τmin.1 := hτminT.1 (PointedCone.subset_hull (Set.mem_singleton e))
+  have hCτ : ((τmin.1 : Set (realified V)) ∩ positiveCone.upper Q t).Nonempty := by
+    obtain ⟨z, hzMap, hzA⟩ := hτminT.2
+    have hzβ : 0 < isotropicHalfspaceForm Q he z := by
+      rw [show isotropicHalfspaceForm Q he z = 1 from hzA]
+      exact zero_lt_one
+    have hzz : z ∈ (τmin.1 ⊓ τmin.1).map
+        (Submodule.span ℝ ({e} : Set (realified V))).mkQ := by
+      rw [map_inf_eq_inf_map_of_span_singleton heτ heτ]
+      exact ⟨hzMap, hzMap⟩
+    simpa only [inf_idem] using exists_mem_inf_upper_of_mem_map_inf
+      hpos hnd he0 he heSheet heτ heτ hzz hzβ
+  let idx : supportIndex (positiveCone.upper Q t) S
+      (PointedCone.hull ℝ ({e} : Set (realified V))) :=
+    ⟨τmin.1, τmin.2, hτminT.1, hCτ⟩
+  refine ⟨idx, idx.2.1, idx.2.2.1, hτminT.2, ?_⟩
+  intro τ hτS hστ hPne hsub
+  exact hτmin (j := ⟨τ, hτS⟩) ⟨hστ, hPne⟩ hsub
+
 omit [Module.Finite ℚ V] in
 /-- Differences of two points of an affinely closed section, with the affineness stated on the
 section only. -/
