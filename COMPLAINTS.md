@@ -2845,8 +2845,10 @@ downstream assertions, computational observations, or downstream diagnostics.
   for as a route to a limiting member.
 - **Repair link:** the existence statement is
   `∃ τ ∈ semifanArrangement ψ F, PointedCone.hull ℝ {rationalPoint (fibreRay hBsym F G)} ≤ τ ∧
-  ((τ : Set (realified ↥F.space)) ∩ positiveCone.upper (fibreForm Q F.space) F.sheet).Nonempty`;
-  it would close Example 6.4's `J_{Σ(H)} = J_H` together with the `≥` half.
+  ((τ : Set (realified ↥F.space)) ∩ positiveCone.upper (fibreForm Q F.space) F.sheet).Nonempty`.
+  It is landed as `exists_mem_semifanArrangement_halfLine_meets`, from `CutsFinitelyOnRational` at
+  the fibre; what remains open for Example 6.4 is the `≥` half of `J_{Σ(H)} = J_H`, whose `hspan`
+  is the description of the cell's dual cone by its walls.
 
 ### `Σ(ℋ)`'s condition (i) is the count at the reduced lattice, and its ambient index is not the fibre's
 
@@ -3042,12 +3044,27 @@ downstream assertions, computational observations, or downstream diagnostics.
   sign pattern exactly when every wall through `u` passes through `r` and every wall off `r` has the
   same sign at `u` — clause (a) is *not* "`u` is off the walls through `r`" but "`u` is on no wall
   that misses `r`", and `mem_arrangementCone_signPattern_of_sign_eq` packages the two clauses.
-- **What is missing for the member meeting `C_I`.** Two things. (1) The point `u`: a point of the
-  open cone off every wall that misses `r` and on the right side of the finitely many cutting walls
-  (clauses (a) and (b) above), which needs the rational cone `P = hull{r, v}` through `r`, a rational
-  `v ∈ C_I` and the relative interior of `P`. (2) `C_I ⊆ C_{I,+}` at a fibre, i.e.
-  `positiveCone.upper (fibreForm Q F.space) F.sheet ⊆ F.closure`. That is true — the rational points
-  of the closed sheet are dense in it and their convex hull is its interior — but this repository has
-  it only for a `PointedCone` that is open as a set (`subset_rationalClosure`), and the upper sheet
-  carries `0`, so the instance does not apply. An argument through a rational cone inside the sheet
-  (or a density lemma for `rationalClosure` of a cone with nonempty interior) supplies it.
+- **Repair (landed): the member meeting `C_I` exists.** `exists_mem_semifanArrangement_halfLine_meets`
+  constructs `τ ∈ Σ(ℋ)` above the half line with `τ ∩ C_I ≠ ∅`, from `CutsFinitelyOnRational` at the
+  fibre and nothing else. The two gaps this entry recorded are closed:
+  (2) `C_I ⊆ C_{I,+}` is `ConicalLine.upper_subset_closure`: the open sheet lies in the interior of
+  the *pointed* upper sheet `positiveCone.upperZero`, whose closure is the closed sheet, so
+  `subset_rationalClosure_of_mem` applies — `subset_rationalClosure` itself is unusable at a pointed
+  cone, as this entry said, and the pointed upper sheet is the object to apply it to.
+  (1) the point `u` is `r + ε v` for a rational `v ∈ C_I`, `ε > 0`, where `v` exists because the
+  rational points are dense in the open sheet and `ε` is chosen in the neighbourhood of `0⁺` on which
+  the finitely many walls cutting `P = ⟨r, v⟩` keep their sign (`exists_mem_signPattern_eq_of_cutsFinitely`).
+  Both `r` and `v` are rational points, so `P` is a rational cone and the count applies to it; and
+  `0 < r · v` (`associated_pos_of_mem_upper_of_mem_closedSheet`, at the isotropic ray and a point of
+  the open sheet of a form of signature `(1, n-1)`) is what puts `r + ε v` in the open sheet for
+  every `ε > 0`. No local finiteness of `ℋ` at the ray is needed, and no `ℚ`-point argument beyond
+  density: the relative interior of `P` is not used, the sign agreement being with the finitely many
+  cutting walls of a cone through `r`.
+- **LC-09 for (1) and (2).** Queries `rationalClosure`, `rationalBoundary`, `dense rational points
+  convex cone`, `convexHull rational points dense`, `signPattern arrangement cone`, `semifan`,
+  `locally finite hyperplane arrangement`, `germ arrangement point wall` over the corpus: no hit for
+  a rational closure, a semifan or an arrangement germ (the closest, TauCeti
+  `SimplicialComplex/Arrangement.lean`, subdivides a *finite* family of affine functionals, which is
+  the `CutsFinitelyOnRational` case, not the germ at a boundary ray). Mathlib has
+  `Dense.exists_mem_open`, `PointedCone` as a submodule over `Nonneg ℝ`, and no statement about the
+  germ of a hyperplane arrangement at an isotropic boundary ray.
