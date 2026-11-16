@@ -60,6 +60,19 @@ an `ℝ`-vector space with no extra structure.
   `subset_closure_rationalClosure`), and `C ⊆ C₊` itself for a finite-dimensional `L`
   (`subset_rationalClosure`), which discharges the cover hypothesis `hcover` of the
   support-space theorems (`exists_mem_of_mem_of_cover_rationalClosure`).
+* **The open cone `C` is carried as a set.** Definition 4.2's `C` is an open nondegenerate convex
+  cone, and an open cone does not hold `0` — an open cone holding `0` is the whole space — so a
+  `PointedCone` carrier admits only `C = ⊤`. The four theorems of this file that carry an open cone
+  are therefore stated for `C : Set (realified V)`: openness, the positive scalar action of
+  `ConvexCone.smul_mem'`, and `0 ∉ C` (`ConvexCone.Blunt`), with `Cplus` the source's `C₊` where
+  the decomposition over `C₊` is also needed. Each is applied once to the open sheet of Example
+  4.3, `positiveCone.upper Q t`, in the section "The four theorems on the open sheet"
+  (`exists_rationalCone_mem_nhds_sdiff_subset_of_mem_upper`,
+  `supportSpace_eq_of_mem_openSheet_of_locallyRational`,
+  `supportSpace_eq_of_locallyFinite_of_cover_openSheet`,
+  `sigmaSupportSpace_eq_supportSpace_of_locallyFinite_of_cover_openSheet`). The rational cone of
+  the local statement is a `PointedCone` and so holds `0`, which is why its conclusion is
+  containment apart from that apex.
 * **The reading of "the restriction"** (the point on which this file takes a position): the
   restriction of `Σ` to a rational subcone `P` is the collection of *faces* of the traces
   `σ ⊓ P`, `σ ∈ Σ` (`faceClosure (restrictionTo Σ P)`), not the traces themselves. The two
@@ -1074,18 +1087,36 @@ theorem isRationalCone_normalizedConeOn {ι : Type*} [DecidableEq ι]
         (isRationalCone_inf_halfspace ih (hrlo i)) (hrup i)
       simpa [normalizedConeOn, Finset.inf_insert, inf_assoc, inf_left_comm, inf_comm] using h
 
-/-- **A nonzero point in the interior of a cone has a rational cone neighbourhood contained in
-the cone** (the local input to Looijenga's Lemma-Definition 4.5). Choose a signed coordinate `ell`
-positive at `x`, take a small closed coordinate ball around `x` inside `C`, and choose rational
-bounds around the ratios `rationalCoordinate b i x / ell x`. Their normalized cone is a
-neighbourhood of `x`. Conversely, if `y` satisfies the bounds, normalize it to `ell z = ell x`;
-the coordinate bounds put `z` in the closed ball inside `C`; and `y` is a nonnegative multiple
-of `z`. This handles arbitrary real `x`, not only rational points. The open-cone statement is the
-wrapper `exists_rationalCone_mem_nhds_subset_of_ne_zero` immediately below. -/
-theorem exists_rationalCone_mem_nhds_subset_of_mem_interior [Module.Finite ℚ V]
-    {C : PointedCone ℝ (realified V)} {x : realified V} (hx : x ∈ interior C) (hx0 : x ≠ 0) :
+/-- **A nonzero point in the interior of an open cone set has a rational cone neighbourhood whose
+points other than the apex lie in the cone** (the local input to Looijenga's Lemma-Definition 4.5).
+Choose a signed coordinate `ell` positive at `x`, take a small closed coordinate ball around `x`
+inside `C`, and choose rational bounds around the ratios
+`rationalCoordinate b i x / ell x`. Their normalized cone is a neighbourhood of `x`. Conversely,
+if `y` satisfies the bounds, normalize it to `ell z = ell x`; the coordinate bounds put `z` in the
+closed ball inside `C`; and `y` is a nonnegative multiple of `z`. This handles arbitrary real `x`,
+not only rational points.
+
+`C` is a *set*, not a `PointedCone`: Looijenga's cone (Definition 4.2, p. 17) is an open
+nondegenerate convex cone, which does not hold `0`, while a `PointedCone` holds it, and an open
+cone that held `0` would be the whole space. The hypothesis `hCsmul` is the scalar action of
+`ConvexCone.smul_mem'`. The rational cone `K` is a `PointedCone` and so holds `0`, which is outside
+`C`; hence the conclusion is `K` minus its apex (`ConvexCone.Blunt` is the same exclusion stated of
+the cone). For a cone `C` that does hold `0` this is `K ≤ C`
+(`exists_rationalCone_mem_nhds_subset_of_mem_interior`). The open-cone statement is the wrapper
+`exists_rationalCone_mem_nhds_sdiff_subset_of_ne_zero` below.
+
+LC-09 (2026-11-20): `content:ConvexCone.Blunt content:IsOpen` and
+`content:open convex cone content:set content:does not contain zero` found Mathlib's
+`ConvexCone`/`ConvexCone.Blunt` (`Mathlib/Geometry/Convex/Cone/Basic.lean:60,281`) — the bundled
+form of "a convex cone that does not hold `0`", cited here as the vocabulary the hypotheses below
+are read in and not as a carrier, which is the sheet `positiveCone.upper Q t` of `Set`-type;
+`content:IsOpenConvexCone` and `content:positiveCone.upper content:smul_mem` found nothing. -/
+theorem exists_rationalCone_mem_nhds_sdiff_subset_of_mem_interior [Module.Finite ℚ V]
+    {C : Set (realified V)}
+    (hCsmul : ∀ ⦃c : ℝ⦄, 0 < c → ∀ ⦃x : realified V⦄, x ∈ C → c • x ∈ C)
+    {x : realified V} (hx : x ∈ interior C) (hx0 : x ≠ 0) :
     ∃ K : PointedCone ℝ (realified V), IsRationalCone K ∧
-      (K : Set (realified V)) ∈ 𝓝 x ∧ K ≤ C := by
+      (K : Set (realified V)) ∈ 𝓝 x ∧ ((K : Set (realified V)) \ {0}) ⊆ C := by
   classical
   let b := Module.finBasis ℚ V
   let e := (b.baseChange ℝ).equivFun
@@ -1167,7 +1198,8 @@ theorem exists_rationalCone_mem_nhds_subset_of_mem_interior [Module.Finite ℚ V
       rw [mem_normalizedConeOn]
       exact ⟨fun i _ => ⟨(hy.2 i).1.le, (hy.2 i).2.le⟩, hy.1.le⟩
     exact Filter.mem_of_superset (hUopen.mem_nhds hxU) hUK
-  · intro y hy
+  · rintro y ⟨hyK, hyn0⟩
+    have hy : y ∈ normalizedConeOn Finset.univ b ell lo up := hyK
     rw [mem_normalizedConeOn] at hy
     have hbnd (i) := hy.1 i (Finset.mem_univ i)
     rcases hy.2.eq_or_lt with helly | helly
@@ -1182,8 +1214,7 @@ theorem exists_rationalCone_mem_nhds_subset_of_mem_interior [Module.Finite ℚ V
         ext i
         rw [← rationalCoordinate_apply]
         exact hcoord i
-      rw [hy0]
-      exact C.zero_mem
+      exact absurd hy0 (by simpa using hyn0)
     · have helly0 : ell y ≠ 0 := ne_of_gt helly
       let z := (ell x / ell y) • y
       have hzcoord (i) : rationalCoordinate b i z = (ell x / ell y) * rationalCoordinate b i y := by
@@ -1236,17 +1267,41 @@ theorem exists_rationalCone_mem_nhds_subset_of_mem_interior [Module.Finite ℚ V
         field_simp
         simp
       rw [← hy_eq]
-      exact C.smul_mem (div_nonneg helly.le hellx.le) hzC
+      exact hCsmul (div_pos helly hellx) hzC
 
-/-- A nonzero point of an open cone has a rational cone neighbourhood contained in the cone.
-This is the open-cone wrapper of `exists_rationalCone_mem_nhds_subset_of_mem_interior`. -/
-theorem exists_rationalCone_mem_nhds_subset_of_ne_zero [Module.Finite ℚ V]
-    {C : PointedCone ℝ (realified V)} (hCopen : IsOpen (C : Set (realified V)))
+/-- **A nonzero point in the interior of a cone has a rational cone neighbourhood contained in
+the cone.** The pointed form of `exists_rationalCone_mem_nhds_sdiff_subset_of_mem_interior`: the
+apex excluded there is a point of `C` here. -/
+theorem exists_rationalCone_mem_nhds_subset_of_mem_interior [Module.Finite ℚ V]
+    {C : PointedCone ℝ (realified V)} {x : realified V} (hx : x ∈ interior C) (hx0 : x ≠ 0) :
+    ∃ K : PointedCone ℝ (realified V), IsRationalCone K ∧
+      (K : Set (realified V)) ∈ 𝓝 x ∧ K ≤ C := by
+  obtain ⟨K, hKrat, hKn, hKsdiff⟩ :=
+    exists_rationalCone_mem_nhds_sdiff_subset_of_mem_interior
+      (C := (C : Set (realified V))) (fun c hc _ hz => C.smul_mem hc.le hz) hx hx0
+  refine ⟨K, hKrat, hKn, fun y hy => ?_⟩
+  by_cases hy0 : y = 0
+  · rw [hy0]
+    exact C.zero_mem
+  · exact hKsdiff ⟨hy, by simpa using hy0⟩
+
+/-- **A nonzero point of an open cone has a rational cone neighbourhood whose points other than
+the apex lie in the cone.** This is the open-cone wrapper of
+`exists_rationalCone_mem_nhds_sdiff_subset_of_mem_interior`, with `C` the open nondegenerate convex
+cone of Looijenga's Definition 4.2, p. 17, carried as a set and not as a `PointedCone` (whose apex
+`0` an open cone does not hold). Of the source's cone the statement asks for openness and the
+positive scalar action of `ConvexCone.smul_mem'`; convexity is not used here and is what an
+application discharges. The sheet `positiveCone.upper Q t` is the instance the setting of Example
+4.3 uses (`exists_rationalCone_mem_nhds_sdiff_subset_of_mem_upper`, section "The four theorems on
+the open sheet"). -/
+theorem exists_rationalCone_mem_nhds_sdiff_subset_of_ne_zero [Module.Finite ℚ V]
+    {C : Set (realified V)} (hCopen : IsOpen C)
+    (hCsmul : ∀ ⦃c : ℝ⦄, 0 < c → ∀ ⦃x : realified V⦄, x ∈ C → c • x ∈ C)
     {x : realified V} (hx : x ∈ C) (hx0 : x ≠ 0) :
     ∃ K : PointedCone ℝ (realified V), IsRationalCone K ∧
-      (K : Set (realified V)) ∈ 𝓝 x ∧ K ≤ C :=
-  exists_rationalCone_mem_nhds_subset_of_mem_interior
-    (mem_interior_iff_mem_nhds.2 (hCopen.mem_nhds hx)) hx0
+      (K : Set (realified V)) ∈ 𝓝 x ∧ ((K : Set (realified V)) \ {0}) ⊆ C :=
+  exists_rationalCone_mem_nhds_sdiff_subset_of_mem_interior hCsmul
+    (by rw [hCopen.interior_eq]; exact hx) hx0
 
 /-- Looijenga, Definition 4.1, p. 16: a *rational cone system* in `L(ℝ)` is a finite
 collection of nondegenerate rational convex cones such that a face of a member is a member,
@@ -4567,24 +4622,38 @@ theorem supportSpace_eq_of_rational_neighborhood {Cplus : PointedCone ℝ (reali
   exact hlocalA.symm.trans (hAB.trans hlocalB)
 
 /-- **Lemma-Definition 4.5 where `σ` meets the open cone, without `hexp`.** A nonzero point
-`x ∈ σ ∩ C` supplies the rational neighbourhood of `exists_rationalCone_mem_nhds_subset_of_ne_zero`.
-The fact that an open nondegenerate cone cannot contain zero is carried as the explicit condition
-`hC0`; in the hyperbolic setting it follows directly from positivity of the quadratic form. -/
-theorem supportSpace_eq_of_mem_open_of_locallyRational {C : PointedCone ℝ (realified V)}
-    [Module.Finite ℚ V] (hCopen : IsOpen (C : Set (realified V)))
-    {S : Set (PointedCone ℝ (realified V))} (hS : IsLocallyRationalDecomposition (rationalClosure C) S)
-    (hC0 : (0 : realified V) ∉ (C : Set (realified V)))
+`x ∈ σ ∩ C` supplies the rational neighbourhood of
+`exists_rationalCone_mem_nhds_sdiff_subset_of_ne_zero`. `C` is Looijenga's open nondegenerate
+convex cone (Definition 4.2, p. 17) carried as a set: open, with the positive scalar action of
+`ConvexCone.smul_mem'`, and not holding `0` (`hC0`, `ConvexCone.Blunt` on the bundled cone) — a
+`PointedCone` holds `0`, and an open cone holding it is the whole space. `Cplus` is the source's
+`C₊ = rationalClosure C` over which the decomposition `S` is taken, carried separately because
+`C` is a set; `hCsub` is `C ⊆ C₊`. In the hyperbolic setting of Example 4.3 both hypotheses are
+supplied by the open sheet (`supportSpace_eq_of_mem_openSheet_of_locallyRational`), where `0 ∉ C`
+is positivity of the quadratic form. -/
+theorem supportSpace_eq_of_mem_open_of_locallyRational
+    {C : Set (realified V)} {Cplus : PointedCone ℝ (realified V)} [Module.Finite ℚ V]
+    (hCopen : IsOpen C)
+    (hCsmul : ∀ ⦃c : ℝ⦄, 0 < c → ∀ ⦃x : realified V⦄, x ∈ C → c • x ∈ C)
+    {S : Set (PointedCone ℝ (realified V))} (hS : IsLocallyRationalDecomposition Cplus S)
+    (hC0 : (0 : realified V) ∉ C)
+    (hCsub : C ⊆ (Cplus : Set (realified V)))
     {σ a b : PointedCone ℝ (realified V)} (ha : a ∈ S) (hb : b ∈ S)
     (hσa : σ ≤ a) (hσb : σ ≤ b)
-    (hσC : ((σ : Set (realified V)) ∩ (C : Set (realified V))).Nonempty) :
+    (hσC : ((σ : Set (realified V)) ∩ C).Nonempty) :
     supportSpace a σ = supportSpace b σ := by
   obtain ⟨x, hxσ, hxC⟩ := hσC
   have hx0 : x ≠ 0 := by
     intro h
     exact hC0 (h ▸ hxC)
-  obtain ⟨K, hKrat, hKn, hKleC⟩ :=
-    exists_rationalCone_mem_nhds_subset_of_ne_zero hCopen hxC hx0
-  have hKle : K ≤ rationalClosure C := hKleC.trans (subset_rationalClosure C hCopen)
+  obtain ⟨K, hKrat, hKn, hKsub⟩ :=
+    exists_rationalCone_mem_nhds_sdiff_subset_of_ne_zero hCopen hCsmul hxC hx0
+  have hKle : K ≤ Cplus := by
+    intro y hy
+    by_cases hy0 : y = 0
+    · rw [hy0]
+      exact Cplus.zero_mem
+    · exact hCsub (hKsub ⟨hy, by simpa using hy0⟩)
   exact supportSpace_eq_of_rational_neighborhood hS ha hb hσa hσb hKrat hKle hxσ hKn
 
 /-- **The `Σ`-support space of Lemma-Definition 4.5 is the common value**: if the support space of
@@ -5040,6 +5109,126 @@ theorem sigmaSupportSpace_eq_supportSpace_of_locallyFinite_of_cover_rationalClos
       hexp τ.2.1 τ₀.2.1 τ.2.2.2 τ₀.2.2.2
 
 end SupportSpaceIndependenceLocallyFinite
+
+/-! ## The four theorems on the open sheet
+
+Looijenga's `C` in the setting of Example 4.3 is the open sheet `positiveCone.upper Q t`
+(`.tmp-sources/looijenga-math0201218v2.md:487`), and Definition 4.2 (p. 17) asks of it only that it
+be an open nondegenerate convex cone. The four theorems of this file that carry an open cone are
+stated for such a cone as a *set* (`C : Set (realified V)`) and not as a `PointedCone`, whose apex
+`0` an open cone does not hold; this section applies each of them to the sheet. What the
+applications discharge is the sheet's openness (`isOpen_positiveCone_upper_of_moduleTopology`) and
+its inclusion in `C₊` (`upper_subset_rationalClosure_closedSheet`); the positive scalar action is
+`positiveCone.smul_mem_upper`, and `0` is off the sheet (`zero_notMem_upper`). -/
+
+section OpenSheet
+
+/-- The open sheet is closed under multiplication by a positive scalar: it is a cone. -/
+theorem positiveCone.smul_mem_upper {Q : QuadraticForm ℝ (realified V)} {t : realified V}
+    ⦃c : ℝ⦄ (hc : 0 < c) ⦃x : realified V⦄ (hx : x ∈ positiveCone.upper Q t) :
+    c • x ∈ positiveCone.upper Q t := by
+  refine ⟨?_, ?_⟩
+  · rw [QuadraticMap.map_smul, smul_eq_mul]
+    exact mul_pos (mul_pos hc hc) hx.1
+  · rw [map_smul, LinearMap.smul_apply, smul_eq_mul]
+    exact mul_pos hc hx.2
+
+/-- The apex is not on the open sheet: the quadratic form vanishes at `0`. -/
+theorem zero_notMem_upper (Q : QuadraticForm ℝ (realified V)) (t : realified V) :
+    (0 : realified V) ∉ positiveCone.upper Q t := by
+  intro h
+  simpa using h.1
+
+/-- **The open sheet lies in `C₊`** — the `C ⊂ C₊` of Looijenga, Definition 4.2, p. 17, for the
+cone of Example 4.3: the sheet is the interior of its pointed version
+(`upper_subset_interior_upperZero`), that version lies in the closed sheet
+(`upperZero_le_closedSheet`), and a point in the interior of a cone inside another cone's closure
+lies in the latter's rational closure (`subset_rationalClosure_of_mem`). -/
+theorem upper_subset_rationalClosure_closedSheet [Module.Finite ℚ V]
+    {Q : QuadraticForm ℝ (realified V)} (hpos : sigPos Q = 1) {t : realified V}
+    (ht : 0 < Q t) :
+    positiveCone.upper Q t ⊆ (rationalClosure (closedSheet Q hpos ht) : Set (realified V)) := by
+  intro z hz
+  exact subset_rationalClosure_of_mem
+    ((upperZero_le_closedSheet hpos ht).trans (Submodule.le_topologicalClosure _))
+    (upper_subset_interior_upperZero hpos ht hz)
+
+/-- **`exists_rationalCone_mem_nhds_sdiff_subset_of_mem_interior` on the open sheet.** A nonzero
+point of the open sheet of Example 4.3 has a rational cone neighbourhood whose points other than
+the apex lie on the sheet. -/
+theorem exists_rationalCone_mem_nhds_sdiff_subset_of_mem_upper [Module.Finite ℚ V]
+    {Q : QuadraticForm ℝ (realified V)} {t : realified V}
+    {x : realified V} (hx : x ∈ positiveCone.upper Q t) (hx0 : x ≠ 0) :
+    ∃ K : PointedCone ℝ (realified V), IsRationalCone K ∧
+      (K : Set (realified V)) ∈ 𝓝 x ∧ ((K : Set (realified V)) \ {0}) ⊆ positiveCone.upper Q t :=
+  exists_rationalCone_mem_nhds_sdiff_subset_of_ne_zero
+    (isOpen_positiveCone_upper_of_moduleTopology Q t)
+    (fun _ hc _ hz => positiveCone.smul_mem_upper (Q := Q) (t := t) hc hz) hx hx0
+
+/-- **`supportSpace_eq_of_mem_open_of_locallyRational` on the open sheet**: Lemma-Definition 4.5,
+p. 19, for the members `a`, `b` of a locally rational decomposition of `C₊ =
+rationalClosure (closedSheet Q hpos ht)` whose common subcone `σ` meets the open sheet. -/
+theorem supportSpace_eq_of_mem_openSheet_of_locallyRational [Module.Finite ℚ V]
+    {Q : QuadraticForm ℝ (realified V)} {t : realified V} (hpos : sigPos Q = 1) {ht : 0 < Q t}
+    {S : Set (PointedCone ℝ (realified V))}
+    (hS : IsLocallyRationalDecomposition (rationalClosure (closedSheet Q hpos ht)) S)
+    {σ a b : PointedCone ℝ (realified V)} (ha : a ∈ S) (hb : b ∈ S)
+    (hσa : σ ≤ a) (hσb : σ ≤ b)
+    (hσC : ((σ : Set (realified V)) ∩ (positiveCone.upper Q t : Set (realified V))).Nonempty) :
+    supportSpace a σ = supportSpace b σ :=
+  supportSpace_eq_of_mem_open_of_locallyRational
+    (Cplus := rationalClosure (closedSheet Q hpos ht))
+    (isOpen_positiveCone_upper_of_moduleTopology Q t)
+    (fun _ hc _ hz => positiveCone.smul_mem_upper (Q := Q) (t := t) hc hz)
+    hS (zero_notMem_upper Q t) (upper_subset_rationalClosure_closedSheet hpos ht)
+    ha hb hσa hσb hσC
+
+/-- **`supportSpace_eq_of_locallyFinite_of_cover_rationalClosure` on the open sheet**: the
+independence of the support space from the member `τ`, by local finiteness and the cutting forms,
+for the open cone of Example 4.3. -/
+theorem supportSpace_eq_of_locallyFinite_of_cover_openSheet [Module.Finite ℚ V]
+    {Q : QuadraticForm ℝ (realified V)} {t : realified V} (hpos : sigPos Q = 1) {ht : 0 < Q t}
+    {S : Set (PointedCone ℝ (realified V))} {σ : PointedCone ℝ (realified V)}
+    (hclosed : ∀ τ ∈ S, IsClosed ((τ : PointedCone ℝ (realified V)) : Set (realified V)))
+    (hCplus : ∀ z ∈ rationalClosure (closedSheet Q hpos ht), ∃ τ ∈ S, z ∈ τ)
+    (hloc : LocallyFinite fun τ : {τ : PointedCone ℝ (realified V) // τ ∈ S} =>
+      ((τ.1 : PointedCone ℝ (realified V)) : Set (realified V)))
+    (hexp : ∀ a b : PointedCone ℝ (realified V), a ∈ S → b ∈ S →
+      (((a ⊓ b : PointedCone ℝ (realified V)) : Set (realified V)) ∩
+        (positiveCone.upper Q t : Set (realified V))).Nonempty →
+      ∃ w w' : (realified V) →ₗ[ℝ] ℝ, Dominates σ a (a ⊓ b) w ∧ Dominates σ b (a ⊓ b) w')
+    {τ τ' : PointedCone ℝ (realified V)} (hτ : τ ∈ S) (hτ' : τ' ∈ S)
+    (hτC : ((τ : Set (realified V)) ∩ (positiveCone.upper Q t : Set (realified V))).Nonempty)
+    (hτ'C : ((τ' : Set (realified V)) ∩ (positiveCone.upper Q t : Set (realified V))).Nonempty) :
+    supportSpace τ σ = supportSpace τ' σ :=
+  supportSpace_eq_of_locallyFinite_of_cover_rationalClosure
+    (C := positiveCone.upper Q t) (Cplus := closedSheet Q hpos ht)
+    (convex_upper Q hpos ht) hclosed (upper_subset_rationalClosure_closedSheet hpos ht)
+    hCplus hloc hexp hτ hτ' hτC hτ'C
+
+/-- **`sigmaSupportSpace_eq_supportSpace_of_locallyFinite_of_cover_rationalClosure` on the open
+sheet**: `L_σ` of Lemma-Definition 4.5 for the open cone of Example 4.3, the index of `L_σ` ranging
+over the members meeting the sheet (`supportIndex`). -/
+theorem sigmaSupportSpace_eq_supportSpace_of_locallyFinite_of_cover_openSheet
+    [Module.Finite ℚ V]
+    {Q : QuadraticForm ℝ (realified V)} {t : realified V} (hpos : sigPos Q = 1) {ht : 0 < Q t}
+    {S : Set (PointedCone ℝ (realified V))} {σ : PointedCone ℝ (realified V)}
+    (hclosed : ∀ τ ∈ S, IsClosed ((τ : PointedCone ℝ (realified V)) : Set (realified V)))
+    (hCplus : ∀ z ∈ rationalClosure (closedSheet Q hpos ht), ∃ τ ∈ S, z ∈ τ)
+    (hloc : LocallyFinite fun τ : {τ : PointedCone ℝ (realified V) // τ ∈ S} =>
+      ((τ.1 : PointedCone ℝ (realified V)) : Set (realified V)))
+    (hexp : ∀ a b : PointedCone ℝ (realified V), a ∈ S → b ∈ S →
+      (((a ⊓ b : PointedCone ℝ (realified V)) : Set (realified V)) ∩
+        (positiveCone.upper Q t : Set (realified V))).Nonempty →
+      ∃ w w' : (realified V) →ₗ[ℝ] ℝ, Dominates σ a (a ⊓ b) w ∧ Dominates σ b (a ⊓ b) w')
+    (τ₀ : supportIndex (positiveCone.upper Q t) S σ) :
+    sigmaSupportSpace (positiveCone.upper Q t) S σ = supportSpace τ₀.1 σ :=
+  sigmaSupportSpace_eq_supportSpace_of_locallyFinite_of_cover_rationalClosure
+    (C := positiveCone.upper Q t) (Cplus := closedSheet Q hpos ht)
+    (convex_upper Q hpos ht) hclosed (upper_subset_rationalClosure_closedSheet hpos ht)
+    hCplus hloc hexp τ₀
+
+end OpenSheet
 
 /-! ## The two descriptions of `L_σ` in the source's proof of Lemma-Definition 4.5
 
