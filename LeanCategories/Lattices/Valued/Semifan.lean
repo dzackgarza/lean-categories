@@ -484,6 +484,23 @@ theorem ConicalLine.closure_eq_closedSheet (F : ConicalLine BQ Q)
     rw [closedSheet_eq_closure_upper (Q := fibreForm Q F.space) hpos F.sheet_pos] at hx
     exact closure_mono (fun y hy => subset_hull hy) hx
 
+/-- **The half line lies in the rational closure `C_{I,+}` of the fibre.** It is an isotropic ray
+of the closed sheet of the fibre form (`fibreRay_isotropic`, `fibreRay_sheet_nonneg`), and `C_{I,+}`
+is the hull of the rational points of that sheet (`ConicalLine.closure_eq_closedSheet`). This is
+the sentence after Definition 6.1's list: the member `C_{J,+}` of a `ℚ`-isotropic plane is a
+boundary ray of `C_{I,+}`. -/
+theorem fibreRay_mem_closure (hBQ : ∀ u w : V,
+    (associated Q) (rationalPoint u) (rationalPoint w) = (BQ u w : ℝ))
+    (hBsym : BQ.IsSymm) (F : ConicalLine BQ Q) (G : ConicalPlane BQ) (h : F.line ≤ G.plane)
+    (hpos : sigPos (fibreForm Q F.space) = 1) :
+    rationalPoint (fibreRay hBsym F G) ∈ F.closure := by
+  have hQr : (fibreForm Q F.space) (rationalPoint (fibreRay hBsym F G)) = 0 :=
+    fibreRay_isotropic hBQ hBsym F G h
+  have hsheet := fibreRay_sheet_nonneg hBsym F G
+  rw [ConicalLine.closure_eq_closedSheet F hpos]
+  exact mem_rationalClosure.2 (subset_convexHull ℝ _ ⟨⟨_, Set.mem_univ _, rfl⟩,
+    subset_closure ((mem_closedSheet hpos F.sheet_pos).2 ⟨le_of_eq hQr.symm, hsheet⟩)⟩)
+
 end FibreCone
 
 /-! ## Definition 6.1, case (ii): the support space of a plane's half line -/

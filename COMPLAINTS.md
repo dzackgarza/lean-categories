@@ -3034,3 +3034,8 @@ downstream assertions, computational observations, or downstream diagnostics.
   `mem_supportSpace_halfLine_of_supportForms_span` gives the reverse inclusion once the dual cone of
   the cell is described by its walls; `isAdmissibleDecomposition_of_vSigmaPlane_eq` then assembles
   Definition 6.1 for `Σ(ℋ)`.
+- **What is landed of it.** `Semifan.fibreRay_mem_closure`: the half line lies in `C_{I,+}` (it is an
+  isotropic ray of the closed sheet with `0 ≤ r · t`), so `hull_fibreRay_le_cell` no longer takes that
+  as a hypothesis, and `exists_mem_semifanArrangement_halfLine_le` states the easy half
+  unconditionally: the cell of the ray's own sign pattern is a member of `Σ(ℋ)` containing the ray.
+  The member *meeting the open cone* is what remains, with clauses (a) and (b) above.

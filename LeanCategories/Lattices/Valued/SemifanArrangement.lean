@@ -1709,13 +1709,13 @@ theorem mem_semifanArrangement_cell {ι : Type*} (ψ : ι → V →ₗ[ℚ] ℚ)
       semifanArrangement ψ F :=
   mem_faceClosure.2 ⟨_, ⟨s, rfl⟩, PointedCone.IsFaceOf.rfl⟩
 
-omit [Module.Finite ℚ V] in
 /-- **The half line of a `ℚ`-isotropic plane lies in the cell of its own sign pattern**: the weak
 sign conditions of `arrangementCone` hold at the ray itself, and the ray lies in `C_{I,+}`
-(`hr`). -/
+(`fibreRay_mem_closure`). -/
 theorem hull_fibreRay_le_cell {ι : Type*} (ψ : ι → V →ₗ[ℚ] ℚ) (hBsym : BQ.IsSymm)
-    (F : ConicalLine BQ Q) (G : ConicalPlane BQ)
-    (hr : rationalPoint (fibreRay hBsym F G) ∈ F.closure) :
+    (F : ConicalLine BQ Q) (G : ConicalPlane BQ) (h : F.line ≤ G.plane)
+    (hBQ : ∀ u w : V, (associated Q) (rationalPoint u) (rationalPoint w) = (BQ u w : ℝ))
+    (hpos : sigPos (fibreForm Q F.space) = 1) :
     PointedCone.hull ℝ ({rationalPoint (fibreRay hBsym F G)} : Set (realified ↥F.space)) ≤
       arrangementCone (fun i : fibreWalls ψ F => fibreFormC F (ψ ↑i))
           (signPattern (fun i : fibreWalls ψ F => fibreFormC F (ψ ↑i))
@@ -1730,7 +1730,22 @@ theorem hull_fibreRay_le_cell {ι : Type*} (ψ : ι → V →ₗ[ℚ] ℚ) (hBsy
       rintro x hx
       rw [Set.mem_singleton_iff] at hx
       subst hx
-      exact hr)
+      exact fibreRay_mem_closure hBQ hBsym F G h hpos)
+
+/-- **The half line lies in a member of `Σ(ℋ)`**: the cell of its own sign pattern is a member
+(`mem_semifanArrangement_cell`) and contains the ray (`hull_fibreRay_le_cell`). What item (2) of the
+issue adds is that some member above the ray *meets the open cone* `C_I`, which needs the walls
+off the ray to keep their signs between `r` and a nearby point of `C_I` — `COMPLAINTS.md`. -/
+theorem exists_mem_semifanArrangement_halfLine_le {ι : Type*} (ψ : ι → V →ₗ[ℚ] ℚ)
+    (hBsym : BQ.IsSymm) (F : ConicalLine BQ Q) (G : ConicalPlane BQ) (h : F.line ≤ G.plane)
+    (hBQ : ∀ u w : V, (associated Q) (rationalPoint u) (rationalPoint w) = (BQ u w : ℝ))
+    (hpos : sigPos (fibreForm Q F.space) = 1) :
+    ∃ τ ∈ semifanArrangement ψ F,
+      PointedCone.hull ℝ ({rationalPoint (fibreRay hBsym F G)} : Set (realified ↥F.space)) ≤ τ :=
+  ⟨_, mem_semifanArrangement_cell ψ F
+      (signPattern (fun i : fibreWalls ψ F => fibreFormC F (ψ ↑i))
+        (rationalPoint (fibreRay hBsym F G))),
+    hull_fibreRay_le_cell ψ hBsym F G h hBQ hpos⟩
 
 end HalfLineCell
 
