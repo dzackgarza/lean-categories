@@ -58,26 +58,33 @@ E. Looijenga, *Compactifications defined by arrangements II: locally symmetric v
   in which the counting lemma of Example 4.3 (b) takes the lattice of a cone system.
   `pairing_fibreProj` and `integral_reducedLattice`: the fibre's pairing of two projected normals is
   the ambient pairing, so a form integral on `Λ` is integral on the reduced lattice.
+* **the counting hypothesis at a fibre**, transported from the ambient cone:
+  `cutsFinitelyOnRational_of_map_realifyMap` (a rational cone of the fibre maps to a rational cone
+  of `V(ℝ)` — `isRationalCone_map_realifyMap`, `map_hull_eq` — and a trace cuts it exactly when its
+  ambient form cuts the image — `cutsOn_map_realifyMap`), in the form for the walls of `Σ(H)`:
+  `cutsFinitelyOnRational_semifanArrangement`, which turns the ambient counting lemma of Example 4.3
+  (b) into the fibre's `CutsFinitelyOnRational`. `realifiedFormC_apply_eq_normalForm` identifies the
+  `ℚ`-form of a normal with its normal form, which is how the ambient counting lemma's conclusion is
+  read as a hypothesis on the traces.
 
 ## What is not here
 
-* **`CutsFinitelyOnRational` at the fibre**, and hence condition (i) of Definition 6.1 with no
-  hypothesis carried. The reduced lattice it runs on is in place (`reducedLattice`, with a `ℚ`-basis
-  of the carrier whose `ℤ`-span it is, and the integrality of the form on it), as is the counting
-  lemma of Example 4.3 (b) with the group action replaced by a finite set of norms
-  (`cutsFinitelyOnRational_of_finiteNormValues`). What is missing is the instantiation of that lemma
-  at the fibre, and its `hg` hypothesis — a generator of `ℓ ⊓ Λ_F` for each wall line `ℓ` — is where
-  the obvious route fails: the cut of a `ℚ`-line with a lattice is cyclic, but its generator need
-  not be the projection of an ambient one, so the ambient finite set of norms
-  (`fibreForm_fibreProj`, `finite_form_values_of_orbitFamily`) does not bound the norms of the
-  generators the lemma needs.
-  For `Λ = ℤ(e + 2w) ⊕ ℤ f ⊕ ℤ(2e)` in `ℚ³ = ⟨e, f⟩ ⊥ ⟨w⟩` (`e·f = 1`, `w·w = 1`, the form
-  integral on `Λ`) and `ℓ = ℚ w` one has `ℓ ⊓ Λ = ℤ·4w` while `Λ_F = ℤ·2π(w)` and
-  `ℓ ⊓ Λ_F = ℤ·2π(w)` — the projection `π(4w) = 4w` is not primitive in the reduced lattice (a hand
-  computation, not a Lean statement). The counting at the fibre therefore needs a norm bound at the
-  reduced lattice itself, or the transfer of the ambient counting hypothesis along
-  `fibreProjLinear`, which is a statement about rational cones in the fibre and the ambient closed
-  sheet and is not in the repository either.
+* **`CutsFinitelyOnRational` at the fibre with no hypothesis carried**, and hence condition (i) of
+  Definition 6.1. What is in place: the reduced lattice of the fibre (`reducedLattice`, with a
+  `ℚ`-basis of the carrier whose `ℤ`-span it is, and the integrality of the form on it), the
+  counting lemma of Example 4.3 (b) with the group action replaced by a finite set of norms
+  (`cutsFinitelyOnRational_of_finiteNormValues`), and the transfer of the ambient counting
+  hypothesis to the fibre (`cutsFinitelyOnRational_of_map_realifyMap`, and its form for the walls of
+  `Σ(H)`, `cutsFinitelyOnRational_semifanArrangement`). Two things stand between that and the
+  statement. (a) The transfer carries one *geometric* hypothesis, `hmap`: that the rational cones of
+  `C_{I,+}` land in the ambient closed sheet, which is `C_I ⊆ C₊` for the fibre's cone and is not in
+  the repository as a lemma. (b) The other route, the counting lemma instantiated directly at the
+  reduced lattice, does not follow from the ambient norm bound: the cut of a `ℚ`-line with a lattice
+  is cyclic, but its generator need not be the projection of an ambient one. For
+  `Λ = ℤ(e + 2w) ⊕ ℤ f ⊕ ℤ(2e)` in `ℚ³ = ⟨e, f⟩ ⊥ ⟨w⟩` (`e·f = 1`, `w·w = 1`, the form integral on
+  `Λ`) and `ℓ = ℚ w` one has `ℓ ⊓ Λ = ℤ·4w` while `Λ_F = ℤ·2π(w)` and `ℓ ⊓ Λ_F = ℤ·2π(w)` — the
+  projection `π(4w) = 4w` is not primitive in the reduced lattice (a hand computation, not a Lean
+  statement).
 
 * **Condition (ii) and `J_{Σ(H)} = J_H`** (the `Σ`-support space of a plane's half line is
   `J^⊥ ⊓ ⋂_{H ∋ J} H`). At the half line of `J`, `vSigmaPlane` is `sigmaSupportSpace` over the
@@ -887,5 +894,130 @@ theorem integral_reducedLattice (hBsym : BQ.IsSymm) (F : ConicalLine BQ Q) {κ :
   exact ⟨n, by simpa using (pairing_fibreProj hBsym F hu.2 hw.2).trans hn⟩
 
 end ReducedLattice
+
+/-! ## The counting hypothesis transfers to a conical fibre
+
+Example 6.4, p. 29 (text line 791), reads condition (i) of Definition 6.1 at the fibre off Example
+4.3 (b): "the `H ∈ H` containing `I` correspond to `ℚ`-hyperplanes in `I^⊥/I ⊗ I` ... and so
+according to example 4.3-b these decompose `C_{I,+}`". The hyperplanes of `H` are hyperplanes of `V`
+and their traces on the fibre are the restrictions of their forms to the carrier, so the counting
+hypothesis at the fibre is the *restriction* of the counting hypothesis on the ambient cone: a
+rational cone of the fibre maps to a rational cone of `V(ℝ)` (`isRationalCone_map_realifyMap`), and
+a trace cuts it exactly when its ambient form cuts the image (`cutsOn_map_realifyMap`). This is
+`cutsFinitelyOnRational_of_map_realifyMap`, and `cutsFinitelyOnRational_semifanArrangement` is its
+form for the walls of `Σ(H)`.
+
+With it, condition (i) at a fibre follows from the ambient counting lemma
+(`cutsFinitelyOnRational_orbitFamily`, #161) and one geometric inclusion — that the rational cones
+of `C_{I,+}` land in the ambient closed sheet (`hmap` below), which is `C_I ⊆ C₊` for the fibre's
+cone.
+-/
+
+section CountingAtFibre
+
+variable {BQ : LinearMap.BilinForm ℚ V} {Q : QuadraticForm ℝ (realified V)}
+
+/-- **The cone hull is carried to the cone hull of the image.** -/
+theorem map_hull_eq {E F : Type} [AddCommGroup E] [Module ℝ E] [AddCommGroup F] [Module ℝ F]
+    (f : E →ₗ[ℝ] F) (s : Set E) :
+    (PointedCone.hull ℝ s).map f = PointedCone.hull ℝ (f '' s) := by
+  rw [PointedCone.hull, PointedCone.map, Submodule.map_span]
+  rfl
+
+omit [Module.Finite ℚ V] in
+/-- **A rational cone of a conical fibre is a rational cone of `V(ℝ)`**: its generators are rational
+points of the carrier, which are rational points of `V` (`realifyMap_rationalPoint`). -/
+theorem isRationalCone_map_realifyMap (F : ConicalLine BQ Q)
+    {P : PointedCone ℝ (realified ↥F.space)} (hP : IsRationalCone P) :
+    IsRationalCone (P.map (realifyMap F.space)) := by
+  classical
+  obtain ⟨s, rfl⟩ := hP
+  refine ⟨s.image (fun w : ↥F.space => (w : V)), ?_⟩
+  rw [map_hull_eq]
+  have himage : (realifyMap F.space) '' (rationalPoint '' (s : Set ↥F.space)) =
+      rationalPoint '' ((s.image (fun w : ↥F.space => (w : V)) : Finset V) : Set V) := by
+    ext x
+    constructor
+    · rintro ⟨w, ⟨w₀, hw, rfl⟩, rfl⟩
+      exact ⟨(w₀ : V), Finset.mem_image_of_mem _ hw, realifyMap_rationalPoint F.space w₀⟩
+    · rintro ⟨v, hv, rfl⟩
+      obtain ⟨w₀, hw, rfl⟩ := Finset.mem_image.mp hv
+      exact ⟨_, ⟨w₀, hw, rfl⟩, realifyMap_rationalPoint F.space w₀⟩
+  rw [himage]
+
+omit [Module.Finite ℚ V] in
+/-- **A trace cuts a rational cone of the fibre exactly when its ambient form cuts the image**: the
+identity `Ψ x = Φ (realifyMap F.space x)` carries the two points of both signs. -/
+theorem cutsOn_map_realifyMap (F : ConicalLine BQ Q)
+    {Φ : (realified V) →L[ℝ] ℝ} {Ψ : (realified ↥F.space) →L[ℝ] ℝ}
+    (hΨ : ∀ x, Ψ x = Φ (realifyMap F.space x)) {P : PointedCone ℝ (realified ↥F.space)} :
+    CutsOn Ψ.toLinearMap P →
+      CutsOn Φ.toLinearMap (P.map (realifyMap F.space)) := by
+  rintro ⟨⟨x, hx, hx0⟩, ⟨y, hy, hy0⟩⟩
+  exact ⟨⟨_, ⟨x, hx, rfl⟩, by simpa [hΨ x] using hx0⟩,
+    ⟨_, ⟨y, hy, rfl⟩, by simpa [hΨ y] using hy0⟩⟩
+
+omit [Module.Finite ℚ V] in
+/-- **The counting hypothesis of Example 4.3 (b) restricts to a conical fibre.** A trace that cuts a
+rational cone `P` of the fibre has its ambient form cutting the image of `P`, which is rational
+(`isRationalCone_map_realifyMap`) and inside `Cplus` (`hmap`), so the cutters of `P` are among the
+cutters of the image, of which there are finitely many. -/
+theorem cutsFinitelyOnRational_of_map_realifyMap (F : ConicalLine BQ Q)
+    {Cplus : PointedCone ℝ (realified V)} {Cfib : PointedCone ℝ (realified ↥F.space)}
+    {ι : Type*} {Φ : ι → (realified V) →L[ℝ] ℝ} {Ψ : ι → (realified ↥F.space) →L[ℝ] ℝ}
+    (hΨ : ∀ (i : ι) (x : realified ↥F.space), Ψ i x = Φ i (realifyMap F.space x))
+    (hcut : CutsFinitelyOnRational Cplus Φ)
+    (hmap : ∀ P : PointedCone ℝ (realified ↥F.space), IsRationalCone P → P ≤ Cfib →
+      P.map (realifyMap F.space) ≤ Cplus) :
+    CutsFinitelyOnRational Cfib Ψ := by
+  intro P hP hPle
+  have hP' : IsRationalCone (P.map (realifyMap F.space)) :=
+    isRationalCone_map_realifyMap F hP
+  refine (hcut (P.map (realifyMap F.space)) hP' (hmap P hP hPle)).subset ?_
+  intro i hi
+  exact cutsOn_map_realifyMap F (hΨ i) hi
+
+omit [Module.Finite ℚ V] in
+/-- **The `ℚ`-form of a normal is the normal form of its real point**: the two continuous linear
+forms agree on the rational points of `V(ℝ)`, which span it. -/
+theorem realifiedFormC_apply_eq_normalForm (hBQ : ∀ u w : V,
+    (associated Q) (rationalPoint u) (rationalPoint w) = (BQ u w : ℝ)) (v : V) :
+    realifiedFormC (BQ v) = normalForm Q v := by
+  refine ContinuousLinearMap.ext fun x => ?_
+  have hL : ∀ w : V, realifiedForm (BQ v) (rationalPoint (V := V) w)
+      - normalForm Q v (rationalPoint w) = 0 := by
+    intro w
+    rw [realifiedForm_rationalPoint, normalForm_apply, hBQ, sub_self]
+  let L : realified V →ₗ[ℝ] ℝ :=
+    (realifiedFormC (BQ v)).toLinearMap - (normalForm Q v).toLinearMap
+  have hLzero : L = 0 := by
+    have hle : Submodule.span ℝ (Set.range (rationalPoint (V := V))) ≤ L.ker := by
+      rw [Submodule.span_le]
+      rintro - ⟨w, rfl⟩
+      simpa [L] using hL w
+    rw [span_range_rationalPoint, top_le_iff] at hle
+    exact LinearMap.ext fun z => by
+      have hz : z ∈ L.ker := by rw [hle]; exact Submodule.mem_top
+      simpa using hz
+  have h := congrArg (fun f : realified V →ₗ[ℝ] ℝ => f x) hLzero
+  change realifiedForm (BQ v) x - normalForm Q v x = 0 at h
+  exact sub_eq_zero.1 h
+
+omit [Module.Finite ℚ V] in
+/-- **Condition (i) of Definition 6.1 at a fibre, from the ambient counting hypothesis**: the
+walls of `Σ(H)` at the fibre are the traces of the hyperplanes containing `I`, and their cutters on
+a rational cone of `C_{I,+}` are among the cutters of the cone's image in `V(ℝ)` — so the ambient
+counting lemma of Example 4.3 (b) (`cutsFinitelyOnRational_orbitFamily`) gives the fibre's. -/
+theorem cutsFinitelyOnRational_semifanArrangement (F : ConicalLine BQ Q)
+    {ι : Type*} {ψ : ι → V →ₗ[ℚ] ℚ} {Cplus : PointedCone ℝ (realified V)}
+    (hcut : CutsFinitelyOnRational Cplus (fun i : fibreWalls ψ F => realifiedFormC (ψ i)))
+    (hmap : ∀ P : PointedCone ℝ (realified ↥F.space), IsRationalCone P → P ≤ F.closure →
+      P.map (realifyMap F.space) ≤ Cplus) :
+    CutsFinitelyOnRational F.closure (fun i : fibreWalls ψ F => fibreFormC F (ψ i)) := by
+  refine cutsFinitelyOnRational_of_map_realifyMap F (Cfib := F.closure) ?_ hcut hmap
+  intro i x
+  exact fibreFormC_apply F (ψ i) x
+
+end CountingAtFibre
 
 end LeanCategories.Lattices.Valued
