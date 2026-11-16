@@ -9909,6 +9909,79 @@ theorem sigmaSupportSpace_facialDecomposition_hull_ne_span (hpos : sigPos Q = 1)
   rw [hcontra] at hker
   exact hw (hle hker)
 
+/-- **`L_σ` is contained in `I^⊥` and in the span of every member of the source's index** — the
+upper bound of Looijenga's description (Lemma-Definition 4.5, p. 19) over the whole index
+`supportIndex C S σ`, not over two members as in `sigmaSupportSpace_le_inf_span_of_isotropic`.
+`L_σ` is the intersection of the `supportSpace τ σ`, each of which lies in `⟨τ⟩`
+(`supportSpace_le_span`), and it lies in `I^⊥`
+(`sigmaSupportSpace_le_ker_associated_of_isotropic`). This is the `≤` half of
+`L_σ = I^⊥ ⊓ ⨅_{τ ⊋ σ} ⟨τ⟩`. -/
+theorem sigmaSupportSpace_le_ker_inf_iInf_span
+    {Q : QuadraticForm ℝ (realified V)} {t e : realified V} (hpos : sigPos Q = 1)
+    (ht : 0 < Q t) (he : Q e = 0) (het : 0 ≤ (associated Q) e t)
+    {C : Set (realified V)} {S : Set (PointedCone ℝ (realified V))}
+    {σ : PointedCone ℝ (realified V)} (τ₀ : supportIndex C S σ)
+    (hσ : σ = PointedCone.hull ℝ ({e} : Set (realified V)))
+    (hτ : ∀ τ : supportIndex C S σ, τ.1 ≤ closedSheet Q hpos ht) :
+    sigmaSupportSpace C S σ ≤
+      LinearMap.ker (associated Q e) ⊓
+        ⨅ τ : supportIndex C S σ, Submodule.span ℝ (τ.1 : Set (realified V)) := by
+  refine le_inf (sigmaSupportSpace_le_ker_associated_of_isotropic hpos ht he het τ₀ hσ hτ) ?_
+  exact le_iInf fun τ =>
+    (sigmaSupportSpace_le τ.2.1 τ.2.2.1 τ.2.2.2).trans (supportSpace_le_span τ.2.2.1)
+
+/-- **A vector orthogonal to a nonzero isotropic `e` off the line of `e`**: the kernel of `e ·`
+contains the line `ℝ e` (as `e · e = Q e = 0`), so if it were that line its rank would be one,
+while rank-nullity gives it the rank of the ambient space minus the rank of `e ·`, which is at most
+one. In dimension at least `3` the two bounds cannot both hold. Nondegeneracy of the form is not
+needed for this step; it enters where `I^⊥` is identified with the kernel. This is the witness
+that `sigmaSupportSpace_facialDecomposition_hull_ne_span` takes as a hypothesis. -/
+theorem exists_associated_eq_zero_notMem_span
+    {Q : QuadraticForm ℝ (realified V)} {e : realified V} (he : Q e = 0) (he0 : e ≠ 0)
+    (hrank : 3 ≤ Module.finrank ℝ (realified V)) :
+    ∃ w : realified V, (associated Q) e w = 0 ∧
+      w ∉ Submodule.span ℝ ({e} : Set (realified V)) := by
+  classical
+  by_contra hcon
+  push Not at hcon
+  have hee : (associated Q) e e = 0 := by rw [associated_self_apply, he]
+  have hkerle : LinearMap.ker (associated Q e) ≤ Submodule.span ℝ ({e} : Set (realified V)) :=
+    fun w hw => hcon w hw
+  have hleker : Submodule.span ℝ ({e} : Set (realified V)) ≤ LinearMap.ker (associated Q e) := by
+    rw [Submodule.span_le]
+    rintro w hw
+    have hw' : w = e := by simpa using hw
+    rw [hw']
+    exact hee
+  have hker : LinearMap.ker (associated Q e) = Submodule.span ℝ ({e} : Set (realified V)) :=
+    le_antisymm hkerle hleker
+  have hdim : Module.finrank ℝ (LinearMap.ker (associated Q e)) = 1 := by
+    rw [hker]
+    exact finrank_span_singleton he0
+  have hrank_eq := LinearMap.finrank_range_add_finrank_ker (associated Q e)
+  have hle1 : Module.finrank ℝ (LinearMap.range (associated Q e)) ≤ 1 := by
+    simpa using (LinearMap.range (associated Q e)).finrank_le
+  omega
+
+/-- **`L_σ ≠ ⟨σ⟩` for an isotropic half line of `Σ(bb)`, with the witness derived.** The version
+`sigmaSupportSpace_facialDecomposition_hull_ne_span` takes the vector orthogonal to `e` and off
+its line as a hypothesis; here it is `exists_associated_eq_zero_notMem_span` from `e ≠ 0` and
+`3 ≤ finrank ℝ L(ℝ)`, and the sign condition `0 ≤ e · t` is read off `e ∈ C₊` (which lies in the
+closed sheet) rather than assumed. -/
+theorem sigmaSupportSpace_facialDecomposition_hull_ne_span_of_nondegenerate
+    {Q : QuadraticForm ℝ (realified V)} {t : realified V} (hpos : sigPos Q = 1)
+    (hnd : Q.Nondegenerate) {ht : 0 < Q t} {e : realified V} (he : Q e = 0) (he0 : e ≠ 0)
+    (heC : e ∈ rationalClosure (closedSheet Q hpos ht))
+    (hrank : 3 ≤ Module.finrank ℝ (realified V)) :
+    sigmaSupportSpace (positiveCone.upper Q t)
+        (facialDecomposition (rationalClosure (closedSheet Q hpos ht)))
+        (PointedCone.hull ℝ ({e} : Set (realified V))) ≠
+      Submodule.span ℝ
+        ((PointedCone.hull ℝ ({e} : Set (realified V))) : Set (realified V)) := by
+  have het : 0 ≤ (associated Q) e t := (rationalClosure_le_closedSheet hpos heC).2
+  obtain ⟨w, hwe, hw⟩ := exists_associated_eq_zero_notMem_span (Q := Q) he he0 hrank
+  exact sigmaSupportSpace_facialDecomposition_hull_ne_span hpos hnd he he0 heC het hwe hw
+
 end IsotropicRationalTraces
 
 end LeanCategories.Lattices.Valued
