@@ -10199,17 +10199,19 @@ def IsProjectedMinimal (Q : QuadraticForm ℝ (realified V)) {e : realified V} (
       projectedPolyhedron Q he τmin ⊆ projectedPolyhedron Q he τ
 
 omit [Module.Finite ℚ V] in
-/-- Differences of two points of an affinely closed section lie in the lineality of the closure: the
-whole affine line through them lies in the cone, so each side is a limit of scalings of the cone. -/
-theorem sub_mem_lineal_topologicalClosure_of_affine
+omit [Module.Finite ℚ V] in
+/-- Differences of two points of an affinely closed section, with the affineness stated on the
+section only. -/
+theorem sub_mem_lineal_topologicalClosure_of_affine_section
     {E : Type*} [AddCommGroup E] [Module ℝ E] [TopologicalSpace E]
     [ContinuousAdd E] [ContinuousSMul ℝ E]
-    {C : PointedCone ℝ E}
-    (haff : ∀ u ∈ C, ∀ v ∈ C, ∀ c : ℝ, c • u + (1 - c) • v ∈ C)
-    {u v : E} (hu : u ∈ C) (hv : v ∈ C) :
+    (β : E →ₗ[ℝ] ℝ) {C : PointedCone ℝ E}
+    (haff : ∀ u ∈ C, β u = 1 → ∀ v ∈ C, β v = 1 → ∀ c : ℝ, c • u + (1 - c) • v ∈ C)
+    {u v : E} (hu : u ∈ C) (hv : v ∈ C) (hβu : β u = 1) (hβv : β v = 1) :
     v - u ∈ PointedCone.lineal C.topologicalClosure := by
   rw [PointedCone.mem_lineal]
-  have hline (a b : E) (ha : a ∈ C) (hb : b ∈ C) : b - a ∈ C.topologicalClosure := by
+  have hline (a b : E) (ha : a ∈ C) (hb : b ∈ C) (hβa : β a = 1) (hβb : β b = 1) :
+      b - a ∈ C.topologicalClosure := by
     refine mem_topologicalClosure_of_forall_add_smul_mem (D := C) (z := a) (x := b - a) ?_
     intro r
     have hrw : a + r • (b - a) = (1 - r) • a + r • b := by
@@ -10217,22 +10219,18 @@ theorem sub_mem_lineal_topologicalClosure_of_affine
       abel
     rw [hrw]
     have hc : (1 : ℝ) - (1 - r) = r := by ring
-    simpa [hc] using haff a ha b hb (1 - r)
-  exact ⟨hline u v hu hv, by simpa [neg_sub] using hline v u hv hu⟩
+    simpa [hc] using haff a ha hβa b hb hβb (1 - r)
+  exact ⟨hline u v hu hv hβu hβv, by simpa [neg_sub] using hline v u hv hu hβv hβu⟩
 
 omit [Module.Finite ℚ V] in
-/-- **The affine-span lemma.** A cone `C` in the half-space `{0 ≤ β}` whose section `{β = 1}` is
-affinely closed and nonempty: the part of `span C` that `β` kills is the lineality of the closure of
-`C`. One inclusion is `β ≥ 0` on the closure; for the other, every point of `C` is a section point
-`p` plus a difference of section points, and differences of section points are limits of scalings of
-`C`. -/
-theorem span_inf_ker_eq_lineal_topologicalClosure_of_affine
+/-- **The affine-span lemma**, with the affineness stated on the section. -/
+theorem span_inf_ker_eq_lineal_topologicalClosure_of_affine_section
     {E : Type*} [AddCommGroup E] [Module ℝ E] [TopologicalSpace E]
     [ContinuousAdd E] [ContinuousSMul ℝ E]
     (β : E →ₗ[ℝ] ℝ) (hβc : Continuous β) {C : PointedCone ℝ E}
     (hβ : ∀ x ∈ C, 0 ≤ β x)
     (hne : ∃ p : E, p ∈ C ∧ β p = 1)
-    (haff : ∀ u ∈ C, ∀ v ∈ C, ∀ c : ℝ, c • u + (1 - c) • v ∈ C)
+    (haff : ∀ u ∈ C, β u = 1 → ∀ v ∈ C, β v = 1 → ∀ c : ℝ, c • u + (1 - c) • v ∈ C)
     (hcl : (C.topologicalClosure : Set E) ⊆ (Submodule.span ℝ (C : Set E) : Set E)) :
     Submodule.span ℝ (C : Set E) ⊓ LinearMap.ker β =
       PointedCone.lineal C.topologicalClosure := by
@@ -10250,14 +10248,17 @@ theorem span_inf_ker_eq_lineal_topologicalClosure_of_affine
       intro c hc
       rcases eq_or_lt_of_le (hβ c hc) with h0 | hpos
       · have hsum : c + p ∈ C := C.add_mem hc hpC
+        have hβsum : β (c + p) = 1 := by rw [map_add]; linarith
         have hdiff : (c + p) - p ∈ PointedCone.lineal C.topologicalClosure :=
-          sub_mem_lineal_topologicalClosure_of_affine (C := C) haff hpC hsum
+          sub_mem_lineal_topologicalClosure_of_affine_section β haff hpC hsum hpβ hβsum
         have heq : c = (c + p) - p := by abel
         rw [heq]
         exact Submodule.mem_sup.2 ⟨_, hdiff, 0, Submodule.zero_mem _, by rw [add_zero]⟩
       · have hqC : (β c)⁻¹ • c ∈ C := C.smul_mem (inv_nonneg.2 hpos.le) hc
+        have hqβ : β ((β c)⁻¹ • c) = 1 := by
+          rw [map_smul, smul_eq_mul, inv_mul_cancel₀ hpos.ne']
         have hdiff : (β c)⁻¹ • c - p ∈ PointedCone.lineal C.topologicalClosure :=
-          sub_mem_lineal_topologicalClosure_of_affine (C := C) haff hpC hqC
+          sub_mem_lineal_topologicalClosure_of_affine_section β haff hpC hqC hpβ hqβ
         have hmem : (β c)⁻¹ • c ∈ PointedCone.lineal C.topologicalClosure ⊔
             Submodule.span ℝ ({p} : Set E) := by
           have heq : (β c)⁻¹ • c = p + ((β c)⁻¹ • c - p) := by abel
@@ -10312,17 +10313,17 @@ theorem cone_topologicalClosure_le_span {E : Type*} [AddCommGroup E] [Module ℝ
 
 omit [Module.Finite ℚ V] in
 /-- **The affine-span lemma in finite dimension**, with no closure hypothesis: it is discharged by
-`cone_topologicalClosure_le_span`. -/
+`cone_topologicalClosure_le_span`, and the affineness is asked on the section only. -/
 theorem span_inf_ker_eq_lineal_topologicalClosure_of_affine_finite
     {E : Type*} [AddCommGroup E] [Module ℝ E] [TopologicalSpace E]
     [ContinuousAdd E] [ContinuousSMul ℝ E] [T2Space E] [Module.Finite ℝ E]
     (β : E →ₗ[ℝ] ℝ) (hβc : Continuous β) {C : PointedCone ℝ E}
     (hβ : ∀ x ∈ C, 0 ≤ β x)
     (hne : ∃ p : E, p ∈ C ∧ β p = 1)
-    (haff : ∀ u ∈ C, ∀ v ∈ C, ∀ c : ℝ, c • u + (1 - c) • v ∈ C) :
+    (haff : ∀ u ∈ C, β u = 1 → ∀ v ∈ C, β v = 1 → ∀ c : ℝ, c • u + (1 - c) • v ∈ C) :
     Submodule.span ℝ (C : Set E) ⊓ LinearMap.ker β =
       PointedCone.lineal C.topologicalClosure :=
-  span_inf_ker_eq_lineal_topologicalClosure_of_affine β hβc hβ hne haff
+  span_inf_ker_eq_lineal_topologicalClosure_of_affine_section β hβc hβ hne haff
     (cone_topologicalClosure_le_span C)
 
 omit [Module.Finite ℚ V] in
@@ -10365,6 +10366,41 @@ theorem cone_topologicalClosure_map_le_span {e : realified V}
     IsModuleTopology.toContinuousAdd ℝ _
   dsimp only
   exact cone_topologicalClosure_le_span_of_isModuleTopology (fun p => inferInstance) _
+
+omit [Module.Finite ℚ V] in
+/-- **The affine-span lemma at the isotropic quotient**, in the form the reverse inclusion consumes:
+with the member's projected polyhedron affinely closed, the part of `π_I τ`'s span that `e ·` kills
+is the lineality of its closure — `U` of `A_I(ℝ)`. -/
+theorem span_inf_ker_isotropicHalfspaceForm_eq_lineal
+    {Q : QuadraticForm ℝ (realified V)} {e : realified V} (he : Q e = 0)
+    (τ : PointedCone ℝ (realified V))
+    (hβ : ∀ x ∈ (τ.map (Submodule.span ℝ ({e} : Set (realified V))).mkQ :
+      PointedCone ℝ (realified V ⧸ Submodule.span ℝ ({e} : Set (realified V)))), 0 ≤
+        isotropicHalfspaceForm Q he x)
+    (hne : (projectedPolyhedron Q he τ).Nonempty)
+    (haff : ∀ u ∈ projectedPolyhedron Q he τ, ∀ v ∈ projectedPolyhedron Q he τ, ∀ c : ℝ,
+      c • u + (1 - c) • v ∈ projectedPolyhedron Q he τ) :
+    let N := Submodule.span ℝ ({e} : Set (realified V))
+    letI := IsModuleTopology.toContinuousAdd ℝ (realified V ⧸ N)
+    Submodule.span ℝ ((τ.map N.mkQ : PointedCone ℝ (realified V ⧸ N)) : Set _) ⊓
+        LinearMap.ker (isotropicHalfspaceForm Q he) =
+      PointedCone.lineal (τ.map N.mkQ).topologicalClosure := by
+  intro N
+  letI : ContinuousAdd (realified V ⧸ N) := IsModuleTopology.toContinuousAdd ℝ _
+  have hβc : Continuous (isotropicHalfspaceForm Q he) :=
+    IsModuleTopology.continuous_of_linearMap _
+  have haff' : ∀ u ∈ (τ.map N.mkQ : PointedCone ℝ (realified V ⧸ N)),
+      isotropicHalfspaceForm Q he u = 1 →
+      ∀ v ∈ (τ.map N.mkQ : PointedCone ℝ (realified V ⧸ N)),
+        isotropicHalfspaceForm Q he v = 1 → ∀ c : ℝ,
+        c • u + (1 - c) • v ∈ (τ.map N.mkQ : PointedCone ℝ (realified V ⧸ N)) := by
+    intro u hu hu1 v hv hv1 c
+    exact (haff u ⟨hu, hu1⟩ v ⟨hv, hv1⟩ c).1
+  exact span_inf_ker_eq_lineal_topologicalClosure_of_affine_section
+    (isotropicHalfspaceForm Q he) hβc hβ
+    ⟨hne.choose, hne.choose_spec.1, hne.choose_spec.2⟩ haff'
+    (cone_topologicalClosure_map_le_span (e := e) τ)
+
 
 end AffineModel
 
