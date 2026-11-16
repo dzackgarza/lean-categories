@@ -126,9 +126,11 @@ an `ℝ`-vector space with no extra structure.
   (`sigmaSupportSpace_le_ker_associated_of_isotropic`), and the reverse inclusion, which is what
   the affine model over `A_I(ℝ)` supplies, is also carried. Section separation is proved at every
   projected star member (`hasSectionSeparatingFunctional_map_of_isotropicHalfspace`) by supporting
-  the closed section of its closure and using relative closedness on the open half-space; at a
-  projected-minimal member this gives the reverse inclusion with no extra hypothesis
-  (`inf_ker_iInf_span_le_sigmaSupportSpace_of_projectedMinimal`). For the facial decomposition
+  the closed section of its closure and using relative closedness on the open half-space. Local
+  finiteness at the isotropic point constructs a projected-minimal member
+  (`exists_isProjectedMinimal_of_locallyFiniteAt`), so the reverse inclusion carries neither a
+  minimal-member witness nor a minimality premise
+  (`inf_ker_iInf_span_le_sigmaSupportSpace_of_locallyFiniteAt`). For the facial decomposition
   `Σ(bb)` the
   description is carried in full, both inclusions and the strict inequality: the only face of
   `C₊` meeting the open cone is `C₊` itself, the closed sheet and its rational closure carry the
@@ -11213,6 +11215,30 @@ theorem inf_ker_iInf_span_le_sigmaSupportSpace_of_projectedMinimal
   inf_ker_iInf_span_le_sigmaSupportSpace_of_separating hpos hnd he0 he het hS τmin hmin
     (hasSectionSeparatingFunctional_map_of_isotropicHalfspace hpos hnd he0 he hS
       τmin.2.2.1 τmin.2.1)
+
+/-- **The reverse inclusion with neither a minimal-member witness nor a minimality premise.**
+Local finiteness at `e` constructs both by `exists_isProjectedMinimal_of_locallyFiniteAt`, and
+membership of `e` in `C₊` supplies `0 ≤ e · t`. This is the isotropic-half-line part of
+Looijenga's reverse inclusion at Lemma-Definition 4.5, p. 19, over the affine model
+`A_I(ℝ)`. -/
+theorem inf_ker_iInf_span_le_sigmaSupportSpace_of_locallyFiniteAt
+    {Q : QuadraticForm ℝ (realified V)} {t e : realified V} (hpos : sigPos Q = 1)
+    (hnd : Q.Nondegenerate) {ht : 0 < Q t} (he0 : e ≠ 0) (he : Q e = 0)
+    (heC : e ∈ rationalClosure (closedSheet Q hpos ht))
+    {S : Set (PointedCone ℝ (realified V))}
+    (hS : IsLocallyRationalDecomposition (rationalClosure (closedSheet Q hpos ht)) S)
+    (hloc : ∃ U ∈ 𝓝 e, {τ : {τ : PointedCone ℝ (realified V) // τ ∈ S} |
+      ((τ.1 : Set (realified V)) ∩ U).Nonempty}.Finite) :
+    LinearMap.ker (associated Q e) ⊓
+        (⨅ τ : supportIndex (positiveCone.upper Q t) S
+          (PointedCone.hull ℝ ({e} : Set (realified V))),
+          Submodule.span ℝ (τ.1 : Set (realified V))) ≤
+      sigmaSupportSpace (positiveCone.upper Q t) S
+        (PointedCone.hull ℝ ({e} : Set (realified V))) := by
+  obtain ⟨τmin, hmin⟩ := exists_isProjectedMinimal_of_locallyFiniteAt
+    hpos hnd he0 he heC hS hloc
+  exact inf_ker_iInf_span_le_sigmaSupportSpace_of_projectedMinimal hpos hnd he0 he
+    (rationalClosure_le_closedSheet hpos heC).2 hS τmin hmin
 end AffineModel
 
 end LeanCategories.Lattices.Valued
