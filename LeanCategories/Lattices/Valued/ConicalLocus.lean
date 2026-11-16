@@ -48,7 +48,11 @@ decompositions of §6 live on.
   §4 at each fibre. That needs `sigPos` of a fibre form to be `1` and the fibre form to be
   nondegenerate — the source's "this signature remains `(1, n-1)`" (§1B, p. 11). The sharp
   statements are `Semifan.sigPos_fibreForm` and `Semifan.fibreForm_nondegenerate`; Example 6.2 is
-  `Semifan.bailyBorel_isAdmissibleDecomposition`, and Example 6.4 is still owed.
+  `Semifan.bailyBorel_isAdmissibleDecomposition`. For Example 6.4, `Σ(ℋ)` is
+  `SemifanArrangement.semifanArrangement` and the `≤` half of `J_{Σ(ℋ)} = J_ℋ` is
+  `SemifanArrangement.vSigmaPlane_semifanArrangement_le_JH`; the `≥` half still needs the
+  description of a cell's dual cone by its walls, and `J^⊥` the orthogonal complement of the ray
+  (`COMPLAINTS.md`).
 * The `Γ`-invariance in `IsGammaInvariantLocus` is stated at the level of the images of members in
   `V(ℝ)`, and it takes the image *under the isometry*: `γ` carries the fibre of `I` to the fibre of
   `γI` (§1B, p. 11), so the members of the second are the images of the members of the first.

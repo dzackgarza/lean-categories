@@ -2034,4 +2034,104 @@ theorem exists_mem_semifanArrangement_halfLine_meets
 
 end HalfLineMeets
 
+/-! ## Example 6.4: the `≤` half of `J_{Σ(ℋ)} = J_ℋ`
+
+Looijenga, Example 6.4, p. 29 (`.tmp-sources/looijenga-math0201218v2.md:791`): "the space `J_ℋ`
+associated to a `ℚ`-isotropic plane `J` is the common intersection of `J^⊥` and the hyperplanes
+`H ∈ ℋ` containing `J`".
+
+The support space of the half line is the intersection of the zero sets of the forms nonnegative on
+a member above it and vanishing on it (Lemma-Definition 4.5, p. 19), so the two inclusions are read
+on those forms. `J^⊥` is the pair of kernels `⟨gen⟩^⊥ ∩ ⟨ray⟩^⊥` of the two generators of the
+plane, and the trace of every `H ⊇ J` vanishes on the member of `Σ(ℋ)` above the half line that
+meets the open cone (`exists_mem_semifanArrangement_halfLine_meets`), which is
+`supportSpace_halfLine_le_ker`. -/
+
+section HalfLineSupportLe
+
+variable {BQ : LinearMap.BilinForm ℚ V} {Q : QuadraticForm ℝ (realified V)}
+
+/-- **The `Σ`-support space of the half line lies in `⟨gen⟩^⊥`**, the `I`-half of `J^⊥`: the fibre
+of `I` is orthogonal to `I` (`realify_planeComplement_le_planePerp`), and so is the line itself. -/
+theorem vSigmaPlane_semifanArrangement_le_ker_gen {ι : Type*} (ψ : ι → V →ₗ[ℚ] ℚ)
+    (hBsym : BQ.IsSymm) (F : ConicalLine BQ Q) (G : ConicalPlane BQ) (h : F.line ≤ G.plane)
+    (hBQ : ∀ u w : V, (associated Q) (rationalPoint u) (rationalPoint w) = (BQ u w : ℝ)) :
+    vSigmaPlane hBsym F (semifanArrangement ψ F) G h ≤
+      LinearMap.ker (associated Q (rationalPoint F.gen)) := by
+  rw [vSigmaPlane]
+  refine sup_le ?_ ?_
+  · rw [lineSpan, Submodule.span_le]
+    rintro x hx
+    rw [Set.mem_singleton_iff] at hx
+    subst hx
+    change (associated Q (rationalPoint F.gen)) (rationalPoint F.gen) = 0
+    rw [hBQ, F.gen_iso]
+    norm_num
+  · intro z hz
+    obtain ⟨y, -, rfl⟩ := Submodule.mem_map.1 hz
+    change (associated Q (rationalPoint F.gen)) (realifyMap F.space y) = 0
+    exact (mem_planePerp_iff.1 (realify_planeComplement_le_planePerp (Q := Q)
+      (e := F.gen) (f := F.partner) hBQ ⟨y, rfl⟩)).1
+
+/-- **The `Σ`-support space of the half line lies in the trace of every `H ⊇ J`**: a hyperplane
+containing the plane `J` has its trace vanishing on the half line, and the support space of the half
+line relative to a member of `Σ(ℋ)` above it is contained in the kernel of that trace
+(`supportSpace_halfLine_le_ker`). The member is the one meeting the open cone
+(`exists_mem_semifanArrangement_halfLine_meets`). -/
+theorem vSigmaPlane_semifanArrangement_le_ker_wall {ι : Type*} (ψ : ι → V →ₗ[ℚ] ℚ)
+    (hBsym : BQ.IsSymm) (F : ConicalLine BQ Q) (G : ConicalPlane BQ) (h : F.line ≤ G.plane)
+    (hBQ : ∀ u w : V, (associated Q) (rationalPoint u) (rationalPoint w) = (BQ u w : ℝ))
+    (hpos : sigPos (fibreForm Q F.space) = 1)
+    (hnd : (fibreForm Q F.space).Nondegenerate)
+    (hcut : CutsFinitelyOnRational F.closure (fun i : fibreWalls ψ F => fibreFormC F (ψ ↑i)))
+    (i : fibreWalls ψ F)
+    (hi : fibreFormC F (ψ ↑i) (rationalPoint (fibreRay hBsym F G)) = 0) :
+    vSigmaPlane hBsym F (semifanArrangement ψ F) G h ≤
+      LinearMap.ker (realifiedFormC (ψ (i : ι))).toLinearMap := by
+  obtain ⟨τ, hτmem, hτle, hτmeet⟩ :=
+    exists_mem_semifanArrangement_halfLine_meets ψ hBsym F G h hBQ hpos hnd hcut
+  have hle := supportSpace_halfLine_le_ker (Q := Q) hBsym F G ⟨τ, hτmem, hτle, hτmeet⟩ i hi
+  have hsub : sigmaSupportSpace (positiveCone.upper (fibreForm Q F.space) F.sheet)
+      (semifanArrangement ψ F) (PointedCone.hull ℝ ({rationalPoint (fibreRay hBsym F G)})) ≤
+      supportSpace τ (PointedCone.hull ℝ ({rationalPoint (fibreRay hBsym F G)})) :=
+    sigmaSupportSpace_le hτmem hτle hτmeet
+  rw [vSigmaPlane]
+  refine sup_le ?_ ?_
+  · rw [lineSpan, Submodule.span_le]
+    rintro x hx
+    rw [Set.mem_singleton_iff] at hx
+    subst hx
+    rw [realifiedFormC_toLinearMap]
+    change realifiedForm (ψ (i : ι)) (rationalPoint F.gen) = 0
+    rw [realifiedForm_rationalPoint]
+    have hgen : F.gen ∈ F.line := by
+      rw [F.line_eq]; exact Submodule.subset_span (Set.mem_singleton _)
+    have hzero := (i.2 : F.line ≤ LinearMap.ker (ψ (i : ι))) hgen
+    simpa using hzero
+  · intro z hz
+    obtain ⟨y, hy, rfl⟩ := Submodule.mem_map.1 hz
+    change realifiedForm (ψ (i : ι)) (realifyMap F.space y) = 0
+    rw [← fibreFormC_apply F (ψ (i : ι)) y]
+    exact hle (hsub hy)
+
+/-- **Looijenga, Example 6.4, p. 29: `J_{Σ(ℋ)} ⊆ J_ℋ`.** The support space of the half line of the
+`ℚ`-isotropic plane `J` is contained in `⟨gen⟩^⊥` (the `I`-half of `J^⊥`) and in the trace of every
+hyperplane of `ℋ` containing `J` — the intersection the source calls `J_ℋ`. -/
+theorem vSigmaPlane_semifanArrangement_le_JH {ι : Type*} (ψ : ι → V →ₗ[ℚ] ℚ)
+    (hBsym : BQ.IsSymm) (F : ConicalLine BQ Q) (G : ConicalPlane BQ) (h : F.line ≤ G.plane)
+    (hBQ : ∀ u w : V, (associated Q) (rationalPoint u) (rationalPoint w) = (BQ u w : ℝ))
+    (hpos : sigPos (fibreForm Q F.space) = 1)
+    (hnd : (fibreForm Q F.space).Nondegenerate)
+    (hcut : CutsFinitelyOnRational F.closure (fun i : fibreWalls ψ F => fibreFormC F (ψ ↑i))) :
+    vSigmaPlane hBsym F (semifanArrangement ψ F) G h ≤
+      LinearMap.ker (associated Q (rationalPoint F.gen)) ⊓
+        ⨅ i : {i : fibreWalls ψ F //
+            fibreFormC F (ψ ↑i) (rationalPoint (fibreRay hBsym F G)) = 0},
+          LinearMap.ker (realifiedFormC (ψ ((i.1 : fibreWalls ψ F) : ι))).toLinearMap :=
+  le_inf (vSigmaPlane_semifanArrangement_le_ker_gen ψ hBsym F G h hBQ)
+    (le_iInf fun i => vSigmaPlane_semifanArrangement_le_ker_wall ψ hBsym F G h hBQ hpos hnd hcut
+      i.1 i.2)
+
+end HalfLineSupportLe
+
 end LeanCategories.Lattices.Valued

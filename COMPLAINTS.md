@@ -2823,6 +2823,16 @@ downstream assertions, computational observations, or downstream diagnostics.
   is local finiteness *on `D`*, at the boundary of the compactified domain it is the locally
   rational — not locally finite — property that holds, so the source's own hypothesis does not
   immediately give it).
+- **The `≤` half (landed).** `vSigmaPlane_semifanArrangement_le_JH` proves
+  `J_{Σ(ℋ)} ⊆ ⟨gen⟩^⊥ ⊓ ⋂_{H ⊇ J} H`: the `I`-half of `J^⊥` from the fibre's orthogonality to `I`
+  (`vSigmaPlane_semifanArrangement_le_ker_gen`, no counting needed) and the walls from
+  `supportSpace_halfLine_le_ker` at the member above the half line that meets the open cone
+  (`vSigmaPlane_semifanArrangement_le_ker_wall`). Two pieces of `J^⊥` are still owed and are *not*
+  formal: the orthogonal complement of the **ray** of `J`, which needs `0 ≤ r · x` for `x` on the
+  closed sheet and `r` an isotropic vector of it (the Lorentzian sign on the closed sheet, which
+  this repository has only for `x` in the *open* sheet,
+  `associated_pos_of_mem_upper_of_mem_closedSheet`), and the passage from the two generators to all
+  of `J`; and the `≥` half below.
 - **The `≥` half, reduced:** `J_H ⊆ J_{Σ(H)}` asks that every form `ψ` nonnegative on `τ` and zero
   on the ray `⟨r⟩` kill `w`, where `w` is orthogonal to `r` and lies in the trace of every wall
   through `J`. `mem_supportSpace_halfLine_of_supportForms_span` proves this from one statement
