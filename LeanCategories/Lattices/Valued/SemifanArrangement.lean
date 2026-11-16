@@ -67,10 +67,10 @@ E. Looijenga, *Compactifications defined by arrangements II: locally symmetric v
   are still those at `r`. Given the member `τ` the `≤` half follows — a trace is one-signed on `τ`
   and zero on the half line, so it lies in `supportForms τ σ` and the support space is inside it,
   with `supportSpace_le_ker_associated_of_isotropic` for the `J^⊥` half — and the `≥` half needs the
-  span of the cell, `⟨arrangementCone φ s ⊓ C₊⟩ = ⋂_{s i = 0} ker (φ i)`, which holds when the cell
-  has a point of the open cone at which exactly the walls of the sign pattern's zero set vanish
-  (the same finiteness of the walls, used once more; without it a point of the open cone on a wall
-  outside the zero set obstructs both signs of the line).
+  span of that cell, `⟨arrangementCone φ s ⊓ C₊⟩ = ⋂_{s i = 0} ker (φ i)`, whose `⊇` half needs the
+  family to be finite (or locally finite) along the cell: for `y` in the cell and `x` in the common
+  kernel, `y + ε x` is again in the cell only below a bound on `ε` that is uniform over the walls
+  carrying a nonzero sign in `s`, so those walls have to be finite.
 * **`CutsFinitelyOnRational` at the fibre is carried, not derived**:
   `semifanArrangement_isLocallyRational` takes it as a hypothesis. The counting lemma is
   `cutsFinitelyOnRational_orbitFamily`, stated for one lattice `Λ` in one space, preserved by `Γ`.
