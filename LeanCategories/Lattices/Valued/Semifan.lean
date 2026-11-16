@@ -52,26 +52,40 @@ sentence after Lemma-Definition 4.5 (p. 19, text line 523), in the fibre `I^⊥/
 
 ## What is assumed, and where the source supplies it
 
-* `IsGammaInvariantLocus` is a field of `IsAdmissibleDecomposition` and is *not* discharged here for
-  the facial decomposition: transporting a fibre along an isometry of `V` is not constructed.
-  The two conditions (i) and (ii) of Definition 6.1 and the support spaces are, and are the
-  content of Example 6.2 below.
-* `hray` in the theorems of §5: the half line `C_{J,+}` of a `ℚ`-isotropic plane `J` lies on the
-  closed sheet of the fibre of a line `I ≤ J`. The source has this as part of its construction: "A
-  real isotropic plane `J` in `V` containing `I` corresponds to a real isotropic line `J̄` in
-  `I^⊥/I` and vice versa. In that case, `Λ²J` can be regarded as a line in `I ⊗ I^⊥/I` and via this
-  inclusion, `C_J` is contained in the boundary of `C_I`" (§1B, p. 11, text line 267). The carrier
-  `ConicalLines` and `ConicalPlane` of `ConicalLocus` record the two cones but not which half of the
-  boundary of the other they occupy, so the half line's orientation is a named hypothesis.
+* `hray`/`hsheet` in the theorems of §5 and in `bailyBorel_isAdmissibleDecomposition`: the half
+  line `C_{J,+}` of a `ℚ`-isotropic plane `J` lies on the closed sheet of the fibre of a line
+  `I ≤ J`. The source has this as part of its construction: "A real isotropic plane `J` in `V`
+  containing `I` corresponds to a real isotropic line `J̄` in `I^⊥/I` and vice versa. In that case,
+  `Λ²J` can be regarded as a line in `I ⊗ I^⊥/I` and via this inclusion, `C_J` is contained in the
+  boundary of `C_I`" (§1B, p. 11, text line 267). The carrier `ConicalLines` and `ConicalPlane` of
+  `ConicalLocus` record the two cones but not which half of the boundary of the other they occupy,
+  so the half line's orientation is a named hypothesis.
+
+## The `Γ`-action on the conical locus
+
+An isometry `g` of `(V, BQ)` carries the fibre of a `ℚ`-isotropic line `I` to the fibre of `gI`
+(§1B, p. 11). That transport is constructed here, because Definition 6.1's collection `Σ` is
+`Γ`-invariant as a collection of cones and nothing in `ConicalLine` recorded the action:
+
+* `ConicalLine.map`: the transported fibre. It exists because an isometry preserves `Q` on `V(ℝ)`
+  (`associated_realifiedEquiv_apply`, `quadratic_realifiedEquiv`), so the image of a positive vector
+  is positive and the image of the upper sheet is the upper sheet of the image fibre. The carrier
+  isometry is `fibreCarrierEquiv`/`fibreCarrierEquivReal`, and the choice of sheet is forced: no
+  freedom among the two components remains.
+* `ConicalLine.map_closure`: the rational closure `C_{I,+}` is carried onto the rational closure of
+  the image fibre. Both are hulls of the rational points of their closed sheets
+  (`ConicalLine.closure_eq_hull_closedSheet`), the closed sheet is carried onto the closed sheet
+  (`mem_closedSheet_map_iff`, `image_closedSheet`) since its two defining inequalities are `Q x ≥ 0`
+  and `x · t ≥ 0`, and the hull of an image is the image of the hull (`hull_map`).
+* `bailyBorel_gammaInvariant`: `Σ(bb)` is `Γ`-invariant. The union of the images of the members of
+  a fibre is the image of its cone (`iUnion_memberImage_facialDecomposition`), so it is carried
+  along by the closure transport.
+* `bailyBorel_isAdmissibleDecomposition`: **Example 6.2 as a theorem** — Definition 6.1 for the
+  facial decomposition of the conical locus of a form of signature `(2, n)`, with no field left as
+  a hypothesis (`sigPos_fibreForm` supplies `(1, n-1)` in every fibre).
 
 ## What is not here
 
-* **The `Γ`-invariance of the facial decomposition** (`IsGammaInvariantLocus`), and with it
-  Example 6.2 as a whole: transporting a conical fibre along an isometry of `V` — the choice of the
-  transported sheet among the two components of the fibre's cone — is not constructed, so
-  `IsAdmissibleDecomposition` keeps `gammaInvariant` as a hypothesis. The conditions (i) and (ii)
-  of Definition 6.1 are proved (`bailyBorel_condition_i`,
-  `bailyBorel_condition_ii`), as are the support spaces the example names.
 * **Example 6.4, the admissible decomposition `Σ(H)` of an arithmetic arrangement** (p. 29, text
   line 791), and with it the identification `J_{Σ(H)} = J_H = J^⊥ ∩ ⋂_{H ∋ J} H`. Both are
   statements about the cells of the arrangement in a fibre, and the missing step is the one the
@@ -107,6 +121,29 @@ this repository's `IsotropicQuotientSignature.sigPos_restrict_planePerp` and is 
 `sigPos_fibreForm` uses. `content:signature add orthogonal decomposition quadratic`: only the
 `TauCetiRoadmap` target files, no proof. `content:faces of a closed convex cone extreme ray`: no
 match for the isotropic case. Nothing to import for the statements below.
+
+## LC-09 search record (2026-11-16, the `Γ`-action on the conical locus)
+
+Formalization-corpus queries, with the hits. `content:"conical locus" content:transport`: no file.
+`content:rationalClosure content:"PointedCone.map"`: no file. `content:convexHull content:"linear
+equivalence" content:"rational points"`: the search timed out at the API (`status=500`, context
+deadline exceeded) and was rerun below in the smaller forms; the smaller forms
+(`content:realifiedEquiv`, `content:"QuadraticMap.IsometryEquiv" content:comap`) returned only
+LeanPool's `HasseMinkowski` files — quadratic-form equivalences and isometry invariance of
+nondegeneracy, with no cone, hull or rational closure. `content:"PointedCone.map" content:hull`:
+no file. `content:isometry content:"quadratic form" content:associated content:preserves`: one
+LeanPool file, the same `HasseMinkowski/Prod.lean` material (base change of a quadratic form to a
+matrix, nondegeneracy under equivalence) — nothing about transporting a cone along an isometry.
+`content:"support space" content:arrangement content:hyperplane`, `content:"isotropic"
+content:"hyperplane arrangement" content:cone`, `content:"locally rational" content:cone
+content:decomposition`, `content:semifan`, `content:"sign cell" content:arrangement
+content:decomposition`, `content:"conical" content:"fibre" content:"isometry"`: no file.
+`content:"admissible decomposition"`: two files, TauCeti `IntegralLattices/Suggested.lean` (the
+term used for a decomposition of a discriminant form, no cones) and LeanPool's bramble
+decompositions — neither is the object of Definition 6.1. Nothing to import for the transport, the
+rational-closure transport or the `Γ`-invariance of the facial decomposition; what this unit uses
+from elsewhere is already in the repository (`realifiedEquiv`, `coneMap`,
+`isLocallyRationalDecomposition_coneMap`, `associated_realifiedEquiv`).
 -/
 
 @[expose] public section
@@ -769,5 +806,513 @@ theorem vSigmaPlane_le_of_refines (hBsym : BQ.IsSymm) (F : ConicalLine BQ Q)
   exact Submodule.map_mono (sigmaSupportSpace_le_of_refines hidx h)
 
 end Lemma66
+
+/-! ## The transport of a conical fibre along an isometry of `V`
+
+`Γ` acts on the *collection* of conical fibres: an isometry `g` of `(V, BQ)` in `Γ` carries the
+fibre of a `ℚ`-isotropic line `I` to the fibre of `gI` (§1B, p. 11). Nothing in
+`ConicalLine` records this action, which is why `IsGammaInvariantLocus` was carried as a hypothesis
+in §Definition 6.1 above. What follows constructs it:
+
+* `ConicalLine.map`: the transported fibre, with the transported sheet
+  (`fibreCarrierEquivReal`), so that the upper sheet — and with it the cone — is carried onto the
+  upper sheet of the image fibre;
+* `ConicalLine.map_closure`: the rational closure `C_{I,+}` of Definition 4.2 is carried onto the
+  rational closure of the image fibre, so that the facial decompositions correspond.
+
+The one thing the transport needs of `g` is that it be an isometry of `BQ`
+(`associated_realifiedEquiv_apply`, `quadratic_realifiedEquiv`); the choice of sheet is then forced
+up to nothing: the image of the chosen positive vector is positive, because `Q` is preserved. -/
+
+section Transport
+
+variable {Q : QuadraticForm ℝ (realified V)} {BQ : LinearMap.BilinForm ℚ V} {g : V ≃ₗ[ℚ] V}
+
+omit [Module.Finite ℚ V] in
+/-- **An isometry of `(V, BQ)` preserves the associated form of `Q` on `V(ℝ)`.** Agreement on the
+pairs of `ℚ`-rational points, which span `V(ℝ)`, already forces the two bilinear forms to agree; on
+those pairs the statement is the isometry of `BQ` (`hBQ`). -/
+theorem associated_realifiedEquiv_apply
+    (hBQ : ∀ u w : V, (associated Q) (rationalPoint u) (rationalPoint w) = (BQ u w : ℝ))
+    (hg : ∀ x y : V, BQ (g x) (g y) = BQ x y) (y z : realified V) :
+    (associated Q) (realifiedEquiv g y) (realifiedEquiv g z) = (associated Q) y z := by
+  have key : ∀ (v : V) (z : realified V),
+      (associated Q) (realifiedEquiv g (rationalPoint v)) (realifiedEquiv g z)
+        = (associated Q) (rationalPoint v) z := by
+    intro v z
+    rw [realifiedEquiv_rationalPoint]
+    exact associated_realifiedEquiv hBQ hg v z
+  have hswap : ∀ y z : realified V,
+      (associated Q) (realifiedEquiv g y) (realifiedEquiv g z) = (associated Q) y z := by
+    intro y z
+    let L : (realified V) →ₗ[ℝ] ℝ :=
+      ((associated Q) (realifiedEquiv g y)).comp (realifiedEquiv g).toLinearMap -
+        (associated Q) y
+    have hL : ∀ x : V, L (rationalPoint x) = 0 := by
+      intro x
+      have h1 : (associated Q) (realifiedEquiv g y) (realifiedEquiv g (rationalPoint x))
+          = (associated Q) (rationalPoint x) y := by
+        rw [associated_comm (Q := Q) (realifiedEquiv g y) (realifiedEquiv g (rationalPoint x)),
+          key x y, associated_comm (Q := Q) (rationalPoint x) y]
+      change (associated Q) (realifiedEquiv g y) ((realifiedEquiv g) (rationalPoint x))
+        - (associated Q) y (rationalPoint x) = 0
+      rw [h1, associated_comm (Q := Q) y (rationalPoint x), sub_self]
+    have hzero : L = 0 := by
+      have hle : Submodule.span ℝ (Set.range (rationalPoint (V := V))) ≤ L.ker := by
+        rw [Submodule.span_le]
+        rintro - ⟨x, rfl⟩
+        simpa using hL x
+      rw [span_range_rationalPoint, top_le_iff] at hle
+      exact LinearMap.ext fun w => by
+        have hw : w ∈ L.ker := by rw [hle]; exact Submodule.mem_top
+        simpa using hw
+    have h := congrArg (fun f : (realified V) →ₗ[ℝ] ℝ => f z) hzero
+    change (associated Q) (realifiedEquiv g y) ((realifiedEquiv g) z) - (associated Q) y z = 0 at h
+    rw [sub_eq_zero] at h
+    exact h
+  exact hswap y z
+
+omit [Module.Finite ℚ V] in
+/-- **An isometry of `(V, BQ)` preserves `Q` on `V(ℝ)`**, since `Q x = x · x`. -/
+theorem quadratic_realifiedEquiv
+    (hBQ : ∀ u w : V, (associated Q) (rationalPoint u) (rationalPoint w) = (BQ u w : ℝ))
+    (hg : ∀ x y : V, BQ (g x) (g y) = BQ x y) (y : realified V) :
+    Q (realifiedEquiv g y) = Q y := by
+  rw [← associated_self_apply Q (realifiedEquiv g y), ← associated_self_apply Q y]
+  exact associated_realifiedEquiv_apply hBQ hg y y
+
+omit [Module.Finite ℚ V] in
+/-- **An isometry carries the carrier of a conical fibre to the carrier of the image fibre**: the
+orthogonal complement of the hyperbolic plane `⟨e, f⟩` is mapped onto the orthogonal complement of
+`⟨g e, g f⟩`, so that the reduction `I^⊥/I` of §1B, p. 11, goes to `(gI)^⊥/(gI)`. -/
+theorem map_planeComplement (hg : ∀ x y : V, BQ (g x) (g y) = BQ x y) (e f : V) :
+    (planeComplement BQ e f).map (g : V →ₗ[ℚ] V) = planeComplement BQ (g e) (g f) := by
+  refine le_antisymm ?_ ?_
+  · intro x hx
+    obtain ⟨w, hw, rfl⟩ := Submodule.mem_map.1 hx
+    rw [mem_planeComplement_iff] at hw ⊢
+    refine ⟨?_, ?_⟩
+    · change BQ (g e) (g w) = 0
+      rw [hg e w]
+      exact hw.1
+    · change BQ (g f) (g w) = 0
+      rw [hg f w]
+      exact hw.2
+  · intro x hx
+    rw [mem_planeComplement_iff] at hx
+    refine Submodule.mem_map.2 ⟨g.symm x, ?_, by simp⟩
+    rw [mem_planeComplement_iff]
+    refine ⟨?_, ?_⟩
+    · have h := hg e (g.symm x)
+      rw [LinearEquiv.apply_symm_apply] at h
+      rw [← h]
+      exact hx.1
+    · have h := hg f (g.symm x)
+      rw [LinearEquiv.apply_symm_apply] at h
+      rw [← h]
+      exact hx.2
+
+/-- **The isometry of the carriers**: `g` restricted to the carrier `I^⊥/I` of a conical fibre,
+with inverse the restriction of `g⁻¹`. -/
+noncomputable def fibreCarrierEquiv (F : ConicalLine BQ Q)
+    (hg : ∀ x y : V, BQ (g x) (g y) = BQ x y) :
+    ↥(planeComplement BQ F.gen F.partner) ≃ₗ[ℚ]
+      ↥(planeComplement BQ (g F.gen) (g F.partner)) where
+  toFun w := ⟨g w, by
+    have h := map_planeComplement (BQ := BQ) (g := g) hg F.gen F.partner
+    rw [← h]
+    exact Submodule.mem_map_of_mem w.2⟩
+  invFun w := ⟨g.symm w, by
+    have h := map_planeComplement (BQ := BQ) (g := g) hg F.gen F.partner
+    have hw : (w : V) ∈ F.space.map (g : V →ₗ[ℚ] V) := by
+      change (w : V) ∈ (planeComplement BQ F.gen F.partner).map (g : V →ₗ[ℚ] V)
+      rw [h]
+      exact w.2
+    obtain ⟨v, hv, hvw⟩ := Submodule.mem_map.1 hw
+    have hsv : g.symm (w : V) = v := by
+      rw [← hvw]
+      simp
+    rw [hsv]
+    exact hv⟩
+  left_inv w := Subtype.ext (by simp)
+  right_inv w := Subtype.ext (by simp)
+  map_add' a b := Subtype.ext (by simp)
+  map_smul' c a := Subtype.ext (by simp)
+
+/-- The realification of the carrier isometry: the isometry of the fibre's real form. -/
+noncomputable def fibreCarrierEquivReal (F : ConicalLine BQ Q)
+    (hg : ∀ x y : V, BQ (g x) (g y) = BQ x y) :
+    realified ↥(planeComplement BQ F.gen F.partner) ≃ₗ[ℝ]
+      realified ↥(planeComplement BQ (g F.gen) (g F.partner)) :=
+  (fibreCarrierEquiv (Q := Q) (g := g) F hg).baseChange ℚ ℝ
+
+omit [Module.Finite ℚ V] in
+theorem fibreCarrierEquivReal_rationalPoint {F : ConicalLine BQ Q}
+    (hg : ∀ x y : V, BQ (g x) (g y) = BQ x y) (w : ↥(planeComplement BQ F.gen F.partner)) :
+    fibreCarrierEquivReal (Q := Q) (g := g) F hg (rationalPoint w) =
+      rationalPoint (fibreCarrierEquiv (Q := Q) (g := g) F hg w) := by
+  simp only [fibreCarrierEquivReal, rationalPoint_apply, LinearEquiv.baseChange_tmul]
+
+omit [Module.Finite ℚ V] in
+/-- **The carrier isometry is `g` under the identification of the carrier with a subspace of
+`V(ℝ)`**: the two realifications agree. -/
+theorem realifyMap_fibreCarrierEquivReal {F : ConicalLine BQ Q}
+    (hg : ∀ x y : V, BQ (g x) (g y) = BQ x y)
+    (x : realified ↥(planeComplement BQ F.gen F.partner)) :
+    realifyMap (planeComplement BQ (g F.gen) (g F.partner))
+        (fibreCarrierEquivReal (Q := Q) (g := g) F hg x) =
+      realifiedEquiv g (realifyMap (planeComplement BQ F.gen F.partner) x) := by
+  let L : realified ↥(planeComplement BQ F.gen F.partner) →ₗ[ℝ] realified V :=
+    (realifyMap (planeComplement BQ (g F.gen) (g F.partner))).comp
+        (fibreCarrierEquivReal (Q := Q) (g := g) F hg).toLinearMap -
+      (realifiedEquiv g).toLinearMap.comp (realifyMap (planeComplement BQ F.gen F.partner))
+  have hL : ∀ w : ↥(planeComplement BQ F.gen F.partner), L (rationalPoint w) = 0 := by
+    intro w
+    have h1 : realifyMap (planeComplement BQ (g F.gen) (g F.partner))
+        ((fibreCarrierEquivReal (Q := Q) (g := g) F hg) (rationalPoint w))
+        = rationalPoint (g w) := by
+      rw [fibreCarrierEquivReal_rationalPoint]
+      exact realifyMap_rationalPoint _ _
+    have h2 : (realifiedEquiv g)
+        ((realifyMap (planeComplement BQ F.gen F.partner)) (rationalPoint w))
+        = rationalPoint (g w) := by
+      rw [realifyMap_rationalPoint, realifiedEquiv_rationalPoint]
+    change realifyMap (planeComplement BQ (g F.gen) (g F.partner))
+        ((fibreCarrierEquivReal (Q := Q) (g := g) F hg) (rationalPoint w)) -
+      (realifiedEquiv g)
+        ((realifyMap (planeComplement BQ F.gen F.partner)) (rationalPoint w)) = 0
+    exact sub_eq_zero.mpr (h1.trans h2.symm)
+  have hzero : L = 0 := by
+    have hle : Submodule.span ℝ
+        (Set.range (rationalPoint (V := ↥(planeComplement BQ F.gen F.partner)))) ≤ L.ker := by
+      rw [Submodule.span_le]
+      rintro - ⟨w, rfl⟩
+      simpa using hL w
+    rw [span_range_rationalPoint, top_le_iff] at hle
+    exact LinearMap.ext fun y => by
+      have hy : y ∈ L.ker := by rw [hle]; exact Submodule.mem_top
+      simpa using hy
+  have h := congrArg (fun f : realified ↥(planeComplement BQ F.gen F.partner) →ₗ[ℝ] realified V =>
+    f x) hzero
+  change realifyMap (planeComplement BQ (g F.gen) (g F.partner))
+      ((fibreCarrierEquivReal (Q := Q) (g := g) F hg) x) -
+    (realifiedEquiv g) (realifyMap (planeComplement BQ F.gen F.partner) x) = 0 at h
+  exact sub_eq_zero.mp h
+
+/-- **The transported conical fibre**: the fibre of `gI`, with the hyperbolic partner and the
+sheet carried by the isometry. An `abbrev`, so that its fields and hence its carrier are
+definitionally those of `g F` (the carrier `ConicalLine.space` is one too). -/
+noncomputable abbrev ConicalLine.map (F : ConicalLine BQ Q)
+    (hBQ : ∀ u w : V, (associated Q) (rationalPoint u) (rationalPoint w) = (BQ u w : ℝ))
+    (hg : ∀ x y : V, BQ (g x) (g y) = BQ x y) : ConicalLine BQ Q where
+  line := F.line.map (g : V →ₗ[ℚ] V)
+  isotropic := by
+    intro x hx y hy
+    obtain ⟨x₀, hx₀, rfl⟩ := Submodule.mem_map.1 hx
+    obtain ⟨y₀, hy₀, rfl⟩ := Submodule.mem_map.1 hy
+    change BQ (g x₀) (g y₀) = 0
+    rw [hg x₀ y₀]
+    exact F.isotropic x₀ hx₀ y₀ hy₀
+  one_dim := by
+    rw [LinearEquiv.finrank_map_eq g F.line]
+    exact F.one_dim
+  gen := g F.gen
+  line_eq := by
+    rw [F.line_eq, Submodule.map_span]
+    simp
+  gen_iso := by rw [hg, F.gen_iso]
+  gen_ne := by
+    intro h
+    apply F.gen_ne
+    have h' := congrArg g.symm h
+    simpa using h'
+  partner := g F.partner
+  partner_iso := by rw [hg, F.partner_iso]
+  pairing := by rw [hg, F.pairing]
+  sheet := fibreCarrierEquivReal (Q := Q) (g := g) F hg F.sheet
+  sheet_pos := by
+    have hsq := realifyMap_fibreCarrierEquivReal (Q := Q) (g := g) (BQ := BQ) (F := F) hg F.sheet
+    have hQ := quadratic_realifiedEquiv (Q := Q) (g := g) (BQ := BQ) hBQ hg
+      (realifyMap (planeComplement BQ F.gen F.partner) F.sheet)
+    rw [show fibreForm Q (planeComplement BQ (g F.gen) (g F.partner))
+        ((fibreCarrierEquivReal (Q := Q) (g := g) F hg) F.sheet)
+        = Q (realifiedEquiv g (realifyMap (planeComplement BQ F.gen F.partner) F.sheet)) from by
+      change Q (realifyMap (planeComplement BQ (g F.gen) (g F.partner))
+        ((fibreCarrierEquivReal (Q := Q) (g := g) F hg) F.sheet)) = _
+      rw [hsq]]
+    rw [hQ]
+    exact F.sheet_pos
+
+end Transport
+
+/-! ## The closure `C_{I,+}` is carried onto the closure of the image fibre -/
+
+section ClosureTransport
+
+variable {Q : QuadraticForm ℝ (realified V)} {BQ : LinearMap.BilinForm ℚ V} {g : V ≃ₗ[ℚ] V}
+
+omit [Module.Finite ℚ V] in
+/-- The fibre form does not depend on which name the carrier is given. -/
+theorem fibreForm_space (F : ConicalLine BQ Q) :
+    fibreForm Q F.space = fibreForm Q (planeComplement BQ F.gen F.partner) := rfl
+
+omit [Module.Finite ℚ V] in
+/-- The positive index of the fibre form does not depend on which name the carrier is given. -/
+theorem sigPos_fibreForm_space (F : ConicalLine BQ Q) :
+    sigPos (fibreForm Q F.space) =
+      sigPos (fibreForm Q (planeComplement BQ F.gen F.partner)) := rfl
+
+omit [Module.Finite ℚ V] in
+/-- **The rational closure of a cone that is closed in itself** (Definition 4.2, p. 17) is the
+hull of its `ℚ`-rational points: `L(ℚ) ∩ C̄` loses the closure, the cone being closed. -/
+theorem rationalClosure_eq_hull_rationalPoint_of_isClosed {C : PointedCone ℝ (realified V)}
+    (hC : C.closure = C) :
+    rationalClosure C = PointedCone.hull ℝ
+      (rationalPoint '' (Set.univ : Set V) ∩ (C : Set (realified V))) := by
+  rw [rationalClosure_eq_hull]
+  have hb : rationalBoundary C = rationalPoint '' (Set.univ : Set V) ∩ (C : Set (realified V)) := by
+    simp only [rationalBoundary, hC]
+  rw [hb]
+
+/-- **The rational closure `C_{I,+}` of a conical fibre is the hull of the rational points of its
+closed sheet** — `ConicalLine.closure_eq_closedSheet` and Definition 4.2 together. -/
+theorem ConicalLine.closure_eq_hull_closedSheet (F : ConicalLine BQ Q)
+    (hpos : sigPos (fibreForm Q (planeComplement BQ F.gen F.partner)) = 1) :
+    F.closure = PointedCone.hull ℝ
+      (rationalPoint '' (Set.univ : Set ↥(planeComplement BQ F.gen F.partner)) ∩
+        (closedSheet (fibreForm Q (planeComplement BQ F.gen F.partner)) hpos F.sheet_pos :
+          Set (realified ↥(planeComplement BQ F.gen F.partner)))) := by
+  rw [ConicalLine.closure_eq_closedSheet F hpos]
+  exact rationalClosure_eq_hull_rationalPoint_of_isClosed
+    ((isClosed_closedSheet_of_moduleTopology _ hpos F.sheet_pos).submodule_topologicalClosure_eq)
+
+omit [Module.Finite ℚ V] in
+/-- The image of a cone hull under a linear map is the cone hull of the image. -/
+theorem hull_map {E F : Type*} [AddCommGroup E] [Module ℝ E] [AddCommGroup F] [Module ℝ F]
+    (f : E →ₗ[ℝ] F) (s : Set E) :
+    (PointedCone.hull ℝ s).map f = PointedCone.hull ℝ (f '' s) := by
+  change Submodule.map (f : E →ₗ[{c : ℝ // 0 ≤ c}] F)
+    (Submodule.span {c : ℝ // 0 ≤ c} s) = Submodule.span {c : ℝ // 0 ≤ c} (f '' s)
+  rw [Submodule.map_span]
+  rfl
+
+omit [Module.Finite ℚ V] in
+/-- The carrier isometry carries the `ℚ`-rational points onto the `ℚ`-rational points. -/
+theorem fibreCarrierEquiv_toLinearMap_rationalPoint {F : ConicalLine BQ Q}
+    (hg : ∀ x y : V, BQ (g x) (g y) = BQ x y)
+    (w : ↥(planeComplement BQ F.gen F.partner)) :
+    (fibreCarrierEquivReal (Q := Q) (g := g) F hg).toLinearMap (rationalPoint w) =
+      rationalPoint (fibreCarrierEquiv (Q := Q) (g := g) F hg w) :=
+  fibreCarrierEquivReal_rationalPoint (Q := Q) (g := g) hg w
+
+omit [Module.Finite ℚ V] in
+theorem image_rationalPoint_fibreCarrierEquivReal {F : ConicalLine BQ Q}
+    (hg : ∀ x y : V, BQ (g x) (g y) = BQ x y) :
+    (fibreCarrierEquivReal (Q := Q) (g := g) F hg).toLinearMap ''
+        (rationalPoint '' (Set.univ : Set ↥(planeComplement BQ F.gen F.partner)))
+      = rationalPoint '' (Set.univ : Set ↥(planeComplement BQ (g F.gen) (g F.partner))) := by
+  ext y
+  constructor
+  · rintro ⟨x, ⟨w, -, rfl⟩, rfl⟩
+    exact ⟨fibreCarrierEquiv (Q := Q) (g := g) F hg w, Set.mem_univ _,
+      fibreCarrierEquiv_toLinearMap_rationalPoint (Q := Q) (g := g) hg w⟩
+  · rintro ⟨w, -, rfl⟩
+    refine ⟨rationalPoint ((fibreCarrierEquiv (Q := Q) (g := g) F hg).symm w),
+      ⟨_, Set.mem_univ _, rfl⟩, ?_⟩
+    rw [fibreCarrierEquiv_toLinearMap_rationalPoint]
+    simp
+
+/-- **The closed sheet of a fibre is carried onto the closed sheet of the image fibre**: the two
+inequalities defining `closedSheet` are `Q x ≥ 0` and `x · t ≥ 0`, and `Q`, the pairing and the
+chosen sheet are all preserved by the isometry. -/
+theorem mem_closedSheet_map_iff (F : ConicalLine BQ Q)
+    (hBQ : ∀ u w : V, (associated Q) (rationalPoint u) (rationalPoint w) = (BQ u w : ℝ))
+    (hg : ∀ x y : V, BQ (g x) (g y) = BQ x y)
+    (hpos : sigPos (fibreForm Q (planeComplement BQ F.gen F.partner)) = 1)
+    (hpos' : sigPos (fibreForm Q (planeComplement BQ (g F.gen) (g F.partner))) = 1)
+    (ht' : 0 < fibreForm Q (planeComplement BQ (g F.gen) (g F.partner))
+      (ConicalLine.map F hBQ hg).sheet)
+    (x : realified ↥(planeComplement BQ F.gen F.partner)) :
+    (fibreCarrierEquivReal (Q := Q) (g := g) F hg).toLinearMap x ∈
+        closedSheet (fibreForm Q (planeComplement BQ (g F.gen) (g F.partner))) hpos' ht'
+      ↔ x ∈ closedSheet (fibreForm Q (planeComplement BQ F.gen F.partner)) hpos F.sheet_pos := by
+  have hQx : fibreForm Q (planeComplement BQ (g F.gen) (g F.partner))
+      ((fibreCarrierEquivReal (Q := Q) (g := g) F hg).toLinearMap x) =
+        fibreForm Q (planeComplement BQ F.gen F.partner) x := by
+    change Q (realifyMap (planeComplement BQ (g F.gen) (g F.partner))
+      (fibreCarrierEquivReal (Q := Q) (g := g) F hg x))
+        = Q (realifyMap (planeComplement BQ F.gen F.partner) x)
+    rw [realifyMap_fibreCarrierEquivReal, quadratic_realifiedEquiv hBQ hg]
+  have hBx : (associated (fibreForm Q (planeComplement BQ (g F.gen) (g F.partner))))
+      ((fibreCarrierEquivReal (Q := Q) (g := g) F hg).toLinearMap x)
+      (ConicalLine.map F hBQ hg).sheet
+      = (associated (fibreForm Q (planeComplement BQ F.gen F.partner))) x F.sheet := by
+    change (associated (fibreForm Q (planeComplement BQ (g F.gen) (g F.partner))))
+        (fibreCarrierEquivReal (Q := Q) (g := g) F hg x)
+        (ConicalLine.map F hBQ hg).sheet
+      = (associated (fibreForm Q (planeComplement BQ F.gen F.partner))) x F.sheet
+    conv_lhs => rw [associated_fibreForm]
+    conv_rhs => rw [associated_fibreForm]
+    conv_lhs => rw [realifyMap_fibreCarrierEquivReal, realifyMap_fibreCarrierEquivReal]
+    exact associated_realifiedEquiv_apply hBQ hg _ _
+  change (0 ≤ fibreForm Q (planeComplement BQ (g F.gen) (g F.partner))
+        ((fibreCarrierEquivReal (Q := Q) (g := g) F hg).toLinearMap x) ∧
+      0 ≤ (associated (fibreForm Q (planeComplement BQ (g F.gen) (g F.partner))))
+        ((fibreCarrierEquivReal (Q := Q) (g := g) F hg).toLinearMap x)
+        (ConicalLine.map F hBQ hg).sheet) ↔
+      (0 ≤ fibreForm Q (planeComplement BQ F.gen F.partner) x ∧
+        0 ≤ (associated (fibreForm Q (planeComplement BQ F.gen F.partner))) x F.sheet)
+  rw [hQx, hBx]
+
+/-- **The closed sheet is carried onto the closed sheet** (`mem_closedSheet_map_iff`, as an
+identity of sets). -/
+theorem image_closedSheet (F : ConicalLine BQ Q)
+    (hBQ : ∀ u w : V, (associated Q) (rationalPoint u) (rationalPoint w) = (BQ u w : ℝ))
+    (hg : ∀ x y : V, BQ (g x) (g y) = BQ x y)
+    (hpos : sigPos (fibreForm Q (planeComplement BQ F.gen F.partner)) = 1)
+    (hpos' : sigPos (fibreForm Q (planeComplement BQ (g F.gen) (g F.partner))) = 1)
+    (ht' : 0 < fibreForm Q (planeComplement BQ (g F.gen) (g F.partner))
+      (ConicalLine.map F hBQ hg).sheet) :
+    (fibreCarrierEquivReal (Q := Q) (g := g) F hg).toLinearMap ''
+        ((closedSheet (fibreForm Q (planeComplement BQ F.gen F.partner)) hpos F.sheet_pos :
+          PointedCone ℝ (realified ↥(planeComplement BQ F.gen F.partner))) :
+          Set (realified ↥(planeComplement BQ F.gen F.partner)))
+      = ((closedSheet (fibreForm Q (planeComplement BQ (g F.gen) (g F.partner))) hpos' ht' :
+          PointedCone ℝ (realified ↥(planeComplement BQ (g F.gen) (g F.partner)))) :
+          Set (realified ↥(planeComplement BQ (g F.gen) (g F.partner)))) := by
+  ext y
+  constructor
+  · rintro ⟨x, hx, rfl⟩
+    exact (mem_closedSheet_map_iff F hBQ hg hpos hpos' ht' x).2 hx
+  · intro hy
+    obtain ⟨x, hx⟩ := (fibreCarrierEquivReal (Q := Q) (g := g) F hg).surjective y
+    exact ⟨x, (mem_closedSheet_map_iff F hBQ hg hpos hpos' ht' x).1 (hx ▸ hy), hx⟩
+
+/-- **The rational closure `C_{I,+}` of the transported fibre is the image of `C_{I,+}`**
+(Definition 4.2, p. 17). Both closures are hulls of the rational points of their closed sheets
+(`ConicalLine.closure_eq_hull_closedSheet`), the hull of an image is the image of the hull
+(`hull_map`), and the closed sheet is carried onto the closed sheet (`image_closedSheet`). -/
+theorem ConicalLine.map_closure (F : ConicalLine BQ Q)
+    (hBQ : ∀ u w : V, (associated Q) (rationalPoint u) (rationalPoint w) = (BQ u w : ℝ))
+    (hg : ∀ x y : V, BQ (g x) (g y) = BQ x y)
+    (hpos : sigPos (fibreForm Q (planeComplement BQ F.gen F.partner)) = 1)
+    (hpos' : sigPos (fibreForm Q (planeComplement BQ (g F.gen) (g F.partner))) = 1)
+    (ht' : 0 < fibreForm Q (planeComplement BQ (g F.gen) (g F.partner))
+      (ConicalLine.map F hBQ hg).sheet) :
+    F.closure.map (fibreCarrierEquivReal (Q := Q) (g := g) F hg).toLinearMap =
+      (ConicalLine.map F hBQ hg).closure := by
+  rw [ConicalLine.closure_eq_hull_closedSheet F hpos,
+    ConicalLine.closure_eq_hull_closedSheet (ConicalLine.map F hBQ hg) hpos']
+  rw [hull_map]
+  congr 1
+  rw [Set.image_inter (f := (fibreCarrierEquivReal (Q := Q) (g := g) F hg).toLinearMap)
+    (fun a b hab => (fibreCarrierEquivReal (Q := Q) (g := g) F hg).injective hab)]
+  congr 1
+  · exact image_rationalPoint_fibreCarrierEquivReal (Q := Q) (g := g) (F := F) hg
+  · exact image_closedSheet F hBQ hg hpos hpos' ht'
+
+end ClosureTransport
+
+/-! ## `Γ`-invariance of the facial decomposition, and Example 6.2 -/
+
+section BailyBorelAdmissible
+
+variable {Q : QuadraticForm ℝ (realified V)} {BQ : LinearMap.BilinForm ℚ V}
+
+omit [Module.Finite ℚ V] in
+/-- The image of a member of a conical fibre in `V(ℝ)`, as a set image. -/
+theorem memberImage_eq_image (F : ConicalLine BQ Q)
+    (σ : PointedCone ℝ (realified ↥F.space)) :
+    memberImage F σ = (realifyMap F.space) '' (σ : Set (realified ↥F.space)) :=
+  PointedCone.coe_map σ (realifyMap F.space)
+
+omit [Module.Finite ℚ V] in
+/-- The union of the images of the faces of a fibre's cone is the image of the cone itself: every
+face is contained in it, and the cone is a face of itself. -/
+theorem iUnion_memberImage_facialDecomposition (F : ConicalLine BQ Q) :
+    (⋃ σ ∈ facialDecomposition F.closure, memberImage F σ) = memberImage F F.closure := by
+  refine Set.eq_of_subset_of_subset ?_ ?_
+  · refine Set.iUnion_subset fun σ => Set.iUnion_subset fun hσ => ?_
+    rw [memberImage_eq_image, memberImage_eq_image]
+    exact Set.image_mono hσ.le
+  · intro x hx
+    exact Set.mem_iUnion.2 ⟨F.closure, Set.mem_iUnion.2 ⟨PointedCone.IsFaceOf.refl _, hx⟩⟩
+
+/-- **The `Γ`-invariance of the facial decomposition `Σ(bb)`** (Definition 6.1, p. 28): an
+isometry `g` of `(V, BQ)` carries the fibre of `I` to the fibre of `gI` (Definition 2.1, §1B) and
+the closure `C_{I,+}` of the first onto the closure of the second
+(`ConicalLine.map_closure`), hence the faces of one onto the faces of the other. The union of the
+images of the members of a fibre is the image of its cone
+(`iUnion_memberImage_facialDecomposition`), so it is carried along. -/
+theorem bailyBorel_gammaInvariant
+    (hBQ : ∀ u w : V, (associated Q) (rationalPoint u) (rationalPoint w) = (BQ u w : ℝ))
+    (Γ : Set (V ≃ₗ[ℚ] V))
+    (hpos : ∀ F : ConicalLine BQ Q, sigPos (fibreForm Q (planeComplement BQ F.gen F.partner)) = 1) :
+    IsGammaInvariantLocus BQ Q Γ (fun F => facialDecomposition F.closure) := by
+  intro g _hgΓ hg F
+  refine ⟨ConicalLine.map F hBQ hg, rfl, ?_⟩
+  rw [iUnion_memberImage_facialDecomposition, iUnion_memberImage_facialDecomposition,
+    memberImage_eq_image, memberImage_eq_image]
+  have hclos := ConicalLine.map_closure (g := g) F hBQ hg (hpos F)
+    (hpos (ConicalLine.map F hBQ hg))
+    (ConicalLine.map F hBQ hg).sheet_pos
+  have hsq : ∀ x : realified ↥F.space,
+      (realifiedEquiv g) ((realifyMap F.space) x)
+        = (realifyMap (ConicalLine.map F hBQ hg).space)
+            ((fibreCarrierEquivReal (Q := Q) (g := g) F hg).toLinearMap x) := by
+    intro x
+    exact (realifyMap_fibreCarrierEquivReal (Q := Q) (g := g) (BQ := BQ) (F := F) hg
+      (show realified ↥(planeComplement BQ F.gen F.partner) from x)).symm
+  have hCsets : (fibreCarrierEquivReal (Q := Q) (g := g) F hg).toLinearMap ''
+      (F.closure : Set (realified ↥F.space)) =
+        ((ConicalLine.map F hBQ hg).closure : Set
+          (realified ↥(ConicalLine.map F hBQ hg).space)) := by
+    rw [← hclos]
+    exact (PointedCone.coe_map F.closure
+      (fibreCarrierEquivReal (Q := Q) (g := g) F hg).toLinearMap).symm
+  ext y
+  constructor
+  · rintro ⟨z, ⟨x, hx, rfl⟩, rfl⟩
+    exact ⟨(fibreCarrierEquivReal (Q := Q) (g := g) F hg).toLinearMap x,
+      hCsets ▸ Set.mem_image_of_mem _ hx, (hsq x).symm⟩
+  · rintro ⟨y', hy', rfl⟩
+    rw [← hCsets] at hy'
+    obtain ⟨x, hx, hx'⟩ := hy'
+    refine ⟨(realifyMap F.space) x, ⟨x, hx, rfl⟩, ?_⟩
+    rw [hsq x]
+    exact congrArg (realifyMap (ConicalLine.map F hBQ hg).space) hx'
+
+/-- **Looijenga, Example 6.2, p. 29: the Baily–Borel decomposition is admissible.** Definition 6.1
+for the facial decomposition of the conical locus of a form of signature `(2, n)`: every fibre has
+signature `(1, n-1)` (§1B, p. 11: `sigPos_fibreForm`), condition (i) is
+`bailyBorel_condition_i`, condition (ii) is `vSigmaPlane_eq_ker_inf_ker` through
+`bailyBorel_condition_ii`, and the collection is `Γ`-invariant by the transport of a conical fibre
+along an isometry (`ConicalLine.map`, `bailyBorel_gammaInvariant`). -/
+theorem bailyBorel_isAdmissibleDecomposition
+    (hBQ : ∀ u w : V, (associated Q) (rationalPoint u) (rationalPoint w) = (BQ u w : ℝ))
+    (hBsym : BQ.IsSymm) (hsig : sigPos Q = 2) (hnd : Q.Nondegenerate)
+    (Γ : Set (V ≃ₗ[ℚ] V))
+    (hsheet : ∀ (F : ConicalLine BQ Q) (G : ConicalPlane BQ) (_h : F.line ≤ G.plane),
+      0 ≤ (associated (fibreForm Q F.space)) (rationalPoint (fibreRay hBsym F G)) F.sheet) :
+    IsAdmissibleDecomposition BQ Q Γ (fun F => facialDecomposition F.closure) := by
+  have hposP : ∀ F : ConicalLine BQ Q,
+      sigPos (fibreForm Q (planeComplement BQ F.gen F.partner)) = 1 := by
+    intro F
+    have h := sigPos_fibreForm (Q := Q) (BQ := BQ) hBQ hBsym F.gen_iso F.partner_iso F.pairing
+    omega
+  have hpos : ∀ F : ConicalLine BQ Q, sigPos (fibreForm Q F.space) = 1 :=
+    fun F => (sigPos_fibreForm_space F).symm ▸ hposP F
+  have hndF : ∀ F : ConicalLine BQ Q, (fibreForm Q F.space).Nondegenerate := by
+    intro F
+    have h := fibreForm_nondegenerate (Q := Q) (BQ := BQ) hBQ hBsym F.gen_iso F.partner_iso
+      F.pairing hnd
+    exact (fibreForm_space F).symm ▸ h
+  exact
+    { gammaInvariant := bailyBorel_gammaInvariant hBQ Γ hposP
+      condition_i := fun F => bailyBorel_condition_i F (hpos F) (hndF F)
+      condition_ii := fun hBsym' F F' G h h' =>
+        bailyBorel_condition_ii hBQ hpos hndF (fun _ F G h => hsheet F G h) hBsym' F F' G h h' }
+
+end BailyBorelAdmissible
 
 end LeanCategories.Lattices.Valued

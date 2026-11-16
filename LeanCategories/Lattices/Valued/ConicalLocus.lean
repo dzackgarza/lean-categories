@@ -44,17 +44,29 @@ decompositions of §6 live on.
 
 ## What is not here
 
-* **Examples 6.2 and 6.4 are not yet theorems.** Both would instantiate §4 at each fibre, which
-  needs `sigPos` of a fibre form to be `1` and the fibre form to be nondegenerate — the source's
-  "this signature remains `(1, n-1)`" (§1B, p. 11). The repository has the sharp statement for the
-  plane complement (`sigPos_restrict_planePerp`, `sigPos_isotropicQuotientForm`, #119); what is
-  missing is the comparison between two complements of `I` in `I^⊥`, i.e. that the restriction of
-  the ambient form to the real form of any complement is isometric to the quotient form. That is the
-  gap the two examples wait on, and it is recorded here rather than assumed.
+* **Examples 6.2 and 6.4 are not theorems here**: they are stated in `Semifan`, which instantiates
+  §4 at each fibre. That needs `sigPos` of a fibre form to be `1` and the fibre form to be
+  nondegenerate — the source's "this signature remains `(1, n-1)`" (§1B, p. 11). The sharp
+  statements are `Semifan.sigPos_fibreForm` and `Semifan.fibreForm_nondegenerate`; Example 6.2 is
+  `Semifan.bailyBorel_isAdmissibleDecomposition`, and Example 6.4 is still owed.
 * The `Γ`-invariance in `IsGammaInvariantLocus` is stated at the level of the images of members in
-  `V(ℝ)`; the transport of a fibre along an isometry (the analogue of `ConicalLine.map`) is not
-  constructed, so the predicate is a genuine hypothesis of Definition 6.1 and not yet discharged
-  for the Baily–Borel decomposition.
+  `V(ℝ)`, and it takes the image *under the isometry*: `γ` carries the fibre of `I` to the fibre of
+  `γI` (§1B, p. 11), so the members of the second are the images of the members of the first.
+  Comparing the two collections without moving one of them would ask two different subspaces of
+  `V(ℝ)` to agree, which no nontrivial isometry of an indefinite form does. The transport itself is
+  `Semifan.ConicalLine.map`, and the predicate is discharged for the facial decomposition by
+  `Semifan.bailyBorel_gammaInvariant`.
+
+## The carriers of a fibre
+
+`ConicalLine.space` is an `abbrev`, and `ConicalLine.cone` and `ConicalLine.closure` are typed by
+the explicit `planeComplement BQ gen partner` rather than by `F.space`. This makes the carrier of a
+fibre and the types of its sheet, its cone and its closure *syntactically* the same expression, so
+that transporting a fibre along an isometry moves all of them at once (`Semifan.ConicalLine.map`)
+and the support spaces of §6 can be compared across two fibres. Naming the carrier only through
+`F.space` leaves the unfolded and the folded form definitionally but not syntactically equal, and
+the operations of §6 (`fibreForm`, `closedSheet`, `rationalClosure`) do not accept one where they
+expect the other.
 
 ## References
 
@@ -332,8 +344,13 @@ namespace ConicalLine
 
 variable {BQ : LinearMap.BilinForm ℚ V} {Q : QuadraticForm ℝ (realified V)} (F : ConicalLine BQ Q)
 
-/-- The carrier of the reduction `I^⊥/I` of a conical fibre. -/
-noncomputable def space : Submodule ℚ V :=
+/-- The carrier of the reduction `I^⊥/I` of a conical fibre. It is an `abbrev` and the cone and
+the closure below are typed by the explicit `planeComplement`, so that the *carrier* of a fibre and
+the types of its sheet, its cone and its closure are interchangeable syntactically: transporting a
+fibre along an isometry of `V` (`Semifan.ConicalLine.map`) moves all of them at once, and the
+support spaces of §6 can be compared across two fibres without a transport isomorphism of
+realifications. -/
+noncomputable abbrev space : Submodule ℚ V :=
   planeComplement BQ F.gen F.partner
 
 omit [Module.Finite ℚ V] in
@@ -342,13 +359,14 @@ theorem mem_space_iff {x : V} : x ∈ F.space ↔ BQ F.gen x = 0 ∧ BQ F.partne
 
 /-- The open cone `C_I` of Definition 2.1, p. 10: the upper sheet of the reduction `I^⊥/I` at the
 chosen positive vector. -/
-noncomputable def cone : PointedCone ℝ (realified ↥F.space) :=
-  PointedCone.hull ℝ (positiveCone.upper (fibreForm Q F.space) F.sheet)
+noncomputable def cone : PointedCone ℝ (realified ↥(planeComplement BQ F.gen F.partner)) :=
+  PointedCone.hull ℝ
+    (positiveCone.upper (fibreForm Q (planeComplement BQ F.gen F.partner)) F.sheet)
 
 /-- The rational closure `C_{I,+}` of Definition 4.2, p. 17, at the conical fibre: the carrier of
 the locally rational decomposition that condition (i) of Definition 6.1 asks for. -/
-noncomputable def closure : PointedCone ℝ (realified ↥F.space) :=
-  rationalClosure F.cone
+noncomputable def closure : PointedCone ℝ (realified ↥(planeComplement BQ F.gen F.partner)) :=
+  rationalClosure (F.cone : PointedCone ℝ (realified ↥(planeComplement BQ F.gen F.partner)))
 
 end ConicalLine
 
@@ -456,13 +474,19 @@ noncomputable def isotropicCenter (Q : QuadraticForm ℝ (realified V))
 
 /-- `Γ`-invariance of a conical decomposition: every isometry of `V` in `Γ` carries the members of
 one conical fibre onto the members of a fibre over the image line (Definition 6.1, p. 28, the
-hypothesis on the collection `Σ`). Stated at the level of the images in `V(ℝ)`. -/
+hypothesis on the collection `Σ`). Stated at the level of the images in `V(ℝ)`.
+
+The image is taken under the isometry: `γ` moves the fibre of `I` to the fibre of `γI`, so the
+members of the fibre of `γI` are the images of the members of the fibre of `I`. Comparing the two
+collections without moving one of them would ask the two fibres to occupy the same subspace of
+`V(ℝ)`, which a nontrivial isometry of an indefinite form does not do. -/
 def IsGammaInvariantLocus (BQ : LinearMap.BilinForm ℚ V) (Q : QuadraticForm ℝ (realified V))
     (Γ : Set (V ≃ₗ[ℚ] V))
     (locus : ∀ F : ConicalLine BQ Q, Set (PointedCone ℝ (realified ↥F.space))) : Prop :=
   ∀ g ∈ Γ, (∀ x y : V, BQ (g x) (g y) = BQ x y) → ∀ F : ConicalLine BQ Q,
     ∃ F' : ConicalLine BQ Q, F'.line = Submodule.map (g : V →ₗ[ℚ] V) F.line ∧
-      (⋃ σ ∈ locus F, memberImage F σ) = ⋃ σ ∈ locus F', memberImage F' σ
+      (realifiedEquiv g) '' (⋃ σ ∈ locus F, memberImage F σ) =
+        ⋃ σ ∈ locus F', memberImage F' σ
 
 /-- **Looijenga, Definition 6.1, p. 28** (text line 769): an admissible decomposition of the conical
 locus is a `Γ`-invariant collection `Σ` of cones in the faces of the conical locus such that
