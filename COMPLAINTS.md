@@ -2769,3 +2769,15 @@ downstream assertions, computational observations, or downstream diagnostics.
   `LeanCategories.Lattices.Valued.finrank_span_lt_of_isFaceOf_of_ne`, using equality of affine spans
   and `face_eq_of_mem_intrinsicInterior`; it remains an upstream candidate for Mathlib's pointed-cone
   face API.
+
+### A cone is spanned by its nonempty level-one section (#163)
+
+- **Need:** comparing the linear-span ranks of two projected cones must be equivalent to comparing
+  their `A_I` sections, so the face-rank drop can be used for projected-minimal selection.
+- **Coverage:** LC-09 queries `span cone hyperplane section nonnegative`,
+  `PointedCone span eq_one`, and `span_inter_eq_one`, together with local Mathlib searches for span,
+  section, slice, level and hyperplane, found no declaration identifying a pointed cone's span with
+  the span of its nonempty level-one section under a nonnegative linear form.
+- **Repair link:** supplied here by
+  `LeanCategories.Lattices.Valued.span_eq_span_section_of_nonneg`; its proof is algebraic and is an
+  upstream candidate for the pointed-cone API.

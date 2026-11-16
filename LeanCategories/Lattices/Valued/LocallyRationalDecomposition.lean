@@ -10257,6 +10257,41 @@ theorem projectedPolyhedron_nonempty {Q : QuadraticForm ℝ (realified V)} {t e 
     rw [map_smul]
   · rw [mem_affineModel, map_smul, smul_eq_mul, inv_mul_cancel₀ hβ.ne']
 
+omit [Module.Finite ℚ V] in
+/-- **A cone on a nonnegative half-space is spanned by a nonempty level-one section.** At height
+zero, subtract the supplied level-one point after adding it; at positive height, rescale onto the
+section. LC-09 (2026-11-22): `span cone hyperplane section nonnegative`,
+`PointedCone span eq_one`, and `span_inter_eq_one` found no competing declaration. The proof is the
+elementary affine-chart bridge used by the minimal-cell argument of Looijenga's Lemma-Definition
+4.5, p. 19. -/
+theorem span_eq_span_section_of_nonneg {E : Type*} [AddCommGroup E] [Module ℝ E]
+    (β : E →ₗ[ℝ] ℝ) {C : PointedCone ℝ E} (hβ : ∀ x ∈ C, 0 ≤ β x)
+    (hne : ∃ p ∈ C, β p = 1) :
+    Submodule.span ℝ (C : Set E) =
+      Submodule.span ℝ ((C : Set E) ∩ {x | β x = 1}) := by
+  obtain ⟨p, hpC, hpβ⟩ := hne
+  apply le_antisymm
+  · rw [Submodule.span_le]
+    intro x hxC
+    have hxβ := hβ x hxC
+    rcases eq_or_lt_of_le hxβ with hzero | hpos
+    · have hxp : x + p ∈ (C : Set E) ∩ {x | β x = 1} := by
+        refine ⟨C.add_mem hxC hpC, ?_⟩
+        change β (x + p) = 1
+        rw [map_add, hpβ]
+        linarith
+      have hp : p ∈ (C : Set E) ∩ {x | β x = 1} := ⟨hpC, hpβ⟩
+      rw [show x = (x + p) - p by abel]
+      exact Submodule.sub_mem _ (Submodule.subset_span hxp) (Submodule.subset_span hp)
+    · have hyC : (β x)⁻¹ • x ∈ C := C.smul_mem (inv_nonneg.2 hpos.le) hxC
+      have hyβ : β ((β x)⁻¹ • x) = 1 := by
+        rw [map_smul, smul_eq_mul, inv_mul_cancel₀ hpos.ne']
+      have hy : (β x)⁻¹ • x ∈ (C : Set E) ∩ {x | β x = 1} := ⟨hyC, hyβ⟩
+      rw [show x = β x • ((β x)⁻¹ • x) by
+        rw [smul_smul, mul_inv_cancel₀ hpos.ne', one_smul]]
+      exact Submodule.smul_mem _ _ (Submodule.subset_span hy)
+  · exact Submodule.span_mono Set.inter_subset_left
+
 /-- Minimality in the projected order: no member of the decomposition above `σ` cuts a *nonempty*
 polyhedron strictly smaller than `τmin`'s, so `τmin`'s polyhedron is an element of the induced
 decomposition of `A_I(ℝ)` minimal under inclusion.
