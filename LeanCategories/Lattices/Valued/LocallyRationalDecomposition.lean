@@ -106,15 +106,24 @@ an `ℝ`-vector space with no extra structure.
   carried and which are not; of the description of `L_σ` itself the upper bound `L_σ ⊆ I^⊥` is
   carried in the section "The two descriptions of `L_σ`"
   (`sigmaSupportSpace_le_ker_associated_of_isotropic`), and the reverse inclusion, which is what
-  the affine model over `A_I(ℝ)` supplies, is not.
+  the affine model over `A_I(ℝ)` supplies, is not. For the facial decomposition `Σ(bb)` the
+  description is carried in full, both inclusions and the strict inequality: the only face of
+  `C₊` meeting the open cone is `C₊` itself, the closed sheet and its rational closure carry the
+  same forms, and self-duality of the closed sheet gives `L_σ = I^⊥ ≠ ⟨σ⟩`
+  (`sigmaSupportSpace_facialDecomposition_hull_eq_ker`,
+  `sigmaSupportSpace_facialDecomposition_hull_ne_span`).
 * **`sigmaSupportSpace` ranges over the open cone.** The index of Lemma-Definition 4.5
   (`.tmp-sources/looijenga-math0201218v2.md:519`) is the set of members `τ ≥ σ` with `τ ∩ C ≠ ∅`
   for the *open* cone `C`; over the closed cone `C.closure` every pointed cone `τ` meets it in `0`,
   so `τ = σ` is always in range and the intersection is `⟨σ⟩` for every `σ`
   (`sigmaSupportSpace_eq_span_of_meets`, which is now what its hypothesis says). The parameter is
-  therefore a set of points, and the uses pass the open sheet `positiveCone.upper Q t` — the cone
-  `supportSpace_eq_of_locallyRational` ranges over — and, in `ConicalLocus.lean`, the open cone
-  `C_I` of the conical fibre. On a locally rational decomposition the intersection is then a
+  therefore a set of points, and every use passes an open cone: the open sheet
+  `positiveCone.upper Q t` — the cone `supportSpace_eq_of_locallyRational` ranges over — in the
+  support-space theorems, including the locally finite ones
+  (`supportSpace_eq_of_locallyFinite_of_cover_rationalClosure`,
+  `sigmaSupportSpace_eq_supportSpace_of_locallyFinite_of_cover_rationalClosure`, where `C₊` is the
+  separate parameter `Cplus`), and the open cone `C_I` of the conical fibre in `ConicalLocus.lean`.
+  On a locally rational decomposition the intersection is then a
   single one of its terms (`sigmaSupportSpace_eq_supportSpace_of_locallyRational`), for an
   isotropic half line it lies in `I^⊥ ⊓ ⟨τ⟩ ⊓ ⟨τ'⟩` and is strictly smaller than `⟨τ⟩` and than
   `⟨τ'⟩` (`sigmaSupportSpace_le_inf_span_of_isotropic`, `sigmaSupportSpace_lt_span_of_isotropic`),
@@ -3321,6 +3330,23 @@ theorem supportSpace_mono {σ τ τ' : PointedCone ℝ (realified V)} (hτ : τ 
   refine mem_supportSpace.2 fun φ hφ => ?_
   exact mem_supportSpace.1 hx φ ⟨fun y hy => hφ.1 y (hτ hy), hφ.2⟩
 
+/-- **The support space does not change when a cone is thickened to its closure.** A form
+nonnegative on `τ` is nonnegative on the closure of `τ`: it is continuous
+(`IsModuleTopology.continuous_of_linearMap`) and `{y | 0 ≤ φ y}` is closed. So a cone `τ'` with
+`τ ≤ τ' ≤ closure τ` is cut out by the same forms as `τ`, and the common zero sets agree. -/
+theorem supportSpace_eq_of_le_closure
+    {σ τ τ' : PointedCone ℝ (realified V)} (hττ' : τ ≤ τ')
+    (hτ' : (τ' : Set (realified V)) ⊆ closure ((τ : Set (realified V)))) :
+    supportSpace τ σ = supportSpace τ' σ := by
+  refine le_antisymm (supportSpace_mono hττ') ?_
+  intro x hx
+  refine mem_supportSpace.2 fun φ hφ => ?_
+  have hcont : Continuous φ := IsModuleTopology.continuous_of_linearMap φ
+  have hclosed : IsClosed {y : realified V | 0 ≤ φ y} := isClosed_le continuous_const hcont
+  have hnonneg : (τ' : Set (realified V)) ⊆ {y : realified V | 0 ≤ φ y} := fun y hy =>
+    hclosed.closure_subset_iff.2 hφ.1 (hτ' hy)
+  exact mem_supportSpace.1 hx φ ⟨hnonneg, hφ.2⟩
+
 /-- **A point outside a closed pointed cone is separated by a real nonnegative form.** Separation
 is run in normed coordinates and composed with the continuous linear equivalence. This is the
 form used by the closed-cone support-space lemmas below. -/
@@ -4876,16 +4902,17 @@ end ConeConnectivity
 section SupportSpaceIndependenceLocallyFinite
 
 /-- A step of the chains of `reflTransGen_inf_nonempty_of_convex`: two members of `S` whose
-intersection meets `C`. -/
+intersection meets `C`. `C` is a set of points — the open cone of the index of `supportIndex` —
+and not a cone, so that the index of Lemma-Definition 4.5 does not contain `τ = σ`. -/
 def ChainRel {E : Type*} [AddCommGroup E] [Module ℝ E]
-    (C : PointedCone ℝ E) (S : Set (PointedCone ℝ E)) (a b : PointedCone ℝ E) : Prop :=
-  a ∈ S ∧ b ∈ S ∧ (((a ⊓ b : PointedCone ℝ E) : Set E) ∩ (C : Set E)).Nonempty
+    (C : Set E) (S : Set (PointedCone ℝ E)) (a b : PointedCone ℝ E) : Prop :=
+  a ∈ S ∧ b ∈ S ∧ (((a ⊓ b : PointedCone ℝ E) : Set E) ∩ C).Nonempty
 
 /-- **Lineality is constant along a chain of common faces.** At each step the common face takes
 part in `PointedCone.IsFaceOf.lineal_congr`; induction carries the equality to the endpoints.
 This is the incidence part of Looijenga's affine translation-space induction. -/
 theorem lineal_eq_of_reflTransGen {E : Type*} [AddCommGroup E] [Module ℝ E]
-    {C : PointedCone ℝ E} {S : Set (PointedCone ℝ E)} {τ τ' : PointedCone ℝ E}
+    {C : Set E} {S : Set (PointedCone ℝ E)} {τ τ' : PointedCone ℝ E}
     (h : Relation.ReflTransGen (ChainRel C S) τ τ')
     (hface : ∀ a b : PointedCone ℝ E, ChainRel C S a b →
       (a ⊓ b).IsFaceOf a ∧ (a ⊓ b).IsFaceOf b) :
@@ -4898,7 +4925,7 @@ theorem lineal_eq_of_reflTransGen {E : Type*} [AddCommGroup E] [Module ℝ E]
 
 /-- **Along a chain in which consecutive members meet in a common face cut out of each by a form,
 the support space over `σ` does not change.** -/
-theorem supportSpace_eq_of_reflTransGen {C : PointedCone ℝ (realified V)}
+theorem supportSpace_eq_of_reflTransGen {C : Set (realified V)}
     {S : Set (PointedCone ℝ (realified V))} {σ : PointedCone ℝ (realified V)}
     {τ τ' : PointedCone ℝ (realified V)} (h : Relation.ReflTransGen (ChainRel C S) τ τ')
     (hface : ∀ a b : PointedCone ℝ (realified V), ChainRel C S a b →
@@ -4914,9 +4941,9 @@ members of the decomposition (`reflTransGen_inf_nonempty_of_convex`), and along 
 consecutive members meet in a common face on which the support space does not change
 (`supportSpace_eq_of_dominates`). Nothing is assumed about the members beyond being closed and
 locally finite, covering `C`, and the cutting forms at each pair; no coordinates are used. -/
-theorem supportSpace_eq_of_locallyFinite {C : PointedCone ℝ (realified V)}
+theorem supportSpace_eq_of_locallyFinite {C : Set (realified V)}
     {S : Set (PointedCone ℝ (realified V))} {σ : PointedCone ℝ (realified V)}
-    (hconv : Convex ℝ (C : Set (realified V)))
+    (hconv : Convex ℝ C)
     (hclosed : ∀ τ ∈ S, IsClosed ((τ : PointedCone ℝ (realified V)) : Set (realified V)))
     (hcover : ∀ z ∈ C, ∃ τ ∈ S, z ∈ τ)
     (hloc : LocallyFinite fun τ : {τ : PointedCone ℝ (realified V) // τ ∈ S} =>
@@ -4934,7 +4961,8 @@ theorem supportSpace_eq_of_locallyFinite {C : PointedCone ℝ (realified V)}
   obtain ⟨x, hxτ, hxC⟩ := hτC
   obtain ⟨y, hyτ', hyC⟩ := hτ'C
   refine supportSpace_eq_of_reflTransGen
-    (reflTransGen_inf_nonempty_of_convex hconv hclosed hcover hloc hxC hyC hτ hτ' hxτ hyτ') ?_
+    (reflTransGen_inf_nonempty_of_convex_set hconv hclosed hcover hloc hxC hyC hτ hτ' hxτ hyτ')
+    ?_
   rintro a b ⟨ha, hb, hab⟩
   obtain ⟨w, w', hw, hw'⟩ := hexp a b ha hb hab
   exact supportSpace_eq_of_dominates hw hw'
@@ -4943,9 +4971,9 @@ theorem supportSpace_eq_of_locallyFinite {C : PointedCone ℝ (realified V)}
 intersection of the support spaces of the members above `σ` — the `sigmaSupportSpace` carried in
 this file — is the support space of any one of them, which is the independence from `τ` that the
 source asserts. -/
-theorem sigmaSupportSpace_eq_supportSpace_of_locallyFinite {C : PointedCone ℝ (realified V)}
+theorem sigmaSupportSpace_eq_supportSpace_of_locallyFinite {C : Set (realified V)}
     {S : Set (PointedCone ℝ (realified V))} {σ : PointedCone ℝ (realified V)}
-    (hconv : Convex ℝ (C : Set (realified V)))
+    (hconv : Convex ℝ C)
     (hclosed : ∀ τ ∈ S, IsClosed ((τ : PointedCone ℝ (realified V)) : Set (realified V)))
     (hcover : ∀ z ∈ C, ∃ τ ∈ S, z ∈ τ)
     (hloc : LocallyFinite fun τ : {τ : PointedCone ℝ (realified V) // τ ∈ S} =>
@@ -4960,16 +4988,20 @@ theorem sigmaSupportSpace_eq_supportSpace_of_locallyFinite {C : PointedCone ℝ 
     supportSpace_eq_of_locallyFinite hconv hclosed hcover hloc hexp τ.2.1 τ₀.2.1 τ.2.2.2 τ₀.2.2.2
 
 /-- **Lemma-Definition 4.5, the independence of `L_σ` from `τ`, with the cover taken from the
-decomposition itself** (Looijenga, p. 19): the members cover the rational closure `C₊`, and
-`C ⊆ C₊` (`subset_rationalClosure`) supplies the cover hypothesis of
-`supportSpace_eq_of_locallyFinite`. -/
+decomposition itself** (Looijenga, p. 19): `C` is the *open* cone that the index ranges over
+(`supportIndex`), `Cplus` is the source's `C₊`, and the members cover `C₊`; `C ⊆ C₊`
+(`hCsub`) supplies the cover hypothesis of `supportSpace_eq_of_locallyFinite`. The source's
+`C₊ = rationalClosure C` is not assumed literally — only that `C` lies in `C₊` — because the
+index must see the open cone `C` and not the closed `C₊`: over a pointed cone the index holds
+`τ = σ`, and the intersection is `⟨σ⟩` (`sigmaSupportSpace_eq_span_of_meets`). -/
 theorem supportSpace_eq_of_locallyFinite_of_cover_rationalClosure
-    {C : PointedCone ℝ (realified V)} {S : Set (PointedCone ℝ (realified V))}
-    {σ : PointedCone ℝ (realified V)} [Module.Finite ℚ V]
-    (hconv : Convex ℝ (C : Set (realified V)))
+    {C : Set (realified V)} {Cplus : PointedCone ℝ (realified V)}
+    {S : Set (PointedCone ℝ (realified V))}
+    {σ : PointedCone ℝ (realified V)}
+    (hconv : Convex ℝ C)
     (hclosed : ∀ τ ∈ S, IsClosed ((τ : PointedCone ℝ (realified V)) : Set (realified V)))
-    (hCopen : IsOpen (C : Set (realified V)))
-    (hCplus : ∀ z ∈ rationalClosure C, ∃ τ ∈ S, z ∈ τ)
+    (hCsub : C ⊆ (rationalClosure Cplus : Set (realified V)))
+    (hCplus : ∀ z ∈ rationalClosure Cplus, ∃ τ ∈ S, z ∈ τ)
     (hloc : LocallyFinite fun τ : {τ : PointedCone ℝ (realified V) // τ ∈ S} =>
       ((τ.1 : PointedCone ℝ (realified V)) : Set (realified V)))
     (hexp : ∀ a b : PointedCone ℝ (realified V), a ∈ S → b ∈ S →
@@ -4982,28 +5014,29 @@ theorem supportSpace_eq_of_locallyFinite_of_cover_rationalClosure
     (hτ'C : (((τ' : PointedCone ℝ (realified V)) : Set (realified V)) ∩
       (C : Set (realified V))).Nonempty) :
     supportSpace τ σ = supportSpace τ' σ :=
-  supportSpace_eq_of_locallyFinite hconv hclosed
-    (exists_mem_of_mem_of_cover_rationalClosure hCopen hCplus) hloc hexp hτ hτ' hτC hτ'C
+  supportSpace_eq_of_locallyFinite hconv hclosed (fun z hz => hCplus z (hCsub hz)) hloc hexp
+    hτ hτ' hτC hτ'C
 
 /-- **Lemma-Definition 4.5, `L_σ` from the members covering `C₊`** — the previous theorem as the
-support space of `σ` in the decomposition. -/
+support space of `σ` in the decomposition, with the index ranging over the open cone `C`. -/
 theorem sigmaSupportSpace_eq_supportSpace_of_locallyFinite_of_cover_rationalClosure
-    {C : PointedCone ℝ (realified V)} {S : Set (PointedCone ℝ (realified V))}
-    {σ : PointedCone ℝ (realified V)} [Module.Finite ℚ V]
-    (hconv : Convex ℝ (C : Set (realified V)))
+    {C : Set (realified V)} {Cplus : PointedCone ℝ (realified V)}
+    {S : Set (PointedCone ℝ (realified V))}
+    {σ : PointedCone ℝ (realified V)}
+    (hconv : Convex ℝ C)
     (hclosed : ∀ τ ∈ S, IsClosed ((τ : PointedCone ℝ (realified V)) : Set (realified V)))
-    (hCopen : IsOpen (C : Set (realified V)))
-    (hCplus : ∀ z ∈ rationalClosure C, ∃ τ ∈ S, z ∈ τ)
+    (hCsub : C ⊆ (rationalClosure Cplus : Set (realified V)))
+    (hCplus : ∀ z ∈ rationalClosure Cplus, ∃ τ ∈ S, z ∈ τ)
     (hloc : LocallyFinite fun τ : {τ : PointedCone ℝ (realified V) // τ ∈ S} =>
       ((τ.1 : PointedCone ℝ (realified V)) : Set (realified V)))
     (hexp : ∀ a b : PointedCone ℝ (realified V), a ∈ S → b ∈ S →
       (((a ⊓ b : PointedCone ℝ (realified V)) : Set (realified V)) ∩
         (C : Set (realified V))).Nonempty →
       ∃ w w' : (realified V) →ₗ[ℝ] ℝ, Dominates σ a (a ⊓ b) w ∧ Dominates σ b (a ⊓ b) w')
-    (τ₀ : supportIndex (C : Set (realified V)) S σ) :
-    sigmaSupportSpace (C : Set (realified V)) S σ = supportSpace τ₀.1 σ :=
+    (τ₀ : supportIndex C S σ) :
+    sigmaSupportSpace C S σ = supportSpace τ₀.1 σ :=
   sigmaSupportSpace_eq_supportSpace τ₀ fun τ =>
-    supportSpace_eq_of_locallyFinite_of_cover_rationalClosure hconv hclosed hCopen hCplus hloc
+    supportSpace_eq_of_locallyFinite_of_cover_rationalClosure hconv hclosed hCsub hCplus hloc
       hexp τ.2.1 τ₀.2.1 τ.2.2.2 τ₀.2.2.2
 
 end SupportSpaceIndependenceLocallyFinite
@@ -5030,7 +5063,26 @@ cases, and neither of them is the cutting form `hexp` of the section above:
   — that a minimal member of the induced decomposition of `A_I(ℝ)` is an affine subspace, that the
   whole decomposition is invariant under its translation space `U`, and that `L_σ` is the space
   over `U` — is not reconstructed; see "Completed independence, and assertions that remain
-  separate" in the module docstring. -/
+  separate" in the module docstring.
+
+The reverse inclusion, `I^⊥ ⊓ ⨅_{τ} ⟨τ⟩ ≤ L_σ`, is not carried, and the state of the reduction is
+this. Let `x` lie in the intersection and `φ ∈ supportForms τ₀ σ` with `τ₀` in the index of
+`supportIndex` (which is `positiveCone.upper Q t`, the open cone). The zero set `F = τ₀ ⊓ ker φ` is
+a face of `τ₀`, hence a member of `Σ` (`IsLocallyRationalDecomposition.mem_of_isFaceOf`). If `F`
+meets `C` then `F` is in the index, so `x ∈ ⟨F⟩ ⊆ ker φ` and `φ x = 0` — that half is a
+calculation, not carried either. If `F` does not meet `C` then `F = σ`: a cone of the closed sheet
+containing `σ = ℝ_{≥ 0} e` and a further `w` with `w · e > 0` contains `w + t • e`, which is
+timelike for `t > 0`, so `F ∩ C = ∅` forces `w · e = 0` for every `w ∈ F`, and then `w ∈ ℝ e`
+(`exists_smul_of_associated_eq_zero_of_mem_closedSheet_self`). So everything left is the forms
+whose zero face on `τ₀` is exactly `σ`, and for those the intersection over the *whole* index is
+load-bearing: in signature `(1, 4)` with the single `ℚ`-hyperplane `H = {z₁ = 0}` through `σ`, a
+cell `C₊ ⊓ {±z₁ ≥ 0}` has span `V` but support space `I^⊥ ⊓ H`, strictly smaller than
+`I^⊥ ⊓ ⟨cell⟩ = I^⊥`; only the member `C₊ ⊓ H`, whose span is `H`, brings the intersection down to
+`L_σ`. What the source supplies here, and this file does not, is that the minimal member of the
+induced decomposition of `A_I(ℝ)` has span exactly `I + U`: with that, `⨅_{τ} ⟨τ⟩ = I + U`, and
+the reverse inclusion at that one member is `supportSpace_map_mkQ_bot_eq_topologicalClosure_lineal`
+(`⟨π_I τ_min⟩ = lineal(closure π_I τ_min) = U`). The hand-checked sign-cell evidence above is not a
+proof, and neither is this paragraph. -/
 
 section SupportSpaceDescriptions
 
@@ -9523,6 +9575,148 @@ theorem sigmaSupportSpace_eq_inf_span_of_isotropic_of_inf_eq
   obtain ⟨hlt, hlt'⟩ :=
     sigmaSupportSpace_lt_span_of_isotropic hpos hnd hS hσ hστ hστ' hτ hτ' hτC hτ'C
   exact ⟨le_antisymm hXle (by rw [hinf]; exact hXge), hlt, hlt'⟩
+
+/-! ### The instance: `L_σ = I^⊥` on `Σ(bb)` at `C₊`
+
+Looijenga, p. 19: "So the support spaces of `Σ(bb)` are `V`, `{0}` and the hyperplanes orthogonal
+to a `ℚ`-isotropic line." For `σ` an isotropic half line this is the whole of the source's
+description, because the only member of `Σ(bb)` meeting the open cone is `C₊` itself
+(`eq_of_isFaceOf_of_meets_open_sheet`), so the index of `supportIndex` has `C₊` as its only point
+and `L_σ = supportSpace C₊ σ`; and every form nonnegative on `C₊` and zero on `e` is a multiple of
+`y ↦ e · y` (`supportSpace_closedSheet_hull_eq_ker`, by self-duality of the closed sheet), so
+`L_σ = I^⊥`, which is not `⟨σ⟩`.
+
+The one step `supportSpace_closedSheet_hull_eq_ker` does not supply is that `C₊` and the closed
+sheet carry the same forms: `C₊ = rationalClosure (closedSheet)` is a subcone of the closed sheet,
+and a form nonnegative on `C₊` is nonnegative on the closure of `C₊`, which is the closed sheet
+because the rational points of the closed sheet are dense in it. That is
+`closedSheet_le_closure_rationalClosure` and
+`supportSpace_eq_of_le_closure`. -/
+
+/-- **The closed sheet is the closure of its rational closure `C₊`** (Looijenga, Definition 4.2,
+p. 17: `C₊` is the convex hull of `L(ℚ) ∩ C̄`). A point `x` of the closed sheet is a limit of
+rational points of the closed sheet: for any neighbourhood `U` of `x` the ray `x + s • t`, `s > 0`,
+enters `U` and lies in the *open* sheet (it is timelike and pairs positively with `t`), so `U`
+meets `L(ℚ) ∩ C`, which is contained in `C₊`. -/
+theorem closedSheet_le_closure_rationalClosure (hpos : sigPos Q = 1)
+    {ht : 0 < Q t} :
+    (closedSheet Q hpos ht : Set (realified V)) ⊆
+      closure ((rationalClosure (closedSheet Q hpos ht)) : Set (realified V)) := by
+  intro x hx
+  rw [mem_closure_iff_nhds]
+  intro T hT
+  obtain ⟨U, hUT, hU, hxU⟩ := mem_nhds_iff.1 hT
+  have hcont : Continuous fun s : ℝ => x + s • t :=
+    continuous_const.add (continuous_id.smul continuous_const)
+  have htend : Filter.Tendsto (fun s : ℝ => x + s • t) (𝓝 0) (𝓝 x) := by
+    simpa only [zero_smul, add_zero] using hcont.tendsto (0 : ℝ)
+  have hev : ∀ᶠ s in 𝓝[>] (0 : ℝ), x + s • t ∈ U :=
+    mem_nhdsWithin_of_mem_nhds (htend.eventually (IsOpen.mem_nhds hU hxU))
+  obtain ⟨s, hsU, hs⟩ := (hev.and self_mem_nhdsWithin).exists
+  have hs0 : 0 < s := hs
+  set y : realified V := x + s • t with hy
+  have hyQ : 0 < Q y := by
+    have hexp := quadratic_expand Q 1 s x t
+    have harg : (1 : ℝ) • x + s • t = y := by rw [one_smul, hy]
+    rw [harg] at hexp
+    have h1 : 0 ≤ s * ((associated Q) x t) := mul_nonneg hs0.le hx.2
+    have h2 : 0 < s ^ 2 * Q t := mul_pos (pow_pos hs0 2) ht
+    nlinarith [hx.1, h1, h2, hexp]
+  have hyt : 0 < (associated Q) y t := by
+    have hsplit : (associated Q) y t = (associated Q) x t + s * Q t := by
+      rw [hy, map_add, map_smul, LinearMap.add_apply, LinearMap.smul_apply, smul_eq_mul,
+        associated_self_apply]
+    rw [hsplit]
+    nlinarith [hx.2, ht, hs0]
+  have hyUp : y ∈ positiveCone.upper Q t := ⟨hyQ, hyt⟩
+  have hopen : IsOpen (U ∩ positiveCone.upper Q t) :=
+    hU.inter (isOpen_positiveCone_upper_of_moduleTopology Q t)
+  have hne : (U ∩ positiveCone.upper Q t).Nonempty := ⟨y, hsU, hyUp⟩
+  obtain ⟨z, hzr, hz⟩ := dense_range_rationalPoint.exists_mem_open hopen hne
+  obtain ⟨v, hv⟩ := hzr
+  exact ⟨z, hUT hz.1, mem_rationalClosure.2 (subset_convexHull ℝ _
+    ⟨⟨v, Set.mem_univ v, hv⟩, subset_closure (subset_closedSheet hpos ht hz.2)⟩)⟩
+
+/-- **The support space of an isotropic half line over `C₊` is `I^⊥`**: the closed sheet and its
+rational closure carry the same forms, so the computation for the closed sheet
+(`supportSpace_closedSheet_hull_eq_ker`) applies to `C₊`. -/
+theorem supportSpace_rationalClosure_closedSheet_hull_eq_ker (hpos : sigPos Q = 1)
+    (hnd : Q.Nondegenerate) {ht : 0 < Q t} {e : realified V} (he : Q e = 0) (he0 : e ≠ 0)
+    (het : 0 ≤ (associated Q) e t) :
+    supportSpace (rationalClosure (closedSheet Q hpos ht))
+        (PointedCone.hull ℝ ({e} : Set (realified V))) = LinearMap.ker (associated Q e) := by
+  rw [supportSpace_eq_of_le_closure (rationalClosure_le_closedSheet hpos)
+    (closedSheet_le_closure_rationalClosure (Q := Q) hpos)]
+  exact supportSpace_closedSheet_hull_eq_ker hpos hnd ht he he0 het
+
+/-- **The `Σ`-support space of an isotropic half line in `Σ(bb)` is `I^⊥`** (Looijenga, p. 19, the
+sentence after Lemma-Definition 4.5: the support spaces of `Σ(bb)` are `V`, `{0}` and the
+hyperplanes orthogonal to a `ℚ`-isotropic line). Only `C₊` meets the open cone among the faces of
+`C₊`, so the index of `supportIndex` is the single point `C₊`, and the `Σ`-support space is
+`supportSpace C₊ σ = I^⊥`. This is the source's description of `L_σ` with both inclusions, in the
+facial decomposition.
+
+LC-09 (2026-11-19): `content:"light cone" content:"dual cone"` and
+`content:"closed light cone"` returned no file; `content:self-dual content:Lorentz` returned only
+Physlib's tensor-species metric, which carries no self-duality statement for a quadratic form of
+signature `(1, n − 1)`, and `content:rational content:dense content:"convex cone"` returned CakeML
+HOL's `CLOSURE_RATIONALS_IN_CONVEX_SET` (`Multivariate/convex.ml`), the HOL counterpart of the
+density step, which is proved here from Mathlib's `Dense.exists_mem_open` and the file's own
+`dense_range_rationalPoint`. The self-duality used is the repository's
+`quadratic_nonneg_of_forall_mem_closedSheet_nonneg`, not a corpus import. -/
+theorem sigmaSupportSpace_facialDecomposition_hull_eq_ker (hpos : sigPos Q = 1)
+    (hnd : Q.Nondegenerate) {ht : 0 < Q t} {e : realified V} (he : Q e = 0) (he0 : e ≠ 0)
+    (heC : e ∈ rationalClosure (closedSheet Q hpos ht))
+    (het : 0 ≤ (associated Q) e t) :
+    sigmaSupportSpace (positiveCone.upper Q t)
+        (facialDecomposition (rationalClosure (closedSheet Q hpos ht)))
+        (PointedCone.hull ℝ ({e} : Set (realified V))) = LinearMap.ker (associated Q e) := by
+  let Cplus := rationalClosure (closedSheet Q hpos ht)
+  have hσle : PointedCone.hull ℝ ({e} : Set (realified V)) ≤ Cplus := by
+    intro y hy
+    obtain ⟨c, hc0, hc⟩ := PointedCone.mem_hull_singleton.1 hy
+    rw [← hc]
+    exact Cplus.smul_mem hc0 heC
+  have htUp : t ∈ positiveCone.upper Q t :=
+    ⟨ht, by rw [associated_self_apply]; exact ht⟩
+  have htC : t ∈ Cplus :=
+    upperZero_le_rationalClosure_closedSheet (Q := Q) hpos
+      (by rw [mem_upperZero]; exact Or.inr htUp)
+  have hidx : supportIndex (positiveCone.upper Q t) (facialDecomposition Cplus)
+      (PointedCone.hull ℝ ({e} : Set (realified V))) :=
+    ⟨Cplus, PointedCone.IsFaceOf.refl Cplus, hσle, ⟨t, htC, htUp⟩⟩
+  refine sigmaSupportSpace_eq_of_forall_eq hidx (L := LinearMap.ker (associated Q e)) fun τ => ?_
+  rw [eq_of_isFaceOf_of_meets_open_sheet (Q := Q) hpos ht τ.2.1 τ.2.2.2]
+  exact supportSpace_rationalClosure_closedSheet_hull_eq_ker hpos hnd he he0 het
+
+/-- **`L_σ` is not the span of `σ` in `Σ(bb)`**: `L_σ = I^⊥` contains a vector of `I^⊥` that is not
+a multiple of the isotropic generator, so the `Σ`-support space of an isotropic half line is
+strictly larger than `⟨σ⟩` — the value the definition by the index alone would give if the index
+ranged over a pointed cone (`sigmaSupportSpace_eq_span_of_meets`). In the source's signature
+`(1, 3)` such a `w` is any vector of the negative definite plane `w₁, w₂`. -/
+theorem sigmaSupportSpace_facialDecomposition_hull_ne_span (hpos : sigPos Q = 1)
+    (hnd : Q.Nondegenerate) {ht : 0 < Q t} {e w : realified V} (he : Q e = 0) (he0 : e ≠ 0)
+    (heC : e ∈ rationalClosure (closedSheet Q hpos ht))
+    (het : 0 ≤ (associated Q) e t) (hwe : (associated Q) e w = 0)
+    (hw : w ∉ Submodule.span ℝ ({e} : Set (realified V))) :
+    sigmaSupportSpace (positiveCone.upper Q t)
+        (facialDecomposition (rationalClosure (closedSheet Q hpos ht)))
+        (PointedCone.hull ℝ ({e} : Set (realified V))) ≠
+      Submodule.span ℝ
+        ((PointedCone.hull ℝ ({e} : Set (realified V))) : Set (realified V)) := by
+  intro hcontra
+  have hle : Submodule.span ℝ
+      ((PointedCone.hull ℝ ({e} : Set (realified V))) : Set (realified V))
+      ≤ Submodule.span ℝ ({e} : Set (realified V)) := by
+    refine Submodule.span_le.2 fun y hy => ?_
+    exact PointedCone.hull_le_span ℝ ({e} : Set (realified V)) hy
+  have hker : w ∈ sigmaSupportSpace (positiveCone.upper Q t)
+      (facialDecomposition (rationalClosure (closedSheet Q hpos ht)))
+      (PointedCone.hull ℝ ({e} : Set (realified V))) := by
+    rw [sigmaSupportSpace_facialDecomposition_hull_eq_ker hpos hnd he he0 heC het]
+    exact hwe
+  rw [hcontra] at hker
+  exact hw (hle hker)
 
 end IsotropicRationalTraces
 
