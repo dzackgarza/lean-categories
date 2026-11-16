@@ -10198,6 +10198,101 @@ def IsProjectedMinimal (Q : QuadraticForm ℝ (realified V)) {e : realified V} (
     projectedPolyhedron Q he τ ⊆ projectedPolyhedron Q he τmin →
       projectedPolyhedron Q he τmin ⊆ projectedPolyhedron Q he τ
 
+omit [Module.Finite ℚ V] in
+/-- Differences of two points of an affinely closed section lie in the lineality of the closure: the
+whole affine line through them lies in the cone, so each side is a limit of scalings of the cone. -/
+theorem sub_mem_lineal_topologicalClosure_of_affine
+    {E : Type*} [AddCommGroup E] [Module ℝ E] [TopologicalSpace E]
+    [ContinuousAdd E] [ContinuousSMul ℝ E]
+    {C : PointedCone ℝ E}
+    (haff : ∀ u ∈ C, ∀ v ∈ C, ∀ c : ℝ, c • u + (1 - c) • v ∈ C)
+    {u v : E} (hu : u ∈ C) (hv : v ∈ C) :
+    v - u ∈ PointedCone.lineal C.topologicalClosure := by
+  rw [PointedCone.mem_lineal]
+  have hline (a b : E) (ha : a ∈ C) (hb : b ∈ C) : b - a ∈ C.topologicalClosure := by
+    refine mem_topologicalClosure_of_forall_add_smul_mem (D := C) (z := a) (x := b - a) ?_
+    intro r
+    have hrw : a + r • (b - a) = (1 - r) • a + r • b := by
+      rw [smul_sub, sub_smul, one_smul]
+      abel
+    rw [hrw]
+    have hc : (1 : ℝ) - (1 - r) = r := by ring
+    simpa [hc] using haff a ha b hb (1 - r)
+  exact ⟨hline u v hu hv, by simpa [neg_sub] using hline v u hv hu⟩
+
+omit [Module.Finite ℚ V] in
+/-- **The affine-span lemma.** A cone `C` in the half-space `{0 ≤ β}` whose section `{β = 1}` is
+affinely closed and nonempty: the part of `span C` that `β` kills is the lineality of the closure of
+`C`. One inclusion is `β ≥ 0` on the closure; for the other, every point of `C` is a section point
+`p` plus a difference of section points, and differences of section points are limits of scalings of
+`C`. -/
+theorem span_inf_ker_eq_lineal_topologicalClosure_of_affine
+    {E : Type*} [AddCommGroup E] [Module ℝ E] [TopologicalSpace E]
+    [ContinuousAdd E] [ContinuousSMul ℝ E]
+    (β : E →ₗ[ℝ] ℝ) (hβc : Continuous β) {C : PointedCone ℝ E}
+    (hβ : ∀ x ∈ C, 0 ≤ β x)
+    (hne : ∃ p : E, p ∈ C ∧ β p = 1)
+    (haff : ∀ u ∈ C, ∀ v ∈ C, ∀ c : ℝ, c • u + (1 - c) • v ∈ C)
+    (hcl : (C.topologicalClosure : Set E) ⊆ (Submodule.span ℝ (C : Set E) : Set E)) :
+    Submodule.span ℝ (C : Set E) ⊓ LinearMap.ker β =
+      PointedCone.lineal C.topologicalClosure := by
+  obtain ⟨p, hpC, hpβ⟩ := hne
+  have hβcl : ∀ x ∈ C.topologicalClosure, 0 ≤ β x := by
+    intro x hx
+    exact closure_minimal (s := (C : Set E)) (t := {y | 0 ≤ β y}) (fun y hy => hβ y hy)
+      (isClosed_le continuous_const hβc) hx
+  apply le_antisymm
+  · intro x hx
+    obtain ⟨hxspan, hxker⟩ := Submodule.mem_inf.1 hx
+    have hsub : (C : Set E) ⊆
+        ((PointedCone.lineal C.topologicalClosure ⊔
+          Submodule.span ℝ ({p} : Set E) : Submodule ℝ E) : Set E) := by
+      intro c hc
+      rcases eq_or_lt_of_le (hβ c hc) with h0 | hpos
+      · have hsum : c + p ∈ C := C.add_mem hc hpC
+        have hdiff : (c + p) - p ∈ PointedCone.lineal C.topologicalClosure :=
+          sub_mem_lineal_topologicalClosure_of_affine (C := C) haff hpC hsum
+        have heq : c = (c + p) - p := by abel
+        rw [heq]
+        exact Submodule.mem_sup.2 ⟨_, hdiff, 0, Submodule.zero_mem _, by rw [add_zero]⟩
+      · have hqC : (β c)⁻¹ • c ∈ C := C.smul_mem (inv_nonneg.2 hpos.le) hc
+        have hdiff : (β c)⁻¹ • c - p ∈ PointedCone.lineal C.topologicalClosure :=
+          sub_mem_lineal_topologicalClosure_of_affine (C := C) haff hpC hqC
+        have hmem : (β c)⁻¹ • c ∈ PointedCone.lineal C.topologicalClosure ⊔
+            Submodule.span ℝ ({p} : Set E) := by
+          have heq : (β c)⁻¹ • c = p + ((β c)⁻¹ • c - p) := by abel
+          rw [heq]
+          exact Submodule.mem_sup.2 ⟨(β c)⁻¹ • c - p, hdiff,
+            p, Submodule.subset_span (Set.mem_singleton p), by abel⟩
+        have hc' : c = β c • ((β c)⁻¹ • c) := by
+          rw [smul_smul, mul_inv_cancel₀ hpos.ne', one_smul]
+        rw [hc']
+        exact Submodule.smul_mem _ _ hmem
+    have hspanle : Submodule.span ℝ (C : Set E) ≤
+        PointedCone.lineal C.topologicalClosure ⊔ Submodule.span ℝ ({p} : Set E) :=
+      Submodule.span_le.2 hsub
+    obtain ⟨u, hu, w, hw, hxw⟩ := Submodule.mem_sup.1 (hspanle hxspan)
+    obtain ⟨c, rfl⟩ := Submodule.mem_span_singleton.1 hw
+    have hβu : β u = 0 := by
+      have h1 := hβcl u (PointedCone.mem_lineal.1 hu).1
+      have h2 := hβcl (-u) (PointedCone.mem_lineal.1 hu).2
+      rw [map_neg] at h2
+      linarith
+    have hxβ : β x = c := by
+      rw [← hxw, map_add, map_smul, hβu, smul_eq_mul, hpβ, mul_one, zero_add]
+    have hc0 : c = 0 := hxβ ▸ hxker
+    rw [hc0, zero_smul, add_zero] at hxw
+    rw [← hxw]
+    exact hu
+  · intro x hx
+    obtain ⟨hx1, hx2⟩ := PointedCone.mem_lineal.1 hx
+    refine Submodule.mem_inf.2 ⟨hcl hx1, ?_⟩
+    rw [LinearMap.mem_ker]
+    have h1 := hβcl x hx1
+    have h2 := hβcl (-x) hx2
+    rw [map_neg] at h2
+    linarith
+
 end AffineModel
 
 end LeanCategories.Lattices.Valued
