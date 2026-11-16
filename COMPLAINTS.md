@@ -2752,3 +2752,20 @@ downstream assertions, computational observations, or downstream diagnostics.
   hence settle whether the source's general assertion needs that extra hypothesis. Keep the current
   explicitly named `..._of_locallyFiniteAt` theorems for applications that do supply `hloc`; do not
   relabel them as the unrestricted source statement.
+
+### Proper cone faces need a linear-span rank drop (#163)
+
+- **Need:** an inclusion-minimal nonempty projected member can be selected by least linear-span rank
+  only if a proper face of a pointed cone has strictly smaller linear-span rank. This is the general
+  replacement for choosing a minimum just among the cells containing one point, which misses smaller
+  faces not containing that point.
+- **Coverage:** LC-09 queries `FACE_OF_AFF_DIM_LT`, `IsFaceOf finrank`, `proper face affine dimension`,
+  `IsFaceOf span`, and `intrinsicInterior IsFaceOf` found no Lean declaration with the required
+  statement. The nearest reference implementation was the HOL Light/Candle `FACE_OF_AFF_DIM_LT`
+  argument in `Multivariate/polytope.ml`; its finite-dimensional descent is the same mathematical
+  ingredient. The local search also considered `Submodule.finrank_lt_finrank_of_lt` and the existing
+  intrinsic-interior face API, which are the two owners used by the proof.
+- **Repair link:** supplied here by
+  `LeanCategories.Lattices.Valued.finrank_span_lt_of_isFaceOf_of_ne`, using equality of affine spans
+  and `face_eq_of_mem_intrinsicInterior`; it remains an upstream candidate for Mathlib's pointed-cone
+  face API.

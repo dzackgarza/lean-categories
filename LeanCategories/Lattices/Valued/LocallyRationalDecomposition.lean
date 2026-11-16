@@ -8902,6 +8902,49 @@ theorem face_eq_of_mem_intrinsicInterior {E : Type*}
     exact F.smul_mem hpos.le hxF
   exact hF.mem_of_smul_add_mem hy hz hr hmem
 
+/-- **A proper face of a pointed cone has strictly smaller linear-span rank.** If the spans were
+equal, a relative-interior point of the face would also be a relative-interior point of the ambient
+cone: the ambient characterization `mem_intrinsicInterior_iff_eventually` transports its relative
+neighbourhood across the equality of affine spans. Then `face_eq_of_mem_intrinsicInterior` would
+make the face improper. LC-09 (2026-11-22): `FACE_OF_AFF_DIM_LT`, `IsFaceOf finrank`,
+`proper face affine dimension`, and `IsFaceOf span` found the HOL Light/Candle affine-dimension
+argument in `Multivariate/polytope.ml`, but no Lean cone declaration with this statement. This
+proof uses the existing intrinsic-interior face API instead of introducing a separate `aff_dim`
+development. -/
+theorem finrank_span_lt_of_isFaceOf_of_ne {E : Type*}
+    [AddCommGroup E] [Module ℝ E] [Module.Finite ℝ E]
+    [TopologicalSpace E] [IsModuleTopology ℝ E] [ContinuousAdd E]
+    {F C : PointedCone ℝ E} (hF : F.IsFaceOf C) (hne : F ≠ C) :
+    Module.finrank ℝ (Submodule.span ℝ (F : Set E)) <
+      Module.finrank ℝ (Submodule.span ℝ (C : Set E)) := by
+  letI := IsModuleTopology.isTopologicalAddGroup ℝ E
+  apply Submodule.finrank_lt_finrank_of_lt
+  refine lt_of_le_of_ne (Submodule.span_mono hF.le) ?_
+  intro hspan
+  apply hne
+  have hAF : affineSpan ℝ (F : Set E) =
+      (Submodule.span ℝ (F : Set E)).toAffineSubspace := by
+    apply affineSpan_eq_span_of_zero_mem
+    exact subset_affineSpan ℝ _ F.zero_mem
+  have hAC : affineSpan ℝ (C : Set E) =
+      (Submodule.span ℝ (C : Set E)).toAffineSubspace := by
+    apply affineSpan_eq_span_of_zero_mem
+    exact subset_affineSpan ℝ _ C.zero_mem
+  obtain ⟨x, hx⟩ := nonempty_intrinsicInterior_of_convex_moduleTopology
+    F.convex ⟨0, F.zero_mem⟩
+  have hxF : x ∈ F := intrinsicInterior_subset hx
+  have hx' := mem_intrinsicInterior_iff_eventually.1 hx
+  apply face_eq_of_mem_intrinsicInterior hF hxF
+  rw [mem_intrinsicInterior_iff_eventually]
+  refine ⟨?_, ?_⟩
+  · rw [hAC, ← hspan, ← hAF]
+    exact subset_affineSpan ℝ _ hxF
+  · filter_upwards [hx'.2] with y hy hyC
+    apply hF.le
+    apply hy
+    rw [hAF, hspan, ← hAC]
+    exact hyC
+
 /-- **A member of a locally rational decomposition is determined by its trace on a neighbourhood.**
 Two members whose interiors meet a fixed open set in the same trace have a common face containing
 a relative-interior point of each, hence coincide. LC-09:
