@@ -2811,8 +2811,8 @@ downstream assertions, computational observations, or downstream diagnostics.
   accumulating at it without containing it leave every member off the ray — in `ℝ²` with `C₊` the
   closed upper half plane, the walls `{y = x/n}` (`n ≥ 1`) and the ray `{(x,0) | x ≥ 0}`. For the
   `H` of the source it is the local finiteness of `H` on `D` at the ray that supplies `τ`. What this
-  unit supplies is the `≤` half with `τ` in hand
-  (`sigmaSupportSpace_halfLine_le_ker_of_mem`), i.e. `J_{Σ(H)} ⊆ J_H`. The `≥` half
+  unit supplies is the `≤` half with `τ` in hand (`supportSpace_halfLine_le_ker`,
+  `LeanCategories/Lattices/Valued/SemifanArrangement.lean`), i.e. `J_{Σ(H)} ⊆ J_H`. The `≥` half
   (`⟨arrangementCone φ s ⊓ C₊⟩₊ = ⋂_{s i = 0} ker (φ i)`) and the existence of `τ` are open.
 - **Coverage:** LC-09 queries `closed sheet`, `arrangement cell closure`, `fan locally finite
   boundary ray`, `weakSignCellCone`; the cells are the ported TauCeti sign-cell machine

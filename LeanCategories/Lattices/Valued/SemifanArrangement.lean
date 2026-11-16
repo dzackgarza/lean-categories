@@ -64,6 +64,12 @@ E. Looijenga, *Compactifications defined by arrangements II: locally symmetric v
   (Looijenga, Definition 2.1, p. 10) — the rational cones of the fibre inside `C_{I,+}` land in the
   ambient closed sheet, with no hypothesis. `ConicalLine.closure_cone_eq_closedSheet` is the
   identification of `C_{I,+}` with the closed sheet of the fibre form that it rests on.
+* **the support space of a plane's half line** (`supportSpace_halfLine_le_ker`): Looijenga, Example
+  6.4, p. 29, `J_{Σ(H)} ⊆ J_H` — the support space of the half line of a `ℚ`-isotropic plane `J` in
+  the fibre of `I ≤ J` lies in the trace of every hyperplane of `H` containing `J`, given a member
+  of `Σ(H)` above the half line that meets the open cone `C_I` (Lemma-Definition 4.5, p. 19). A
+  member of an arrangement decomposition is a face of a sign cell, so every trace is one-signed on
+  it, and it vanishes on the half line exactly for the hyperplanes containing `J`.
 * **the counting hypothesis at a fibre**, transported from the ambient cone:
   `cutsFinitelyOnRational_of_map_realifyMap` (a rational cone of the fibre maps to a rational cone
   of `V(ℝ)` — `isRationalCone_map_realifyMap`, `map_hull_eq` — and a trace cuts it exactly when its
@@ -927,6 +933,95 @@ theorem map_closure_le_ambientClosedSheet (F : ConicalLine BQ Q)
   exact PointedCone.subset_hull hmem
 
 end AmbientClosedSheet
+
+/-! ## The support space of a plane's half line in `Σ(H)`
+
+Looijenga, Example 6.4, p. 29 (text line 791): "the space `J_H` associated to a `ℚ`-isotropic plane
+`J` is the common intersection of `J^⊥` and the hyperplanes `H ∈ H` containing `J`". In the fibre of
+a line `I ≤ J` the half line of `J` is `σ = hull {fibreRay}`, and a member of `Σ(H)` above it is a
+face of a sign cell of the traces, so every trace is one-signed on it and vanishes on `σ` when the
+hyperplane contains `J`. The support space of `σ` (Lemma-Definition 4.5, p. 19) is then contained in
+the trace of every such hyperplane — the inclusion `J_{Σ(H)} ⊆ J_H`.
+
+`supportSpace_halfLine_le_ker` takes the member `τ` above `σ` meeting the open cone as an argument:
+without one the index set of the intersection is empty and the support space is `⊤`. Its existence
+for the `H` of the source is recorded in `COMPLAINTS.md`.
+-/
+
+section HalfLineSupport
+
+variable {BQ : LinearMap.BilinForm ℚ V} {Q : QuadraticForm ℝ (realified V)}
+
+omit [Module.Finite ℚ V] in
+/-- **Looijenga, Example 6.4, p. 29: `J_{Σ(H)} ⊆ J_H`** — the support space of the half line `σ` of
+a `ℚ`-isotropic plane `J` in the fibre of `I` is contained in the kernel of the trace of every
+hyperplane of `H` containing `J`, as soon as a member of `Σ(H)` above `σ` meets the open cone. -/
+theorem supportSpace_halfLine_le_ker {ι : Type*} {ψ : ι → V →ₗ[ℚ] ℚ} (hBsym : BQ.IsSymm)
+    (F : ConicalLine BQ Q) (G : ConicalPlane BQ)
+    (τ : supportIndex (positiveCone.upper (fibreForm Q F.space) F.sheet) (semifanArrangement ψ F)
+      (PointedCone.hull ℝ ({rationalPoint (fibreRay hBsym F G)} : Set (realified ↥F.space))))
+    (i : fibreWalls ψ F)
+    (hi : fibreFormC F (ψ i) (rationalPoint (fibreRay hBsym F G)) = 0) :
+    supportSpace τ.1 (PointedCone.hull ℝ ({rationalPoint (fibreRay hBsym F G)} :
+      Set (realified ↥F.space))) ≤ LinearMap.ker ((fibreFormC F (ψ i)).toLinearMap) := by
+  classical
+  have hmem : τ.1 ∈ faceClosure (arrangementCells
+      (fun j : fibreWalls ψ F => fibreFormC F (ψ j)) F.closure) := τ.2.1
+  obtain ⟨cell, hcell, hface⟩ := mem_faceClosure.1 hmem
+  obtain ⟨s, rfl⟩ := hcell
+  have hle : τ.1 ≤ arrangementCone (fun j : fibreWalls ψ F => fibreFormC F (ψ j)) s ⊓ F.closure :=
+    hface.le
+  have hvan : ∀ x ∈ PointedCone.hull ℝ ({rationalPoint (fibreRay hBsym F G)} :
+      Set (realified ↥F.space)), fibreFormC F (ψ i) x = 0 := by
+    intro x hx
+    obtain ⟨c, -, rfl⟩ := PointedCone.mem_hull_singleton.1 hx
+    rw [ContinuousLinearMap.map_smul, smul_eq_mul, hi, mul_zero]
+  have hsign : ∀ x ∈ τ.1, match s i with
+      | SignType.zero => fibreFormC F (ψ i) x = 0
+      | SignType.neg => fibreFormC F (ψ i) x ≤ 0
+      | SignType.pos => 0 ≤ fibreFormC F (ψ i) x := by
+    intro x hx
+    exact (mem_arrangementCone (fun j : fibreWalls ψ F => fibreFormC F (ψ ↑j))).1
+      (Submodule.mem_inf.1 (hle hx)).1 i
+  rcases hs : s i with _ | _ | _
+  · have hΨ : (fibreFormC F (ψ i)).toLinearMap ∈
+        supportForms τ.1 (PointedCone.hull ℝ ({rationalPoint (fibreRay hBsym F G)} :
+          Set (realified ↥F.space))) := by
+      refine mem_supportForms.2 ⟨fun x hx => ?_, fun x hx => ?_⟩
+      · have hx' := hsign x hx
+        simp only [hs] at hx'
+        simpa using hx'.ge
+      · simpa using hvan x hx
+    exact iInf_le (fun φ : supportForms τ.1 (PointedCone.hull ℝ
+      ({rationalPoint (fibreRay hBsym F G)} : Set (realified ↥F.space))) =>
+      LinearMap.ker (φ : (realified ↥F.space) →ₗ[ℝ] ℝ)) ⟨_, hΨ⟩
+  · have hΨ : -((fibreFormC F (ψ i)).toLinearMap) ∈
+        supportForms τ.1 (PointedCone.hull ℝ ({rationalPoint (fibreRay hBsym F G)} :
+          Set (realified ↥F.space))) := by
+      refine mem_supportForms.2 ⟨fun x hx => ?_, fun x hx => ?_⟩
+      · have hx' := hsign x hx
+        simp only [hs] at hx'
+        change 0 ≤ -(fibreFormC F (ψ i) x)
+        linarith
+      · change -(fibreFormC F (ψ i) x) = 0
+        rw [hvan x hx, neg_zero]
+    refine le_trans (iInf_le (fun φ : supportForms τ.1 (PointedCone.hull ℝ
+      ({rationalPoint (fibreRay hBsym F G)} : Set (realified ↥F.space))) =>
+      LinearMap.ker (φ : (realified ↥F.space) →ₗ[ℝ] ℝ)) ⟨_, hΨ⟩) ?_
+    rw [LinearMap.ker_neg]
+  · have hΨ : (fibreFormC F (ψ i)).toLinearMap ∈
+        supportForms τ.1 (PointedCone.hull ℝ ({rationalPoint (fibreRay hBsym F G)} :
+          Set (realified ↥F.space))) := by
+      refine mem_supportForms.2 ⟨fun x hx => ?_, fun x hx => ?_⟩
+      · have hx' := hsign x hx
+        simp only [hs] at hx'
+        simpa using hx'
+      · simpa using hvan x hx
+    exact iInf_le (fun φ : supportForms τ.1 (PointedCone.hull ℝ
+      ({rationalPoint (fibreRay hBsym F G)} : Set (realified ↥F.space))) =>
+      LinearMap.ker (φ : (realified ↥F.space) →ₗ[ℝ] ℝ)) ⟨_, hΨ⟩
+
+end HalfLineSupport
 
 /-! ## The counting hypothesis transfers to a conical fibre
 
