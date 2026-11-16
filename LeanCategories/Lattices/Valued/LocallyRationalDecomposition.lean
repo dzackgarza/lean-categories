@@ -10189,16 +10189,21 @@ theorem projectedPolyhedron_nonempty {Q : QuadraticForm ℝ (realified V)} {t e 
     rw [map_smul]
   · rw [mem_affineModel, map_smul, smul_eq_mul, inv_mul_cancel₀ hβ.ne']
 
-/-- Minimality in the projected order: no member of the decomposition above `σ` cuts a strictly
-smaller polyhedron on `A_I(ℝ)`, so `τmin`'s polyhedron is an element of the induced decomposition
-minimal under inclusion. -/
+/-- Minimality in the projected order: no member of the decomposition above `σ` cuts a *nonempty*
+polyhedron strictly smaller than `τmin`'s, so `τmin`'s polyhedron is an element of the induced
+decomposition of `A_I(ℝ)` minimal under inclusion.
+
+Nonemptiness is part of the comparison, and it has to be: `β` is nonnegative on every member's
+projection and vanishes nowhere on its section, so the face a member cuts by `β` has an empty
+polyhedron — without this condition that face would be a strictly smaller member and no member with
+a nonempty polyhedron would be minimal. -/
 def IsProjectedMinimal (Q : QuadraticForm ℝ (realified V)) {e : realified V} (he : Q e = 0)
     (S : Set (PointedCone ℝ (realified V))) (σ τmin : PointedCone ℝ (realified V)) : Prop :=
   τmin ∈ S ∧ σ ≤ τmin ∧ ∀ τ ∈ S, σ ≤ τ →
-    projectedPolyhedron Q he τ ⊆ projectedPolyhedron Q he τmin →
-      projectedPolyhedron Q he τmin ⊆ projectedPolyhedron Q he τ
+    (projectedPolyhedron Q he τ).Nonempty →
+      projectedPolyhedron Q he τ ⊆ projectedPolyhedron Q he τmin →
+        projectedPolyhedron Q he τmin ⊆ projectedPolyhedron Q he τ
 
-omit [Module.Finite ℚ V] in
 omit [Module.Finite ℚ V] in
 /-- Differences of two points of an affinely closed section, with the affineness stated on the
 section only. -/
@@ -10581,7 +10586,8 @@ theorem projectedPolyhedron_apply_eq_zero_of_projectedMinimal
     (hmin : IsProjectedMinimal Q he S σ τmin)
     (φ : (realified V ⧸ Submodule.span ℝ ({e} : Set (realified V))) →ₗ[ℝ] ℝ)
     (hφ : ∀ x ∈ (τmin.map (Submodule.span ℝ ({e} : Set (realified V))).mkQ :
-      PointedCone ℝ (realified V ⧸ Submodule.span ℝ ({e} : Set (realified V)))), 0 ≤ φ x) :
+      PointedCone ℝ (realified V ⧸ Submodule.span ℝ ({e} : Set (realified V)))), 0 ≤ φ x)
+    (hp : ∃ p ∈ projectedPolyhedron Q he τmin, φ p = 0) :
     ∀ u ∈ projectedPolyhedron Q he τmin, φ u = 0 := by
   intro u hu
   obtain ⟨hτS, hστ, hminimal⟩ := hmin
@@ -10615,7 +10621,15 @@ theorem projectedPolyhedron_apply_eq_zero_of_projectedMinimal
     rintro x ⟨hx, hxA⟩
     obtain ⟨y, hy, rfl⟩ := PointedCone.mem_map.1 hx
     exact ⟨PointedCone.mem_map.2 ⟨y, hy.1, rfl⟩, hxA⟩
-  have hback := hminimal _ hF hσF hsub
+  -- the face's polyhedron is nonempty: the common zero the hypothesis supplies
+  obtain ⟨p, hpP, hpφ⟩ := hp
+  have hneF : (projectedPolyhedron Q he
+      (τmin ⊓ PointedCone.ofSubmodule (LinearMap.ker ψ))).Nonempty := by
+    obtain ⟨hpC, hpM⟩ := hpP
+    refine ⟨p, ⟨?_, hpM⟩⟩
+    rw [map_inf_ker_comp_mkQ (e := e) τmin φ]
+    exact ⟨hpC, hpφ⟩
+  have hback := hminimal _ hF hσF hneF hsub
   obtain ⟨hxF, -⟩ := hback hu
   obtain ⟨y, hy, rfl⟩ := PointedCone.mem_map.1 hxF
   exact hy.2
