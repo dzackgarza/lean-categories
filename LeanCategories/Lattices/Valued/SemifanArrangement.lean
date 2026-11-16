@@ -53,18 +53,31 @@ E. Looijenga, *Compactifications defined by arrangements II: locally symmetric v
 ## What is not here
 
 * **Condition (ii) and `J_{Σ(H)} = J_H`** (the `Σ`-support space of a plane's half line is
-  `J^⊥ ⊓ ⋂_{H ∋ J} H`). The inclusion `≤` is available from the support space's definition — every
-  member above the half line is one-signed for each wall through it and zero on it, so its support
-  space lies in that wall, together with `supportSpace_le_ker_associated_of_isotropic` for the `J^⊥`
-  half. The reverse needs the span of an arrangement cell above the half line,
-  `⟨arrangementCone φ s ⊓ C₊⟩ = ⋂_{s i = 0} ker (φ i)`, which is where the source's
-  "it follows from this and Example 4.3-b" sits; it in turn needs the walls' signature `(1, n-2)`,
-  and the repository has no statement about the signature of the restriction of a form to a
-  hyperplane (only to the complement of a hyperbolic plane, `sigPos_restrict_planePerp`).
+  `J^⊥ ⊓ ⋂_{H ∋ J} H`). At the half line of `J`, `vSigmaPlane` is
+  `sigmaSupportSpace` over the members `τ` of `Σ(H)` with `C_{J,+} ≤ τ` and `τ ∩ C_I ≠ ∅`, and
+  *both* inclusions need such a `τ`: with none, that intersection is `⊤` and the two sides are
+  different subspaces. **Such a member need not exist for an arbitrary family of forms**, which is
+  what `semifanArrangement` takes as its input: in `ℝ²`, with `C₊` the closed upper half plane and
+  the walls `{y = x/n}` (`n ≥ 1`), the ray `{(x, 0) | x ≥ 0}` lies in no member of the decomposition
+  (every sector lies in an angular interval bounded away from it), so the index of the half line is
+  empty. The source's `H` is locally finite on `D` (Example 6.4, p. 29), and it is that finiteness —
+  finitely many walls meeting a neighbourhood of the half line — which supplies the member: for `z`
+  in the open cone and `t > 0` small the point `r + t z` is again in the open cone, and the cell
+  containing it has the half line in its closure, because the signs of the walls not containing `J`
+  are still those at `r`. Given the member `τ` the `≤` half follows — a trace is one-signed on `τ`
+  and zero on the half line, so it lies in `supportForms τ σ` and the support space is inside it,
+  with `supportSpace_le_ker_associated_of_isotropic` for the `J^⊥` half — and the `≥` half needs the
+  span of the cell, `⟨arrangementCone φ s ⊓ C₊⟩ = ⋂_{s i = 0} ker (φ i)`, which holds when the cell
+  has a point of the open cone at which exactly the walls of the sign pattern's zero set vanish
+  (the same finiteness of the walls, used once more; without it a point of the open cone on a wall
+  outside the zero set obstructs both signs of the line).
 * **`CutsFinitelyOnRational` at the fibre is carried, not derived**:
-  `semifanArrangement_isLocallyRational` takes it as a hypothesis. For the arithmetic `H` of the
-  source it is `cutsFinitelyOnRational_orbitFamily` at the fibre's lattice, which is not
-  instantiated here.
+  `semifanArrangement_isLocallyRational` takes it as a hypothesis. The counting lemma is
+  `cutsFinitelyOnRational_orbitFamily`, stated for one lattice `Λ` in one space, preserved by `Γ`.
+  At the fibre the elements of `Γ` fixing `I` carry the carrier `⟨e, f⟩^⊥` to `⟨g e, g f⟩^⊥` for the
+  transported partner (`Semifan.fibreCarrierEquiv`), so they do not act on one carrier, and the
+  fibre's lattice is the reduction `(Λ ∩ I^⊥)/(Λ ∩ I)` rather than `Λ ∩ ⟨e, f⟩^⊥`. Deriving the
+  hypothesis therefore needs that reduction at the level of `ℤ`-modules, which is not here.
 -/
 
 @[expose] public section
