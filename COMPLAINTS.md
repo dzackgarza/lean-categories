@@ -2944,3 +2944,93 @@ downstream assertions, computational observations, or downstream diagnostics.
   with `τ` a one-sided cell as above, and supply the boundary local finiteness either as the named
   hypothesis the source's `ℋ` supplies or from `CutsFinitelyOnRational` at a cone through `r` once
   such a cone is available.
+
+### A half-line field on `ConicalPlane` is unsatisfiable; the orientation lives in the fibre (#162)
+
+- **Need:** item (4) of the #162 brief asks that `ConicalPlane` carry its half line `C_{J,+}` as a
+  field, so that `hsheet` (the inequality `0 ≤ ⟨r, t_F⟩` at a fibre's positive vector `t_F`) leaves
+  the statement of `bailyBorel_isAdmissibleDecomposition`.
+- **Evidence (the field is uninhabited).** Two `ConicalLine`s `F`, `F'` over one `ℚ`-isotropic plane
+  `J` may carry opposite sheets: `ConicalLine.sheet` is a positive vector of the fibre form, and the
+  fibre of a form of signature `(1, n-1)` has two open sheets, so `F.sheet` and `-F.sheet` are both
+  legal `sheet_pos` data. The class `r ∈ I^⊥/I` of the plane's ray is isotropic and nonzero
+  (`fibreRay_isotropic`, `fibreRay_ne_zero`), and in signature `(1, n-1)` an isotropic vector pairs
+  nonzero with a positive vector, so `⟨r, t⟩ ≠ 0`. Hence a field asserting `0 ≤ ⟨r, t_F⟩` for every
+  fibre `F` over `J` would require `⟨r, t⟩ ≥ 0` and `⟨r, -t⟩ ≥ 0`, i.e. `⟨r,t⟩ = 0` — a
+  contradiction. A structure with such a field has no instances, and every theorem about it would be
+  vacuously true.
+- **Why the source does not need it.** Looijenga fixes a type IV domain `D`, i.e. one connected
+  component of the positive 2-planes of `V(ℝ)`; the sheets `C_{I,+}` of all fibres come from that one
+  `D` and are coherent, so `C_J ⊂ ∂C_I` for the coherent pair (§1B, p. 11, text line 267). The Lean
+  carriers `ConicalLine`/`ConicalPlane` do not model `D`, so coherency across two fibres is not
+  available at all — it is not a missing lemma.
+- **Repair (landed).** The orientation is carried where it *is* well defined, in the fibre:
+  `ConicalLocus.fibreRay` is now the half line — the class `fibreRayProj` of the plane's ray, or its
+  negative, whichever lies on the closed sheet — and `fibreRay_sheet_nonneg` is the sheet inequality
+  as a theorem. `hsheet` is removed from `vSigmaPlane_eq_ker_inf_ker`, `bailyBorel_condition_ii` and
+  `bailyBorel_isAdmissibleDecomposition`. `rationalPoint_fibreRay_val` records the value in `V` up to
+  sign, which is what the two points of `vSigmaPlane_eq_ker_inf_ker` that used to unfold the class use.
+- **Coverage:** the sign computation is two lines and has no case analysis beyond the two sheets;
+  `ConicalPlane.ray` is unchanged, so `V_σ` is the support space of the half line on the closed sheet
+  of the fibre, which is the source's member. Confidence: high.
+- **What remains:** nothing in this item. A coherent family of sheets over a whole conical locus would
+  be a model of `D` (a predicate relating the sheets of the fibres of two lines in a plane), and is
+  not needed for Definition 6.1.
+
+### `Σ(ℋ)` at a fibre is indexed by the fibre's hyperplanes, and the count is the fibre's (#162)
+
+- **Need:** item (1) of the #162 brief: the walls of `Σ(ℋ)` at a fibre must be indexed by the fibre's
+  own `ℚ`-hyperplanes (the traces), so that the counting lemma of Example 4.3 (b) — a statement about
+  the fibre's hyperplanes — applies.
+- **Evidence.** `semifanArrangement ψ F` indexes the walls by the *ambient* family,
+  `fibreWalls ψ F = {i // F.line ≤ ker (ψ i)}`, while `CutsFinitelyOnRational` counts *indices*
+  (`{i | CutsOn (φ i) P}.Finite`). The map from ambient walls to traces is not injective: with
+  `V = ℚe ⊕ ℚf ⊕ W`, `I = ℚe` and `T ⊂ W` a hyperplane, every `I ⊕ T ⊕ ℚ(f + k)`, `k ∉ I ⊕ T`, is a
+  `ℚ`-hyperplane containing `I` with trace `T`, so an infinite ambient family can sit over one trace
+  and the ambient-indexed count is not the source's count.
+- **Repair (landed).** `arrangementCone_smul`/`arrangementCells_smul`/`arrangementDecomposition_smul`:
+  the arrangement sees the hyperplanes and not the normals that represent them, so it is unchanged
+  when each form of the family is multiplied by a nonzero scalar. With `arrangementDecomposition_reindex`
+  this gives `semifanArrangement_isLocallyRational_of_traces`: a bijection of the ambient walls with
+  the fibre's own hyperplane family, up to a nonzero scalar per wall, carries condition (i) at the
+  fibre — `arrangementDecomposition_reducedLattice_isLocallyRational`, which has no counting
+  hypothesis — to the ambient-indexed `semifanArrangement`.
+- **Gap and impact.** The correspondence hypothesis is carried, not derived: it says that the ambient
+  family has exactly one member over each trace. Deriving it needs the arithmetic input (the normals
+  of `ℋ` are lattice vectors, i.e. the generators `gen`/`hgen` of `cutsFinitelyOnRational_reducedLattice`),
+  which is not formalized per fibre. What *is* settled is that the ambient indexing is not the
+  source's, so condition (i) for `Σ(ℋ)` is now stated with the fibre's count and the correspondence as
+  its only remaining hypothesis.
+- **Coverage:** the non-injectivity is a three-line computation. Confidence: high.
+
+### The member of `Σ(ℋ)` above the half line: what the obstruction actually is (#162)
+
+- **Need:** item (2) of the #162 brief: a member `τ ∈ Σ(ℋ)` above the half line `C_{J,+}` with
+  `τ ∩ C_I ≠ ∅`, the hypothesis of Lemma-Definition 4.5, p. 19 (text line 519), used to compute
+  `J_{Σ(ℋ)}`.
+- **Evidence (corrected).** The earlier record said that walls *through* the ray cut the cell of the
+  ray's own sign pattern down to the ray. That is true of the own-pattern cell, but it is not the
+  obstruction to the general statement, because a wall through `r` imposes *no* condition at `r`:
+  for a pattern `s` with `s i = pos` the condition at `r` is `0 ≤ φ i r`, and `φ i r = 0` satisfies it;
+  the same for `neg`. So with `s = signPattern φ u` for a point `u` of the open cone, `r` lies in the
+  cell of `u`'s pattern as soon as, for every wall **not** through `r`, `φ i u` has the same sign as
+  `φ i r`, and for every wall on which `u` happens to lie, `φ i r = 0`.
+- **The two clauses that a proof needs.** (a) Walls not through `r` that cut a rational cone `P`
+  through `r` (`P = hull{r, v}`, `v ∈ C_I`): finitely many, by `CutsFinitelyOnRational` at `P`, and
+  `u = r + ε v ∈ relint P` can be chosen close enough to `r` to keep their signs — the two conditions
+  "in the relative interior of `P`" and "close to `r`" are compatible because `r + ε v ∈ relint P` for
+  every `ε > 0` when `r`, `v` are independent. (b) Walls not through `r` that do **not** cut `P`: they
+  are one-signed on `P`, so if such a wall vanishes on `relint P` it vanishes on `P` and hence at `r` —
+  a contradiction with "not through `r`" — so `u ∈ relint P` is automatically off it. Hence a single
+  `u` satisfies both clauses, and `τ := arrangementCone φ (signPattern φ u) ⊓ C_{I,+}` contains `r`
+  and meets `C_I` in `u`.
+- **Gap and impact.** The proof of (a)+(b) is not formalized: it needs the relative interior of the
+  cone `hull{r, v}`, the finiteness of the cutting walls from `CutsFinitelyOnRational` at that cone, a
+  rational point `v` of the open cone (for `P` to be a *rational* cone, as the count requires), and
+  the transfer of a sign from `r` to nearby points of `relint P`. No boundary local finiteness of `ℋ`
+  is needed — the earlier record's conclusion that it is was too strong, since walls through `r` are
+  harmless.
+- **Repair link:** with such a `τ`, `supportSpace_halfLine_le_ker` gives `J_{Σ(ℋ)} ⊆ J_ℋ`, and
+  `mem_supportSpace_halfLine_of_supportForms_span` gives the reverse inclusion once the dual cone of
+  the cell is described by its walls; `isAdmissibleDecomposition_of_vSigmaPlane_eq` then assembles
+  Definition 6.1 for `Σ(ℋ)`.

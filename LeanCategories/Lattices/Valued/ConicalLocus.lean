@@ -420,10 +420,63 @@ noncomputable def fibreProj (F : ConicalLine BQ Q) (x : V) : ↥F.space :=
         F.partner_iso, hxf]
       ring⟩
 
-/-- The fibre of a `ℚ`-isotropic plane in the conical fibre of one of its lines: the class of the
-plane's ray in `I^⊥/I` (Looijenga §1B, p. 11: `Λ²J` is a line in `I ⊗ I^⊥/I`). -/
-noncomputable def fibreRay (F : ConicalLine BQ Q) (G : ConicalPlane BQ) : ↥F.space :=
+/-- The class of a `ℚ`-isotropic plane's ray in the conical fibre of one of its lines, *without* the
+choice of half line: Looijenga §1B, p. 11 (text line 265), "`Λ²J` can be regarded as a line in
+`I ⊗ I^⊥/I`". -/
+noncomputable def fibreRayProj (F : ConicalLine BQ Q) (G : ConicalPlane BQ) : ↥F.space :=
   fibreProj hBsym F G.ray
+
+/-- **The half line `C_{J,+}` of a `ℚ`-isotropic plane in the fibre of one of its lines**: the class
+of the plane's ray, or its opposite, whichever lies on the **closed sheet** of the fibre's cone —
+the isotropic ray `r` of the fibre with `0 ≤ r · t` at the fibre's positive vector `t`.
+
+Looijenga §1B, p. 11 (text line 267): "`Λ²J` can be regarded as a line in `I ⊗ I^⊥/I` and via this
+inclusion, `C_J` is contained in the boundary of `C_I`". The fibre `ConicalLine` carries its sheet
+`C_I` as data, and of the two half lines of the isotropic line `J/I` exactly one is a boundary ray
+of the closed sheet of `C_I` (`0 < r · t` for a positive `t` in signature `(1, n-1)`, so the two
+have opposite signs at `t`); this is that half line. It is the member `σ = C_{J,+}` of Definition
+6.1 (ii), the one whose `Σ`-support space the definition names. -/
+noncomputable def fibreRay (F : ConicalLine BQ Q) (G : ConicalPlane BQ) : ↥F.space :=
+  if 0 ≤ (associated (fibreForm Q F.space)) (rationalPoint (fibreRayProj hBsym F G)) F.sheet
+  then fibreRayProj hBsym F G else -fibreRayProj hBsym F G
+
+omit [Module.Finite ℚ V] in
+/-- The half line is one of the two generators of the plane's class in the fibre. -/
+theorem fibreRay_eq_or_neg (F : ConicalLine BQ Q) (G : ConicalPlane BQ) :
+    fibreRay hBsym F G = fibreRayProj hBsym F G ∨
+      fibreRay hBsym F G = -fibreRayProj hBsym F G := by
+  rw [fibreRay]
+  split_ifs with h
+  · exact Or.inl rfl
+  · exact Or.inr rfl
+
+omit [Module.Finite ℚ V] in
+/-- **The half line lies on the closed sheet of the fibre's cone**: `0 ≤ r · t`. -/
+theorem fibreRay_sheet_nonneg (F : ConicalLine BQ Q) (G : ConicalPlane BQ) :
+    0 ≤ (associated (fibreForm Q F.space)) (rationalPoint (fibreRay hBsym F G)) F.sheet := by
+  rw [fibreRay]
+  split_ifs with h
+  · exact h
+  · rw [map_neg, LinearMap.BilinForm.neg_left]
+    linarith [lt_of_not_ge h]
+
+omit [Module.Finite ℚ V] in
+/-- The fibre form does not see which of the two generators is taken: it is even. -/
+theorem fibreForm_fibreRay_eq (F : ConicalLine BQ Q) (G : ConicalPlane BQ) :
+    (fibreForm Q F.space) (rationalPoint (fibreRay hBsym F G)) =
+      (fibreForm Q F.space) (rationalPoint (fibreRayProj hBsym F G)) := by
+  rcases fibreRay_eq_or_neg hBsym F G with h | h
+  · rw [h]
+  · rw [h, map_neg, QuadraticMap.map_neg]
+
+omit [Module.Finite ℚ V] in
+/-- The half line is not zero when the plane's class is not zero. -/
+theorem fibreRay_ne_zero_of (F : ConicalLine BQ Q) (G : ConicalPlane BQ)
+    (h : fibreRayProj hBsym F G ≠ 0) : fibreRay hBsym F G ≠ 0 := by
+  rcases fibreRay_eq_or_neg hBsym F G with h' | h'
+  · rw [h']; exact h
+  · rw [h']
+    simpa using h
 
 end Fibre
 

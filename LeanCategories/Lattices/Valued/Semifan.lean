@@ -50,16 +50,17 @@ the orthogonal complement `J^⊥` of the `ℚ`-isotropic plane `J`, written as t
 two forms of a spanning pair. That is the "hyperplane orthogonal to a `ℚ`-isotropic line" of the
 sentence after Lemma-Definition 4.5 (p. 19, text line 523), in the fibre `I^⊥/I` of a line of `J`.
 
-## What is assumed, and where the source supplies it
+## The half line of a plane, and where the source has it
 
-* `hray`/`hsheet` in the theorems of §5 and in `bailyBorel_isAdmissibleDecomposition`: the half
-  line `C_{J,+}` of a `ℚ`-isotropic plane `J` lies on the closed sheet of the fibre of a line
-  `I ≤ J`. The source has this as part of its construction: "A real isotropic plane `J` in `V`
-  containing `I` corresponds to a real isotropic line `J̄` in `I^⊥/I` and vice versa. In that case,
-  `Λ²J` can be regarded as a line in `I ⊗ I^⊥/I` and via this inclusion, `C_J` is contained in the
-  boundary of `C_I`" (§1B, p. 11, text line 267). The carrier `ConicalLines` and `ConicalPlane` of
-  `ConicalLocus` record the two cones but not which half of the boundary of the other they occupy,
-  so the half line's orientation is a named hypothesis.
+* `fibreRay` is the half line `C_{J,+}` of a `ℚ`-isotropic plane `J` in the fibre of a line
+  `I ≤ J`: the class of `J`'s ray in `I^⊥/I`, or its opposite, whichever lies on the closed sheet of
+  the fibre (`fibreRay_sheet_nonneg`). The source has this as part of its construction: "A real
+  isotropic plane `J` in `V` containing `I` corresponds to a real isotropic line `J̄` in `I^⊥/I` and
+  vice versa. In that case, `Λ²J` can be regarded as a line in `I ⊗ I^⊥/I` and via this inclusion,
+  `C_J` is contained in the boundary of `C_I`" (§1B, p. 11, text line 267). The choice of sheet that
+  `ConicalLine` carries is what selects the half line: of the two boundary rays of the isotropic
+  line `J/I`, exactly one has `0 < r · t` at the fibre's positive vector `t`, since `r` is isotropic
+  and `t` positive in signature `(1, n-1)`. Nothing is assumed.
 
 ## The `Γ`-action on the conical locus
 
@@ -366,26 +367,25 @@ omit [Module.Finite ℚ V] in
 line 265), "`Λ²J` can be regarded as a line in `I ⊗ I^⊥/I`". The representative in the carrier
 `planeComplement` of the fibre is `ray - (ray · f) e`: the adjustment is along the hyperbolic
 partner `f` only, because `ray · e = 0` (both lie in the totally isotropic plane). -/
-theorem fibreRay_val (hBsym : BQ.IsSymm) (F : ConicalLine BQ Q) (G : ConicalPlane BQ)
+theorem fibreRayProj_val (hBsym : BQ.IsSymm) (F : ConicalLine BQ Q) (G : ConicalPlane BQ)
     (h : F.line ≤ G.plane) :
-    ((fibreRay hBsym F G : ↥F.space) : V) = G.ray - BQ G.ray F.partner • F.gen := by
+    ((fibreRayProj hBsym F G : ↥F.space) : V) = G.ray - BQ G.ray F.partner • F.gen := by
   have hge : BQ G.ray F.gen = 0 := G.isotropic G.ray G.ray_mem F.gen (F.gen_mem_plane G h)
-  simp [fibreRay, fibreProj, hge]
+  simp [fibreRayProj, fibreProj, hge]
 
 omit [Module.Finite ℚ V] in
-/-- **The ray of a plane is isotropic in the fibre**: `J/I` is totally isotropic in `I^⊥/I`, so the
-half line `C_{J,+}` is an isotropic half line of the fibre's cone — the case of Lemma-Definition
-4.5, p. 19, that the source distinguishes. -/
+/-- **The half line of a plane is a nonzero isotropic ray of the fibre**, from its class: the fibre
+form is even (`fibreForm_fibreRay_eq`), so the half line inherits both properties of the class. -/
 theorem fibreRay_isotropic (hBQ : ∀ u w : V,
     (associated Q) (rationalPoint u) (rationalPoint w) = (BQ u w : ℝ))
     (hBsym : BQ.IsSymm) (F : ConicalLine BQ Q) (G : ConicalPlane BQ) (h : F.line ≤ G.plane) :
     (fibreForm Q F.space) (rationalPoint (fibreRay hBsym F G)) = 0 := by
-  rw [fibreForm_rationalPoint hBQ]
+  rw [fibreForm_fibreRay_eq, fibreForm_rationalPoint hBQ]
   have hge : BQ G.ray F.gen = 0 := G.isotropic G.ray G.ray_mem F.gen (F.gen_mem_plane G h)
   have hsym : BQ F.gen G.ray = 0 := by rw [hBsym.eq]; exact hge
-  have hb : BQ ((fibreRay hBsym F G : ↥F.space) : V) ((fibreRay hBsym F G : ↥F.space) : V)
-      = 0 := by
-    rw [fibreRay_val hBsym F G h]
+  have hb : BQ ((fibreRayProj hBsym F G : ↥F.space) : V)
+      ((fibreRayProj hBsym F G : ↥F.space) : V) = 0 := by
+    rw [fibreRayProj_val hBsym F G h]
     set a : ℚ := BQ G.ray F.partner with ha
     have step1 : BQ (G.ray - a • F.gen) (G.ray - a • F.gen)
         = BQ G.ray (G.ray - a • F.gen) - a * BQ F.gen (G.ray - a • F.gen) := by
@@ -400,13 +400,13 @@ theorem fibreRay_isotropic (hBQ : ∀ u w : V,
   norm_num
 
 omit [Module.Finite ℚ V] in
-/-- The ray of a plane is not zero in the fibre: `ray ∉ I` (the plane's ray is not a multiple of the
-line's generator, `ConicalPlane.ray_not_mem_of_line`), and the representative differs from `ray`
-by a multiple of `e`. -/
-theorem fibreRay_ne_zero (hBsym : BQ.IsSymm) (F : ConicalLine BQ Q) (G : ConicalPlane BQ)
-    (h : F.line ≤ G.plane) : fibreRay hBsym F G ≠ 0 := by
+/-- The class of a plane's ray is not zero in the fibre: `ray ∉ I` (the plane's ray is not a
+multiple of the line's generator, `ConicalPlane.ray_not_mem_of_line`), and the representative
+differs from `ray` by a multiple of `e`. -/
+theorem fibreRayProj_ne_zero (hBsym : BQ.IsSymm) (F : ConicalLine BQ Q) (G : ConicalPlane BQ)
+    (h : F.line ≤ G.plane) : fibreRayProj hBsym F G ≠ 0 := by
   intro h0
-  have hval := fibreRay_val hBsym F G h
+  have hval := fibreRayProj_val hBsym F G h
   rw [h0] at hval
   simp only [ZeroMemClass.coe_zero] at hval
   have hray : G.ray = BQ G.ray F.partner • F.gen := sub_eq_zero.1 hval.symm
@@ -414,6 +414,35 @@ theorem fibreRay_ne_zero (hBsym : BQ.IsSymm) (F : ConicalLine BQ Q) (G : Conical
     rw [F.line_eq, hray]
     exact Submodule.smul_mem _ _ (Submodule.subset_span (Set.mem_singleton F.gen))
   exact G.ray_not_mem_of_line F.line h F.one_dim hmem
+
+omit [Module.Finite ℚ V] in
+/-- **The half line of a plane is a nonzero ray of the fibre.** -/
+theorem fibreRay_ne_zero (hBsym : BQ.IsSymm) (F : ConicalLine BQ Q) (G : ConicalPlane BQ)
+    (h : F.line ≤ G.plane) : fibreRay hBsym F G ≠ 0 :=
+  fibreRay_ne_zero_of hBsym F G (fibreRayProj_ne_zero hBsym F G h)
+
+omit [Module.Finite ℚ V] in
+/-- **The half line of a plane as a vector of `V`**: the class of the plane's ray, up to sign. A
+vector is killed by the half line exactly when it is killed by `ray` and by the line's
+generator. -/
+theorem rationalPoint_fibreRay_val (hBsym : BQ.IsSymm) (F : ConicalLine BQ Q)
+    (G : ConicalPlane BQ) (h : F.line ≤ G.plane) (x : realified V) :
+    (associated Q) (rationalPoint ((fibreRay hBsym F G : ↥F.space) : V)) x = 0 ↔
+      (associated Q) (rationalPoint G.ray) x -
+        (BQ G.ray F.partner : ℝ) * ((associated Q) (rationalPoint F.gen) x) = 0 := by
+  have hproj : rationalPoint ((fibreRayProj hBsym F G : ↥F.space) : V) =
+      rationalPoint G.ray - (BQ G.ray F.partner : ℝ) • rationalPoint F.gen := by
+    rw [fibreRayProj_val hBsym F G h, map_sub]
+    congr 1
+    exact rationalPoint_rat_smul (BQ G.ray F.partner) F.gen
+  rcases fibreRay_eq_or_neg hBsym F G with h' | h'
+  · have hcoe : ((fibreRay hBsym F G : ↥F.space) : V) =
+        ((fibreRayProj hBsym F G : ↥F.space) : V) := by rw [h']
+    rw [hcoe, hproj, LinearMap.BilinForm.sub_left, LinearMap.BilinForm.smul_left]
+  · have hcoe : ((fibreRay hBsym F G : ↥F.space) : V) =
+        -((fibreRayProj hBsym F G : ↥F.space) : V) := by rw [h']; rfl
+    rw [hcoe, map_neg, LinearMap.BilinForm.neg_left, hproj,
+      LinearMap.BilinForm.sub_left, LinearMap.BilinForm.smul_left, neg_eq_zero]
 
 end FibreRay
 
@@ -500,11 +529,11 @@ theorem vSigmaPlane_eq_ker_inf_ker (hBQ : ∀ u w : V,
     (associated Q) (rationalPoint u) (rationalPoint w) = (BQ u w : ℝ))
     (hBsym : BQ.IsSymm) (F : ConicalLine BQ Q) (G : ConicalPlane BQ) (h : F.line ≤ G.plane)
     (hpos : sigPos (fibreForm Q F.space) = 1)
-    (hnd : (fibreForm Q F.space).Nondegenerate)
-    (hsheet : 0 ≤ (associated (fibreForm Q F.space)) (rationalPoint (fibreRay hBsym F G)) F.sheet) :
+    (hnd : (fibreForm Q F.space).Nondegenerate) :
     vSigmaPlane hBsym F (facialDecomposition F.closure) G h =
       LinearMap.ker (associated Q (rationalPoint F.gen)) ⊓
         LinearMap.ker (associated Q (rationalPoint G.ray)) := by
+  have hsheet := fibreRay_sheet_nonneg hBsym F G
   have hQr : (fibreForm Q F.space) (rationalPoint (fibreRay hBsym F G)) = 0 :=
     fibreRay_isotropic hBQ hBsym F G h
   have hrne : rationalPoint (fibreRay hBsym F G) ≠ 0 :=
@@ -550,20 +579,12 @@ theorem vSigmaPlane_eq_ker_inf_ker (hBQ : ∀ u w : V,
           (realifyMap F.space y) = 0 := by
         rw [← realifyMap_rationalPoint, ← associated_fibreForm]
         exact hy
-      have hsplit : (associated Q) (rationalPoint ((fibreRay hBsym F G : ↥F.space) : V))
-          (realifyMap F.space y)
-          = (associated Q) (rationalPoint G.ray) (realifyMap F.space y)
-            - (BQ G.ray F.partner : ℝ) *
-              ((associated Q) (rationalPoint F.gen) (realifyMap F.space y)) := by
-        have hrat : rationalPoint ((fibreRay hBsym F G : ↥F.space) : V)
-            = rationalPoint G.ray - (BQ G.ray F.partner : ℝ) • rationalPoint F.gen := by
-          rw [fibreRay_val hBsym F G h, map_sub]
-          congr 1
-          exact rationalPoint_rat_smul (BQ G.ray F.partner) F.gen
-        rw [hrat, LinearMap.BilinForm.sub_left, LinearMap.BilinForm.smul_left]
-      rw [hsplit, hAM, mul_zero, sub_zero] at h1
+      have hray0 : (associated Q) (rationalPoint G.ray) (realifyMap F.space y) = 0 := by
+        have hiff := rationalPoint_fibreRay_val hBsym F G h (realifyMap F.space y)
+        rw [h1, hAM, mul_zero, sub_zero] at hiff
+        exact hiff.1 rfl
       exact Submodule.mem_inf.2 ⟨by rw [LinearMap.mem_ker]; exact hAM,
-        by rw [LinearMap.mem_ker]; exact h1⟩
+        by rw [LinearMap.mem_ker]; exact hray0⟩
   · intro z hz
     obtain ⟨hz1, hz2⟩ := Submodule.mem_inf.1 hz
     rw [LinearMap.mem_ker] at hz1 hz2
@@ -588,25 +609,16 @@ theorem vSigmaPlane_eq_ker_inf_ker (hBQ : ∀ u w : V,
       rw [realify_planeComplement_eq_planePerp hBQ hBsym F.gen_iso F.partner_iso F.pairing]
       exact hyW
     obtain ⟨y, hy⟩ := hyMem
-    have hyker : (associated (fibreForm Q F.space)) (rationalPoint (fibreRay hBsym F G)) y = 0 := by
-      have hrat : rationalPoint ((fibreRay hBsym F G : ↥F.space) : V)
-          = rationalPoint G.ray - (BQ G.ray F.partner : ℝ) • rationalPoint F.gen := by
-        rw [fibreRay_val hBsym F G h, map_sub]
-        congr 1
-        exact rationalPoint_rat_smul (BQ G.ray F.partner) F.gen
+    have hgeny : (associated Q) (rationalPoint F.gen) (realifyMap F.space y) = 0 := by
       have hconf : realifyMap F.space y = z - lam • rationalPoint F.gen := hy
-      rw [associated_fibreForm, realifyMap_rationalPoint, hrat, hconf]
-      have hexp : (associated Q)
-          (rationalPoint G.ray - (BQ G.ray F.partner : ℝ) • rationalPoint F.gen)
-          (z - lam • rationalPoint F.gen)
-          = ((associated Q) (rationalPoint G.ray) z
-              - lam * ((associated Q) (rationalPoint G.ray) (rationalPoint F.gen)))
-            - (BQ G.ray F.partner : ℝ) * ((associated Q) (rationalPoint F.gen) z
-              - lam * ((associated Q) (rationalPoint F.gen) (rationalPoint F.gen))) := by
-        rw [LinearMap.BilinForm.sub_left, LinearMap.BilinForm.smul_left, map_sub, map_sub,
-          map_smul, map_smul, smul_eq_mul, smul_eq_mul]
-      rw [hexp, hz1, hz2, hgene, hgen]
-      ring
+      rw [hconf, map_sub, map_smul, smul_eq_mul, hz1, hgen, mul_zero, sub_zero]
+    have hrayy : (associated Q) (rationalPoint G.ray) (realifyMap F.space y) = 0 := by
+      have hconf : realifyMap F.space y = z - lam • rationalPoint F.gen := hy
+      rw [hconf, map_sub, map_smul, smul_eq_mul, hz2, hgene, mul_zero, sub_zero]
+    have hyker : (associated (fibreForm Q F.space)) (rationalPoint (fibreRay hBsym F G)) y = 0 := by
+      rw [associated_fibreForm, realifyMap_rationalPoint]
+      exact (rationalPoint_fibreRay_val hBsym F G h (realifyMap F.space y)).2
+        (by rw [hrayy, hgeny, mul_zero, sub_zero])
     have hz_eq : z = realifyMap F.space y + lam • rationalPoint F.gen := by
       rw [hy]
       abel
@@ -750,15 +762,12 @@ theorem bailyBorel_condition_ii (hBQ : ∀ u w : V,
     (associated Q) (rationalPoint u) (rationalPoint w) = (BQ u w : ℝ))
     (hpos : ∀ F : ConicalLine BQ Q, sigPos (fibreForm Q F.space) = 1)
     (hnd : ∀ F : ConicalLine BQ Q, (fibreForm Q F.space).Nondegenerate)
-    (hsheet : ∀ (hBsym : BQ.IsSymm) (F : ConicalLine BQ Q) (G : ConicalPlane BQ)
-      (_h : F.line ≤ G.plane),
-      0 ≤ (associated (fibreForm Q F.space)) (rationalPoint (fibreRay hBsym F G)) F.sheet)
     (hBsym : BQ.IsSymm) (F F' : ConicalLine BQ Q) (G : ConicalPlane BQ)
     (h : F.line ≤ G.plane) (h' : F'.line ≤ G.plane) :
     vSigmaPlane hBsym F (facialDecomposition F.closure) G h =
       vSigmaPlane hBsym F' (facialDecomposition F'.closure) G h' := by
-  rw [vSigmaPlane_eq_ker_inf_ker hBQ hBsym F G h (hpos F) (hnd F) (hsheet hBsym F G h),
-    vSigmaPlane_eq_ker_inf_ker hBQ hBsym F' G h' (hpos F') (hnd F') (hsheet hBsym F' G h'),
+  rw [vSigmaPlane_eq_ker_inf_ker hBQ hBsym F G h (hpos F) (hnd F),
+    vSigmaPlane_eq_ker_inf_ker hBQ hBsym F' G h' (hpos F') (hnd F'),
     ker_inf_ker_eq F G h, ker_inf_ker_eq F' G h']
 
 end BailyBorel
@@ -1357,13 +1366,14 @@ for the facial decomposition of the conical locus of a form of signature `(2, n)
 signature `(1, n-1)` (§1B, p. 11: `sigPos_fibreForm`), condition (i) is
 `bailyBorel_condition_i`, condition (ii) is `vSigmaPlane_eq_ker_inf_ker` through
 `bailyBorel_condition_ii`, and the collection is `Γ`-invariant at the level of its members by the
-transport of a conical fibre along an isometry (`ConicalLine.map`, `bailyBorel_gammaInvariant`). -/
+transport of a conical fibre along an isometry (`ConicalLine.map`, `bailyBorel_gammaInvariant`).
+
+No hypothesis on the half lines is left: the half line `C_{J,+}` of a `ℚ`-isotropic plane in a fibre
+is `fibreRay`, which carries its own sheet condition (`fibreRay_sheet_nonneg`). -/
 theorem bailyBorel_isAdmissibleDecomposition
     (hBQ : ∀ u w : V, (associated Q) (rationalPoint u) (rationalPoint w) = (BQ u w : ℝ))
     (hBsym : BQ.IsSymm) (hsig : sigPos Q = 2) (hnd : Q.Nondegenerate)
-    (Γ : Set (V ≃ₗ[ℚ] V))
-    (hsheet : ∀ (F : ConicalLine BQ Q) (G : ConicalPlane BQ) (_h : F.line ≤ G.plane),
-      0 ≤ (associated (fibreForm Q F.space)) (rationalPoint (fibreRay hBsym F G)) F.sheet) :
+    (Γ : Set (V ≃ₗ[ℚ] V)) :
     IsAdmissibleDecomposition BQ Q Γ (fun F => facialDecomposition F.closure) := by
   have hposP : ∀ F : ConicalLine BQ Q,
       sigPos (fibreForm Q (planeComplement BQ F.gen F.partner)) = 1 := by
@@ -1381,7 +1391,7 @@ theorem bailyBorel_isAdmissibleDecomposition
     { gammaInvariant := bailyBorel_gammaInvariant hBQ Γ hposP
       condition_i := fun F => bailyBorel_condition_i F (hpos F) (hndF F)
       condition_ii := fun hBsym' F F' G h h' =>
-        bailyBorel_condition_ii hBQ hpos hndF (fun _ F G h => hsheet F G h) hBsym' F F' G h h' }
+        bailyBorel_condition_ii hBQ hpos hndF hBsym' F F' G h h' }
 
 end BailyBorelAdmissible
 

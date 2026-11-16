@@ -175,9 +175,18 @@ theorem fibreFormC_fibreRay_eq_zero {BQ : LinearMap.BilinForm ℚ V}
   change realifiedForm ψ (realifyMap F.space (rationalPoint (fibreRay hBsym F G))) = 0
   rw [realifyMap_rationalPoint, realifiedForm_rationalPoint]
   have hmem : ((fibreRay hBsym F G : ↥F.space) : V) ∈ G.plane := by
-    rw [fibreRay_val hBsym F G h]
-    exact Submodule.sub_mem _ G.ray_mem
-      (Submodule.smul_mem _ _ (F.gen_mem_plane G h))
+    have hproj : ((fibreRayProj hBsym F G : ↥F.space) : V) ∈ G.plane := by
+      rw [fibreRayProj_val hBsym F G h]
+      exact Submodule.sub_mem _ G.ray_mem
+        (Submodule.smul_mem _ _ (F.gen_mem_plane G h))
+    rcases fibreRay_eq_or_neg hBsym F G with h' | h'
+    · have hcoe : ((fibreRay hBsym F G : ↥F.space) : V) =
+          ((fibreRayProj hBsym F G : ↥F.space) : V) := by rw [h']
+      rwa [hcoe]
+    · have hcoe : ((fibreRay hBsym F G : ↥F.space) : V) =
+          -((fibreRayProj hBsym F G : ↥F.space) : V) := by rw [h']; rfl
+      rw [hcoe]
+      exact Submodule.neg_mem _ hproj
   have hzero : ψ ((fibreRay hBsym F G : ↥F.space) : V) = 0 := by
     simpa using hψ hmem
   rw [hzero]
@@ -398,6 +407,61 @@ theorem arrangementDecomposition_reindex {ι' : Type*}
     (Cplus : PointedCone ℝ (realified V₁)) :
     arrangementDecomposition (fun i => φ (j i)) Cplus = arrangementDecomposition φ Cplus := by
   rw [arrangementDecomposition, arrangementDecomposition, arrangementCells_reindex j]
+
+/-- **The arrangement decomposition is unchanged when each form of the family is multiplied by a
+nonzero scalar.** The hyperplane of a trace is what cuts, not the normal: rescaling a form keeps
+its kernel and its two sides, so the sign pattern of a point is flipped by the sign of the scalar
+and the cells are the same set of cones. This is what makes `Σ(H)` at a fibre a decomposition of
+the fibre's `ℚ`-hyperplanes rather than of the normals of the ambient family that represent them:
+over one trace `T ⊂ I^⊥/I` sit the hyperplanes `I ⊕ T ⊕ ℚ(f + k)`, `k ∉ I ⊕ T`, of `V`. -/
+theorem arrangementCone_smul {φ : ι → (realified V₁) →L[ℝ] ℝ} (c : ι → ℝ)
+    (hc : ∀ i, c i ≠ 0) (s : ι → SignType) :
+    arrangementCone (fun i => c i • φ i) s =
+      arrangementCone φ (fun i => SignType.sign (c i) * s i) := by
+  refine SetLike.ext fun x => ?_
+  rw [mem_arrangementCone_iff_specializes, mem_arrangementCone_iff_specializes]
+  refine forall_congr' fun i => ?_
+  have hc' : SignType.sign (c i) ≠ 0 := sign_ne_zero_of_ne (hc i)
+  rw [smul_apply, smul_eq_mul, sign_mul]
+  constructor
+  · rintro (h | h)
+    · left
+      rcases mul_eq_zero.1 h with h' | h'
+      · exact absurd h' hc'
+      · exact h'
+    · right
+      have h' : SignType.sign (c i) * (SignType.sign (c i) * SignType.sign ((φ i) x))
+          = SignType.sign (c i) * s i := congrArg (fun t => SignType.sign (c i) * t) h
+      rw [← mul_assoc, sign_mul_self_of_ne_zero hc', one_mul] at h'
+      exact h'
+  · rintro (h | h)
+    · left
+      rw [h, mul_zero]
+    · right
+      rw [h, ← mul_assoc, sign_mul_self_of_ne_zero hc', one_mul]
+
+/-- **The cells of an arrangement do not depend on the normals of the forms**
+(`arrangementCone_smul`). -/
+theorem arrangementCells_smul {φ : ι → (realified V₁) →L[ℝ] ℝ} (c : ι → ℝ)
+    (hc : ∀ i, c i ≠ 0) (Cplus : PointedCone ℝ (realified V₁)) :
+    arrangementCells (fun i => c i • φ i) Cplus = arrangementCells φ Cplus := by
+  refine Set.Subset.antisymm ?_ ?_
+  · rintro - ⟨s, rfl⟩
+    exact ⟨fun i => SignType.sign (c i) * s i, by rw [arrangementCone_smul c hc]⟩
+  · rintro - ⟨s, rfl⟩
+    refine ⟨fun i => SignType.sign (c i) * s i, ?_⟩
+    rw [arrangementCone_smul c hc]
+    have hfun : (fun i => SignType.sign (c i) * (SignType.sign (c i) * s i)) = s := by
+      funext i
+      rw [← mul_assoc, sign_mul_self_of_ne_zero (sign_ne_zero_of_ne (hc i)), one_mul]
+    rw [hfun]
+
+/-- **The arrangement decomposition does not depend on the normals of the forms**: two families of
+forms with the same hyperplanes, indexed the same way, cut the same cones. -/
+theorem arrangementDecomposition_smul {φ : ι → (realified V₁) →L[ℝ] ℝ} (c : ι → ℝ)
+    (hc : ∀ i, c i ≠ 0) (Cplus : PointedCone ℝ (realified V₁)) :
+    arrangementDecomposition (fun i => c i • φ i) Cplus = arrangementDecomposition φ Cplus := by
+  rw [arrangementDecomposition, arrangementDecomposition, arrangementCells_smul c hc Cplus]
 
 end TransportBetweenSpaces
 
@@ -1460,6 +1524,45 @@ theorem arrangementDecomposition_reducedLattice_isLocallyRational
   exact arrangementDecomposition_isLocallyRational hsal hφ
     (cutsFinitelyOnRational_reducedLattice hBQsym hBQ hsig hnd F bs₀ hint₀ bs hbs ΓI hone H₀
       hΓΛ hΓiso gen hgen)
+
+/-! ## `Σ(H)` indexed by the fibre's own hyperplanes
+
+Looijenga, Example 6.4, p. 29: "the `H ∈ H` containing `I` correspond to `ℚ`-hyperplanes in
+`I^⊥/I ⊗ I` of signature `(1, n-2)` and so according to example 4.3-b these decompose `C_{I,+}`
+into locally rational cones". The count of Example 4.3 (b) is a statement about the *fibre's*
+`ℚ`-hyperplanes, and the correspondence is not injective on the ambient family: with
+`V = ℚe ⊕ ℚf ⊕ W`, `I = ℚe` and `T ⊂ W` a hyperplane, every `I ⊕ T ⊕ ℚ(f + k)`, `k ∉ I ⊕ T`, is a
+`ℚ`-hyperplane containing `I` with trace `T`, so an infinite ambient family can sit over one trace
+and the ambient-indexed count is not the source's. Indexing `Σ(H)` at a fibre by the fibre's own
+hyperplanes is what makes `arrangementDecomposition_reducedLattice_isLocallyRational` — condition
+(i) with no counting hypothesis — a statement about `Σ(H)`: `arrangementCone_smul` says the
+decomposition sees the hyperplanes and not the normals that represent them, so a correspondence of
+the two index sets up to a nonzero scalar transfers the fibre's count to the ambient family. -/
+
+section TracesIndex
+
+variable {BQ : LinearMap.BilinForm ℚ V} {Q : QuadraticForm ℝ (realified V)}
+
+omit [Module.Finite ℚ V] in
+/-- **Condition (i) of Definition 6.1 for `Σ(H)`, counted at the fibre's hyperplanes.** The
+decomposition `Σ(H)` of the fibre is computed from the traces of the hyperplanes of `H` containing
+`I`; if those traces are the forms `φ'` of the fibre's own `ℚ`-hyperplane family, up to the naming
+of the index set (`j`) and a nonzero scalar per wall (`c`), then condition (i) for the
+ambient-indexed `semifanArrangement` follows from condition (i) for the fibre-indexed arrangement —
+the count of Example 4.3 (b) at the fibre. -/
+theorem semifanArrangement_isLocallyRational_of_traces {ι : Type*} (ψ : ι → V →ₗ[ℚ] ℚ)
+    (F : ConicalLine BQ Q) {ι' : Type*} {φ' : ι' → (realified ↥F.space) →L[ℝ] ℝ}
+    (j : fibreWalls ψ F ≃ ι') (c : fibreWalls ψ F → ℝ) (hc : ∀ i, c i ≠ 0)
+    (hforms : ∀ i : fibreWalls ψ F, fibreFormC F (ψ ↑i) = c i • φ' (j i))
+    (hlr : IsLocallyRationalDecomposition F.closure (arrangementDecomposition φ' F.closure)) :
+    IsLocallyRationalDecomposition F.closure (semifanArrangement ψ F) := by
+  rw [semifanArrangement,
+    show (fun i : fibreWalls ψ F => fibreFormC F (ψ ↑i)) = fun i => c i • φ' (j i) from
+      funext hforms,
+    arrangementDecomposition_smul c hc, arrangementDecomposition_reindex j]
+  exact hlr
+
+end TracesIndex
 
 /-! ## Example 6.4: the `≥` half of `J_{Σ(ℋ)} = J_ℋ`
 
