@@ -633,6 +633,49 @@ theorem semifanArrangement_gammaInvariant
 
 end GammaInvarianceArrangement
 
+/-! ## The arithmetic input of Example 6.4: `ℋ` as a finite union of `Γ`-orbits -/
+
+section FiniteUnionOfOrbits
+
+variable {BQ : LinearMap.BilinForm ℚ V} {Q : QuadraticForm ℝ (realified V)}
+
+/-- **Looijenga, Example 6.4, p. 29: `ℋ` is a finite union of `Γ`-orbits of `ℚ`-hyperplanes** (text
+line 793: "let `H` run over a finite union `ℋ` of `Γ`-orbits in the Grassmannian of `Q`-hyperplanes
+of `V` of signature `(2, n - 1)`").
+
+The family `ψ` indexes the hyperplanes of `ℋ` by forms, and the two halves of the source's
+hypothesis are recorded separately because they enter the development at different places:
+`permutes` is the `hequiv` hypothesis with which `Σ(ℋ)` is `Γ`-invariant
+(`semifanArrangement_gammaInvariant_of_finiteOrbits`), and `finite_orbits` is the input the count of
+Example 4.3 (b) consumes. The count itself is made at the fibre over the fibre's own hyperplanes
+(`arrangementDecomposition_reducedLattice_isLocallyRational`, whose data are the fibre's), so this
+structure is the ambient form of the source's hypothesis and not the index set of the count.
+
+LC-09: the corpus queries `finite union of Gamma-orbits hyperplanes`, `arithmetic arrangement
+hyperplane orbits locally finite` and `Gamma invariant hyperplane arrangement orbits` return no
+file, and Mathlib has no arrangement theory, so the two clauses are stated from the source rather
+than ported. -/
+structure IsFiniteUnionOfOrbits {ι : Type*} (Γ : Set (V ≃ₗ[ℚ] V))
+    (ψ : ι → V →ₗ[ℚ] ℚ) : Prop where
+  /-- every isometry of `Γ` permutes the hyperplanes of `ℋ`, up to a nonzero rational scalar -/
+  permutes : ∀ g ∈ Γ, ∃ (ρ : ι ≃ ι) (d : ι → ℚ), (∀ i, d i ≠ 0) ∧
+    ∀ i (y : V), ψ (ρ i) (g y) = d i * ψ i y
+  /-- finitely many of the hyperplanes generate `ℋ` under `Γ` -/
+  finite_orbits : ∃ s : Finset ι, ∀ i, ∃ j ∈ s, ∃ g ∈ Γ, ∃ d : ℚ, d ≠ 0 ∧
+    ∀ y : V, ψ i y = d * ψ j (g y)
+
+/-- **Example 6.4, p. 29: `Σ(ℋ)` is `Γ`-invariant** for `ℋ` a finite union of `Γ`-orbits of
+`ℚ`-hyperplanes, from the permutation half of the arithmetic hypothesis. -/
+theorem semifanArrangement_gammaInvariant_of_finiteOrbits {ι : Type*} {ψ : ι → V →ₗ[ℚ] ℚ}
+    {Γ : Set (V ≃ₗ[ℚ] V)} (h : IsFiniteUnionOfOrbits Γ ψ)
+    (hBQ : ∀ u w : V, (associated Q) (rationalPoint u) (rationalPoint w) = (BQ u w : ℝ))
+    (hpos : ∀ F : ConicalLine BQ Q,
+      sigPos (fibreForm Q (planeComplement BQ F.gen F.partner)) = 1) :
+    IsGammaInvariantLocus BQ Q Γ (semifanArrangement ψ) :=
+  semifanArrangement_gammaInvariant hBQ Γ ψ h.permutes hpos
+
+end FiniteUnionOfOrbits
+
 /-! ## The walls of `Σ(H)` at a fibre are the normal forms of the projected normals
 
 The counting lemma of #161 is stated for a family of `ℚ`-linear forms `BQ v` (the normal forms of
