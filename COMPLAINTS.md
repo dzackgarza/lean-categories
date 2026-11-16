@@ -3163,7 +3163,10 @@ downstream assertions, computational observations, or downstream diagnostics.
   `vSigmaPlane_semifanArrangement_le_JHspace` is the `≤` half stated against it;
   `JH_le_lineSpan_sup_fibreJH` splits a vector of `J_ℋ` as a multiple of the line's generator plus a
   vector `y` of the fibre that is orthogonal to the ray and killed by every wall through it
-  (`fibreJH`); `fibreJH_le_sigmaSupportSpace` puts that `y` in the support space from
+  (`fibreJH`); `fibreJH_le_span_of_wallsThrough` states the remaining hypothesis in its geometric
+  form — the common kernel of the traces through the ray lies in the span of the member, i.e. the
+  walls cut the member out — and `fibreJH_le_sigmaSupportSpace` puts that `y` in the support space
+  from
   `inf_ker_iInf_span_le_sigmaSupportSpace`; and `vSigmaPlane_semifanArrangement_eq_JH` /
   `isAdmissibleDecomposition_semifanArrangement` assemble `J_{Σ(ℋ)} = J_ℋ` and the admissibility of
   `Σ(ℋ)` from the single remaining statement `hspan` — that the span of every member above the half

@@ -2493,6 +2493,21 @@ theorem JH_le_lineSpan_sup_fibreJH {ι : Type*} (ψ : ι → V →ₗ[ℚ] ℚ)
   · refine Submodule.mem_sup_left ?_
     exact Submodule.smul_mem _ _ (Submodule.subset_span (Set.mem_singleton _))
 
+omit [Module.Finite ℚ V] in
+/-- **The geometric form of the span hypothesis**: if the walls through the half line cut the member
+`τ` out — the common kernel of their traces lies in `⟨τ⟩` — then the fibre's `J_ℋ` lies in `⟨τ⟩`.
+This is the hypothesis of `fibreJH_le_sigmaSupportSpace` in the form the source's proof of
+Lemma-Definition 4.5 produces; the orthogonality to the ray is dropped because it is not needed. -/
+theorem fibreJH_le_span_of_wallsThrough {ι : Type*} (ψ : ι → V →ₗ[ℚ] ℚ) (hBsym : BQ.IsSymm)
+    (F : ConicalLine BQ Q) (G : ConicalPlane BQ)
+    {τ : PointedCone ℝ (realified ↥F.space)}
+    (h : (⨅ i : {i : fibreWalls ψ F //
+        fibreFormC F (ψ ↑i) (rationalPoint (fibreRay hBsym F G)) = 0},
+        LinearMap.ker (fibreFormC F (ψ ↑i)).toLinearMap) ≤
+      Submodule.span ℝ (τ : Set (realified ↥F.space))) :
+    fibreJH (Q := Q) ψ hBsym F G ≤ Submodule.span ℝ (τ : Set (realified ↥F.space)) :=
+  inf_le_right.trans h
+
 /-- **The fibre inclusion of the `≥` half**: a vector of the fibre orthogonal to the half line and
 killed by every wall through it lies in the `Σ`-support space of the half line, provided the span of
 every member above the half line meeting the open cone contains it. The last hypothesis is the one
