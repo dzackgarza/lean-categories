@@ -52,32 +52,55 @@ E. Looijenga, *Compactifications defined by arrangements II: locally symmetric v
 
 ## What is not here
 
+* **`CutsFinitelyOnRational` at the fibre**, and hence condition (i) of Definition 6.1 with no
+  hypothesis carried. What is in place: the counting lemma of Example 4.3 (b) with the group action
+  replaced by a finite set of norms (`cutsFinitelyOnRational_of_finiteNormValues`), the
+  identification of the fibre's walls with the normal forms of the projected normals
+  (`fibreFormC_bilinForm`), and the identity `fibreProj v · fibreProj v = v · v` for a normal
+  orthogonal to `I` (`fibreForm_fibreProj`), which is what lets the ambient finite set of norms
+  (`finite_form_values_of_orbitFamily`) serve at every fibre. What is missing is the reduced lattice
+  at the level of `ℤ`-modules: with `Λ` the ambient lattice, the fibre's lattice is the image of
+  `Λ ⊓ I^⊥` under `fibreProj`, and the counting lemma needs it as the `ℤ`-span of a `ℚ`-basis of the
+  fibre's carrier, together with
+  `Λ_F ⊓ ℚ·(fibreProj (gen ℓ)) = ℤ·fibreProj (gen ℓ)` for `ℓ ⊓ Λ = ℤ·gen ℓ` with `ℓ ≤ ker (BQ e)`.
+  Neither the reduction `(Λ ⊓ I^⊥)/(Λ ⊓ I)` as a `ℤ`-module nor that primitivity is in the
+  repository; the remaining step is
+  `∃ bs : Module.Basis κ ℚ ↥F.space, Submodule.span ℤ (Set.range bs) = Submodule.map
+  ((fibreProj hBsym F).restrictScalars ℤ) (Λ ⊓ (LinearMap.ker (BQ F.gen)).restrictScalars ℤ)`
+  together with the associated primitivity and integrality, after which
+  `cutsFinitelyOnRational_of_finiteNormValues` applies at `V := ↥F.space` with `M` the ambient norm
+  set and `g ℓ := fibreProj (gen ℓ)`. Two further notes on that last step. The fibre's form and its
+  restriction `fibreBilinForm` are nondegenerate together and the identification
+  `associated (fibreForm Q F.space) = (fibreBilinForm BQ F : _ → _ → ℚ)` holds on rational points,
+  so the *statement* halves of the instantiation are not the difficulty: applying
+  `cutsFinitelyOnRational_of_finiteNormValues` at `V := ↥F.space` makes the elaborator unfold
+  `ConicalLine.space`, `planeComplement` and the two realifications at every unification step, and
+  the application runs out of heartbeats (`whnf` timeout, 4 000 000) without an error in the
+  mathematics. The cheap model for the next attempt is a lemma stated over an abstract `W` with a
+  `ℚ`-linear equivalence `W ≃ ↥F.space` carrying `fibreForm` to a given form — i.e. the counting at
+  the reduced lattice itself, with the fibre's carrier reached only through that equivalence.
 * **Condition (ii) and `J_{Σ(H)} = J_H`** (the `Σ`-support space of a plane's half line is
-  `J^⊥ ⊓ ⋂_{H ∋ J} H`). At the half line of `J`, `vSigmaPlane` is
-  `sigmaSupportSpace` over the members `τ` of `Σ(H)` with `C_{J,+} ≤ τ` and `τ ∩ C_I ≠ ∅`, and
-  *both* inclusions need such a `τ`: with none, that intersection is `⊤` and the two sides are
-  different subspaces. **Such a member need not exist for an arbitrary family of forms**, which is
-  what `semifanArrangement` takes as its input: in `ℝ²`, with `C₊` the closed upper half plane and
-  the walls `{y = x/n}` (`n ≥ 1`), the ray `{(x, 0) | x ≥ 0}` lies in no member of the decomposition
-  (every sector lies in an angular interval bounded away from it), so the index of the half line is
-  empty. The source's `H` is locally finite on `D` (Example 6.4, p. 29), and it is that finiteness —
-  finitely many walls meeting a neighbourhood of the half line — which supplies the member: for `z`
-  in the open cone and `t > 0` small the point `r + t z` is again in the open cone, and the cell
-  containing it has the half line in its closure, because the signs of the walls not containing `J`
-  are still those at `r`. Given the member `τ` the `≤` half follows — a trace is one-signed on `τ`
-  and zero on the half line, so it lies in `supportForms τ σ` and the support space is inside it,
-  with `supportSpace_le_ker_associated_of_isotropic` for the `J^⊥` half — and the `≥` half needs the
-  span of that cell, `⟨arrangementCone φ s ⊓ C₊⟩ = ⋂_{s i = 0} ker (φ i)`, whose `⊇` half needs the
-  family to be finite (or locally finite) along the cell: for `y` in the cell and `x` in the common
-  kernel, `y + ε x` is again in the cell only below a bound on `ε` that is uniform over the walls
-  carrying a nonzero sign in `s`, so those walls have to be finite.
-* **`CutsFinitelyOnRational` at the fibre is carried, not derived**:
-  `semifanArrangement_isLocallyRational` takes it as a hypothesis. The counting lemma is
-  `cutsFinitelyOnRational_orbitFamily`, stated for one lattice `Λ` in one space, preserved by `Γ`.
-  At the fibre the elements of `Γ` fixing `I` carry the carrier `⟨e, f⟩^⊥` to `⟨g e, g f⟩^⊥` for the
-  transported partner (`Semifan.fibreCarrierEquiv`), so they do not act on one carrier, and the
-  fibre's lattice is the reduction `(Λ ∩ I^⊥)/(Λ ∩ I)` rather than `Λ ∩ ⟨e, f⟩^⊥`. Deriving the
-  hypothesis therefore needs that reduction at the level of `ℤ`-modules, which is not here.
+  `J^⊥ ⊓ ⋂_{H ∋ J} H`). At the half line of `J`, `vSigmaPlane` is `sigmaSupportSpace` over the
+  members `τ` of `Σ(H)` with `C_{J,+} ≤ τ` and `τ ∩ C_I ≠ ∅`, and *both* inclusions need such a
+  `τ`: with none that intersection is `⊤` and the two sides are different subspaces. The exact
+  statement still owed is therefore, at each `F` and `G` with `F.line ≤ G.plane`,
+  `∃ τ ∈ semifanArrangement ψ F, PointedCone.hull ℝ {rationalPoint (fibreRay hBsym F G)} ≤ τ ∧
+  ((τ : Set (realified ↥F.space)) ∩ positiveCone.upper (fibreForm Q F.space) F.sheet).Nonempty`.
+  It does **not** follow from local finiteness on the open cone alone, which is what the counting
+  lemma gives (`finite_setOf_apply_eq_zero_of_cutsFinitelyOnRational`): for an arbitrary family of
+  forms none need exist — in `ℝ²` with `C₊` the closed upper half plane and the walls `{y = x/n}`
+  (`n ≥ 1`) the ray `{(x, 0) | x ≥ 0}` lies in no member of the decomposition, since every sector
+  lies in an angular interval bounded away from it — and in the fibre, walls that accumulate at the
+  half line without containing it have the same effect. The natural candidate for `τ` is the cell of
+  the sign pattern that is `0` exactly on the walls through `J`, which contains the half line by
+  construction; the input still needed is that this cell is nonempty, i.e. that the intersection of
+  the positive sides of the walls not containing `J` meets `⋂_{H ∋ J} H` in a timelike vector. Given
+  `τ`, the `≤` half follows — a trace is one-signed on `τ` and zero on the half line, so it lies in
+  `supportForms τ σ` and the support space is inside it, with
+  `supportSpace_le_ker_associated_of_isotropic` for the `J^⊥` half — and the `≥` half needs
+  `⟨arrangementCone φ s ⊓ C₊⟩ = ⋂_{s i = 0} ker (φ i)`, whose `⊇` half needs the family of walls
+  carrying a nonzero sign in `s` to be finite (or locally finite along the cell): `y + ε x` is again
+  in the cell only below a bound on `ε` uniform over those walls.
 -/
 
 @[expose] public section
