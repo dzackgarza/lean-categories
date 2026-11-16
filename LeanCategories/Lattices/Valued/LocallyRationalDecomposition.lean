@@ -10154,6 +10154,7 @@ theorem projectedPolyhedron_mono {Q : QuadraticForm ℝ (realified V)} {e : real
   obtain ⟨y, hy, rfl⟩ := PointedCone.mem_map.1 hu
   exact PointedCone.mem_map.2 ⟨y, h hy, rfl⟩
 
+omit [Module.Finite ℚ V] in
 /-- **The isotropic kernel descends to `A_I(ℝ)`'s direction**: the image of `I^⊥ = ker (e ·)` under
 `π_I` is the kernel of the descended functional `β` (Lemma-Definition 4.5, p. 19). -/
 theorem map_ker_associated_eq_ker_isotropicHalfspaceForm
@@ -10203,8 +10204,8 @@ polyhedron — without this condition that face would be a strictly smaller memb
 a nonempty polyhedron would be minimal. -/
 def IsProjectedMinimal (Q : QuadraticForm ℝ (realified V)) {e : realified V} (he : Q e = 0)
     (S : Set (PointedCone ℝ (realified V))) (σ τmin : PointedCone ℝ (realified V)) : Prop :=
-  τmin ∈ S ∧ σ ≤ τmin ∧ ∀ τ ∈ S, σ ≤ τ →
-    (projectedPolyhedron Q he τ).Nonempty →
+  τmin ∈ S ∧ σ ≤ τmin ∧ (projectedPolyhedron Q he τmin).Nonempty ∧
+    ∀ τ ∈ S, σ ≤ τ → (projectedPolyhedron Q he τ).Nonempty →
       projectedPolyhedron Q he τ ⊆ projectedPolyhedron Q he τmin →
         projectedPolyhedron Q he τmin ⊆ projectedPolyhedron Q he τ
 
@@ -10424,6 +10425,7 @@ theorem map_span_eq_span_map {e : realified V} (τ : PointedCone ℝ (realified 
     Set.ext fun x => PointedCone.mem_map
   rw [h, Submodule.map_span]
 
+omit [Module.Finite ℚ V] in
 /-- **The `e ·`-killed part of a member's span is the projected lineality.** -/
 theorem map_inf_ker_span_eq_lineal
     {Q : QuadraticForm ℝ (realified V)} {e : realified V} (he : Q e = 0)
@@ -10594,7 +10596,7 @@ theorem projectedPolyhedron_apply_eq_zero_of_projectedMinimal
     (hp : ∃ p ∈ projectedPolyhedron Q he τmin, φ p = 0) :
     ∀ u ∈ projectedPolyhedron Q he τmin, φ u = 0 := by
   intro u hu
-  obtain ⟨hτS, hστ, hminimal⟩ := hmin
+  obtain ⟨hτS, hστ, -, hminimal⟩ := hmin
   -- the functional pulled back to `L(ℝ)`
   set ψ : realified V →ₗ[ℝ] ℝ :=
     φ.comp (Submodule.span ℝ ({e} : Set (realified V))).mkQ with hψdef
@@ -10637,6 +10639,17 @@ theorem projectedPolyhedron_apply_eq_zero_of_projectedMinimal
   obtain ⟨hxF, -⟩ := hback hu
   obtain ⟨y, hy, rfl⟩ := PointedCone.mem_map.1 hxF
   exact hy.2
+omit [Module.Finite ℚ V] in
+omit [Module.Finite ℚ V] in
+/-- A projected-minimal member cuts a nonempty polyhedron: minimality carries it, and it is what the
+engine above needs to have a point to vanish at. -/
+theorem projectedPolyhedron_nonempty_of_projectedMinimal
+    {Q : QuadraticForm ℝ (realified V)} {e : realified V} (he : Q e = 0)
+    {S : Set (PointedCone ℝ (realified V))} {σ τmin : PointedCone ℝ (realified V)}
+    (hmin : IsProjectedMinimal Q he S σ τmin) :
+    (projectedPolyhedron Q he τmin).Nonempty :=
+  hmin.2.2.1
+
 omit [Module.Finite ℚ V] in
 /-- **Affineness of the projected polyhedron is affineness inside the projection**: since `β` is `1`
 on the polyhedron and affine combinations preserve `β`, an affine combination of polyhedron points
