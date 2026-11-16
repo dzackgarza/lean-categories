@@ -123,21 +123,17 @@ an `ℝ`-vector space with no extra structure.
   "Lemma-Definition 4.5, the general case" below, whose docstring says which of its steps are
   carried and which are not; of the description of `L_σ` itself the upper bound `L_σ ⊆ I^⊥` is
   carried in the section "The two descriptions of `L_σ`"
-  (`sigmaSupportSpace_le_ker_associated_of_isotropic`), and the reverse inclusion, which is what
-  the affine model over `A_I(ℝ)` supplies, is carried under an explicit ambient local-finiteness
-  hypothesis. Section separation is proved at every projected star member
-  (`hasSectionSeparatingFunctional_map_of_isotropicHalfspace`), and local finiteness at the
-  isotropic point constructs a projected-minimal member
-  (`exists_isProjectedMinimal_of_locallyFiniteAt`), so the reverse inclusion carries neither a
-  minimal-member witness nor a minimality premise
-  (`inf_ker_iInf_span_le_sigmaSupportSpace_of_locallyFiniteAt`). That ambient finiteness hypothesis
-  is additional, not a clause of Definition 4.2 (line 481): finite restriction to rational subcones
-  is not the same as topological local finiteness at an isotropic boundary point. The local
-  finiteness in the proof of Lemma-Definition 4.5 (line 521) belongs to the projected decomposition
-  of `A_I(ℝ)`, already carried by `locallyFinite_map_star_of_isotropicHalfspace`, not to the ambient
-  space near `e`. Thus the theorem carries neither premise *under the stated finiteness hypothesis*,
-  and does not yet claim the source's unrestricted statement. For the facial decomposition
-  `Σ(bb)` the
+  (`sigmaSupportSpace_le_ker_associated_of_isotropic`), and the reverse inclusion is the canonical
+  `inf_ker_iInf_span_le_sigmaSupportSpace`, with neither a minimal-member witness nor an ambient
+  local-finiteness premise. Section separation is proved at every projected star member
+  (`hasSectionSeparatingFunctional_map_of_isotropicHalfspace`). A projected-minimal member is
+  selected by least linear-span rank (`exists_isProjectedMinimal`): a strictly smaller nonempty
+  section determines a proper projected face and hence has strictly smaller rank. This replaces the
+  earlier ambient `hloc` argument, whose old call signatures remain as compatibility wrappers. The
+  local finiteness in the source's proof (line 521) belongs to the projected decomposition of
+  `A_I(ℝ)`, already carried by `locallyFinite_map_star_of_isotropicHalfspace`, not to the ambient
+  space near `e`; the rank proof uses the common-face structure directly and needs no such
+  additional ambient hypothesis. For the facial decomposition `Σ(bb)` the
   description is carried in full, both inclusions and the strict inequality: the only face of
   `C₊` meeting the open cone is `C₊` itself, the closed sheet and its rational closure carry the
   same forms, and self-duality of the closed sheet gives `L_σ = I^⊥ ≠ ⟨σ⟩`
@@ -10485,7 +10481,7 @@ theorem exists_isProjectedMinimal_of_locallyFiniteAt
     (heC : e ∈ rationalClosure (closedSheet Q hpos ht))
     {S : Set (PointedCone ℝ (realified V))}
     (hS : IsLocallyRationalDecomposition (rationalClosure (closedSheet Q hpos ht)) S)
-    (hloc : ∃ U ∈ 𝓝 e, {τ : {τ : PointedCone ℝ (realified V) // τ ∈ S} |
+    (_hloc : ∃ U ∈ 𝓝 e, {τ : {τ : PointedCone ℝ (realified V) // τ ∈ S} |
       ((τ.1 : Set (realified V)) ∩ U).Nonempty}.Finite) :
     ∃ τmin : supportIndex (positiveCone.upper Q t) S
       (PointedCone.hull ℝ ({e} : Set (realified V))),
@@ -11405,31 +11401,45 @@ theorem inf_ker_iInf_span_le_sigmaSupportSpace_of_projectedMinimal
     (hasSectionSeparatingFunctional_map_of_isotropicHalfspace hpos hnd he0 he hS
       τmin.2.2.1 τmin.2.1)
 
-/-- **The reverse inclusion with neither a minimal-member witness nor a minimality premise.**
-Local finiteness at `e` constructs both by `exists_isProjectedMinimal_of_locallyFiniteAt`, and
-membership of `e` in `C₊` supplies `0 ≤ e · t`. This is an ambient-neighbourhood-finite version of
-the isotropic-half-line reverse inclusion at Lemma-Definition 4.5, p. 19, over `A_I(ℝ)`. The
-source's Definition 4.2 (line 481) does not include that finiteness hypothesis; its local-finiteness
-statement in the 4.5 proof (line 521) is in the projected affine space, not at `e` in the ambient
-space. The version with only those source hypotheses is tracked separately as unfinished. -/
-theorem inf_ker_iInf_span_le_sigmaSupportSpace_of_locallyFiniteAt
+/-- **The source-strength reverse inclusion in Lemma-Definition 4.5, p. 19.** There is no
+minimal-member witness, minimality premise, or ambient local-finiteness hypothesis:
+`exists_isProjectedMinimal` supplies the minimal member by projected span rank, and membership of
+`e` in `C₊` supplies `0 ≤ e · t`. Its only explicit inputs are `hpos`, `hnd`, `he0`, `he`, `heC`
+and `hS`, exactly the required decomposition hypotheses over `A_I(ℝ)`. -/
+theorem inf_ker_iInf_span_le_sigmaSupportSpace
     {Q : QuadraticForm ℝ (realified V)} {t e : realified V} (hpos : sigPos Q = 1)
     (hnd : Q.Nondegenerate) {ht : 0 < Q t} (he0 : e ≠ 0) (he : Q e = 0)
     (heC : e ∈ rationalClosure (closedSheet Q hpos ht))
     {S : Set (PointedCone ℝ (realified V))}
-    (hS : IsLocallyRationalDecomposition (rationalClosure (closedSheet Q hpos ht)) S)
-    (hloc : ∃ U ∈ 𝓝 e, {τ : {τ : PointedCone ℝ (realified V) // τ ∈ S} |
-      ((τ.1 : Set (realified V)) ∩ U).Nonempty}.Finite) :
+    (hS : IsLocallyRationalDecomposition (rationalClosure (closedSheet Q hpos ht)) S) :
     LinearMap.ker (associated Q e) ⊓
         (⨅ τ : supportIndex (positiveCone.upper Q t) S
           (PointedCone.hull ℝ ({e} : Set (realified V))),
           Submodule.span ℝ (τ.1 : Set (realified V))) ≤
       sigmaSupportSpace (positiveCone.upper Q t) S
         (PointedCone.hull ℝ ({e} : Set (realified V))) := by
-  obtain ⟨τmin, hmin⟩ := exists_isProjectedMinimal_of_locallyFiniteAt
-    hpos hnd he0 he heC hS hloc
+  obtain ⟨τmin, hmin⟩ := exists_isProjectedMinimal hpos hnd he0 he heC hS
   exact inf_ker_iInf_span_le_sigmaSupportSpace_of_projectedMinimal hpos hnd he0 he
     (rationalClosure_le_closedSheet hpos heC).2 hS τmin hmin
+
+/-- **Compatibility form with the former ambient-finiteness premise.** The canonical theorem
+`inf_ker_iInf_span_le_sigmaSupportSpace` needs no such premise; this declaration preserves the old
+call signature. -/
+theorem inf_ker_iInf_span_le_sigmaSupportSpace_of_locallyFiniteAt
+    {Q : QuadraticForm ℝ (realified V)} {t e : realified V} (hpos : sigPos Q = 1)
+    (hnd : Q.Nondegenerate) {ht : 0 < Q t} (he0 : e ≠ 0) (he : Q e = 0)
+    (heC : e ∈ rationalClosure (closedSheet Q hpos ht))
+    {S : Set (PointedCone ℝ (realified V))}
+    (hS : IsLocallyRationalDecomposition (rationalClosure (closedSheet Q hpos ht)) S)
+    (_hloc : ∃ U ∈ 𝓝 e, {τ : {τ : PointedCone ℝ (realified V) // τ ∈ S} |
+      ((τ.1 : Set (realified V)) ∩ U).Nonempty}.Finite) :
+    LinearMap.ker (associated Q e) ⊓
+        (⨅ τ : supportIndex (positiveCone.upper Q t) S
+          (PointedCone.hull ℝ ({e} : Set (realified V))),
+          Submodule.span ℝ (τ.1 : Set (realified V))) ≤
+      sigmaSupportSpace (positiveCone.upper Q t) S
+        (PointedCone.hull ℝ ({e} : Set (realified V))) :=
+  inf_ker_iInf_span_le_sigmaSupportSpace hpos hnd he0 he heC hS
 end AffineModel
 
 end LeanCategories.Lattices.Valued

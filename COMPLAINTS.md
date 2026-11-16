@@ -2718,40 +2718,22 @@ downstream assertions, computational observations, or downstream diagnostics.
   the *projected* affine-space decomposition, already carried by
   `locallyFinite_map_star_of_isotropicHalfspace`. Example 4.3(b), line 491, likewise says "locally
   finite on $C$", not at the isotropic boundary of `C₊` where 4.5 projects along `I`.
-- **Gap and impact:** `hloc` is the stronger statement that finitely many members of `S` meet some
-  ambient neighbourhood of `e`. It makes every member containing `e` part of that locally finite set,
-  which is exactly what the finite-preorder proof uses. The source's projected finiteness has `0`
-  outside the affine section `β = 1` and supplies no such global finite candidate set. Adding `hloc` to
-  `IsLocallyRationalDecomposition` would strengthen the definition, not repair it against line 481.
-  Therefore #163's fully source-general reverse inclusion still resists; the exact target without
-  `τmin`, `hmin`, or `hloc` is
-  ```lean
-  theorem reverse_inclusion_source_strength
-      {Q : QuadraticForm ℝ (realified V)} {t e : realified V} (hpos : sigPos Q = 1)
-      (hnd : Q.Nondegenerate) {ht : 0 < Q t} (he0 : e ≠ 0) (he : Q e = 0)
-      (heC : e ∈ rationalClosure (closedSheet Q hpos ht))
-      {S : Set (PointedCone ℝ (realified V))}
-      (hS : IsLocallyRationalDecomposition (rationalClosure (closedSheet Q hpos ht)) S) :
-      LinearMap.ker (associated Q e) ⊓
-          (⨅ τ : supportIndex (positiveCone.upper Q t) S
-            (PointedCone.hull ℝ ({e} : Set (realified V))),
-            Submodule.span ℝ (τ.1 : Set (realified V))) ≤
-        sigmaSupportSpace (positiveCone.upper Q t) S
-          (PointedCone.hull ℝ ({e} : Set (realified V)))
-  ```
+- **Resolution:** `hloc` was an artifact of the former finite-candidate proof, not a necessary input.
+  The source's projected finiteness has `0` outside the affine section `β = 1` and supplies no global
+  finite candidate set, but no finite candidate set is needed. `exists_isProjectedMinimal` selects by
+  least projected linear-span rank. Any strictly smaller nonempty section makes the common projected
+  face proper; `finrank_span_lt_of_isFaceOf_of_ne` and `span_eq_span_section_of_nonneg` then give the
+  contradictory rank descent. This also avoids the false one-point local-minimality inference, which
+  misses proper faces not containing that point.
 - **Coverage:** Definition 4.2, Setting 4.4, Example 4.3(b), the complete proof of 4.5, the Lean
   structure fields and the existing finite-trace/projected-local-finiteness declarations were compared.
-  LC-09 queries covered locally rational/polyhedral decompositions, local finiteness and boundary
-  rational cones; no existing declaration upgrades the restriction clause to ambient finiteness at `e`.
-  No counterexample to `hloc` for an arbitrary locally rational decomposition is asserted here. What is
-  established is that `hloc` is not stated by the cited definition and is not the local finiteness
-  asserted in the 4.5 passage; only an explicit proof from the rational-restriction clause could
-  justify removing it, and none is available in this development.
-- **Repair link:** establish the projected-minimal member from the projected `A_I` local finiteness
-  (rather than from finite ambient candidates), or produce a complete example in which `hloc` fails and
-  hence settle whether the source's general assertion needs that extra hypothesis. Keep the current
-  explicitly named `..._of_locallyFiniteAt` theorems for applications that do supply `hloc`; do not
-  relabel them as the unrestricted source statement.
+  LC-09 queries covered locally rational/polyhedral decompositions, local finiteness, proper-face
+  dimensions, well-founded minima and level-one section spans. No counterexample to `hloc` is asserted:
+  it is simply not needed by the new proof.
+- **Repair link:** resolved by `finrank_span_map_lt_of_projectedPolyhedron_ssubset`,
+  `exists_isProjectedMinimal`, and the canonical `inf_ker_iInf_span_le_sigmaSupportSpace`. The final
+  theorem has only `hpos`, `hnd`, `he0`, `he`, `heC`, and `hS`; the old `..._of_locallyFiniteAt`
+  declarations remain only as compatibility wrappers.
 
 ### Proper cone faces need a linear-span rank drop (#163)
 
