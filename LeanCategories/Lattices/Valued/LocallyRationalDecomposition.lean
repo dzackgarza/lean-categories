@@ -10325,6 +10325,47 @@ theorem span_inf_ker_eq_lineal_topologicalClosure_of_affine_finite
   span_inf_ker_eq_lineal_topologicalClosure_of_affine β hβc hβ hne haff
     (cone_topologicalClosure_le_span C)
 
+omit [Module.Finite ℚ V] in
+/-- **A cone's closure lies in its span, by separation**: a point outside the span is separated from
+it by a linear functional, which is continuous in the module topology, hence vanishes on the
+closure. -/
+theorem cone_topologicalClosure_le_span_of_isModuleTopology {E : Type*} [AddCommGroup E]
+    [Module ℝ E] [TopologicalSpace E] [ContinuousAdd E] [IsModuleTopology ℝ E]
+    (hproj : ∀ p : Submodule ℝ E, Module.Projective ℝ (E ⧸ p)) (C : PointedCone ℝ E) :
+    (C.topologicalClosure : Set E) ⊆ (Submodule.span ℝ (C : Set E) : Set E) := by
+  intro x hx
+  by_contra hxspan
+  obtain ⟨f, hf0, hfker⟩ :=
+    Submodule.exists_dual_map_eq_bot_of_notMem (p := Submodule.span ℝ (C : Set E)) hxspan
+      (hproj _)
+  have hfC : ∀ y ∈ C, f y = 0 := by
+    intro y hy
+    have hmem : f y ∈ (Submodule.span ℝ (C : Set E)).map f :=
+      ⟨y, Submodule.subset_span hy, rfl⟩
+    rw [hfker] at hmem
+    simpa using hmem
+  have hzero : f x = 0 :=
+    closure_minimal (t := {y | f y = 0}) (fun y hy => hfC y hy)
+      (isClosed_singleton.preimage (IsModuleTopology.continuous_of_linearMap f)) hx
+  exact hf0 hzero
+
+omit [Module.Finite ℚ V] in
+/-- The closure hypothesis of `span_inf_ker_eq_lineal_topologicalClosure_of_affine`, at the quotient
+by the isotropic line: the closure of `π_I τ` lies in its span. Separation
+(`cone_topologicalClosure_le_span_of_isModuleTopology`) applies because every subspace of a real
+vector space is projective. -/
+theorem cone_topologicalClosure_map_le_span {e : realified V}
+    (τ : PointedCone ℝ (realified V)) :
+    let N := Submodule.span ℝ ({e} : Set (realified V))
+    letI := IsModuleTopology.toContinuousAdd ℝ (realified V ⧸ N)
+    ((τ.map N.mkQ).topologicalClosure : Set (realified V ⧸ N)) ⊆
+      ((Submodule.span ℝ ((τ.map N.mkQ : PointedCone ℝ (realified V ⧸ N)) : Set _) :
+        Submodule ℝ (realified V ⧸ N)) : Set (realified V ⧸ N)) := by
+  letI : ContinuousAdd (realified V ⧸ Submodule.span ℝ ({e} : Set (realified V))) :=
+    IsModuleTopology.toContinuousAdd ℝ _
+  dsimp only
+  exact cone_topologicalClosure_le_span_of_isModuleTopology (fun p => inferInstance) _
+
 end AffineModel
 
 end LeanCategories.Lattices.Valued
