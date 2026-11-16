@@ -63,10 +63,12 @@ an `ℝ`-vector space with no extra structure.
 * **The open cone `C` is carried as a set.** Definition 4.2's `C` is an open nondegenerate convex
   cone, and an open cone does not hold `0` — an open cone holding `0` is the whole space — so a
   `PointedCone` carrier admits only `C = ⊤`. The four theorems of this file that carry an open cone
-  are therefore stated for `C : Set (realified V)`: openness, the positive scalar action of
-  `ConvexCone.smul_mem'`, and `0 ∉ C` (`ConvexCone.Blunt`), with `Cplus` the source's `C₊` where
-  the decomposition over `C₊` is also needed. Each is applied once to the open sheet of Example
-  4.3, `positiveCone.upper Q t`, in the section "The four theorems on the open sheet"
+  are therefore stated for `C : Set (realified V)`: the rational-neighbourhood pair for an open `C`
+  with the positive scalar action of `ConvexCone.smul_mem'` — and, for the support-space one,
+  `0 ∉ C` (`ConvexCone.Blunt` on the bundled cone) and `C ⊆ C₊` — and the locally finite pair for a
+  `Convex ℝ C` lying in `C₊`, their proof using convexity and no openness. `Cplus` is the source's
+  `C₊`. Each is applied once to the open sheet of Example 4.3, `positiveCone.upper Q t`, in the
+  section "The four theorems on the open sheet"
   (`exists_rationalCone_mem_nhds_sdiff_subset_of_mem_upper`,
   `supportSpace_eq_of_mem_openSheet_of_locallyRational`,
   `supportSpace_eq_of_locallyFinite_of_cover_openSheet`,
