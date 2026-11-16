@@ -10402,6 +10402,83 @@ theorem span_inf_ker_isotropicHalfspaceForm_eq_lineal
     (cone_topologicalClosure_map_le_span (e := e) τ)
 
 
+omit [Module.Finite ℚ V] in
+/-- The span of the projection of a cone is the image of its span. -/
+theorem map_span_eq_span_map {e : realified V} (τ : PointedCone ℝ (realified V)) :
+    (Submodule.span ℝ (τ : Set (realified V))).map
+        (Submodule.span ℝ ({e} : Set (realified V))).mkQ =
+      Submodule.span ℝ ((τ.map (Submodule.span ℝ ({e} : Set (realified V))).mkQ :
+        PointedCone ℝ (realified V ⧸ Submodule.span ℝ ({e} : Set (realified V)))) : Set _) := by
+  have h : ((τ.map (Submodule.span ℝ ({e} : Set (realified V))).mkQ :
+      PointedCone ℝ (realified V ⧸ Submodule.span ℝ ({e} : Set (realified V)))) : Set _) =
+      (Submodule.span ℝ ({e} : Set (realified V))).mkQ '' (τ : Set (realified V)) :=
+    Set.ext fun x => PointedCone.mem_map
+  rw [h, Submodule.map_span]
+
+/-- **The `e ·`-killed part of a member's span is the projected lineality.** -/
+theorem map_inf_ker_span_eq_lineal
+    {Q : QuadraticForm ℝ (realified V)} {e : realified V} (he : Q e = 0)
+    (τ : PointedCone ℝ (realified V))
+    (hβ : ∀ x ∈ (τ.map (Submodule.span ℝ ({e} : Set (realified V))).mkQ :
+      PointedCone ℝ (realified V ⧸ Submodule.span ℝ ({e} : Set (realified V)))), 0 ≤
+        isotropicHalfspaceForm Q he x)
+    (hne : (projectedPolyhedron Q he τ).Nonempty)
+    (haff : ∀ u ∈ projectedPolyhedron Q he τ, ∀ v ∈ projectedPolyhedron Q he τ, ∀ c : ℝ,
+      c • u + (1 - c) • v ∈ projectedPolyhedron Q he τ) :
+    letI := IsModuleTopology.toContinuousAdd ℝ
+      (realified V ⧸ Submodule.span ℝ ({e} : Set (realified V)))
+    (LinearMap.ker (associated Q e) ⊓ Submodule.span ℝ (τ : Set (realified V))).map
+        (Submodule.span ℝ ({e} : Set (realified V))).mkQ =
+      PointedCone.lineal
+        ((τ.map (Submodule.span ℝ ({e} : Set (realified V))).mkQ).topologicalClosure) := by
+  letI : ContinuousAdd (realified V ⧸ Submodule.span ℝ ({e} : Set (realified V))) :=
+    IsModuleTopology.toContinuousAdd ℝ _
+  have hkey := span_inf_ker_isotropicHalfspaceForm_eq_lineal (Q := Q) (e := e) he τ hβ hne haff
+  dsimp only at hkey ⊢
+  rw [inf_comm] at hkey
+  apply le_antisymm
+  · calc (LinearMap.ker (associated Q e) ⊓ Submodule.span ℝ (τ : Set (realified V))).map
+          (Submodule.span ℝ ({e} : Set (realified V))).mkQ
+        ≤ (LinearMap.ker (associated Q e)).map
+              (Submodule.span ℝ ({e} : Set (realified V))).mkQ ⊓
+            (Submodule.span ℝ (τ : Set (realified V))).map
+              (Submodule.span ℝ ({e} : Set (realified V))).mkQ :=
+          Submodule.map_inf_le (Submodule.span ℝ ({e} : Set (realified V))).mkQ
+      _ = PointedCone.lineal
+            ((τ.map (Submodule.span ℝ ({e} : Set (realified V))).mkQ).topologicalClosure) := by
+          rw [map_ker_associated_eq_ker_isotropicHalfspaceForm (he := he),
+            map_span_eq_span_map (e := e), hkey]
+  · intro u hu
+    have hu1 : u ∈ ((τ.map (Submodule.span ℝ ({e} : Set (realified V))).mkQ).topologicalClosure) :=
+      (PointedCone.mem_lineal.1 hu).1
+    have hu2 : -u ∈ ((τ.map (Submodule.span ℝ ({e} : Set (realified V))).mkQ).topologicalClosure) :=
+      (PointedCone.mem_lineal.1 hu).2
+    have hspan : u ∈ Submodule.span ℝ
+        ((τ.map (Submodule.span ℝ ({e} : Set (realified V))).mkQ :
+          PointedCone ℝ (realified V ⧸ Submodule.span ℝ ({e} : Set (realified V)))) : Set _) :=
+      cone_topologicalClosure_map_le_span (e := e) τ hu1
+    have hβcl : ∀ x ∈ ((τ.map (Submodule.span ℝ ({e} : Set (realified V))).mkQ).topologicalClosure),
+        0 ≤ isotropicHalfspaceForm Q he x := by
+      intro x hx
+      have hx' : x ∈ closure (((τ.map (Submodule.span ℝ ({e} : Set (realified V))).mkQ :
+          PointedCone ℝ (realified V ⧸ Submodule.span ℝ ({e} : Set (realified V)))) : Set _)) := hx
+      exact closure_minimal (t := {y | 0 ≤ isotropicHalfspaceForm Q he y})
+        (fun y hy => hβ y hy)
+        (isClosed_le continuous_const (IsModuleTopology.continuous_of_linearMap _)) hx'
+    have hβu : isotropicHalfspaceForm Q he u = 0 := by
+      have h1 : 0 ≤ isotropicHalfspaceForm Q he u := hβcl u hu1
+      have h2 : 0 ≤ isotropicHalfspaceForm Q he (-u) := hβcl (-u) hu2
+      rw [map_neg] at h2
+      linarith
+    have hmap : u ∈ (Submodule.span ℝ (τ : Set (realified V))).map
+        (Submodule.span ℝ ({e} : Set (realified V))).mkQ := by
+      rw [map_span_eq_span_map (e := e)]
+      exact hspan
+    obtain ⟨x, hxspan, hxu⟩ := hmap
+    refine Submodule.mem_map.2 ⟨x, ?_, hxu⟩
+    refine Submodule.mem_inf.2 ⟨?_, hxspan⟩
+    rw [LinearMap.mem_ker, ← isotropicHalfspaceForm_mkQ (Q := Q) he x, hxu]
+    exact hβu
 end AffineModel
 
 end LeanCategories.Lattices.Valued
