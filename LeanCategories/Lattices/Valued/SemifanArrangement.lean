@@ -70,6 +70,16 @@ E. Looijenga, *Compactifications defined by arrangements II: locally symmetric v
   of `Σ(H)` above the half line that meets the open cone `C_I` (Lemma-Definition 4.5, p. 19). A
   member of an arrangement decomposition is a face of a sign cell, so every trace is one-signed on
   it, and it vanishes on the half line exactly for the hyperplanes containing `J`.
+* **the `J^⊥` half of that inclusion**: the support space of the half line lies in the common kernel
+  of the two forms of the spanning pair of `J = ⟨gen, ray⟩` — the line's generator
+  (`vSigmaPlane_semifanArrangement_le_ker_gen`, from `realify_planeComplement_le_planePerp`) and the
+  plane's ray (`vSigmaPlane_semifanArrangement_le_ker_ray`, from
+  `sigmaSupportSpace_halfLine_le_ker_fibreRay`). The second is where the sign of the fibre enters:
+  an isotropic ray of the closed sheet of a form of signature `(1, dim − 1)` pairs nonnegatively
+  with every vector of the sheet (`nonneg_associated_of_quadratic_eq_zero_of_mem_closedSheet`), so
+  the metric dual of the ray is a form nonnegative on the member and zero on the ray, hence vanishes
+  on the support space. `vSigmaPlane_semifanArrangement_le_JH` is the conjunction of the three
+  inclusions, the `J_{Σ(H)} ⊆ J_H` of the source.
 * **the reverse inclusion of Example 6.4**: `mem_supportSpace_halfLine_of_supportForms_span` (and
   its form at the walls of `Σ(H)`,
   `mem_supportSpace_halfLine_of_supportForms_span_semifanArrangement`): `J_H ⊆ J_{Σ(H)}` is a
@@ -2045,7 +2055,27 @@ a member above it and vanishing on it (Lemma-Definition 4.5, p. 19), so the two 
 on those forms. `J^⊥` is the pair of kernels `⟨gen⟩^⊥ ∩ ⟨ray⟩^⊥` of the two generators of the
 plane, and the trace of every `H ⊇ J` vanishes on the member of `Σ(ℋ)` above the half line that
 meets the open cone (`exists_mem_semifanArrangement_halfLine_meets`), which is
-`supportSpace_halfLine_le_ker`. -/
+`supportSpace_halfLine_le_ker`.
+
+### LC-09 record (2026-11-16, #162, the `J^⊥` half)
+
+The geometric input is the sign of the pairing of two vectors of the closed sheet of a form of
+signature `(1, dim − 1)` — the reversed Cauchy–Schwarz inequality of an indefinite form. The corpus
+(`scripts/formalization_corpus.py search`) and Mathlib's own sources were searched first:
+`light cone isotropic ray orthogonal`, `reversed Cauchy-Schwarz indefinite quadratic form`,
+`Lorentzian cone self-dual`, `closed cone dual quadratic signature one`,
+`isotropic vector nonnegative pairing sheet`, `sigPos`, `nonneg_associated_of_mem_closedSheet`,
+`PointedCone.dual finitely generated`: no file on the light cone or on a reversed Cauchy–Schwarz
+inequality (the only substantive hits are Mathlib's `Mathlib.lean` import list and TauCeti's cone
+files, which are the cone API used below, not this inequality). Mathlib's `sigPos` is
+`LinearAlgebra/QuadraticForm/Signature.lean`; its Cauchy–Schwarz results
+(`Analysis/InnerProductSpace/Basic.lean`) are for positive definite inner product spaces and do not
+apply to an indefinite form. The inequality is therefore the repository's own, and it is already
+proved: `nonneg_associated_of_quadratic_eq_zero_of_mem_closedSheet` (the isotropic form of
+`nonneg_associated_of_mem_closedSheet`, which pushes both vectors into the open sheet), whose fibre
+form is `supportSpace_le_ker_associated_of_isotropic`. What is written here is the transport of that
+statement to the ambient space, through the class of the ray in the fibre
+(`fibreRayProj_val`). -/
 
 section HalfLineSupportLe
 
@@ -2114,9 +2144,90 @@ theorem vSigmaPlane_semifanArrangement_le_ker_wall {ι : Type*} (ψ : ι → V �
     rw [← fibreFormC_apply F (ψ (i : ι)) y]
     exact hle (hsub hy)
 
+/-- **The `Σ`-support space of the half line lies in the orthogonal complement of the ray.**
+
+The form `x ↦ r · x` attached to an isotropic ray `r` of the closed sheet is nonnegative on the
+whole closed sheet (`nonneg_associated_of_quadratic_eq_zero_of_mem_closedSheet`: an isotropic vector
+of the sheet of a form of signature `(1, dim − 1)` pairs nonnegatively with every vector of the
+sheet), so it is one of the forms of `supportForms τ ⟨r⟩` and every point of the support space is
+orthogonal to `r`. This is the `⟨ray⟩^⊥` half of `J^⊥` in Example 6.4, p. 29. -/
+theorem sigmaSupportSpace_halfLine_le_ker_fibreRay {ι : Type*} (ψ : ι → V →ₗ[ℚ] ℚ)
+    (hBsym : BQ.IsSymm) (F : ConicalLine BQ Q) (G : ConicalPlane BQ) (h : F.line ≤ G.plane)
+    (hBQ : ∀ u w : V, (associated Q) (rationalPoint u) (rationalPoint w) = (BQ u w : ℝ))
+    (hpos : sigPos (fibreForm Q F.space) = 1)
+    (hnd : (fibreForm Q F.space).Nondegenerate)
+    (hcut : CutsFinitelyOnRational F.closure (fun i : fibreWalls ψ F => fibreFormC F (ψ ↑i))) :
+    sigmaSupportSpace (positiveCone.upper (fibreForm Q F.space) F.sheet) (semifanArrangement ψ F)
+        (PointedCone.hull ℝ ({rationalPoint (fibreRay hBsym F G)} : Set (realified ↥F.space))) ≤
+      LinearMap.ker ((associated (fibreForm Q F.space)) (rationalPoint (fibreRay hBsym F G))) := by
+  obtain ⟨τ, hτmem, hτle, hτmeet⟩ :=
+    exists_mem_semifanArrangement_halfLine_meets ψ hBsym F G h hBQ hpos hnd hcut
+  refine (sigmaSupportSpace_le hτmem hτle hτmeet).trans ?_
+  obtain ⟨cell, hcell, hface⟩ := mem_faceClosure.1 hτmem
+  obtain ⟨s, rfl⟩ := hcell
+  have hτclos : τ ≤ F.closure := hface.le.trans inf_le_right
+  exact supportSpace_le_ker_associated_of_isotropic (Q := fibreForm Q F.space) hpos F.sheet_pos
+    (fibreRay_isotropic hBQ hBsym F G h) (fibreRay_sheet_nonneg hBsym F G) rfl
+    (hτclos.trans (closure_le_closedSheet F hpos))
+
+/-- **The `Σ`-support space of the half line lies in the orthogonal complement of the plane's
+ray**: the `⟨ray⟩^⊥` half of `J^⊥` for `J = ⟨gen, ray⟩` in Example 6.4, p. 29.
+
+A point of the fibre orthogonal to the *class* of the ray is orthogonal to the ray itself: the class
+differs from the ray by a multiple of the line's generator (`fibreRayProj_val`), which the fibre is
+orthogonal to. -/
+theorem vSigmaPlane_semifanArrangement_le_ker_ray {ι : Type*} (ψ : ι → V →ₗ[ℚ] ℚ)
+    (hBsym : BQ.IsSymm) (F : ConicalLine BQ Q) (G : ConicalPlane BQ) (h : F.line ≤ G.plane)
+    (hBQ : ∀ u w : V, (associated Q) (rationalPoint u) (rationalPoint w) = (BQ u w : ℝ))
+    (hpos : sigPos (fibreForm Q F.space) = 1)
+    (hnd : (fibreForm Q F.space).Nondegenerate)
+    (hcut : CutsFinitelyOnRational F.closure (fun i : fibreWalls ψ F => fibreFormC F (ψ ↑i))) :
+    vSigmaPlane hBsym F (semifanArrangement ψ F) G h ≤
+      LinearMap.ker (associated Q (rationalPoint G.ray)) := by
+  rw [vSigmaPlane]
+  refine sup_le ?_ ?_
+  · rw [lineSpan, Submodule.span_le]
+    rintro x hx
+    rw [Set.mem_singleton_iff] at hx
+    subst hx
+    change (associated Q (rationalPoint G.ray)) (rationalPoint F.gen) = 0
+    rw [hBQ]
+    exact_mod_cast G.isotropic G.ray G.ray_mem F.gen (F.gen_mem_plane G h)
+  · intro z hz
+    obtain ⟨y, hy, rfl⟩ := Submodule.mem_map.1 hz
+    have hker := sigmaSupportSpace_halfLine_le_ker_fibreRay ψ hBsym F G h hBQ hpos hnd hcut hy
+    change (associated Q (rationalPoint G.ray)) (realifyMap F.space y) = 0
+    have hgen0 : (associated Q) (rationalPoint F.gen) (realifyMap F.space y) = 0 :=
+      (mem_planePerp_iff.1 (realify_planeComplement_le_planePerp (Q := Q) (e := F.gen)
+        (f := F.partner) hBQ ⟨y, rfl⟩)).1
+    have hproj : rationalPoint ((fibreRayProj hBsym F G : ↥F.space) : V) =
+        rationalPoint G.ray - (BQ G.ray F.partner : ℝ) • rationalPoint F.gen := by
+      rw [fibreRayProj_val hBsym F G h, map_sub]
+      congr 1
+      exact rationalPoint_rat_smul (BQ G.ray F.partner) F.gen
+    have hshift : (associated Q) (rationalPoint G.ray) (realifyMap F.space y) =
+        (associated Q) (rationalPoint ((fibreRayProj hBsym F G : ↥F.space) : V))
+          (realifyMap F.space y) := by
+      rw [hproj, LinearMap.BilinForm.sub_left, LinearMap.BilinForm.smul_left, hgen0, mul_zero,
+        sub_zero]
+    rw [hshift]
+    have hfib : (associated (fibreForm Q F.space)) (rationalPoint (fibreRayProj hBsym F G)) y =
+        (associated Q) (rationalPoint ((fibreRayProj hBsym F G : ↥F.space) : V))
+          (realifyMap F.space y) := by
+      rw [associated_fibreForm, realifyMap_rationalPoint]
+    rw [← hfib]
+    rcases fibreRay_eq_or_neg hBsym F G with h' | h'
+    · have h0 := LinearMap.mem_ker.1 hker
+      rw [h'] at h0
+      exact h0
+    · have h0 := LinearMap.mem_ker.1 hker
+      rw [h'] at h0
+      simpa using h0
+
 /-- **Looijenga, Example 6.4, p. 29: `J_{Σ(ℋ)} ⊆ J_ℋ`.** The support space of the half line of the
-`ℚ`-isotropic plane `J` is contained in `⟨gen⟩^⊥` (the `I`-half of `J^⊥`) and in the trace of every
-hyperplane of `ℋ` containing `J` — the intersection the source calls `J_ℋ`. -/
+`ℚ`-isotropic plane `J = ⟨gen, ray⟩` is contained in `J^⊥` — the common kernel of the two forms of
+its spanning pair — and in the trace of every hyperplane of `ℋ` containing `J`; that intersection
+is the `J_ℋ` of the source. -/
 theorem vSigmaPlane_semifanArrangement_le_JH {ι : Type*} (ψ : ι → V →ₗ[ℚ] ℚ)
     (hBsym : BQ.IsSymm) (F : ConicalLine BQ Q) (G : ConicalPlane BQ) (h : F.line ≤ G.plane)
     (hBQ : ∀ u w : V, (associated Q) (rationalPoint u) (rationalPoint w) = (BQ u w : ℝ))
@@ -2124,11 +2235,14 @@ theorem vSigmaPlane_semifanArrangement_le_JH {ι : Type*} (ψ : ι → V →ₗ[
     (hnd : (fibreForm Q F.space).Nondegenerate)
     (hcut : CutsFinitelyOnRational F.closure (fun i : fibreWalls ψ F => fibreFormC F (ψ ↑i))) :
     vSigmaPlane hBsym F (semifanArrangement ψ F) G h ≤
-      LinearMap.ker (associated Q (rationalPoint F.gen)) ⊓
+      (LinearMap.ker (associated Q (rationalPoint F.gen)) ⊓
+        LinearMap.ker (associated Q (rationalPoint G.ray))) ⊓
         ⨅ i : {i : fibreWalls ψ F //
             fibreFormC F (ψ ↑i) (rationalPoint (fibreRay hBsym F G)) = 0},
           LinearMap.ker (realifiedFormC (ψ ((i.1 : fibreWalls ψ F) : ι))).toLinearMap :=
-  le_inf (vSigmaPlane_semifanArrangement_le_ker_gen ψ hBsym F G h hBQ)
+  le_inf
+    (le_inf (vSigmaPlane_semifanArrangement_le_ker_gen ψ hBsym F G h hBQ)
+      (vSigmaPlane_semifanArrangement_le_ker_ray ψ hBsym F G h hBQ hpos hnd hcut))
     (le_iInf fun i => vSigmaPlane_semifanArrangement_le_ker_wall ψ hBsym F G h hBQ hpos hnd hcut
       i.1 i.2)
 
