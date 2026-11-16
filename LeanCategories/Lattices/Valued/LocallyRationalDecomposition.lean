@@ -10293,6 +10293,38 @@ theorem span_inf_ker_eq_lineal_topologicalClosure_of_affine
     rw [map_neg] at h2
     linarith
 
+omit [Module.Finite ℚ V] in
+/-- **A cone's closure lies in its span in finite dimension.** -/
+theorem cone_topologicalClosure_le_span {E : Type*} [AddCommGroup E] [Module ℝ E]
+    [TopologicalSpace E] [ContinuousAdd E] [ContinuousSMul ℝ E] [T2Space E] [Module.Finite ℝ E]
+    (C : PointedCone ℝ E) :
+    (C.topologicalClosure : Set E) ⊆ (Submodule.span ℝ (C : Set E) : Set E) := by
+  haveI hAdd : ContinuousAdd E := ‹ContinuousAdd E›
+  haveI hNeg : ContinuousNeg E :=
+    ⟨by
+      have h : Continuous fun x : E => (-1 : ℝ) • x := continuous_const.smul continuous_id
+      simpa using h⟩
+  haveI : IsTopologicalAddGroup E :=
+    { continuous_add := hAdd.1, continuous_neg := hNeg.1 }
+  refine (Submodule.isClosed_of_finiteDimensional
+    (Submodule.span ℝ (C : Set E))).closure_subset_iff.2 ?_
+  exact Submodule.subset_span
+
+omit [Module.Finite ℚ V] in
+/-- **The affine-span lemma in finite dimension**, with no closure hypothesis: it is discharged by
+`cone_topologicalClosure_le_span`. -/
+theorem span_inf_ker_eq_lineal_topologicalClosure_of_affine_finite
+    {E : Type*} [AddCommGroup E] [Module ℝ E] [TopologicalSpace E]
+    [ContinuousAdd E] [ContinuousSMul ℝ E] [T2Space E] [Module.Finite ℝ E]
+    (β : E →ₗ[ℝ] ℝ) (hβc : Continuous β) {C : PointedCone ℝ E}
+    (hβ : ∀ x ∈ C, 0 ≤ β x)
+    (hne : ∃ p : E, p ∈ C ∧ β p = 1)
+    (haff : ∀ u ∈ C, ∀ v ∈ C, ∀ c : ℝ, c • u + (1 - c) • v ∈ C) :
+    Submodule.span ℝ (C : Set E) ⊓ LinearMap.ker β =
+      PointedCone.lineal C.topologicalClosure :=
+  span_inf_ker_eq_lineal_topologicalClosure_of_affine β hβc hβ hne haff
+    (cone_topologicalClosure_le_span C)
+
 end AffineModel
 
 end LeanCategories.Lattices.Valued
