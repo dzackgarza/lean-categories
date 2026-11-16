@@ -77,22 +77,20 @@ An isometry `g` of `(V, BQ)` carries the fibre of a `ℚ`-isotropic line `I` to 
   (`ConicalLine.closure_eq_hull_closedSheet`), the closed sheet is carried onto the closed sheet
   (`mem_closedSheet_map_iff`, `image_closedSheet`) since its two defining inequalities are `Q x ≥ 0`
   and `x · t ≥ 0`, and the hull of an image is the image of the hull (`hull_map`).
-* `bailyBorel_gammaInvariant`: `Σ(bb)` is `Γ`-invariant. The union of the images of the members of
-  a fibre is the image of its cone (`iUnion_memberImage_facialDecomposition`), so it is carried
-  along by the closure transport.
+* `bailyBorel_gammaInvariant`: `Σ(bb)` is `Γ`-invariant — at the level of the *members*: a face of
+  `C_{I,+}` is carried to a face of `C_{gI,+}` (`isFaceOf_map_iff`), with
+  `memberImage_map_eq` identifying the image of the member with the member of the image fibre, and
+  conversely. `iUnion_memberImage_facialDecomposition` records the weaker union statement, which is
+  all that the union of the images sees.
 * `bailyBorel_isAdmissibleDecomposition`: **Example 6.2 as a theorem** — Definition 6.1 for the
   facial decomposition of the conical locus of a form of signature `(2, n)`, with no field left as
   a hypothesis (`sigPos_fibreForm` supplies `(1, n-1)` in every fibre).
 
 ## What is not here
 
-* **Example 6.4, the admissible decomposition `Σ(H)` of an arithmetic arrangement** (p. 29, text
-  line 791), and with it the identification `J_{Σ(H)} = J_H = J^⊥ ∩ ⋂_{H ∋ J} H`. Both are
-  statements about the cells of the arrangement in a fibre, and the missing step is the one the
-  source reads off the decomposition: the support space of the half line `C_{J,+}` relative to
-  `Σ(H)` is the intersection of the hyperplanes containing it. In the facial decomposition that is
-  `vSigmaPlane_eq_ker_inf_ker` — `I(σ) = V_σ ∩ V_σ^⊥` is then `J` — but for `Σ(H)` the forms
-  cutting the walls out of the round cone are needed, and they are not constructed here.
+* **Example 6.4**: `Σ(H)` itself, its condition (i), and the trace forms of the hyperplanes are in
+  `SemifanArrangement`. What is not here is the identification `J_{Σ(H)} = J_H` (condition (ii)) and
+  the `Γ`-invariance of `Σ(H)`; both are recorded there.
 * **Theorem 6.7** (`X^Σ` is a normal analytic space) is a later unit of the pipeline.
 
 ## References
@@ -1238,56 +1236,128 @@ theorem iUnion_memberImage_facialDecomposition (F : ConicalLine BQ Q) :
   · intro x hx
     exact Set.mem_iUnion.2 ⟨F.closure, Set.mem_iUnion.2 ⟨PointedCone.IsFaceOf.refl _, hx⟩⟩
 
-/-- **The `Γ`-invariance of the facial decomposition `Σ(bb)`** (Definition 6.1, p. 28): an
-isometry `g` of `(V, BQ)` carries the fibre of `I` to the fibre of `gI` (Definition 2.1, §1B) and
-the closure `C_{I,+}` of the first onto the closure of the second
-(`ConicalLine.map_closure`), hence the faces of one onto the faces of the other. The union of the
-images of the members of a fibre is the image of its cone
-(`iUnion_memberImage_facialDecomposition`), so it is carried along. -/
-theorem bailyBorel_gammaInvariant
+omit [Module.Finite ℚ V] in
+/-- **Faces are carried to faces** by a linear equivalence of the ambient real vector spaces: the
+defining property of a face (`IsFaceOf`) is transported through the equivalence. -/
+theorem isFaceOf_map_iff {E F : Type*} [AddCommGroup E] [Module ℝ E] [AddCommGroup F] [Module ℝ F]
+    (e : E ≃ₗ[ℝ] F) {σ P : PointedCone ℝ E} :
+    (σ.map (e : E →ₗ[ℝ] F)).IsFaceOf (P.map (e : E →ₗ[ℝ] F)) ↔ σ.IsFaceOf P := by
+  constructor
+  · intro h
+    refine ⟨?_, ?_⟩
+    · intro x hx
+      obtain ⟨y, hy, hyx⟩ := PointedCone.mem_map.1
+        (h.le (PointedCone.mem_map.2 ⟨x, hx, rfl⟩))
+      rw [e.injective hyx] at hy
+      exact hy
+    · intro x y a hx hy ha hxy
+      have h1 : e x ∈ P.map (e : E →ₗ[ℝ] F) := PointedCone.mem_map.2 ⟨x, hx, rfl⟩
+      have h2 : e y ∈ P.map (e : E →ₗ[ℝ] F) := PointedCone.mem_map.2 ⟨y, hy, rfl⟩
+      have h3 : a • e x + e y ∈ σ.map (e : E →ₗ[ℝ] F) := by
+        rw [← map_smul, ← map_add]
+        exact PointedCone.mem_map.2 ⟨a • x + y, hxy, rfl⟩
+      obtain ⟨z, hz, hz'⟩ := PointedCone.mem_map.1 (h.2 h1 h2 ha h3)
+      rw [e.injective hz'] at hz
+      exact hz
+  · intro h
+    refine ⟨?_, ?_⟩
+    · intro z hz
+      obtain ⟨x, hx, rfl⟩ := PointedCone.mem_map.1 hz
+      exact PointedCone.mem_map.2 ⟨x, h.le hx, rfl⟩
+    · intro z w a hz hw ha hzw
+      obtain ⟨x, hx, rfl⟩ := PointedCone.mem_map.1 hz
+      obtain ⟨y, hy, rfl⟩ := PointedCone.mem_map.1 hw
+      have hzw' : a • x + y ∈ σ := by
+        obtain ⟨s, hs, hse⟩ := PointedCone.mem_map.1 hzw
+        have hse' : e s = e (a • x + y) := by
+          have h1 : e (a • x + y) = a • e x + e y := by simp only [map_add, map_smul]
+          rw [h1]
+          exact hse
+        rw [e.injective hse'] at hs
+        exact hs
+      exact PointedCone.mem_map.2
+        ⟨x, h.mem_of_smul_add_mem hx hy ha hzw', rfl⟩
+
+omit [Module.Finite ℚ V] in
+/-- **The image of a member of a fibre is the member of the image fibre**: `memberImage` commutes
+with the carrier isometry. -/
+theorem memberImage_map_eq (F : ConicalLine BQ Q)
     (hBQ : ∀ u w : V, (associated Q) (rationalPoint u) (rationalPoint w) = (BQ u w : ℝ))
-    (Γ : Set (V ≃ₗ[ℚ] V))
-    (hpos : ∀ F : ConicalLine BQ Q, sigPos (fibreForm Q (planeComplement BQ F.gen F.partner)) = 1) :
-    IsGammaInvariantLocus BQ Q Γ (fun F => facialDecomposition F.closure) := by
-  intro g _hgΓ hg F
-  refine ⟨ConicalLine.map F hBQ hg, rfl, ?_⟩
-  rw [iUnion_memberImage_facialDecomposition, iUnion_memberImage_facialDecomposition,
-    memberImage_eq_image, memberImage_eq_image]
-  have hclos := ConicalLine.map_closure (g := g) F hBQ hg (hpos F)
-    (hpos (ConicalLine.map F hBQ hg))
-    (ConicalLine.map F hBQ hg).sheet_pos
-  have hsq : ∀ x : realified ↥F.space,
+    (hg : ∀ x y : V, BQ (g x) (g y) = BQ x y)
+    (σ : PointedCone ℝ (realified ↥(planeComplement BQ F.gen F.partner))) :
+    memberImage (ConicalLine.map F hBQ hg)
+        (σ.map (fibreCarrierEquivReal (Q := Q) (g := g) F hg).toLinearMap)
+      = (realifiedEquiv g) '' memberImage F σ := by
+  have hsq : ∀ x : realified ↥(planeComplement BQ F.gen F.partner),
       (realifiedEquiv g) ((realifyMap F.space) x)
         = (realifyMap (ConicalLine.map F hBQ hg).space)
             ((fibreCarrierEquivReal (Q := Q) (g := g) F hg).toLinearMap x) := by
     intro x
-    exact (realifyMap_fibreCarrierEquivReal (Q := Q) (g := g) (BQ := BQ) (F := F) hg
-      (show realified ↥(planeComplement BQ F.gen F.partner) from x)).symm
-  have hCsets : (fibreCarrierEquivReal (Q := Q) (g := g) F hg).toLinearMap ''
-      (F.closure : Set (realified ↥F.space)) =
-        ((ConicalLine.map F hBQ hg).closure : Set
-          (realified ↥(ConicalLine.map F hBQ hg).space)) := by
-    rw [← hclos]
-    exact (PointedCone.coe_map F.closure
-      (fibreCarrierEquivReal (Q := Q) (g := g) F hg).toLinearMap).symm
+    exact (realifyMap_fibreCarrierEquivReal (Q := Q) (g := g) (BQ := BQ) (F := F) hg x).symm
+  rw [memberImage_eq_image, memberImage_eq_image, PointedCone.coe_map]
   ext y
   constructor
   · rintro ⟨z, ⟨x, hx, rfl⟩, rfl⟩
+    exact ⟨(realifyMap F.space) x, ⟨x, hx, rfl⟩, hsq x⟩
+  · rintro ⟨z, ⟨x, hx, rfl⟩, rfl⟩
     exact ⟨(fibreCarrierEquivReal (Q := Q) (g := g) F hg).toLinearMap x,
-      hCsets ▸ Set.mem_image_of_mem _ hx, (hsq x).symm⟩
-  · rintro ⟨y', hy', rfl⟩
-    rw [← hCsets] at hy'
-    obtain ⟨x, hx, hx'⟩ := hy'
-    refine ⟨(realifyMap F.space) x, ⟨x, hx, rfl⟩, ?_⟩
-    rw [hsq x]
-    exact congrArg (realifyMap (ConicalLine.map F hBQ hg).space) hx'
+      ⟨x, hx, rfl⟩, (hsq x).symm⟩
+
+/-- **The `Γ`-invariance of the facial decomposition `Σ(bb)`** (Definition 6.1, p. 28), at the
+level of the members: an isometry `g` of `(V, BQ)` carries the fibre of `I` to the fibre of `gI`
+(Definition 2.1, §1B), the closure `C_{I,+}` of the first onto the closure of the second
+(`ConicalLine.map_closure`), and hence the faces of one onto the faces of the other
+(`isFaceOf_map_iff`), with `memberImage_map_eq` identifying the images. -/
+theorem bailyBorel_gammaInvariant
+    (hBQ : ∀ u w : V, (associated Q) (rationalPoint u) (rationalPoint w) = (BQ u w : ℝ))
+    (Γ : Set (V ≃ₗ[ℚ] V))
+    (hpos : ∀ F : ConicalLine BQ Q,
+      sigPos (fibreForm Q (planeComplement BQ F.gen F.partner)) = 1) :
+    IsGammaInvariantLocus BQ Q Γ (fun F => facialDecomposition F.closure) := by
+  intro g _hgΓ hg F
+  have hclos := ConicalLine.map_closure (g := g) F hBQ hg (hpos F)
+    (hpos (ConicalLine.map F hBQ hg)) (ConicalLine.map F hBQ hg).sheet_pos
+  have hcomp : (fibreCarrierEquivReal (Q := Q) (g := g) F hg).symm.toLinearMap.comp
+      (fibreCarrierEquivReal (Q := Q) (g := g) F hg).toLinearMap = LinearMap.id := by
+    ext y
+    simp
+  have hcomp' : (fibreCarrierEquivReal (Q := Q) (g := g) F hg).toLinearMap.comp
+      (fibreCarrierEquivReal (Q := Q) (g := g) F hg).symm.toLinearMap = LinearMap.id := by
+    ext y
+    simp
+  have hclos_symm : ((ConicalLine.map F hBQ hg).closure).map
+      (fibreCarrierEquivReal (Q := Q) (g := g) F hg).symm.toLinearMap = F.closure := by
+    rw [← hclos, PointedCone.map_map, hcomp, PointedCone.map_id]
+  refine ⟨ConicalLine.map F hBQ hg, rfl, ?_, ?_⟩
+  · intro σ hσ
+    refine ⟨σ.map (fibreCarrierEquivReal (Q := Q) (g := g) F hg).toLinearMap, ?_, ?_⟩
+    · change (σ.map (fibreCarrierEquivReal (Q := Q) (g := g) F hg).toLinearMap).IsFaceOf
+        (ConicalLine.map F hBQ hg).closure
+      have hface : (σ.map (fibreCarrierEquivReal (Q := Q) (g := g) F hg).toLinearMap).IsFaceOf
+          (F.closure.map (fibreCarrierEquivReal (Q := Q) (g := g) F hg).toLinearMap) :=
+        (isFaceOf_map_iff _).2 hσ
+      rwa [hclos] at hface
+    · exact memberImage_map_eq F hBQ hg σ
+  · intro σ' hσ'
+    refine ⟨σ'.map (fibreCarrierEquivReal (Q := Q) (g := g) F hg).symm.toLinearMap, ?_, ?_⟩
+    · change (σ'.map (fibreCarrierEquivReal (Q := Q) (g := g) F hg).symm.toLinearMap).IsFaceOf
+        F.closure
+      have hface : (σ'.map (fibreCarrierEquivReal (Q := Q) (g := g) F hg).symm.toLinearMap).IsFaceOf
+          ((ConicalLine.map F hBQ hg).closure.map
+            (fibreCarrierEquivReal (Q := Q) (g := g) F hg).symm.toLinearMap) :=
+        (isFaceOf_map_iff _).2 hσ'
+      rwa [hclos_symm] at hface
+    · have h := memberImage_map_eq F hBQ hg
+        (σ'.map (fibreCarrierEquivReal (Q := Q) (g := g) F hg).symm.toLinearMap)
+      rw [PointedCone.map_map, hcomp', PointedCone.map_id] at h
+      exact h
 
 /-- **Looijenga, Example 6.2, p. 29: the Baily–Borel decomposition is admissible.** Definition 6.1
 for the facial decomposition of the conical locus of a form of signature `(2, n)`: every fibre has
 signature `(1, n-1)` (§1B, p. 11: `sigPos_fibreForm`), condition (i) is
 `bailyBorel_condition_i`, condition (ii) is `vSigmaPlane_eq_ker_inf_ker` through
-`bailyBorel_condition_ii`, and the collection is `Γ`-invariant by the transport of a conical fibre
-along an isometry (`ConicalLine.map`, `bailyBorel_gammaInvariant`). -/
+`bailyBorel_condition_ii`, and the collection is `Γ`-invariant at the level of its members by the
+transport of a conical fibre along an isometry (`ConicalLine.map`, `bailyBorel_gammaInvariant`). -/
 theorem bailyBorel_isAdmissibleDecomposition
     (hBQ : ∀ u w : V, (associated Q) (rationalPoint u) (rationalPoint w) = (BQ u w : ℝ))
     (hBsym : BQ.IsSymm) (hsig : sigPos Q = 2) (hnd : Q.Nondegenerate)

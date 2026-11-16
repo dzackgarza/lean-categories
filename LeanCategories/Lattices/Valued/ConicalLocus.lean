@@ -472,21 +472,24 @@ noncomputable def isotropicCenter (Q : QuadraticForm ℝ (realified V))
     (Vσ : Submodule ℝ (realified V)) : Submodule ℝ (realified V) :=
   Vσ ⊓ LinearMap.BilinForm.orthogonal (associated Q) Vσ
 
-/-- `Γ`-invariance of a conical decomposition: every isometry of `V` in `Γ` carries the members of
-one conical fibre onto the members of a fibre over the image line (Definition 6.1, p. 28, the
-hypothesis on the collection `Σ`). Stated at the level of the images in `V(ℝ)`.
+/-- `Γ`-invariance of a conical decomposition (Definition 6.1, p. 28, the hypothesis on the
+collection `Σ`): every isometry of `V` in `Γ` carries the *members* of one conical fibre onto the
+members of a fibre over the image line, and the images are taken under the isometry — `γ` moves the
+fibre of `I` to the fibre of `γI` (§1B, p. 11).
 
-The image is taken under the isometry: `γ` moves the fibre of `I` to the fibre of `γI`, so the
-members of the fibre of `γI` are the images of the members of the fibre of `I`. Comparing the two
-collections without moving one of them would ask the two fibres to occupy the same subspace of
-`V(ℝ)`, which a nontrivial isometry of an indefinite form does not do. -/
+Stated at the level of the images in `V(ℝ)`, in both directions: the collection of the images of
+the members of the fibre of `I` is the collection of the images of the members of the fibre of `γI`.
+A statement about the union of those images instead would be implied by any family of members
+covering `C_{I,+}` and would not say that the *cones* are permuted. -/
 def IsGammaInvariantLocus (BQ : LinearMap.BilinForm ℚ V) (Q : QuadraticForm ℝ (realified V))
     (Γ : Set (V ≃ₗ[ℚ] V))
     (locus : ∀ F : ConicalLine BQ Q, Set (PointedCone ℝ (realified ↥F.space))) : Prop :=
   ∀ g ∈ Γ, (∀ x y : V, BQ (g x) (g y) = BQ x y) → ∀ F : ConicalLine BQ Q,
     ∃ F' : ConicalLine BQ Q, F'.line = Submodule.map (g : V →ₗ[ℚ] V) F.line ∧
-      (realifiedEquiv g) '' (⋃ σ ∈ locus F, memberImage F σ) =
-        ⋃ σ ∈ locus F', memberImage F' σ
+      (∀ σ ∈ locus F, ∃ σ' ∈ locus F',
+        memberImage F' σ' = (realifiedEquiv g) '' (memberImage F σ)) ∧
+      (∀ σ' ∈ locus F', ∃ σ ∈ locus F,
+        memberImage F' σ' = (realifiedEquiv g) '' (memberImage F σ))
 
 /-- **Looijenga, Definition 6.1, p. 28** (text line 769): an admissible decomposition of the conical
 locus is a `Γ`-invariant collection `Σ` of cones in the faces of the conical locus such that
