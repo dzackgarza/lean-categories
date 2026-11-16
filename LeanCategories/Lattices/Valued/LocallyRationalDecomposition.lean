@@ -10703,6 +10703,54 @@ theorem projectedPolyhedron_affine_iff {Q : QuadraticForm ℝ (realified V)} {e 
     obtain ⟨-, hv1⟩ := hv
     rw [mem_affineModel, map_add, map_smul, map_smul, smul_eq_mul, smul_eq_mul, hu1, hv1]
     ring
+
+/-- **The reverse inclusion from the named separation input**: Looijenga's
+`L_σ = I^⊥ ⊓ ⨅_{τ ⊋ σ} ⟨τ⟩` for an isotropic half line, given that a non-affine section of the
+minimal member admits a supporting functional. -/
+theorem inf_ker_iInf_span_le_sigmaSupportSpace_of_separating
+    {Q : QuadraticForm ℝ (realified V)} {t e : realified V}
+    (hpos : sigPos Q = 1) (hnd : Q.Nondegenerate) {ht : 0 < Q t}
+    (he0 : e ≠ 0) (he : Q e = 0) (het : 0 ≤ (associated Q) e t)
+    {S : Set (PointedCone ℝ (realified V))}
+    (hS : IsLocallyRationalDecomposition (rationalClosure (closedSheet Q hpos ht)) S)
+    (τmin : supportIndex (positiveCone.upper Q t) S
+      (PointedCone.hull ℝ ({e} : Set (realified V))))
+    (hmin : IsProjectedMinimal Q he S (PointedCone.hull ℝ ({e} : Set (realified V))) τmin.1)
+    (hsep : HasSectionSeparatingFunctional (isotropicHalfspaceForm Q he)
+      (τmin.1.map (Submodule.span ℝ ({e} : Set (realified V))).mkQ)) :
+    LinearMap.ker (associated Q e) ⊓
+        (⨅ τ : supportIndex (positiveCone.upper Q t) S
+          (PointedCone.hull ℝ ({e} : Set (realified V))),
+          Submodule.span ℝ (τ.1 : Set (realified V))) ≤
+      sigmaSupportSpace (positiveCone.upper Q t) S
+        (PointedCone.hull ℝ ({e} : Set (realified V))) := by
+  classical
+  letI : ContinuousAdd (realified V ⧸ Submodule.span ℝ ({e} : Set (realified V))) :=
+    IsModuleTopology.toContinuousAdd ℝ _
+  -- the engine, as the `hzero` of `affine_section_of_separating`
+  have hzero : ∀ φ : (realified V ⧸ Submodule.span ℝ ({e} : Set (realified V))) →ₗ[ℝ] ℝ,
+      (∀ x ∈ (τmin.1.map (Submodule.span ℝ ({e} : Set (realified V))).mkQ :
+        PointedCone ℝ (realified V ⧸ Submodule.span ℝ ({e} : Set (realified V)))), 0 ≤ φ x) →
+      (∃ p ∈ (τmin.1.map (Submodule.span ℝ ({e} : Set (realified V))).mkQ :
+        PointedCone ℝ (realified V ⧸ Submodule.span ℝ ({e} : Set (realified V)))),
+        isotropicHalfspaceForm Q he p = 1 ∧ φ p = 0) →
+      ∀ q ∈ (τmin.1.map (Submodule.span ℝ ({e} : Set (realified V))).mkQ :
+        PointedCone ℝ (realified V ⧸ Submodule.span ℝ ({e} : Set (realified V)))),
+        isotropicHalfspaceForm Q he q = 1 → φ q = 0 := by
+    intro φ hφ hp q hqC hβq
+    exact projectedPolyhedron_apply_eq_zero_of_projectedMinimal he rfl hS.mem_of_isFaceOf hmin φ hφ
+      ⟨hp.choose, ⟨hp.choose_spec.1, hp.choose_spec.2.1⟩, hp.choose_spec.2.2⟩
+      q ⟨hqC, hβq⟩
+  have haffC := affine_section_of_separating hsep hzero
+  have haff : ∀ u ∈ projectedPolyhedron Q he τmin.1, ∀ v ∈ projectedPolyhedron Q he τmin.1,
+      ∀ c : ℝ, c • u + (1 - c) • v ∈ projectedPolyhedron Q he τmin.1 := by
+    intro u hu v hv c
+    obtain ⟨huC, hu1⟩ := hu
+    obtain ⟨hvC, hv1⟩ := hv
+    refine ⟨haffC u huC hu1 v hvC hv1 c, ?_⟩
+    rw [mem_affineModel, map_add, map_smul, map_smul, smul_eq_mul, smul_eq_mul, hu1, hv1]
+    ring
+  exact inf_ker_iInf_span_le_sigmaSupportSpace_of_affine hpos hnd he0 he het hS τmin haff
 end AffineModel
 
 end LeanCategories.Lattices.Valued
