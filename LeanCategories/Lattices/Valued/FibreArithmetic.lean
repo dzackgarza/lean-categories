@@ -670,4 +670,468 @@ theorem CutsFinitelyOnTraces.mono {S S' : Set (Submodule ℚ ↥F.space)}
 
 end TraceCounting
 
+
+/-! ## The counting input, derived from the reduced lattice
+
+Looijenga §1B, p. 11, and Example 4.3 (b), p. 18, read at the fibre of `I`: the traces on `I^⊥/I`
+of the hyperplanes of `ℋ` in the `Γ_I`-orbits of a finite `H₀` cut each rational subcone of
+`C_{I,+}` finitely often, because the reduced lattice `(Λ ⊓ I^⊥)/(Λ ⊓ I)` and the integrality of
+the fibre's form make the norms of the primitive generators take finitely many values
+(`cutsFinitelyOnRational_reducedLattice`, #161/#162). What is added here is the step from that
+*indexed* count to the trace-set count: the traces are the kernels of the normals' forms, so the
+traces that cut are indexed injectively by the cutting lines of the orbit family. -/
+
+section ReducedLatticeCount
+
+variable {BQ : LinearMap.BilinForm ℚ V} {Q : QuadraticForm ℝ (realified V)}
+
+/-- **The traces carried by a `Γ_I`-orbit family of normals** of the fibre: for each line `ℓ` of the
+orbit family and its generator `g ℓ`, the `ℚ`-hyperplane `{w | g ℓ · w = 0}` of the reduced
+lattice. -/
+noncomputable def orbitFamilyTraces (BQ : LinearMap.BilinForm ℚ V) (F : ConicalLine BQ Q)
+    {H₀ : Finset (Submodule ℚ ↥F.space)} {ΓI : Set (↥F.space ≃ₗ[ℚ] ↥F.space)}
+    (gen : ↥(orbitFamily H₀ ΓI) → ↥F.space) : Set (Submodule ℚ ↥F.space) :=
+  {T | ∃ ℓ : ↥(orbitFamily H₀ ΓI), T = LinearMap.ker (restrictBilinForm BQ F.space (gen ℓ))}
+
+omit [Module.Finite ℚ V] in
+/-- **The real form of the trace of a normal is the normal form**: the trace form of the hyperplane
+`g^⊥` of the fibre is `normalForm (fibreForm) g`. -/
+theorem fibreTraceCLM_restrictBilinForm
+    (hBQ : ∀ u w : V, (associated Q) (rationalPoint u) (rationalPoint w) = (BQ u w : ℝ))
+    (F : ConicalLine BQ Q) (w : ↥F.space) :
+    fibreTraceCLM (restrictBilinForm BQ F.space w) = normalForm (fibreForm Q F.space) w := by
+  refine continuousLinearMap_eq_of_rationalPoint_eq fun v => ?_
+  rw [fibreTraceCLM_apply, realifiedForm_rationalPoint, normalForm_apply,
+    associated_fibreForm_restrict hBQ F]
+
+omit [Module.Finite ℚ V] in
+/-- A trace that cuts a rational cone is a trace of the orbit family whose line cuts it. -/
+theorem cutsOn_normalForm_of_traceCutsOn
+    (hBQ : ∀ u w : V, (associated Q) (rationalPoint u) (rationalPoint w) = (BQ u w : ℝ))
+    {F : ConicalLine BQ Q} {H₀ : Finset (Submodule ℚ ↥F.space)}
+    {ΓI : Set (↥F.space ≃ₗ[ℚ] ↥F.space)}
+    {gen : ↥(orbitFamily H₀ ΓI) → ↥F.space}
+    {ℓ : ↥(orbitFamily H₀ ΓI)} {T : Submodule ℚ ↥F.space}
+    (hT : T = LinearMap.ker (restrictBilinForm BQ F.space (gen ℓ)))
+    {P : PointedCone ℝ (realified ↥F.space)} (hcut : TraceCutsOn F T P) :
+    CutsOn (normalForm (fibreForm Q F.space) (gen ℓ)).toLinearMap P := by
+  obtain ⟨f, hf, hcutf⟩ := hcut
+  have hker : LinearMap.ker f = LinearMap.ker (restrictBilinForm BQ F.space (gen ℓ)) := by
+    rw [hf, hT]
+  obtain ⟨c, hc0, hc⟩ := exists_smul_of_ker_eq hker.symm
+  have hclm0 : fibreTraceCLM f =
+      (c : ℝ) • fibreTraceCLM (restrictBilinForm BQ F.space (gen ℓ)) := by
+    ext x
+    rw [fibreTraceCLM_apply, hc, realifiedForm_rat_smul]
+    rfl
+  have hclm : (fibreTraceCLM f).toLinearMap =
+      (c : ℝ) • (normalForm (fibreForm Q F.space) (gen ℓ)).toLinearMap := by
+    rw [hclm0, fibreTraceCLM_restrictBilinForm hBQ F (gen ℓ)]
+    rfl
+  rw [hclm] at hcutf
+  exact (cutsOn_smul (ψ := (normalForm (fibreForm Q F.space) (gen ℓ)).toLinearMap) (P := P)
+    (c := (c : ℝ)) (show ((c : ℝ)) ≠ 0 by exact_mod_cast hc0)).1 hcutf
+
+set_option maxHeartbeats 1000000 in
+-- The orbit family's count and the trace-to-line assignment both elaborate at the fibre's basis;
+-- the default heartbeat budget is short for the pair.
+/-- **Example 4.3 (b) at the fibre, on the set of traces**: the traces of a `Γ_I`-orbit family of
+normals cut each rational subcone of `C_{I,+}` finitely often. The count is
+`cutsFinitelyOnRational_reducedLattice` (`Λ` full and integral, `Γ_I` acting by isometries),
+and the passage from the cutting lines of the orbit family to the cutting traces is
+`cutsOn_normalForm_of_traceCutsOn`: two distinct traces have distinct normal lines, so the
+trace-to-line assignment is injective on traces. -/
+theorem cutsFinitelyOnTraces_orbitFamily
+    (hBQsym : BQ.IsSymm)
+    (hBQ : ∀ u w : V, (associated Q) (rationalPoint u) (rationalPoint w) = (BQ u w : ℝ))
+    (hsig : sigPos Q = 2) (hnd : Q.Nondegenerate) (F : ConicalLine BQ Q)
+    {κ₀ : Type} [Finite κ₀] (bs₀ : Module.Basis κ₀ ℚ V)
+    (hint₀ : ∀ x ∈ Submodule.span ℤ (Set.range bs₀), ∀ y ∈ Submodule.span ℤ (Set.range bs₀),
+      ∃ n : ℤ, BQ x y = (n : ℚ))
+    {κ : Type} [Finite κ] (bs : Module.Basis κ ℚ ↥F.space)
+    (hbs : Submodule.span ℤ (Set.range bs) =
+      reducedLattice hBQsym F (Submodule.span ℤ (Set.range bs₀)))
+    (ΓI : Set (↥F.space ≃ₗ[ℚ] ↥F.space))
+    (hone : (1 : ↥F.space ≃ₗ[ℚ] ↥F.space) ∈ ΓI)
+    (H₀ : Finset (Submodule ℚ ↥F.space))
+    (hΓΛ : ∀ e ∈ ΓI, Submodule.map ((e : ↥F.space →ₗ[ℚ] ↥F.space).restrictScalars ℤ)
+      (Submodule.span ℤ (Set.range bs)) = Submodule.span ℤ (Set.range bs))
+    (hΓiso : ∀ e ∈ ΓI, ∀ x y : ↥F.space,
+      restrictBilinForm BQ F.space (e x) (e y) = restrictBilinForm BQ F.space x y)
+    (gen : ↥(orbitFamily H₀ ΓI) → ↥F.space)
+    (hgen : ∀ ℓ : ↥(orbitFamily H₀ ΓI), gen ℓ ≠ 0 ∧
+      Submodule.span ℤ (Set.range bs) ⊓ ℓ.1.restrictScalars ℤ =
+        Submodule.span ℤ ({gen ℓ} : Set ↥F.space)) :
+    CutsFinitelyOnTraces F (orbitFamilyTraces BQ F gen) := by
+  classical
+  have hcut := cutsFinitelyOnRational_reducedLattice hBQsym hBQ hsig hnd F bs₀ hint₀ bs hbs ΓI hone
+    H₀ hΓΛ hΓiso gen hgen
+  intro P hP hPle
+  set S := orbitFamilyTraces BQ F gen with hS
+  have hex : ∀ T : S, ∃ ℓ : ↥(orbitFamily H₀ ΓI),
+      T.1 = LinearMap.ker (restrictBilinForm BQ F.space (gen ℓ)) := fun T => T.2
+  choose L hL using hex
+  have hfin : {ℓ : ↥(orbitFamily H₀ ΓI) |
+      CutsOn (normalForm (fibreForm Q F.space) (gen ℓ)).toLinearMap P}.Finite :=
+    hcut P hP hPle
+  refine Set.Finite.of_injOn (f := L) ?_ ?_ hfin
+  · intro T hT
+    exact cutsOn_normalForm_of_traceCutsOn hBQ (hL T) hT
+  · intro a _ b _ hab
+    refine Subtype.ext ?_
+    rw [hL a, hL b, hab]
+
+end ReducedLatticeCount
+
+
+/-! ## The half-line support chain at an actual isotropic ray of the fibre
+
+`SemifanArrangement`'s support statements of Example 6.4 are stated for the half line `C_{J,+}` of
+a `ConicalPlane`; the fibre-level content of them does not need the plane. Here the ray is a `ρ` of
+the fibre with `fibreForm Q F.space (rationalPoint ρ) = 0`, `ρ ≠ 0` and nonnegative pairing with the
+sheet — Looijenga §1B, p. 11: "the set of positive vectors is the union of a cone and its antipode.
+But the choice of `D` now singles out one of these two cones". Every geometric input is then the
+fibre's own Lorentzian geometry (`nonneg_associated_of_quadratic_eq_zero_of_mem_closedSheet`,
+`associated_pos_of_mem_upper_of_mem_closedSheet`), and the only counting input is
+`CutsFinitelyOnTraces`. -/
+
+section RaySupport
+
+variable {BQ : LinearMap.BilinForm ℚ V} {Q : QuadraticForm ℝ (realified V)}
+variable {ι : Type*} {ψ : ι → V →ₗ[ℚ] ℚ} {F : ConicalLine BQ Q}
+
+omit [Module.Finite ℚ V] in
+/-- The cell of a sign pattern is a member of the trace arrangement. -/
+theorem mem_semifanArrangementTraces_cell
+    (s : distinctTraces ψ F → SignType) :
+    arrangementCone (traceForm ψ F) s ⊓ F.closure ∈ semifanArrangementTraces ψ F :=
+  mem_faceClosure.2 ⟨_, ⟨s, rfl⟩, PointedCone.IsFaceOf.rfl⟩
+
+/-- **An isotropic rational point of the closed sheet lies in `C_{I,+}`**: it is a rational point of
+the closed sheet, so in the convex hull of them. -/
+theorem rationalPoint_mem_closure_of_isotropic
+    (hpos : sigPos (fibreForm Q F.space) = 1) {ρ : ↥F.space}
+    (hρ : fibreForm Q F.space (rationalPoint ρ) = 0)
+    (hρsheet : 0 ≤ (associated (fibreForm Q F.space)) (rationalPoint ρ) F.sheet) :
+    rationalPoint ρ ∈ F.closure := by
+  rw [ConicalLine.closure_eq_closedSheet F hpos]
+  exact mem_rationalClosure.2 (subset_convexHull ℝ _ ⟨⟨ρ, Set.mem_univ _, rfl⟩,
+    subset_closure ((mem_closedSheet hpos F.sheet_pos).2 ⟨le_of_eq hρ.symm, hρsheet⟩)⟩)
+
+/-- **The member of `Σ(ℋ)` above an actual isotropic ray meets the open cone `C_I`** — the fibre
+form of `exists_mem_semifanArrangement_halfLine_meets`, with the ray a vector of the fibre instead
+of a plane's half line. Only finitely many traces cut the rational cone `⟨r, v⟩`, so a point
+`u = r + ε v` has the sign of `r` at every trace off `r`, and `r` lies in the cell of `u`'s sign
+pattern. -/
+theorem semifanArrangementTraces_ray_meets
+    (hpos : sigPos (fibreForm Q F.space) = 1)
+    (hnd : (fibreForm Q F.space).Nondegenerate)
+    (hcut : CutsFinitelyOnRational F.closure (traceForm ψ F))
+    {ρ : ↥F.space} (hρ : fibreForm Q F.space (rationalPoint ρ) = 0) (hρ0 : ρ ≠ 0)
+    (hρsheet : 0 ≤ (associated (fibreForm Q F.space)) (rationalPoint ρ) F.sheet) :
+    ∃ τ ∈ semifanArrangementTraces ψ F,
+      PointedCone.hull ℝ ({rationalPoint ρ} : Set (realified ↥F.space)) ≤ τ ∧
+      ((τ : Set (realified ↥F.space)) ∩
+        positiveCone.upper (fibreForm Q F.space) F.sheet).Nonempty := by
+  classical
+  set r : realified ↥F.space := rationalPoint ρ with hrdef
+  have hr_closed : r ∈ closedSheet (fibreForm Q F.space) hpos F.sheet_pos :=
+    (mem_closedSheet hpos F.sheet_pos).2 ⟨le_of_eq hρ.symm, hρsheet⟩
+  have hr_ne : r ≠ 0 := rationalPoint_ne_zero hρ0
+  have hr_closure : r ∈ F.closure := rationalPoint_mem_closure_of_isotropic hpos hρ hρsheet
+  obtain ⟨w, hwrange, hwU⟩ := dense_range_rationalPoint.exists_mem_open
+    (isOpen_positiveCone_upper_of_moduleTopology (fibreForm Q F.space) F.sheet)
+    ⟨F.sheet, F.sheet_pos, by rw [associated_self_apply]; exact F.sheet_pos⟩
+  obtain ⟨v, rfl⟩ := hwrange
+  have hv_closure : rationalPoint v ∈ F.closure := ConicalLine.upper_subset_closure F hpos hwU
+  have hrv : 0 < (associated (fibreForm Q F.space)) r (rationalPoint v) := by
+    rw [associated_comm]
+    exact associated_pos_of_mem_upper_of_mem_closedSheet (fibreForm Q F.space) hpos hnd
+      F.sheet_pos hwU hr_closed hr_ne
+  set P : PointedCone ℝ (realified ↥F.space) :=
+    PointedCone.hull ℝ ({r, rationalPoint v} : Set (realified ↥F.space)) with hPdef
+  have hP_rat : IsRationalCone P := by
+    refine ⟨{ρ, v}, ?_⟩
+    rw [hPdef]
+    congr 1
+    ext x
+    simp [hrdef]
+  have hP_le : P ≤ F.closure := by
+    rw [hPdef]
+    refine Submodule.span_le.2 ?_
+    rintro x (rfl | rfl)
+    · exact hr_closure
+    · exact hv_closure
+  have hrP : r ∈ P := by
+    rw [hPdef]; exact PointedCone.subset_hull (by simp)
+  have hvP : rationalPoint v ∈ P := by
+    rw [hPdef]; exact PointedCone.subset_hull (by simp)
+  have hspos : ∀ᶠ ε : ℝ in nhdsWithin (0 : ℝ) (Set.Ioi 0), (0 : ℝ) < ε :=
+    self_mem_nhdsWithin
+  have hUev : ∀ᶠ ε : ℝ in nhdsWithin (0 : ℝ) (Set.Ioi 0),
+      r + ε • rationalPoint v ∈ positiveCone.upper (fibreForm Q F.space) F.sheet :=
+    hspos.mono fun ε hε => by
+      have hε0 : 0 < ε := hε
+      have hvt : 0 < (associated (fibreForm Q F.space)) (rationalPoint v) F.sheet := hwU.2
+      have hrt : 0 ≤ (associated (fibreForm Q F.space)) r F.sheet := by
+        rw [hrdef]; exact hρsheet
+      refine ⟨?_, ?_⟩
+      · have hexp : (fibreForm Q F.space) (r + ε • rationalPoint v)
+            = (fibreForm Q F.space) r
+              + 2 * ε * (associated (fibreForm Q F.space)) r (rationalPoint v)
+              + ε ^ 2 * (fibreForm Q F.space) (rationalPoint v) := by
+          conv_lhs => rw [show r + ε • rationalPoint v = (1 : ℝ) • r + ε • rationalPoint v by
+            rw [one_smul]]
+          rw [quadratic_expand]
+          ring
+        rw [hexp, show (fibreForm Q F.space) r = 0 from hρ, zero_add]
+        have h1 : 0 < ε ^ 2 * (fibreForm Q F.space) (rationalPoint v) :=
+          mul_pos (pow_pos hε0 2) hwU.1
+        have h2 : 0 < 2 * ε * (associated (fibreForm Q F.space)) r (rationalPoint v) :=
+          mul_pos (by linarith) hrv
+        linarith
+      · rw [map_add, map_smul, LinearMap.add_apply, LinearMap.smul_apply, smul_eq_mul]
+        nlinarith [hrt, hvt, hε0]
+  obtain ⟨u, _, huU, hsign⟩ :=
+    exists_mem_signPattern_eq_of_cutsFinitely (Cplus := F.closure) (P := P)
+      hcut hP_rat hP_le hrP hvP _ hUev
+  have hu_closure : u ∈ F.closure := ConicalLine.upper_subset_closure F hpos huU
+  have hoff : ∀ T : distinctTraces ψ F, traceForm ψ F T u = 0 → traceForm ψ F T r = 0 := by
+    intro T hi
+    by_contra hne
+    have hs : SignType.sign ((traceForm ψ F T) r) = 0 := by
+      rw [← hsign T hne, hi, sign_zero]
+    exact sign_ne_zero_of_ne hne hs
+  have hrcone : r ∈ arrangementCone (traceForm ψ F) (signPattern (traceForm ψ F) u) :=
+    mem_arrangementCone_signPattern_of_sign_eq hoff hsign
+  have hucone : u ∈ arrangementCone (traceForm ψ F) (signPattern (traceForm ψ F) u) :=
+    mem_arrangementCone_signPattern (traceForm ψ F) u
+  refine ⟨arrangementCone (traceForm ψ F) (signPattern (traceForm ψ F) u) ⊓ F.closure,
+    mem_semifanArrangementTraces_cell (ψ := ψ) (F := F) _, ?_, ⟨u, ⟨hucone, hu_closure⟩, huU⟩⟩
+  refine Submodule.span_le.2 ?_
+  rintro x hx
+  rw [Set.mem_singleton_iff] at hx
+  subst hx
+  exact ⟨hrcone, hr_closure⟩
+
+/-- **`J_{Σ(ℋ)} ⊆ ⟨r⟩^⊥` at an actual isotropic ray** — the `⟨ray⟩^⊥` half of Example 6.4, p. 29 at
+the fibre: the support space of the ray is contained in the kernel of its own metric dual. The
+metric dual of the ray is nonnegative on the fibre's closed sheet and vanishes at the isotropic
+ray (`nonneg_associated_of_quadratic_eq_zero_of_mem_closedSheet`). -/
+theorem sigmaSupportSpace_ray_le_ker
+    (hpos : sigPos (fibreForm Q F.space) = 1)
+    (hnd : (fibreForm Q F.space).Nondegenerate)
+    (hcut : CutsFinitelyOnRational F.closure (traceForm ψ F))
+    {ρ : ↥F.space} (hρ : fibreForm Q F.space (rationalPoint ρ) = 0) (hρ0 : ρ ≠ 0)
+    (hρsheet : 0 ≤ (associated (fibreForm Q F.space)) (rationalPoint ρ) F.sheet) :
+    sigmaSupportSpace (positiveCone.upper (fibreForm Q F.space) F.sheet)
+        (semifanArrangementTraces ψ F)
+        (PointedCone.hull ℝ ({rationalPoint ρ} : Set (realified ↥F.space))) ≤
+      LinearMap.ker ((associated (fibreForm Q F.space)) (rationalPoint ρ)) := by
+  obtain ⟨τ, hτmem, hτle, hτmeet⟩ :=
+    semifanArrangementTraces_ray_meets (ψ := ψ) hpos hnd hcut hρ hρ0 hρsheet
+  refine (sigmaSupportSpace_le hτmem hτle hτmeet).trans ?_
+  obtain ⟨cell, hcell, hface⟩ := mem_faceClosure.1 hτmem
+  obtain ⟨s, rfl⟩ := hcell
+  have hτclos : τ ≤ F.closure := hface.le.trans inf_le_right
+  exact supportSpace_le_ker_associated_of_isotropic (Q := fibreForm Q F.space) hpos F.sheet_pos
+    hρ hρsheet rfl (hτclos.trans (closure_le_closedSheet F hpos))
+
+/-- **The traces through the ray cut the member out**: the common kernel of the traces vanishing at
+an actual isotropic ray is contained in the span of every member of `Σ(ℋ)` above the ray that meets
+the open cone — the primal form of the description of a cell by its walls (Example 4.3 (b), p. 18),
+at the trace arrangement. -/
+theorem iInf_traceKernel_le_span_of_member
+    (hpos : sigPos (fibreForm Q F.space) = 1)
+    (hcut : CutsFinitelyOnRational F.closure (traceForm ψ F))
+    {ρ : ↥F.space}
+    (τ : supportIndex (positiveCone.upper (fibreForm Q F.space) F.sheet)
+      (semifanArrangementTraces ψ F)
+      (PointedCone.hull ℝ ({rationalPoint ρ} : Set (realified ↥F.space)))) :
+    (⨅ T : {T : distinctTraces ψ F // traceForm ψ F T (rationalPoint ρ) = 0},
+        LinearMap.ker (traceForm ψ F T.1).toLinearMap) ≤
+      Submodule.span ℝ (τ.1 : Set (realified ↥F.space)) := by
+  classical
+  obtain ⟨σ, ⟨s, rfl⟩, hτσ⟩ := τ.2.1
+  have hCsub : (positiveCone.upper (fibreForm Q F.space) F.sheet : Set (realified ↥F.space)) ⊆
+      (F.closure : Set (realified ↥F.space)) := by
+    rw [ConicalLine.closure_eq_closedSheet F hpos]
+    exact upper_subset_rationalClosure_closedSheet hpos F.sheet_pos
+  have hgen := le_span_of_isFaceOf_arrangementCone
+    (φ := traceForm ψ F)
+    (C := (positiveCone.upper (fibreForm Q F.space) F.sheet : Set (realified ↥F.space)))
+    (isOpen_positiveCone_upper_of_moduleTopology (fibreForm Q F.space) F.sheet)
+    (fun c hc x hx => positiveCone.smul_mem_upper (Q := fibreForm Q F.space) (t := F.sheet) hc hx)
+    (zero_notMem_upper (fibreForm Q F.space) F.sheet) hCsub hcut hτσ τ.2.2.2
+  refine (le_iInf fun j => ?_).trans hgen
+  have hrayτ : rationalPoint ρ ∈ τ.1 :=
+    τ.2.2.1 (Submodule.subset_span (Set.mem_singleton _))
+  refine iInf_le_of_le ⟨j.1, ?_⟩ le_rfl
+  have := j.2 hrayτ
+  simpa [LinearMap.mem_ker] using this
+
+end RaySupport
+
+
+/-! ## The fibre-level caller: condition (i) and the support chain from arithmetic only
+
+The hypotheses are the source's: the ambient form is defined over `ℚ` and of signature `(2, n)`
+(`hBQ`, `hsig`), the fibre is a `ℚ`-isotropic line `I` of `Λ` with the reduced lattice
+`(Λ ⊓ I^⊥)/(Λ ⊓ I)` full and integral (`bs`, `hbs`, `hint₀`), `Γ_I` acts on it by lattice
+isomorphisms and isometries (`hΓΛ`, `hΓiso`), and the traces of the walls at `I` are the fibres of
+a `Γ_I`-orbit family of `ℚ`-hyperplanes with primitive generators (`hsub` against
+`orbitFamilyTraces`). Nothing else: no local-finiteness, no trace equivalence, no local-rationality
+certificate. -/
+
+section ArithmeticCaller
+
+variable {BQ : LinearMap.BilinForm ℚ V} {Q : QuadraticForm ℝ (realified V)}
+variable {ι : Type*}
+
+/-- **Condition (i) of Definition 6.1 for `Σ(ℋ)` at a fibre, from the arithmetic input alone.** The
+members of `Σ(ℋ)` in `C_{I,+}` are the cells of the distinct traces of `ℋ` at `I`, and they are a
+locally rational decomposition because Example 4.3 (b) at the reduced lattice counts the cutting
+traces — `cutsFinitelyOnTraces_orbitFamily` — with no counting hypothesis carried. -/
+theorem semifanArrangementTraces_isLocallyRational_of_orbitFamily
+    (hBQsym : BQ.IsSymm)
+    (hBQ : ∀ u w : V, (associated Q) (rationalPoint u) (rationalPoint w) = (BQ u w : ℝ))
+    (hsig : sigPos Q = 2) (hnd : Q.Nondegenerate) (F : ConicalLine BQ Q)
+    {κ₀ : Type} [Finite κ₀] (bs₀ : Module.Basis κ₀ ℚ V)
+    (hint₀ : ∀ x ∈ Submodule.span ℤ (Set.range bs₀), ∀ y ∈ Submodule.span ℤ (Set.range bs₀),
+      ∃ n : ℤ, BQ x y = (n : ℚ))
+    {κ : Type} [Finite κ] (bs : Module.Basis κ ℚ ↥F.space)
+    (hbs : Submodule.span ℤ (Set.range bs) =
+      reducedLattice hBQsym F (Submodule.span ℤ (Set.range bs₀)))
+    (ΓI : Set (↥F.space ≃ₗ[ℚ] ↥F.space))
+    (hone : (1 : ↥F.space ≃ₗ[ℚ] ↥F.space) ∈ ΓI)
+    (H₀ : Finset (Submodule ℚ ↥F.space))
+    (hΓΛ : ∀ e ∈ ΓI, Submodule.map ((e : ↥F.space →ₗ[ℚ] ↥F.space).restrictScalars ℤ)
+      (Submodule.span ℤ (Set.range bs)) = Submodule.span ℤ (Set.range bs))
+    (hΓiso : ∀ e ∈ ΓI, ∀ x y : ↥F.space,
+      restrictBilinForm BQ F.space (e x) (e y) = restrictBilinForm BQ F.space x y)
+    (gen : ↥(orbitFamily H₀ ΓI) → ↥F.space)
+    (hgen : ∀ ℓ : ↥(orbitFamily H₀ ΓI), gen ℓ ≠ 0 ∧
+      Submodule.span ℤ (Set.range bs) ⊓ ℓ.1.restrictScalars ℤ =
+        Submodule.span ℤ ({gen ℓ} : Set ↥F.space))
+    (ψ : ι → V →ₗ[ℚ] ℚ)
+    (hsub : distinctTraces ψ F ⊆ orbitFamilyTraces BQ F gen) :
+    IsLocallyRationalDecomposition F.closure (semifanArrangementTraces ψ F) := by
+  classical
+  have hpos : sigPos (fibreForm Q F.space) = 1 :=
+    sigPos_fibreForm_eq_one hBQ hBQsym hsig F
+  have hndF : (fibreForm Q F.space).Nondegenerate :=
+    fibreForm_space_nondegenerate hBQ hBQsym hnd F
+  have hsal : (F.closure : ConvexCone ℝ (realified ↥F.space)).Salient := by
+    rw [ConicalLine.closure_eq_closedSheet F hpos]
+    exact salient_rationalClosure hpos hndF F.sheet_pos
+  have hφ : ∀ T : distinctTraces ψ F, IsRationalForm (traceForm ψ F T).toLinearMap :=
+    fun T => isRationalForm_fibreFormC F (ψ ↑(traceRep ψ F T))
+  have htraces : CutsFinitelyOnTraces F (distinctTraces ψ F) :=
+    (cutsFinitelyOnTraces_orbitFamily hBQsym hBQ hsig hnd F bs₀ hint₀ bs hbs ΓI hone H₀ hΓΛ hΓiso
+      gen hgen).mono hsub
+  have hcut : CutsFinitelyOnRational F.closure (traceForm ψ F) := by
+    refine (cutsFinitelyOnRational_iff_cutsFinitelyOnTraces (F := F) ?_).2 htraces
+    intro T
+    exact ⟨(ψ ↑(traceRep ψ F T)).comp F.space.subtype, traceRep_spec ψ F T,
+      fibreFormC_eq_fibreTraceCLM (ψ ↑(traceRep ψ F T)) F⟩
+  exact arrangementDecomposition_isLocallyRational hsal hφ hcut
+
+/-- **Condition (i) of Definition 6.1 for `Σ(ℋ)` at a fibre**, in the ambient-indexed form of
+`semifanArrangement`: the same statement, transported across `semifanArrangementTraces_eq`. -/
+theorem semifanArrangement_isLocallyRational_of_orbitFamily
+    (hBQsym : BQ.IsSymm)
+    (hBQ : ∀ u w : V, (associated Q) (rationalPoint u) (rationalPoint w) = (BQ u w : ℝ))
+    (hsig : sigPos Q = 2) (hnd : Q.Nondegenerate) (F : ConicalLine BQ Q)
+    {κ₀ : Type} [Finite κ₀] (bs₀ : Module.Basis κ₀ ℚ V)
+    (hint₀ : ∀ x ∈ Submodule.span ℤ (Set.range bs₀), ∀ y ∈ Submodule.span ℤ (Set.range bs₀),
+      ∃ n : ℤ, BQ x y = (n : ℚ))
+    {κ : Type} [Finite κ] (bs : Module.Basis κ ℚ ↥F.space)
+    (hbs : Submodule.span ℤ (Set.range bs) =
+      reducedLattice hBQsym F (Submodule.span ℤ (Set.range bs₀)))
+    (ΓI : Set (↥F.space ≃ₗ[ℚ] ↥F.space))
+    (hone : (1 : ↥F.space ≃ₗ[ℚ] ↥F.space) ∈ ΓI)
+    (H₀ : Finset (Submodule ℚ ↥F.space))
+    (hΓΛ : ∀ e ∈ ΓI, Submodule.map ((e : ↥F.space →ₗ[ℚ] ↥F.space).restrictScalars ℤ)
+      (Submodule.span ℤ (Set.range bs)) = Submodule.span ℤ (Set.range bs))
+    (hΓiso : ∀ e ∈ ΓI, ∀ x y : ↥F.space,
+      restrictBilinForm BQ F.space (e x) (e y) = restrictBilinForm BQ F.space x y)
+    (gen : ↥(orbitFamily H₀ ΓI) → ↥F.space)
+    (hgen : ∀ ℓ : ↥(orbitFamily H₀ ΓI), gen ℓ ≠ 0 ∧
+      Submodule.span ℤ (Set.range bs) ⊓ ℓ.1.restrictScalars ℤ =
+        Submodule.span ℤ ({gen ℓ} : Set ↥F.space))
+    (ψ : ι → V →ₗ[ℚ] ℚ)
+    (hsub : distinctTraces ψ F ⊆ orbitFamilyTraces BQ F gen) :
+    IsLocallyRationalDecomposition F.closure (semifanArrangement ψ F) := by
+  rw [← semifanArrangementTraces_eq]
+  exact semifanArrangementTraces_isLocallyRational_of_orbitFamily hBQsym hBQ hsig hnd F bs₀ hint₀
+    bs hbs ΓI hone H₀ hΓΛ hΓiso gen hgen ψ hsub
+
+/-- **The fibre-level caller of Example 6.4, p. 29.** One arithmetic input (the traces of `ℋ` at `I`
+lie in the `Γ_I`-orbit family of the reduced lattice) gives, at the fibre:
+
+* condition (i) of Definition 6.1: the members of `Σ(ℋ)` in `C_{I,+}` are a locally rational
+  decomposition;
+* `J_{Σ(ℋ),r} ⊆ ⟨r⟩^⊥` for an actual isotropic ray `r = ρ` of the fibre;
+* the common kernel of the traces through `r` lies in the span of every member above `r` meeting the
+  open cone — the primal form of the description of a member by its walls, which is the half of
+  `J_{Σ(ℋ)} = J_ℋ` that needs the counting.
+
+No local-finiteness, trace-equivalence or local-rationality certificate is supplied, and the ray is
+a vector of the Lorentzian fibre rather than a `ConicalPlane`. -/
+theorem semifanArrangement_arithmetic_fibre
+    (hBQsym : BQ.IsSymm)
+    (hBQ : ∀ u w : V, (associated Q) (rationalPoint u) (rationalPoint w) = (BQ u w : ℝ))
+    (hsig : sigPos Q = 2) (hnd : Q.Nondegenerate) (F : ConicalLine BQ Q)
+    {κ₀ : Type} [Finite κ₀] (bs₀ : Module.Basis κ₀ ℚ V)
+    (hint₀ : ∀ x ∈ Submodule.span ℤ (Set.range bs₀), ∀ y ∈ Submodule.span ℤ (Set.range bs₀),
+      ∃ n : ℤ, BQ x y = (n : ℚ))
+    {κ : Type} [Finite κ] (bs : Module.Basis κ ℚ ↥F.space)
+    (hbs : Submodule.span ℤ (Set.range bs) =
+      reducedLattice hBQsym F (Submodule.span ℤ (Set.range bs₀)))
+    (ΓI : Set (↥F.space ≃ₗ[ℚ] ↥F.space))
+    (hone : (1 : ↥F.space ≃ₗ[ℚ] ↥F.space) ∈ ΓI)
+    (H₀ : Finset (Submodule ℚ ↥F.space))
+    (hΓΛ : ∀ e ∈ ΓI, Submodule.map ((e : ↥F.space →ₗ[ℚ] ↥F.space).restrictScalars ℤ)
+      (Submodule.span ℤ (Set.range bs)) = Submodule.span ℤ (Set.range bs))
+    (hΓiso : ∀ e ∈ ΓI, ∀ x y : ↥F.space,
+      restrictBilinForm BQ F.space (e x) (e y) = restrictBilinForm BQ F.space x y)
+    (gen : ↥(orbitFamily H₀ ΓI) → ↥F.space)
+    (hgen : ∀ ℓ : ↥(orbitFamily H₀ ΓI), gen ℓ ≠ 0 ∧
+      Submodule.span ℤ (Set.range bs) ⊓ ℓ.1.restrictScalars ℤ =
+        Submodule.span ℤ ({gen ℓ} : Set ↥F.space))
+    (ψ : ι → V →ₗ[ℚ] ℚ)
+    (hsub : distinctTraces ψ F ⊆ orbitFamilyTraces BQ F gen)
+    {ρ : ↥F.space} (hρ : fibreForm Q F.space (rationalPoint ρ) = 0) (hρ0 : ρ ≠ 0)
+    (hρsheet : 0 ≤ (associated (fibreForm Q F.space)) (rationalPoint ρ) F.sheet) :
+    IsLocallyRationalDecomposition F.closure (semifanArrangement ψ F) ∧
+      sigmaSupportSpace (positiveCone.upper (fibreForm Q F.space) F.sheet)
+          (semifanArrangementTraces ψ F)
+          (PointedCone.hull ℝ ({rationalPoint ρ} : Set (realified ↥F.space))) ≤
+        LinearMap.ker ((associated (fibreForm Q F.space)) (rationalPoint ρ)) ∧
+      (∀ τ : supportIndex (positiveCone.upper (fibreForm Q F.space) F.sheet)
+          (semifanArrangementTraces ψ F)
+          (PointedCone.hull ℝ ({rationalPoint ρ} : Set (realified ↥F.space))),
+        (⨅ T : {T : distinctTraces ψ F // traceForm ψ F T (rationalPoint ρ) = 0},
+            LinearMap.ker (traceForm ψ F T.1).toLinearMap) ≤
+          Submodule.span ℝ (τ.1 : Set (realified ↥F.space))) := by
+  classical
+  have hpos : sigPos (fibreForm Q F.space) = 1 :=
+    sigPos_fibreForm_eq_one hBQ hBQsym hsig F
+  have hndF : (fibreForm Q F.space).Nondegenerate :=
+    fibreForm_space_nondegenerate hBQ hBQsym hnd F
+  have htraces : CutsFinitelyOnTraces F (distinctTraces ψ F) :=
+    (cutsFinitelyOnTraces_orbitFamily hBQsym hBQ hsig hnd F bs₀ hint₀ bs hbs ΓI hone H₀ hΓΛ hΓiso
+      gen hgen).mono hsub
+  have hcut : CutsFinitelyOnRational F.closure (traceForm ψ F) := by
+    refine (cutsFinitelyOnRational_iff_cutsFinitelyOnTraces (F := F) ?_).2 htraces
+    intro T
+    exact ⟨(ψ ↑(traceRep ψ F T)).comp F.space.subtype, traceRep_spec ψ F T,
+      fibreFormC_eq_fibreTraceCLM (ψ ↑(traceRep ψ F T)) F⟩
+  exact ⟨semifanArrangement_isLocallyRational_of_orbitFamily hBQsym hBQ hsig hnd F bs₀ hint₀ bs
+      hbs ΓI hone H₀ hΓΛ hΓiso gen hgen ψ hsub,
+    sigmaSupportSpace_ray_le_ker (ψ := ψ) hpos hndF hcut hρ hρ0 hρsheet,
+    fun τ => iInf_traceKernel_le_span_of_member (ψ := ψ) hpos hcut τ⟩
+
+end ArithmeticCaller
+
 end LeanCategories.Lattices.Valued
