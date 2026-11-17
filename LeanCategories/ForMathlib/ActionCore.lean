@@ -29,6 +29,15 @@ Searched in Mathlib at the pinned revision: `IsIso` of an involutive endomorphis
 `End.of`/`End.asHom`/`End.mul_asHom`/`End.one_asHom`, `asIso`/`asIso_hom`, `Action.ρAut`. Mathlib
 has `End.isUnit_iff_isIso` and nothing that turns `f * f = 1` into `IsIso f.asHom`; `Action` is a
 root-namespace structure with `V` and `ρ`, and no API moves an action between `C` and `Core C`.
+
+For `mapFunctor`: Mathlib has `Action.res` (restriction along a monoid hom `G →* H`, target category
+unchanged), `Action.forget`, `Action.functorCategoryEquivalence` (`Action V G ≌ (SingleObj G ⤳ V)`,
+through which post-composition by `F` is whiskering), `Functor.mapEnd`, `Functor.Full`,
+`Functor.Faithful` and `Functor.preimage` — but no `Action C G ⥤ Action D G` induced by `F : C ⥤ D`.
+The construction here is written, not ported; `Functor.mapEnd` supplies the monoid hom. Searched in
+TauCeti through the formalization corpus (`TauCetiProject__TauCeti`): `End.of asHom` (23 files, all
+`End`-as-structure uses, no action transport), `Action core self-involution` (0),
+`IsIso.of_mul_self_eq_one` (0).
 -/
 
 @[expose] public section
@@ -174,5 +183,90 @@ theorem ext' {V : Type*} [Category V] {G : Type*} [Monoid G]
       exact congrArg (Action.mk (V := V) (G := G) VA) (eq_of_heq hρ)
 
 end Action
+
+/-! ## Post-composition of an action with a functor
+
+Mathlib has no `Action.mapFunctor`; it has `Action.res` (restriction along a monoid hom `G →* H`,
+which keeps the target category) and the equivalence `Action V G ≌ (SingleObj G ⤳ V)`, through which
+post-composition with `F : C ⥤ D` is whiskering in the functor category. The direct construction is
+written here because it is what the two lattice models need, and it records the object and morphism
+maps explicitly: `V ↦ F.obj V`, `ρ ↦ F.mapEnd ∘ ρ`, `φ ↦ F.map φ.hom`. -/
+
+/-- Post-composition of an action with a functor: `Action C G ⥤ Action D G`. -/
+def Action.mapFunctor {C D : Type*} [Category C] [Category D] (F : C ⥤ D)
+    {G : Type*} [Monoid G] : Action C G ⥤ Action D G where
+  obj A :=
+    { V := F.obj A.V
+      ρ := (F.mapEnd A.V).comp A.ρ }
+  map {A B} φ :=
+    { hom := F.map φ.hom
+      comm := by
+        intro g
+        have h := congrArg F.map (φ.comm g)
+        rw [F.map_comp, F.map_comp] at h
+        simpa [Functor.mapEnd] using h }
+  map_id A := by
+    apply Action.hom_ext
+    simp
+  map_comp φ ψ := by
+    apply Action.hom_ext
+    simp
+
+@[simp]
+theorem Action.mapFunctor_obj_V {C D : Type*} [Category C] [Category D] (F : C ⥤ D)
+    {G : Type*} [Monoid G] (A : Action C G) :
+    ((Action.mapFunctor F).obj A).V = F.obj A.V := rfl
+
+@[simp]
+theorem Action.mapFunctor_map_hom {C D : Type*} [Category C] [Category D] (F : C ⥤ D)
+    {G : Type*} [Monoid G] {A B : Action C G} (φ : A ⟶ B) :
+    ((Action.mapFunctor F).map φ).hom = F.map φ.hom := rfl
+
+/-- Post-composition with a faithful functor is faithful. -/
+instance Action.instFaithfulMapFunctor {C D : Type*} [Category C] [Category D] (F : C ⥤ D)
+    {G : Type*} [Monoid G] [F.Faithful] : (Action.mapFunctor (G := G) F).Faithful where
+  map_injective := by
+    intro A B φ ψ h
+    apply Action.hom_ext
+    apply F.map_injective
+    exact congrArg Action.Hom.hom h
+
+/-- Post-composition with a faithful functor is faithful. -/
+theorem Action.mapFunctor_faithful {C D : Type*} [Category C] [Category D] (F : C ⥤ D)
+    {G : Type*} [Monoid G] [F.Faithful] : (Action.mapFunctor (G := G) F).Faithful :=
+  inferInstance
+
+/-- The preimage of a morphism of post-composed actions, for a full and faithful functor. -/
+noncomputable def Action.mapFunctor.preimage {C D : Type*} [Category C] [Category D]
+    (F : C ⥤ D) {G : Type*} [Monoid G] [F.Full] [F.Faithful] {A B : Action C G}
+    (ψ : (Action.mapFunctor F).obj A ⟶ (Action.mapFunctor F).obj B) : A ⟶ B where
+  hom := F.preimage (show F.obj A.V ⟶ F.obj B.V from ψ.hom)
+  comm := by
+    intro g
+    have hψ : F.map (F.preimage (show F.obj A.V ⟶ F.obj B.V from ψ.hom)) =
+        (show F.obj A.V ⟶ F.obj B.V from ψ.hom) := F.map_preimage _
+    have h2 : F.map ((A.ρ g).asHom ≫ F.preimage (show F.obj A.V ⟶ F.obj B.V from ψ.hom)) =
+        F.map (F.preimage (show F.obj A.V ⟶ F.obj B.V from ψ.hom) ≫ (B.ρ g).asHom) := by
+      rw [F.map_comp, F.map_comp, hψ]
+      exact ψ.comm g
+    have h3 := F.map_injective h2
+    simpa [Functor.mapEnd] using h3
+
+/-- Post-composition with a full and faithful functor is full. -/
+instance Action.instFullMapFunctor {C D : Type*} [Category C] [Category D] (F : C ⥤ D)
+    {G : Type*} [Monoid G] [F.Full] [F.Faithful] :
+    (Action.mapFunctor (G := G) F).Full where
+  map_surjective := by
+    intro A B ψ
+    refine ⟨Action.mapFunctor.preimage F ψ, ?_⟩
+    apply Action.hom_ext
+    change F.map (F.preimage (show F.obj A.V ⟶ F.obj B.V from ψ.hom)) = ψ.hom
+    exact F.map_preimage _
+
+/-- Post-composition with a full and faithful functor is full. -/
+theorem Action.mapFunctor_full {C D : Type*} [Category C] [Category D] (F : C ⥤ D)
+    {G : Type*} [Monoid G] [F.Full] [F.Faithful] : (Action.mapFunctor (G := G) F).Full :=
+  inferInstance
+
 
 end CategoryTheory

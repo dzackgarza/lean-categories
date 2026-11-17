@@ -3578,38 +3578,45 @@ downstream assertions, computational observations, or downstream diagnostics.
   `exists_orbitFamily_of_traceOrbitCover`. Filed here because the GitHub connector cannot create
   issues: this entry is the issue.
 
-### #27 — the morphism-level comparison between `BC2Action` and `EquivariantLatticeCat`
+### #27 — the morphism-level comparison between `BC2Action` and `EquivariantLatticeCat` — RESOLVED
 
-- **Need:** the functor half of the comparison proved in `ArrowLoci.lean` §4. On objects the two
-  models coincide: `equivariantCore : EquivariantLatticeCat Rc BC2 → Action (Core
-  (FiniteProjectiveLatticeCat Rc Rc)) BC2` and `coreToEquivariant` are mutually inverse
-  (`coreToEquivariant_equivariantCore`, `equivariantCore_coreToEquivariant`). What is missing is the
-  transport of *morphisms*, which would make the comparison the equivalence on the core-full
-  subcategory that it should be.
-- **Evidence:** `Action (Core C) G`'s hom-types are `CoreHom`s (isomorphisms of `C`) by
-  construction, while `Action.Hom` for `C` itself is an arbitrary `C`-morphism with a commutation
-  condition, so the object-level maps do not extend to a functor on all morphisms. The two
-  constructions needed are (i) post-composition of an action with a functor of the action categories,
-  `Action C G ⥤ Action D G` from `F : C ⥤ D` (object `V ↦ F.obj V`, `ρ g ↦ End.of (F.map (ρ g).asHom)`,
-  morphism `φ ↦ F.map φ.hom`, with `Action.Hom.comm` transported by `F.map_comp`), and (ii) the
-  inclusion `Core (FiniteProjectiveLatticeCat Rc Rc) ⥤ Core (LatticeCat Rc Rc)` of the cores of a
-  full subcategory and its ambient category. Mathlib has `Action.forget`, `Action.Hom`,
-  `Action.hom_ext` and `Action.ρAut`, and no `Action.mapFunctor`/`Action.res` for an
-  action-category-level functor.
-- **Gap and impact:** without (i)+(ii) the comparison is an object bijection only; a consumer cannot
-  transport an action morphism across the two models, and cannot conclude that the core-valued finite
-  model is the core-full subcategory `BC2Action`'s base cut down to finite lattices. No statement in
-  the tree depends on the missing half: the round trips are proved for objects and nothing claims
-  more.
-- **Coverage:** searched Mathlib at the pinned revision for `Action.mapFunctor`, `Action.res`,
-  `Action.forget`, `Action.Hom`, `Action.instCategory`, `Core.inclusion`, `ιOfLE`,
-  `ObjectProperty.ιOfLE`; searched the repository for `EquivariantLatticeCat`, `toCoreAction`,
-  `mapFunctor`. Not inspected: whether `Action`'s functor-category equivalence
-  (`Action V G ≌ (SingleObj G ⥤ V)`) gives (i) more cheaply than the direct construction.
-- **Repair link:** add `Action.mapFunctor` and the core inclusion to `ForMathlib/ActionCore.lean`, then
-  the comparison functor `Action (Core (FiniteProjectiveLatticeCat Rc Rc)) BC2 ⥤ BC2Action Rc Rc` and
-  its faithfulness (`Core.inclusion` is faithful) close the item. Filed here because the GitHub
-  connector cannot create issues: this entry is the issue.
+- **Need (as filed):** the functor half of the comparison in `ArrowLoci.lean` §4: the two models
+  coincide on objects, and the transport of *morphisms* was missing.
+- **Resolution:** both constructions exist and the comparison functor is proved, full and faithful.
+  * `Action.mapFunctor (F : C ⥤ D) : Action C G ⥤ Action D G` (`ForMathlib/ActionCore.lean`), with
+    `mapFunctor_obj_V`, `mapFunctor_map_hom`, and the instances `Action.instFaithfulMapFunctor`
+    (`F` faithful ⇒ faithful) and `Action.instFullMapFunctor` (`F` full *and* faithful ⇒ full; the
+    preimage is `Action.mapFunctor.preimage`). Mathlib has no such construction: `Action.res` restricts
+    along a monoid hom and keeps the target category, and `Action.functorCategoryEquivalence` gives an
+    indirect route only. `Functor.mapEnd` supplies the monoid hom on endomorphisms.
+  * `coreInclusion (Rc) : Core (FiniteProjectiveLatticeCat Rc Rc) ⥤ Core (LatticeCat Rc Rc)`, with
+    the instances `coreInclusion_instFaithful` and `coreInclusion_instFull`. Fullness is why this
+    works: `isFiniteProjectiveLattice` is an object property of a *full* subcategory, so
+    `ObjectProperty.isoMk` lifts an ambient isomorphism back.
+  * `compareFunctor (Rc) := Action.mapFunctor (coreInclusion Rc) :
+    Action (Core (FiniteProjectiveLatticeCat Rc Rc)) BC2 ⥤ BC2Action Rc Rc`, with
+    `compareFunctor_faithful` and `compareFunctor_full`.
+- **What the shape turned out to be, against the expectation in the filing:** the comparison is *not*
+  merely a functor and *not* non-full. It is a **full embedding** — an equivalence onto its essential
+  image — because `Core` of a full subcategory sits fully faithfully inside `Core` of the ambient
+  category. The obstruction to an equivalence of categories is therefore on *objects*, not on
+  morphisms, and it is proved: `compareFunctor_not_essSurjective` exhibits `bc2ActionInfinite` (the
+  trivial `C₂`-action on the zero form over `ℕ →₀ ℤ`) outside the essential image, using
+  `not_moduleFinite_finsupp` (a finite spanning set of a free module has a finite union of supports)
+  and `moduleFinite_of_iso` (finiteness transfers along an isomorphism of lattices). This is also the
+  proof that the non-core model is *not* equivalent to `BC2Action`: its morphisms are not invertible,
+  and the functor that does exist needs `W = Rc` (built into the target's type) and finiteness.
+- **Coverage:** Mathlib searched at the pinned revision for `Action.mapFunctor`, `Action.res`,
+  `Action.forget`, `Action.Hom`, `Action.instCategory`, `Functor.mapEnd`, `Functor.Full`,
+  `Functor.Faithful`, `Functor.preimage`, `ObjectProperty.isoMk`, `ObjectProperty.ι`,
+  `Module.Finite.equiv`, `Module.Finite.of_surjective`, `Finsupp.mem_supported`, `Finsupp.supported`,
+  `Set.Finite.biUnion`, `Set.Finite.bddAbove`. TauCeti (corpus, `TauCetiProject__TauCeti`) searched for
+  `involutive endomorphism automorphism`, `End.of asHom`, `Action core self-involution`,
+  `IsIso.of_mul_self_eq_one`: no action-category transport and no involution-is-an-automorphism lemma.
+  Not inspected: whether a packaged Mathlib PR adds `Action.mapFunctor`.
+- **Repair link:** no further work owed for this entry. The remaining gaps of #27 are the ones already
+  filed separately (the `Arrow.isoMk`-presentation of the locus closure, and the torsion-freeness
+  hypothesis of `negIso_ne_refl`).
 
 ### #27 — the arrow-category locus closure, the `End`/`Aut` extraction for a `BC₂`-action, and a concrete torsion-free marking witness
 

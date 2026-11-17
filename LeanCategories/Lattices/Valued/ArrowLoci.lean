@@ -13,7 +13,10 @@ public import LeanCategories.ForMathlib.CosliceGroupoid
 public import LeanCategories.ForMathlib.LinearMapCompl
 public import Mathlib.CategoryTheory.Comma.Arrow
 public import Mathlib.CategoryTheory.Core
+public import Mathlib.Algebra.Module.Projective
 public import Mathlib.CategoryTheory.Action.Basic
+public import Mathlib.Data.Finsupp.Basic
+public import Mathlib.LinearAlgebra.Finsupp.Supported
 
 /-!
 # Arrow-category loci, markings as coslice objects, and the `BC₂` involution
@@ -111,7 +114,12 @@ an involution.
   `Submodule.disjoint_def`. The commutation of the arrow category is `Arrow.isoMk`. Mathlib has no
   component-extraction lemma for a `Comma`-isomorphism (no `Comma.isIso_left`) and no thinness
   statement for `Under` over a groupoid, which is why `ForMathlib/CosliceGroupoid.lean` supplies the
-  latter.
+  latter. For §5: `Functor.mapEnd`, `Functor.Full`/`Faithful`/`preimage`, `Action.res`,
+  `Action.functorCategoryEquivalence` (no `Action.mapFunctor`), `ObjectProperty.isoMk`/`ι`,
+  `Module.Finite.equiv`, `Finsupp.mem_supported`/`supported`, `Set.Finite.biUnion`/`bddAbove`.
+  TauCeti, through the formalization corpus (`TauCetiProject__TauCeti`): `involutive endomorphism
+  automorphism`, `End.of asHom`, `Action core self-involution`, `IsIso.of_mul_self_eq_one` — no
+  action-category transport, and no lemma turning `f * f = 1` into `IsIso f`.
 * This repository: `BilinModuleCat.IsPrimitiveEmbedding`, `IsPrimitiveSubmodule` and
   `IsPrimitiveSubmodule.map_equiv_iff` (`Lattices/Valued/Sublattice.lean:24`, `:61`, `:173`),
   `orthogonalComplement` (`:328`), `changeValue` and `changeValue_id`/`changeValue_comp`
@@ -669,11 +677,12 @@ lattices landing in the core. They differ in three places, and the core is not o
 *morphisms*: every morphism in the core-valued model is an isomorphism of lattices by construction,
 while a morphism of `C₂`-actions in `EquivariantLatticeCat` need not be invertible. So the
 comparison is **an equivalence on the core-full subcategory** — `Core (EquivariantLatticeCat Rc
-BC2)` against the core-valued finite model — and its object half is proved here; the functor on
-morphisms (post-composition of an action with a functor of the action categories, plus the
-inclusion `Core (FiniteProjectiveLatticeCat) ⥤ Core (LatticeCat)`) is not built, and is recorded
-in `COMPLAINTS.md`. It is *not* a full embedding and *not* an equivalence of the non-core model with
-`BC2Action`, and the hypothesis that cannot be dropped is finiteness (together with `W = R`). -/
+BC2)` against the core-valued finite model. Both halves are now proved: the object half here (§4),
+and the morphism half in §5, where `compareFunctor` is shown full and faithful and therefore an
+equivalence onto its essential image, with the finiteness hypothesis entering as the failure of
+essential surjectivity rather than of fullness. The comparison is *not* an equivalence of the
+non-core model with `BC2Action`, and the hypotheses that cannot be dropped are finiteness and
+`W = R`. -/
 
 section Comparison
 
@@ -764,5 +773,143 @@ theorem equivariantCore_coreToEquivariant
     rw [asIso_hom]
 
 end Comparison
+
+/-! ## 5. The morphism half of the comparison
+
+Section 4 compared the two models on objects. Here is the functor on morphisms, and its exact
+status.
+
+* `Action.mapFunctor` (`ForMathlib/ActionCore.lean`) post-composes an action with a functor of the
+  target categories; `Functor.mapEnd` supplies the monoid hom on endomorphisms. It is faithful when
+  `F` is, and full when `F` is full *and* faithful (fullness of `F` lifts the underlying morphism,
+  faithfulness lifts the equivariance equation).
+* `coreInclusion` is `Core (FiniteProjectiveLatticeCat R R) ⥤ Core (LatticeCat R R)`. It exists
+  because the finite subcategory is *full*: an isomorphism between two of its objects is an
+  isomorphism of the ambient category and `ObjectProperty.isoMk` lifts it back. Hence it is full and
+  faithful.
+* Their composite `compareFunctor` is therefore **full and faithful** — an equivalence onto its
+  essential image — and *not* an equivalence of categories: its essential image is the actions on
+  finitely generated lattices, while `BC2Action ℤ ℤ` contains the trivial action on the zero form of
+  countably infinite rank (`compareFunctor_not_essSurjective`). What shows that the comparison is
+  not an equivalence is therefore essential surjectivity, not fullness: the morphism half of the
+  comparison is an equivalence of groupoids, and the hypothesis that cannot be dropped is finiteness
+  (with `W = R`, which is where the value module enters: the target `BC2Action Rc Rc` has `W = Rc`
+  built into its type).
+-/
+
+section CompareFunctor
+
+variable (Rc : Type) [CommRing Rc]
+
+/-- The core of the finite-lattice category inside the core of the lattice category. -/
+def coreInclusion : Core (FiniteProjectiveLatticeCat Rc Rc) ⥤ Core (LatticeCat Rc Rc) where
+  obj X := ⟨X.of.obj⟩
+  map f := CoreHom.mk ((isFiniteProjectiveLattice Rc Rc).ι.mapIso f.iso)
+  map_id X := by
+    apply Core.hom_ext
+    simp
+  map_comp f g := by
+    apply Core.hom_ext
+    simp
+
+instance coreInclusion_instFaithful : (coreInclusion Rc).Faithful where
+  map_injective := by
+    intro X Y f g h
+    apply Core.hom_ext
+    exact (isFiniteProjectiveLattice Rc Rc).ι.map_injective
+      (congrArg Iso.hom (congrArg CoreHom.iso h))
+
+instance coreInclusion_instFull : (coreInclusion Rc).Full where
+  map_surjective := by
+    intro X Y φ
+    refine ⟨CoreHom.mk ((isFiniteProjectiveLattice Rc Rc).isoMk φ.iso), ?_⟩
+    apply Core.hom_ext
+    change (isFiniteProjectiveLattice Rc Rc).ι.map
+      ((isFiniteProjectiveLattice Rc Rc).isoMk φ.iso).hom = φ.iso.hom
+    rfl
+
+/-- **The comparison functor**: core-valued `C₂`-actions on finitely generated `Rc`-lattices into
+`BC2Action Rc Rc`. -/
+def compareFunctor :
+    Action (Core (FiniteProjectiveLatticeCat Rc Rc)) BC2 ⥤ BC2Action Rc Rc :=
+  Action.mapFunctor (coreInclusion Rc)
+
+theorem compareFunctor_faithful : (compareFunctor Rc).Faithful :=
+  Action.mapFunctor_faithful (coreInclusion Rc)
+
+/-- The comparison functor is full: every isomorphism of core-valued `C₂`-actions on finitely
+generated lattices comes from the finite model. -/
+theorem compareFunctor_full : (compareFunctor Rc).Full :=
+  Action.mapFunctor_full (coreInclusion Rc)
+
+end CompareFunctor
+
+section InfiniteWitness
+
+/-- Finiteness of the carrier transfers along an isomorphism of lattices. -/
+theorem moduleFinite_of_iso {R : Type} [CommRing R] {L L' : LatticeCat R R}
+    (e : L ≅ L') [h : Module.Finite R ((isLattice R R).ι.obj L).carrier] :
+    Module.Finite R L'.obj.carrier :=
+  Module.Finite.equiv (BilinModuleCat.linearEquivOfIso ((isLattice R R).ι.mapIso e))
+
+/-- A free module of countably infinite rank is not finitely generated: a finite spanning set has
+finite union of supports, and a basis vector outside that union cannot be in the span. -/
+theorem not_moduleFinite_finsupp : ¬ Module.Finite ℤ (ℕ →₀ ℤ) := by
+  intro h
+  obtain ⟨S, hSfin, hspan⟩ :=
+    Submodule.fg_def.mp (Module.Finite.fg_top (R := ℤ) (M := ℕ →₀ ℤ))
+  have hUnion : (⋃ s ∈ S, (s.support : Set ℕ)).Finite :=
+    hSfin.biUnion fun s _ => s.support.finite_toSet
+  obtain ⟨N, hN⟩ := hUnion.bddAbove
+  have hmem : Finsupp.single (N + 1) (1 : ℤ) ∈ Submodule.span ℤ S := by
+    rw [hspan]
+    exact Submodule.mem_top
+  have hle : Submodule.span ℤ S ≤ Finsupp.supported ℤ ℤ (⋃ s ∈ S, (s.support : Set ℕ)) := by
+    rw [Submodule.span_le]
+    intro s hs
+    exact (Finsupp.mem_supported (M := ℤ) (s := ⋃ s ∈ S, (s.support : Set ℕ)) ℤ s).mpr
+      (fun i hi => Set.mem_biUnion hs hi)
+  have hsupp := hle hmem
+  have hsupp' : ((Finsupp.single (N + 1) (1 : ℤ)).support : Set ℕ) ⊆
+      ⋃ s ∈ S, (s.support : Set ℕ) :=
+    (Finsupp.mem_supported (M := ℤ) (s := ⋃ s ∈ S, (s.support : Set ℕ)) ℤ
+      (Finsupp.single (N + 1) (1 : ℤ))).mp hsupp
+  exact absurd (hN (hsupp' (by simp))) (Nat.not_succ_le_self N)
+
+/-- The zero form on a free module of countably infinite rank: a lattice with infinitely generated
+carrier. -/
+def zeroFormInfinite : LatticeCat ℤ ℤ := by
+  refine ⟨BilinModuleCat.ofBilinMap (W := ℤ) (M := ℕ →₀ ℤ)
+      (0 : LinearMap.BilinMap ℤ (ℕ →₀ ℤ) ℤ), ?_, ?_⟩
+  · change Module.Projective ℤ (ℕ →₀ ℤ)
+    infer_instance
+  · intro x y
+    change (0 : ℤ) = 0
+    rfl
+
+theorem zeroFormInfinite_not_finite : ¬ Module.Finite ℤ zeroFormInfinite.obj.carrier :=
+  not_moduleFinite_finsupp
+
+/-- The trivial `C₂`-action on it. -/
+def bc2ActionInfinite : BC2Action ℤ ℤ where
+  V := ⟨zeroFormInfinite⟩
+  ρ := 1
+
+theorem bc2ActionInfinite_not_finite : ¬ Module.Finite ℤ bc2ActionInfinite.V.of.obj.carrier :=
+  not_moduleFinite_finsupp
+
+/-- **The comparison functor is not essentially surjective.** Its source is actions on finitely
+generated lattices; the trivial `C₂`-action on the zero form of countably infinite rank is an object
+of `BC2Action ℤ ℤ` outside its essential image, since an isomorphism of actions would give an
+isomorphism of lattices and carry finite generation across. -/
+theorem compareFunctor_not_essSurjective :
+    ¬ ∀ A : BC2Action ℤ ℤ, ∃ X : Action (Core (FiniteProjectiveLatticeCat ℤ ℤ)) BC2,
+        Nonempty ((compareFunctor ℤ).obj X ≅ A) := by
+  intro h
+  obtain ⟨X, ⟨e⟩⟩ := h bc2ActionInfinite
+  have hfin : Module.Finite ℤ ((compareFunctor ℤ).obj X).V.of.obj.carrier := X.V.of.property
+  exact bc2ActionInfinite_not_finite (moduleFinite_of_iso e.hom.hom.iso (h := hfin))
+
+end InfiniteWitness
 
 end LeanCategories.Lattices.Valued
