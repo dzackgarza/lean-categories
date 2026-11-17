@@ -1035,4 +1035,74 @@ noncomputable def orbitLoopComposite (D : AmbientResidueData R L)
       (D.translate_smul_eq t ht s p).symm)).trans
     (orbitAlphaTo (L := L) (t (s • p)).1).symm
 
+/-! ## The loop's carrier composite, recorded
+
+`thm:schreier-discriminant-image` item 3 reads `ρ_L(k_{s,p})` as the composite of the transports
+`α_{t_p}(L)`, `α_s(L_p)`, `α_{t_sp}(L)⁻¹`. On classes each factor acts by composing with the inverse
+of its carrier equivalence, so the composite acts on value duals by composing with the **carrier
+composite**, which is recorded here once, at the cheap types (`L.obj.carrier`,
+`↥(ambientTranslate …)`), so that the `Submodule.Quotient.mk` rewrites become syntactic instead of
+forcing `isDefEq` checks between `(orbitLattice g).obj.valueDual` and `L.obj.valueDual`:
+
+* `discriminantValueDualEquiv_apply`, `discriminantValueDualEquiv_symm_apply`: the value of a
+  discriminant transport and of its inverse at a carrier element,
+* `orbitLoopValueCarrier`: the carrier composite `L → L_p → L_sp → L`,
+* `orbitLoopValueCarrier_eq_residueStabilizer_symm`: it is the inverse of the loop's own carrier
+  action, from `schreierLoop_symm_apply`,
+* `loopDefectEquiv_mk`: the action of `loopDefectEquiv` on a class.
+
+The identity `loopDefectEquiv D t ht s p = orbitLoopComposite D t ht s p` is still not proved: the
+remaining step is `orbitLoopComposite_mk_carrier`, whose statement — the three-factor composite read
+at `mk f` for a fixed `f : L.obj.valueDual` — is cheap, but whose proof (rewriting the three
+`orbitAlpha` `_mk` lemmas and then identifying the resulting value-dual composite with
+`f.comp orbitLoopValueCarrier.toLinearMap`) still exhausts the heartbeat budget in `whnf`. -/
+
+
+omit [IsDomain R] in
+theorem discriminantValueDualEquiv_apply (e : L ≅ M) (f : L.obj.valueDual)
+    (y : M.obj.carrier) :
+    (discriminantValueDualEquiv e).toLinearMap f y =
+      f ((latticeIsoLinearEquiv e).symm y) := by
+  rw [LinearEquiv.coe_toLinearMap, discriminantValueDualEquiv_apply_comp, LinearMap.comp_apply,
+    LinearEquiv.coe_toLinearMap]
+
+omit [IsDomain R] in
+theorem discriminantValueDualEquiv_symm_apply (e : L ≅ M) (f : M.obj.valueDual)
+    (y : L.obj.carrier) :
+    (discriminantValueDualEquiv e).symm.toLinearMap f y =
+      f ((latticeIsoLinearEquiv e) y) := by
+  rw [LinearEquiv.coe_toLinearMap, discriminantValueDualEquiv_symm_apply_comp,
+    LinearMap.comp_apply, LinearEquiv.coe_toLinearMap]
+
+/-- The carrier composite of the three translated isometries, read contragrediently: `L` to `L_p`
+to `L_sp` and back along the transversal `t_sp`. -/
+noncomputable def orbitLoopValueCarrier (D : AmbientResidueData R L)
+    (t : D.ResiduePoint → ↥D.G) (ht : ∀ q, t q • D.baseResidue = q)
+    (s : ↥D.G) (p : D.ResiduePoint) : L.obj.carrier ≃ₗ[R] L.obj.carrier :=
+  (((orbitCarrierEquiv (t (s • p)).1).trans
+    (orbitTransportEquiv s.1 (t p).1 (t (s • p)).1
+      (D.translate_smul_eq t ht s p).symm).symm)).trans
+    (orbitCarrierEquiv (t p).1).symm
+
+set_option maxHeartbeats 1000000 in
+theorem orbitLoopValueCarrier_eq_residueStabilizer_symm (D : AmbientResidueData R L)
+    (t : D.ResiduePoint → ↥D.G) (ht : ∀ q, t q • D.baseResidue = q)
+    (s : ↥D.G) (p : D.ResiduePoint) :
+    orbitLoopValueCarrier D t ht s p =
+      ((loopOrthogonal D t ht s p).1).symm := by
+  ext y
+  apply toRationalSpan_injective R L
+  simp only [orbitLoopValueCarrier, LinearEquiv.trans_apply, LinearEquiv.coe_coe]
+  rw [orbitCarrierEquiv_symm_apply, orbitTransportEquiv_symm_apply_coe,
+    orbitCarrierEquiv_apply_coe]
+  exact (schreierLoop_symm_apply D t ht s p y).symm
+
+theorem loopDefectEquiv_mk (D : AmbientResidueData R L)
+    (t : D.ResiduePoint → ↥D.G) (ht : ∀ q, t q • D.baseResidue = q)
+    (s : ↥D.G) (p : D.ResiduePoint) (f : L.obj.valueDual) :
+    loopDefectEquiv D t ht s p (Submodule.Quotient.mk f) =
+      Submodule.Quotient.mk
+        (OrthogonalGroup.actOnValueDual (loopOrthogonal D t ht s p) f) := by
+  rw [loopDefectEquiv, OrthogonalGroup.actOnDefect_mk]
+
 end LeanCategories.Lattices.Valued
