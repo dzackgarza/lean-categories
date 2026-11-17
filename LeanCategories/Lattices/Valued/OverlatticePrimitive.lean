@@ -42,12 +42,25 @@ they bite:
   repository has no membership characterisation of `evenOverlatticeFromIsotropicSubgroup`'s carrier
   that would discharge it for the graph construction.
 
-## Where the orthogonality lives
+## Where the orthogonality lives, and the complement
 
-The complement half is stated for `M.pairing` on `↥M.carrier`, i.e. for the overlattice's own
-integral form (`Overlattice.bilinObject`, `OverlatticeLattice.lean`). The ambient `⊥` is *not* in
-`RationalSpan R (S ⊥ K)` and *not* in the sum's carrier: it is the orthogonality of two images inside
-the overlattice's carrier, which is where the gluing happens.
+The complement statements use `M.pairing` on `↥M.carrier`, i.e. the overlattice's own integral form
+(`Overlattice.bilinObject`, `OverlatticeLattice.lean`). **The `⊥` is taken in `M`'s carrier**, on the
+two images `inlSubmodule`/`inrSubmodule` — *not* in `RationalSpan R (S ⊥ K)` and *not* in the sum's
+carrier. That is the point a reader is most likely to get wrong: the two factors are orthogonal in
+the sum, but what makes `K = S^⊥` a statement about `M` is that the orthogonality survives inside
+the overlattice, and it is integrality (the form on `↥M.carrier`) that it is measured against.
+
+The shapes are TauCeti's `mem_glueAlongDiscriminant_left_iff`/`_right_iff`
+(`Overlattice/Graph.lean`), `(x, 0) ∈ glued ↔ x ∈ L.carrier`, ported as
+`mem_inrSubmodule_iff_pairing`. The direction `K ⊆ S^⊥` is unconditional
+(`inrSubmodule_pairing_inlSubmodule`); the direction `S^⊥ ⊆ K` needs `IsFractionFieldPerfect R S` —
+separatingness of the rationalized form kills the first coordinate, where TauCeti's `mem_..._iff`
+gets it from the *construction* — and the mirror intersection hypothesis `hgraph`
+(`ker fstProjection ≤ inrSubmodule`). As with primitivity, the port keeps the shape and replaces
+TauCeti's construction-given intersection by an explicit hypothesis. Note that TauCeti's statement
+is one direction per coordinate (`mem_..._left_iff` *is* an iff there, because their glued lattice
+is built as that set of pairs); here the same iff needs the two hypotheses above.
 
 ## A spelling that does not elaborate
 
@@ -172,6 +185,100 @@ theorem isPrimitiveSubmodule_range_inrInclusion (M : Overlattice R (orthogonalSu
   letI : Module.IsTorsionFree R (RationalSpan R S) :=
     Module.IsTorsionFree.trans_faithfulSMul R (FractionRing R) (RationalSpan R S)
   exact (smul_eq_zero.mp hzero).resolve_left ha
+
+theorem fstProjection_inlInclusion (M : Overlattice R (orthogonalSum S K)) (s : S.obj.carrier) :
+    fstProjection (S := S) M (inlInclusion (K := K) M s) = toRationalSpan R S s := by
+  have h : M.carrier.subtype (inlInclusion (K := K) M s) =
+      toRationalSpan R (orthogonalSum S K) ((s, 0) : ↥(orthogonalSum S K).obj.carrier) := rfl
+  simp only [fstProjection, LinearMap.comp_apply, LinearMap.restrictScalars_apply]
+  rw [h, orthogonalSumSpanFst_toRationalSpan]
+
+theorem sndProjection_inrInclusion (M : Overlattice R (orthogonalSum S K)) (k : K.obj.carrier) :
+    sndProjection (K := K) M (inrInclusion (S := S) M k) = toRationalSpan R K k := by
+  have h : M.carrier.subtype (inrInclusion (S := S) M k) =
+      toRationalSpan R (orthogonalSum S K) ((0, k) : ↥(orthogonalSum S K).obj.carrier) := rfl
+  simp only [sndProjection, LinearMap.comp_apply, LinearMap.restrictScalars_apply]
+  rw [h, orthogonalSumSpanSnd_toRationalSpan]
+
+/-- The overlattice pairing, split along the two coordinates of the rational span. -/
+theorem algebraMap_pairing_split (M : Overlattice R (orthogonalSum S K))
+    (p x : ↥M.carrier) :
+    algebraMap R (FractionRing R) (M.pairing p x) =
+      rationalizedForm R S (fstProjection (S := S) M p) (fstProjection (S := S) M x) +
+        rationalizedForm R K (sndProjection (K := K) M p) (sndProjection (K := K) M x) := by
+  rw [algebraMap_pairing, rationalizedForm_orthogonalSum_fst_snd]
+  rfl
+
+theorem pairing_inlInclusion_inrInclusion (M : Overlattice R (orthogonalSum S K))
+    (s : S.obj.carrier) (k : K.obj.carrier) :
+    M.pairing (inlInclusion (K := K) M s) (inrInclusion (S := S) M k) = 0 := by
+  apply FaithfulSMul.algebraMap_injective R (FractionRing R)
+  rw [algebraMap_pairing_split, fstProjection_inlInclusion, fstProjection_inrInclusion,
+    sndProjection_inlInclusion, sndProjection_inrInclusion, map_zero]
+  simp
+
+
+
+theorem inrSubmodule_pairing_inlSubmodule (M : Overlattice R (orthogonalSum S K)) :
+    ∀ x ∈ inrSubmodule (S := S) M, ∀ p ∈ inlSubmodule (K := K) M, M.pairing p x = 0 := by
+  rintro x ⟨k, rfl⟩ p ⟨s, rfl⟩
+  exact pairing_inlInclusion_inrInclusion M s k
+
+theorem inlSubmodule_pairing_inrSubmodule (M : Overlattice R (orthogonalSum S K)) :
+    ∀ x ∈ inlSubmodule (K := K) M, ∀ p ∈ inrSubmodule (S := S) M, M.pairing p x = 0 := by
+  rintro x ⟨s, rfl⟩ p ⟨k, rfl⟩
+  rw [pairing_comm]
+  exact pairing_inlInclusion_inrInclusion M s k
+
+
+
+theorem orthogonalSubmodule_le_inrSubmodule (hS : IsFractionFieldPerfect R S)
+    (M : Overlattice R (orthogonalSum S K))
+    (hgraph : LinearMap.ker (fstProjection (S := S) M) ≤ inrSubmodule (S := S) M) :
+    ∀ x : ↥M.carrier, (∀ p ∈ inlSubmodule (K := K) M, M.pairing p x = 0) →
+      x ∈ inrSubmodule (S := S) M := by
+  intro x hx
+  apply hgraph
+  rw [LinearMap.mem_ker]
+  have hw0 : ∀ s : S.obj.carrier,
+      rationalizedForm R S (toRationalSpan R S s) (fstProjection (S := S) M x) = 0 := by
+    intro s
+    have hp : M.pairing (inlInclusion (K := K) M s) x = 0 :=
+      hx _ (LinearMap.mem_range_self _ s)
+    have hsplit := algebraMap_pairing_split (S := S) (K := K) M (inlInclusion (K := K) M s) x
+    rw [hp] at hsplit
+    rw [fstProjection_inlInclusion, sndProjection_inlInclusion] at hsplit
+    simpa using hsplit.symm
+  have hwmem : fstProjection (S := S) M x ∈ metricDual R S := by
+    have h := M.dualSubmodule_le_metricDual (M.carrier_le_dualSubmodule x.2)
+    exact ((mem_metricDual_orthogonalSum_iff (L := S) (M := K)
+      (x := (x : RationalSpan R (orthogonalSum S K)))).mp h).1
+  have hw_eq : fstProjection (S := S) M x = rieszEmbedding R S hS
+      (metricDualToValueDual R S ⟨fstProjection (S := S) M x, hwmem⟩) := by
+    have h := congrArg (fun z : metricDual R S => (z : RationalSpan R S))
+      (rieszToMetricDual_metricDualToValueDual R S hS
+        ⟨fstProjection (S := S) M x, hwmem⟩)
+    rw [rieszToMetricDual_coe] at h
+    exact h.symm
+  have hgzero : metricDualToValueDual R S ⟨fstProjection (S := S) M x, hwmem⟩ = 0 := by
+    ext s
+    have h := hw0 s
+    rw [hw_eq, rationalizedForm_isSymmetric, rationalizedForm_rieszEmbedding] at h
+    exact FaithfulSMul.algebraMap_injective R (FractionRing R) (by simpa using h)
+  rw [hw_eq, hgzero, map_zero]
+
+
+
+/-- **`K` is the orthogonal complement of `S` in `M`**, both ways. -/
+theorem mem_inrSubmodule_iff_pairing (hS : IsFractionFieldPerfect R S)
+    (M : Overlattice R (orthogonalSum S K))
+    (hgraph : LinearMap.ker (fstProjection (S := S) M) ≤ inrSubmodule (S := S) M)
+    (x : ↥M.carrier) :
+    x ∈ inrSubmodule (S := S) M ↔ ∀ p ∈ inlSubmodule (K := K) M, M.pairing p x = 0 :=
+  ⟨fun hx => inrSubmodule_pairing_inlSubmodule M x hx,
+    fun hx => orthogonalSubmodule_le_inrSubmodule hS M hgraph x hx⟩
+
+
 
 end Overlattice
 
