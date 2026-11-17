@@ -64,8 +64,9 @@ an `ℝ`-vector space with no extra structure.
   (`subset_rationalClosure`), which discharges the cover hypothesis `hcover` of the
   support-space theorems (`exists_mem_of_mem_of_cover_rationalClosure`).
 * **The open cone `C` is carried as a set.** Definition 4.2's `C` is an open nondegenerate convex
-  cone, and an open cone does not hold `0` — an open cone holding `0` is the whole space — so a
-  `PointedCone` carrier admits only `C = ⊤`. The four theorems of this file that carry an open cone
+  cone, and an open cone does not hold `0` — an open cone holding `0` is the whole space
+  (`eq_univ_of_isOpen_of_zero_mem_of_smul`) — so a `PointedCone` carrier admits only `C = ⊤`. The
+  four theorems of this file that carry an open cone
   are therefore stated for `C : Set (realified V)`: the rational-neighbourhood pair for an open `C`
   with the positive scalar action of `ConvexCone.smul_mem'` — and, for the support-space one,
   `0 ∉ C` (`ConvexCone.Blunt` on the bundled cone) and `C ⊆ C₊` — and the locally finite pair for a
@@ -5121,6 +5122,42 @@ theorem sigmaSupportSpace_eq_supportSpace_of_locallyFinite_of_cover_rationalClos
       hexp τ.2.1 τ₀.2.1 τ.2.2.2 τ₀.2.2.2
 
 end SupportSpaceIndependenceLocallyFinite
+
+/-! ## Why the four theorems carry `C` as a set
+
+An open cone does not hold `0`: a set that is open, holds `0` and is closed under multiplication by
+a positive scalar is everything (`eq_univ_of_isOpen_of_zero_mem_of_smul`). A `PointedCone` holds its
+apex, so on a pointed carrier an openness hypothesis admits only `C = ⊤`, and with the additional
+`0 ∉ C` of the support-space theorem no cone at all. -/
+
+/-- **An open cone that holds `0` is the whole space.** The multiples `t • x` of a point `x`
+approach `0`, so `t • x` lies in `C` for some `t > 0`, and then `x = t⁻¹ • (t • x)` lies in `C` too.
+This is why Looijenga's open cone (Definition 4.2, p. 17) is carried as a set in the four theorems
+of this file: over a `PointedCone`, which holds `0`, an openness hypothesis forces `C = ⊤`, and the
+support-space one additionally asks `0 ∉ C`.
+
+LC-09 (2026-11-17): `content:ConvexCone.Blunt content:IsOpen`, `content:IsOpenConvexCone`,
+`content:ConvexCone content:IsOpen`, `content:open convex cone content:does not contain` and
+`content:"open cone" content:zero` found no formalization of this dichotomy; the one hit is
+Mathlib's `ConvexCone` / `ConvexCone.Blunt` (`Mathlib/Geometry/Convex/Cone/Basic.lean:60,94,281`),
+the bundled form of the vocabulary these statements read the hypotheses in, and `IsOpen` does not
+occur anywhere in `Mathlib/Geometry/Convex/Cone/`. -/
+theorem eq_univ_of_isOpen_of_zero_mem_of_smul {E : Type*} [AddCommGroup E] [Module ℝ E]
+    [TopologicalSpace E] [ContinuousSMul ℝ E] {C : Set E}
+    (hopen : IsOpen C) (h0 : (0 : E) ∈ C)
+    (hsmul : ∀ ⦃c : ℝ⦄, 0 < c → ∀ ⦃x : E⦄, x ∈ C → c • x ∈ C) :
+    C = Set.univ := by
+  refine Set.eq_univ_of_forall fun x => ?_
+  have hcont : Continuous fun t : ℝ => t • x := continuous_id.smul continuous_const
+  have hmem : ∀ᶠ t in 𝓝 (0 : ℝ), t • x ∈ C := by
+    have h := hcont.tendsto (0 : ℝ)
+    rw [zero_smul] at h
+    exact h.eventually (hopen.mem_nhds h0)
+  have hpos : ∀ᶠ t in 𝓝[>] (0 : ℝ), t ∈ Set.Ioi (0 : ℝ) := self_mem_nhdsWithin
+  obtain ⟨t, htC, ht⟩ := ((hmem.filter_mono nhdsWithin_le_nhds).and hpos).exists
+  have hx : t⁻¹ • (t • x) = x := by rw [smul_smul, inv_mul_cancel₀ ht.ne', one_smul]
+  rw [← hx]
+  exact hsmul (inv_pos.2 ht) htC
 
 /-! ## The four theorems on the open sheet
 
