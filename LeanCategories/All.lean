@@ -374,6 +374,7 @@ public import LeanCategories.Lattices.Valued.ConicalMemberDescentTests
 public import LeanCategories.Lattices.Valued.ConicalRefinement
 public import LeanCategories.Lattices.Valued.SemifanArrangement
 public import LeanCategories.Lattices.Valued.FibreArithmetic
+public import LeanCategories.Lattices.Valued.SemifanAssembly
 public import LeanCategories.Lattices.Valued.FibreRefinementTests
 public import LeanCategories.Lattices.Valued.EvenReduction
 public import LeanCategories.Lattices.Valued.DiscriminantIsotropic
