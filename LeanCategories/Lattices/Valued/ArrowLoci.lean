@@ -713,8 +713,12 @@ def equivariantCore (A : EquivariantLatticeCat Rc BC2) :
 theorem equivariantCore_obj (A : EquivariantLatticeCat Rc BC2) :
     (equivariantCore Rc A).V.of = A.V := rfl
 
-/-- The core-valued action and the finite model sit on the same lattice, on the nose. -/
-@[simp]
+/-- The core-valued action and the finite model sit on the same lattice, on the nose.
+
+Not a `@[simp]` lemma: its left-hand side is already rewritten by
+`@[simp] equivariantCore_obj` (`(equivariantCore Rc A).V.of = A.V`), so `simp` normalises
+`(equivariantCore Rc A).V.of.obj` to `A.V.obj` without it, and the `simpNF` audit says so. The
+lemma is kept as the named statement of the coincidence. -/
 theorem equivariantCore_lat (A : EquivariantLatticeCat Rc BC2) :
     (equivariantCore Rc A).V.of.obj = equivariantLat Rc A := rfl
 
@@ -898,17 +902,26 @@ def bc2ActionInfinite : BC2Action ℤ ℤ where
 theorem bc2ActionInfinite_not_finite : ¬ Module.Finite ℤ bc2ActionInfinite.V.of.obj.carrier :=
   not_moduleFinite_finsupp
 
-/-- **The comparison functor is not essentially surjective.** Its source is actions on finitely
-generated lattices; the trivial `C₂`-action on the zero form of countably infinite rank is an object
-of `BC2Action ℤ ℤ` outside its essential image, since an isomorphism of actions would give an
-isomorphism of lattices and carry finite generation across. -/
+/-- **`bc2ActionInfinite` lies outside the essential image of `compareFunctor`.** No core-valued
+action on a finitely generated lattice is isomorphic to the trivial `C₂`-action on the zero form of
+countably infinite rank: an isomorphism of actions would give an isomorphism of lattices, and
+finiteness transfers along it (`moduleFinite_of_iso`).
+
+Stated as `IsEmpty` of the isomorphism type rather than as a negation of `Nonempty`: the
+repository's `noBareNonempty` rule (`Tools/Linters.lean`) bans a bare `Nonempty` witness from a
+declaration's type, so the *absence* is expressed by saying the type of isomorphisms has no
+element — which is what the proof produces, from the isomorphism itself. -/
+theorem compareFunctor_isEmpty_iso_bc2ActionInfinite
+    (X : Action (Core (FiniteProjectiveLatticeCat ℤ ℤ)) BC2) :
+    IsEmpty ((compareFunctor ℤ).obj X ≅ bc2ActionInfinite) :=
+  ⟨fun e => bc2ActionInfinite_not_finite (moduleFinite_of_iso e.hom.hom.iso (h := X.V.of.property))⟩
+
+/-- **The comparison functor is not essentially surjective**: the object named above is not
+isomorphic to anything in its image. -/
 theorem compareFunctor_not_essSurjective :
-    ¬ ∀ A : BC2Action ℤ ℤ, ∃ X : Action (Core (FiniteProjectiveLatticeCat ℤ ℤ)) BC2,
-        Nonempty ((compareFunctor ℤ).obj X ≅ A) := by
-  intro h
-  obtain ⟨X, ⟨e⟩⟩ := h bc2ActionInfinite
-  have hfin : Module.Finite ℤ ((compareFunctor ℤ).obj X).V.of.obj.carrier := X.V.of.property
-  exact bc2ActionInfinite_not_finite (moduleFinite_of_iso e.hom.hom.iso (h := hfin))
+    ∃ A : BC2Action ℤ ℤ, ∀ X : Action (Core (FiniteProjectiveLatticeCat ℤ ℤ)) BC2,
+      IsEmpty ((compareFunctor ℤ).obj X ≅ A) :=
+  ⟨bc2ActionInfinite, compareFunctor_isEmpty_iso_bc2ActionInfinite⟩
 
 end InfiniteWitness
 
