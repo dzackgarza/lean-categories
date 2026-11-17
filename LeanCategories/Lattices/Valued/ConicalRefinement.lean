@@ -6,6 +6,7 @@ module
 
 public import LeanCategories.Lattices.Valued.FibreRefinement
 public import LeanCategories.Lattices.Valued.ConicalMemberDescent
+public import LeanCategories.Lattices.Valued.SemifanArrangement
 public import Mathlib.LinearAlgebra.ExteriorPower.Basis
 
 /-!
@@ -676,6 +677,55 @@ theorem vSigma_le_of_refinesConicalLocus (hBQ : ∀ u w : V,
       σ' ∈ locus' F' ∧ vSigma F σ ≤ vSigma F' σ' := by
   obtain ⟨F', σ', hσ', hsub⟩ := href F σ hσ hcase.1
   exact ⟨F', σ', hσ', vSigma_le_of_carrier_subset hBQ hBsym hcase.1 hsub⟩
+
+/-! ## The plane case against the source's principal coarse family
+
+Lemma 6.6's coarse family `Σ'` is usually the Baily–Borel decomposition — the source says so
+("This applies in particular to the case when `Σ'` is the Baily-Borel decomposition", text line
+823). Against that particular `Σ'` the plane case needs no subordinate refinement at all: the two
+support spaces of a half line are `J_Σ` (Lemma-Definition 4.5 relative to the finer family) and
+`J_{Σ(bb)} = J^⊥` (Example 6.2), and `J_Σ ⊆ J^⊥` is a *definitional* consequence of the two
+source'd formulas, for every finer family of the arrangement shape.
+
+The comparison is not vacuous: `J_{Σ(ℋ)} = J^⊥ ⊓ ⋂ {H ∈ ℋ : J ⊆ H}` (Example 6.4), so a wall
+through `J` cuts it strictly below `J^⊥`, and in signature `(2,3)` the window `J^⊥/J` is
+one-dimensional (`tests/regression/ConicalPlaneRefinement23.lean`).
+-/
+
+section PrincipalCoarse
+
+variable {BQ : LinearMap.BilinForm ℚ V} {Q : QuadraticForm ℝ (realified V)}
+
+/-- **Looijenga, Lemma 6.6, p. 30, the plane case, against `Σ' = Σ(bb)`**: for the arrangement
+decomposition `Σ(ℋ)` (Example 6.4, p. 29) and the Baily–Borel decomposition (Example 6.2, p. 29),
+the support space of the half line `C_{J,+}` relative to the finer family is contained in that
+relative to the coarser one:
+
+`J_{Σ(ℋ)} = J^⊥ ⊓ ⋂ {H ∈ ℋ : J ⊆ H} ⊆ J^⊥ = J_{Σ(bb)}`.
+
+No subordinate refinement and no refinement hypothesis enter: the inclusion is `JH ≤ planePerpQ`
+of the two definitions. So the plane case of Lemma 6.6 is available for the source's principal
+`Σ'`, and the open question is only the general coarse family (`HasSubordinateRefinement`). -/
+theorem vSigmaPlane_semifanArrangement_le_facial {ι : Type*} (ψ : ι → V →ₗ[ℚ] ℚ)
+    (hBQ : ∀ u w : V, (associated Q) (rationalPoint u) (rationalPoint w) = (BQ u w : ℝ))
+    (hBsym : BQ.IsSymm) (F : ConicalLine BQ Q) (G : ConicalPlane BQ) (h : F.line ≤ G.plane)
+    (hpos : sigPos (fibreForm Q F.space) = 1)
+    (hnd : (fibreForm Q F.space).Nondegenerate)
+    (hcut : CutsFinitelyOnRational F.closure (fun i : fibreWalls ψ F => fibreFormC F (ψ ↑i)))
+    (hS : IsLocallyRationalDecomposition F.closure (semifanArrangement ψ F)) :
+    vSigmaPlane hBsym F (semifanArrangement ψ F) G h ≤
+      vSigmaPlane hBsym F (facialDecomposition F.closure) G h := by
+  rw [vSigmaPlane_semifanArrangement_eq_JH ψ hBQ hBsym F G h hpos hnd hcut hS,
+    vSigmaPlane_eq_ker_inf_ker hBQ hBsym F G h hpos hnd]
+  refine le_inf ?_ ?_
+  · exact (inf_le_left : JH (Q := Q) ψ G ≤ planePerpQ (Q := Q) G).trans
+      (iInf_le (fun a : ↥G.plane => LinearMap.ker (associated Q (rationalPoint (a : V))))
+        ⟨F.gen, F.gen_mem_plane G h⟩)
+  · exact (inf_le_left : JH (Q := Q) ψ G ≤ planePerpQ (Q := Q) G).trans
+      (iInf_le (fun a : ↥G.plane => LinearMap.ker (associated Q (rationalPoint (a : V))))
+        ⟨F.planeRay G h, F.planeRay_mem G h⟩)
+
+end PrincipalCoarse
 
 end AmbientRefinement
 
