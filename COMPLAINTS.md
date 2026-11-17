@@ -3264,3 +3264,30 @@ downstream assertions, computational observations, or downstream diagnostics.
 - **What this costs, for the record.** The statement that a ℚ-rational subspace of a realified space
   is spanned by its rational points (ingredient (1) above) is not formalized here and is not needed;
   the LC-09 queries listed above remain the search record for the dual route.
+
+### The common member type exists, but the trace correspondence at `Σ(ℋ)` and Lemma 6.6's "smallest containing member" do not (#162)
+
+- **Need:** (a) the correspondence between the hyperplanes of `ℋ` containing the line `I` and the
+  `ℚ`-hyperplanes of the fibre `I^⊥/I`, which `semifanArrangement_isLocallyRational_of_traces`
+  takes as its data (`j`, `c`, `hc`, `hforms`); (b) the choice, for a member `σ` of a refinement `Σ`
+  of `Σ'`, of the *smallest* member `σ'` of `Σ'` containing it, which Lemma 6.6 (p. 30) quantifies
+  over; (c) the reverse inclusion `I(C_{J,+}) ⊆ J` of the isotropic centre.
+- **Evidence:** Example 6.4, p. 29 (`.tmp-sources/looijenga-math0201218v2.md:791`), Lemma 6.6, p. 30
+  (text line 821), and Definition 6.1's `I(σ) = V_σ ∩ V_σ^⊥` (text line 773). The declarations now
+  on main: `ConicalMember` with `vSigma`/`isotropicCenter`, `ConicalMember.vSigma_plane_witness` (the
+  plane case is independent of the witnessing line), and the monotonicity in the member for the apex,
+  the fibre and the plane (`vSigma_zero_le`, `vSigma_fibre_mono`, `vSigma_plane_mono_of_refines`).
+- **Gap and impact:** (a) is not constructed: the map is not injective on the ambient family (every
+  `I ⊕ T ⊕ ℚ(f + k)` over one trace `T`, recorded at `SemifanArrangement`'s "TracesIndex" section), so
+  it has to be built from the reduced-lattice quotient of the normals, and until then
+  `isAdmissibleDecomposition_semifanArrangement_of_signature` keeps condition (i) as the per-fibre
+  counting input `hcut`. (b) is not constructed: the three member cases are proved but nothing selects
+  `σ'` from the refinement, so Lemma 6.6 is not yet one theorem over the member type. (c) needs the
+  bound `dim ≤ 2` on real isotropic subspaces (Looijenga §1, p. 11) and the description of `V_σ` for an
+  arbitrary admissible `Σ`; only `J ⊆ I(σ)` is proved
+  (`ConicalMember.realify_plane_le_isotropicCenter_facial`).
+- **Coverage:** inspected the source passages above and the declarations named; the reduced-lattice
+  counting of #161 is proved at the fibre (`arrangementDecomposition_reducedLattice_isLocallyRational`)
+  and the fibre's own hyperplane family is the index there.
+- **Repair link:** (a) then unblocks the unconditional Example 6.4; (b) is the remaining choice step of
+  Lemma 6.6; (c) is a separate bound on isotropic subspaces.
