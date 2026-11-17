@@ -363,6 +363,7 @@ public import LeanCategories.Lattices.Valued.EvenGluingGraph
 public import LeanCategories.Lattices.Valued.OrthogonalSumDiscriminant
 public import LeanCategories.Lattices.Valued.OverlatticeLattice
 public import LeanCategories.Lattices.Valued.OverlatticeDiscriminant
+public import LeanCategories.Lattices.Valued.OverlatticePrimitive
 public import LeanCategories.Modules.Flags
 public import LeanCategories.Lattices.Valued.FlagParabolic
 public import LeanCategories.Lattices.Valued.IsotropicReduction
