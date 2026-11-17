@@ -336,6 +336,7 @@ public import LeanCategories.Catalogue.Semantics.Foundation.IntegerSquareBounds
 public import LeanCategories.Catalogue.Semantics.Foundation.TwoSubsets
 public import LeanCategories.Catalogue.Semantics.Foundation.CoreIsomorphisms
 public import LeanCategories.Catalogue.Semantics.Foundation.FiniteOrders
+public import LeanCategories.Lattices.Valued.AmbientSchreierImage
 public import LeanCategories.Lattices.Valued.Cusps
 public import LeanCategories.Lattices.Valued.CuspDescent
 public import LeanCategories.Lattices.Valued.CuspIsotropic
@@ -359,9 +360,12 @@ public import LeanCategories.Lattices.Valued.RationalPolyhedralCone
 public import LeanCategories.Lattices.Valued.RationalConeDuality
 public import LeanCategories.Lattices.Valued.LocallyRationalDecomposition
 public import LeanCategories.Lattices.Valued.ConicalLocus
+public import LeanCategories.Lattices.Valued.FibreRefinement
 public import LeanCategories.Lattices.Valued.Semifan
 public import LeanCategories.Lattices.Valued.ConicalMember
 public import LeanCategories.Lattices.Valued.SemifanArrangement
+public import LeanCategories.Lattices.Valued.FibreArithmetic
+public import LeanCategories.Lattices.Valued.FibreRefinementTests
 public import LeanCategories.Lattices.Valued.EvenReduction
 public import LeanCategories.Lattices.Valued.DiscriminantIsotropic
 public import LeanCategories.Lattices.Valued.DiscriminantQuotient

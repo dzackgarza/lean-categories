@@ -57,16 +57,29 @@ discriminant form` (TauCeti `Algebra/Module/ZLattice/Shell.lean`, `.../RealModel
 has the transport of the next section; the nearest owners model a lattice with its dual
 (`ZLattice`), not this repository's `IntegralLatticeCat` with its separate discriminant module.
 
+## The ambient statement
+
+`LeanCategories.Lattices.Valued.AmbientSchreierImage` supplies the source application of the theorem
+above, which this file does not state: an ambient group `G ≤ O(V)` of isometries of the rational span
+that need not preserve `L`, the invariant module `M ⊇ L` with `mM ⊆ L`, the residue orbit `Σ_m`, the
+two lattice lemmas `lem:orbit-reduction-injective` and `lem:congruence-stabilizer-preimage` (proved
+there without covolumes), the Schreier loops `k_{s,p}` as elements of the residue stabilizer, the
+translate identities `L_{sp} = s L_p = t_{sp} L`, and the integral restriction
+`residueStabilizerHom : Stab_G(L̄_m) →* O(L)` through which the ambient stabilizer reaches `ρ_L`.
+
 ## Not formalized here
 
 The page's item 3 factorizes each `ρ_L (k_{s,p})` through the discriminant isometries
 `α_s(L_p) : A_{L_p} → A_{sL_p}` between the translates of `L` in the orbit
-(`thm:discriminant-transport-functor`). That transport is not available in this development: an
-`IntegralLatticeCat` object carries its own discriminant module, and there is no owner of `A_{tL}`
-together with the comparison `A_L ≃ A_{tL}` for a translate `tL` of `L` by an isometry. The
-generated-subgroup equality below is stated with the discriminant actions at the single lattice `L`,
-which is what `ρ_L` is defined on; the factorized form would refine the *same* equality and is left
-open rather than approximated.
+(`thm:discriminant-transport-functor`). The lattice identities that factorization is indexed by are
+proved in `AmbientSchreierImage`, but not the factorization itself: an `IntegralLatticeCat` object
+carries its own discriminant module, and there is no owner of `A_{tL}` together with the comparison
+`A_L ≃ A_{tL}` for a translate `tL` of `L` by an isometry. `discriminantCarrierEquiv`
+(`DiscriminantFunctor`) supplies that comparison for an isomorphism of lattice objects, so the
+factorized form needs the orbit lattices built as objects first. The generated-subgroup equality
+proved above and in `AmbientSchreierImage` is the same equality, so the factorized form would refine
+it and is left open rather than approximated.
+
 -/
 
 @[expose] public section
