@@ -507,4 +507,269 @@ theorem bailyBorel_memberSet_carrier_subset
   member_carrier_subset_closedSet hBsym
     (fun F => bailyBorel_condition_i F (hpos F) (hnd F)) hm
 
+/-! ## The isotropic centre of a plane's half line -/
+
+omit [Module.Finite ℚ V] in
+/-- **The member's own isotropic generators span the plane**: the two vectors of the plane's
+positive basis are isotropic (`ConicalPlane.dir_iso`, `dirAlt_iso`) and they span `J`, so the
+isotropic directions the member `C_{J,+}` is built from are a *spanning* set for `J`, not a subset.
+This is what makes the centre of the member `J`: the centre is read off the member's plane, not off
+its `Σ`-support space. -/
+theorem ConicalPlane.realify_eq_span_isotropic (G : ConicalPlane BQ) :
+    realify G.plane = Submodule.span ℝ
+      ({rationalPoint G.dir, rationalPoint G.dirAlt} : Set (realified V)) := by
+  rw [← ConicalPlane.span_dir_eq]
+  exact realified_span_pair
+
+/-- **The support space of a plane's half line is `J^⊥`**: the common orthogonal of the plane in the
+form the facial decomposition gives it (`vSigmaPlane_eq_ker_inf_ker`), identified with the
+orthogonal complement of `realify G.plane` through the plane's isotropic generators. -/
+theorem orthogonal_realify_eq_ker_inf_ker (hBsym : BQ.IsSymm) (F : ConicalLine BQ Q)
+    (G : ConicalPlane BQ) (h : F.line ≤ G.plane) :
+    LinearMap.BilinForm.orthogonal (associated Q) (realify G.plane) =
+      LinearMap.ker (associated Q (rationalPoint F.gen)) ⊓
+        LinearMap.ker (associated Q (rationalPoint (F.planeRay G h))) := by
+  have hspan : realify G.plane =
+      Submodule.span ℝ ({rationalPoint F.gen, rationalPoint (F.planeRay G h)} :
+        Set (realified V)) := by
+    rw [← span_gen_ray_eq_plane F G h]
+    exact realified_span_pair
+  ext x
+  rw [hspan, LinearMap.BilinForm.mem_orthogonal_iff, Submodule.mem_inf, LinearMap.mem_ker,
+    LinearMap.mem_ker]
+  constructor
+  · intro hx
+    exact ⟨hx _ (Submodule.subset_span (Set.mem_insert _ _)),
+      hx _ (Submodule.subset_span (Set.mem_insert_of_mem _ (Set.mem_singleton _)))⟩
+  · rintro ⟨h1, h2⟩ y hy
+    obtain ⟨a, b, rfl⟩ := Submodule.mem_span_pair.1 hy
+    have step : (associated Q) (a • rationalPoint F.gen + b • rationalPoint (F.planeRay G h)) x
+        = a * ((associated Q) (rationalPoint F.gen)) x
+          + b * ((associated Q) (rationalPoint (F.planeRay G h))) x := by
+      rw [map_add, map_smul, map_smul, LinearMap.add_apply, LinearMap.smul_apply,
+        LinearMap.smul_apply, smul_eq_mul, smul_eq_mul]
+    rw [step, h1, h2, mul_zero, mul_zero, add_zero]
+
+/-- **`I(C_{J,+}) = J`**: the isotropic centre of a plane's half line is exactly the plane. The
+support space is `J^⊥` (`orthogonal_realify_eq_ker_inf_ker`), and the plane is totally isotropic, so
+it lies in its own orthogonal complement — this is what puts `J` inside the centre — while the
+double orthogonal complement returns it, which keeps the centre from being larger. The member's
+isotropic generators span `J` (`ConicalPlane.realify_eq_span_isotropic`), so the centre is the
+member's own plane and not an artefact of the support formula. -/
+theorem ConicalMember.isotropicCenter_plane_bailyBorel (hBQ : ∀ u w : V,
+    (associated Q) (rationalPoint u) (rationalPoint w) = (BQ u w : ℝ))
+    (hBsym : BQ.IsSymm) (hnd : (associated Q).Nondegenerate) (F : ConicalLine BQ Q)
+    (G : ConicalPlane BQ) (h : F.line ≤ G.plane) (hcoh : G.IsPositiveAt F h)
+    (hpos : sigPos (fibreForm Q F.space) = 1)
+    (hndf : (fibreForm Q F.space).Nondegenerate) :
+    (ConicalMember.plane F G h hcoh : ConicalMember BQ Q).isotropicCenter hBsym
+        (fun F => facialDecomposition F.closure) = realify G.plane := by
+  have hrefl : (associated Q).IsRefl := fun x y hxy => by
+    rw [associated_comm Q x y] at hxy
+    exact hxy
+  -- the plane is totally isotropic, so it lies in its own orthogonal complement
+  have hpair : ∀ a b : ↥G.plane,
+      (associated Q) (rationalPoint (a : V)) (rationalPoint (b : V)) = 0 := by
+    intro a b
+    rw [hBQ, G.isotropic (a : V) a.2 (b : V) b.2]
+    norm_num
+  have hdd : (associated Q) (rationalPoint G.dir) (rationalPoint G.dir) = 0 :=
+    hpair ⟨G.dir, G.dir_mem⟩ ⟨G.dir, G.dir_mem⟩
+  have hda : (associated Q) (rationalPoint G.dir) (rationalPoint G.dirAlt) = 0 :=
+    hpair ⟨G.dir, G.dir_mem⟩ ⟨G.dirAlt, G.dirAlt_mem⟩
+  have had : (associated Q) (rationalPoint G.dirAlt) (rationalPoint G.dir) = 0 :=
+    hpair ⟨G.dirAlt, G.dirAlt_mem⟩ ⟨G.dir, G.dir_mem⟩
+  have haa : (associated Q) (rationalPoint G.dirAlt) (rationalPoint G.dirAlt) = 0 :=
+    hpair ⟨G.dirAlt, G.dirAlt_mem⟩ ⟨G.dirAlt, G.dirAlt_mem⟩
+  have hle : realify G.plane ≤
+      LinearMap.BilinForm.orthogonal (associated Q) (realify G.plane) := by
+    rw [ConicalPlane.realify_eq_span_isotropic]
+    refine Submodule.span_le.2 ?_
+    rintro y (rfl | hy)
+    · refine LinearMap.BilinForm.mem_orthogonal_iff.2 ?_
+      intro n hn
+      have hker : Submodule.span ℝ
+          ({rationalPoint G.dir, rationalPoint G.dirAlt} : Set (realified V)) ≤
+          LinearMap.ker ((associated Q).flip (rationalPoint G.dir)) := by
+        refine Submodule.span_le.2 ?_
+        rintro z (rfl | hz)
+        · exact LinearMap.mem_ker.2 (by rw [LinearMap.flip_apply]; exact hdd)
+        · rw [Set.mem_singleton_iff] at hz
+          subst hz
+          exact LinearMap.mem_ker.2 (by rw [LinearMap.flip_apply]; exact had)
+      exact LinearMap.mem_ker.1 (hker hn)
+    · rw [Set.mem_singleton_iff] at hy
+      subst hy
+      refine LinearMap.BilinForm.mem_orthogonal_iff.2 ?_
+      intro n hn
+      have hker : Submodule.span ℝ
+          ({rationalPoint G.dir, rationalPoint G.dirAlt} : Set (realified V)) ≤
+          LinearMap.ker ((associated Q).flip (rationalPoint G.dirAlt)) := by
+        refine Submodule.span_le.2 ?_
+        rintro z (rfl | hz)
+        · exact LinearMap.mem_ker.2 (by rw [LinearMap.flip_apply]; exact hda)
+        · rw [Set.mem_singleton_iff] at hz
+          subst hz
+          exact LinearMap.mem_ker.2 (by rw [LinearMap.flip_apply]; exact haa)
+      exact LinearMap.mem_ker.1 (hker hn)
+  have hv : (ConicalMember.plane F G h hcoh : ConicalMember BQ Q).vSigma hBsym
+      (fun F => facialDecomposition F.closure) = ⨅ (a : ↥G.plane),
+        LinearMap.ker (associated Q (rationalPoint (a : V))) :=
+    ConicalMember.vSigma_plane_bailyBorel hBQ hBsym F G h hcoh hpos hndf
+  rw [ConicalMember.isotropicCenter, hv, ← ker_inf_ker_eq F G h,
+    ← orthogonal_realify_eq_ker_inf_ker hBsym F G h,
+    LeanCategories.Lattices.Valued.isotropicCenter,
+    LinearMap.BilinForm.orthogonal_orthogonal hnd hrefl]
+  exact inf_eq_right.2 hle
+
+omit [Module.Finite ℚ V] in
+/-- **A negated generator negates the carried set**: `wedgeLeft_neg` read on images. This is the
+sign of the class, and it is what the source's two components of `⋀²V(ℝ) − {0}` distinguish:
+the negated presentation is a different piece of the conical locus, not the same one. -/
+theorem wedgeLeft_neg_image (a : realified V) (S : Set (realified V)) :
+    wedgeLeft (-a) '' S = (fun x => -x) '' (wedgeLeft a '' S) := by
+  rw [wedgeLeft_neg]
+  ext x
+  constructor
+  · rintro ⟨y, hy, rfl⟩
+    exact ⟨_, ⟨y, hy, rfl⟩, rfl⟩
+  · rintro ⟨_, ⟨y, hy, rfl⟩, rfl⟩
+    exact ⟨y, hy, rfl⟩
+
+/-! ## The two orientations of a plane -/
+
+/-- **The same plane with the opposite orientation**: the positive basis in the other order, so that
+the positive rational generator of Example 6.3, p. 29, is `-r_J`. It is a legitimate presentation of
+the plane, and a different one: `ConicalMember.carrier_plane_flip` and
+`ConicalMember.not_both_orientations_coherent` say how it differs. -/
+noncomputable def ConicalPlane.flip (G : ConicalPlane BQ) : ConicalPlane BQ where
+  plane := G.plane
+  isotropic := G.isotropic
+  two_dim := G.two_dim
+  basis := G.basis.reindex (Equiv.swap (0 : Fin 2) 1)
+
+omit [Module.Finite ℚ V] in
+theorem ConicalPlane.flip_plane (G : ConicalPlane BQ) : G.flip.plane = G.plane := rfl
+
+omit [Module.Finite ℚ V] in
+theorem ConicalPlane.flip_dir (G : ConicalPlane BQ) : G.flip.dir = G.dirAlt := by
+  change ((G.basis.reindex (Equiv.swap (0 : Fin 2) 1)) (0 : Fin 2) : V) = G.dirAlt
+  rw [Module.Basis.reindex_apply]
+  simp [ConicalPlane.dirAlt]
+
+omit [Module.Finite ℚ V] in
+theorem ConicalPlane.flip_dirAlt (G : ConicalPlane BQ) : G.flip.dirAlt = G.dir := by
+  change ((G.basis.reindex (Equiv.swap (0 : Fin 2) 1)) (1 : Fin 2) : V) = G.dir
+  rw [Module.Basis.reindex_apply]
+  simp [ConicalPlane.dir]
+
+omit [Module.Finite ℚ V] in
+/-- **The opposite orientation generates the antipodal line**: `r_{J^op} = -r_J`. -/
+theorem ConicalPlane.flip_wedge (G : ConicalPlane BQ) :
+    wedgeTwo (rationalPoint G.flip.dir) (rationalPoint G.flip.dirAlt) =
+      -wedgeTwo (rationalPoint G.dir) (rationalPoint G.dirAlt) := by
+  rw [ConicalPlane.flip_dir, ConicalPlane.flip_dirAlt, wedgeTwo_swap]
+
+/-- **The flip does not change the plane**, hence not the member's centre: the two orientations
+present the same `J`, so `I(C_{J^op,+}) = I(C_{J,+}) = J`
+(`ConicalMember.isotropicCenter_plane_bailyBorel` at `G.flip`). What the flip changes is the
+*carrier*, in the next two statements. -/
+theorem ConicalMember.isotropicCenter_plane_flip (hBQ : ∀ u w : V,
+    (associated Q) (rationalPoint u) (rationalPoint w) = (BQ u w : ℝ))
+    (hBsym : BQ.IsSymm) (hnd : (associated Q).Nondegenerate) (F : ConicalLine BQ Q)
+    (G : ConicalPlane BQ) (h : F.line ≤ G.plane) (hcoh' : G.flip.IsPositiveAt F h)
+    (hpos : sigPos (fibreForm Q F.space) = 1)
+    (hndf : (fibreForm Q F.space).Nondegenerate) :
+    (ConicalMember.plane F G.flip h hcoh' : ConicalMember BQ Q).isotropicCenter hBsym
+        (fun F => facialDecomposition F.closure) = realify G.plane := by
+  have h' : F.line ≤ G.flip.plane := by rw [ConicalPlane.flip_plane]; exact h
+  have hcent := ConicalMember.isotropicCenter_plane_bailyBorel hBQ hBsym hnd F G.flip h' hcoh'
+    hpos hndf
+  rwa [ConicalPlane.flip_plane] at hcent
+
+omit [Module.Finite ℚ V] in
+/-- **The flip negates the carrier**: a plane's carrier at the opposite orientation is the antipodal
+half line, `-C_{J,+}` — the other component of `⋀²V(ℝ) − {0}`, not the same subset. The two
+presentations are therefore not identified anywhere below. -/
+theorem ConicalMember.carrier_plane_flip (hBsym : BQ.IsSymm) (F : ConicalLine BQ Q)
+    (G : ConicalPlane BQ) (h : F.line ≤ G.plane) (hcoh' : G.flip.IsPositiveAt F h) :
+    (ConicalMember.plane F G.flip h hcoh' : ConicalMember BQ Q).carrier hBsym =
+      {x : ⋀[ℝ]^2 (realified V) | ∃ t : ℝ, 0 ≤ t ∧
+        t • (-(wedgeTwo (rationalPoint G.dir) (rationalPoint G.dirAlt))) = x} := by
+  rw [ConicalMember.carrier_plane_eq_positiveRay hBsym F G.flip h hcoh', ConicalPlane.flip_wedge]
+
+omit [Module.Finite ℚ V] in
+/-- **The flipped carrier is not the half line `C_{J,+}`**: it is the antipodal ray of `r_J`, and
+`r_J = dir ∧ dirAlt ≠ 0`, so the two orientations give different subsets of `⋀²V(ℝ)` and are not
+identified. -/
+theorem ConicalMember.carrier_plane_flip_ne_posRay (hBsym : BQ.IsSymm) (F : ConicalLine BQ Q)
+    (G : ConicalPlane BQ) (h : F.line ≤ G.plane) (hcoh' : G.flip.IsPositiveAt F h) :
+    (ConicalMember.plane F G.flip h hcoh' : ConicalMember BQ Q).carrier hBsym ≠
+      {x : ⋀[ℝ]^2 (realified V) | ∃ t : ℝ, 0 ≤ t ∧
+        t • wedgeTwo (rationalPoint G.dir) (rationalPoint G.dirAlt) = x} := by
+  intro heq
+  have hmem : wedgeTwo (rationalPoint G.dir) (rationalPoint G.dirAlt) ∈
+      (ConicalMember.plane F G.flip h hcoh' : ConicalMember BQ Q).carrier hBsym := by
+    rw [heq]
+    exact ⟨(1 : ℝ), zero_le_one, one_smul ℝ _⟩
+  rw [ConicalMember.carrier_plane_flip hBsym F G h hcoh'] at hmem
+  obtain ⟨t, ht, hteq⟩ := hmem
+  have htr : t • wedgeTwo (rationalPoint G.dir) (rationalPoint G.dirAlt) =
+      -wedgeTwo (rationalPoint G.dir) (rationalPoint G.dirAlt) := by
+    have h2 : -(t • wedgeTwo (rationalPoint G.dir) (rationalPoint G.dirAlt)) =
+        wedgeTwo (rationalPoint G.dir) (rationalPoint G.dirAlt) := by
+      rwa [smul_neg] at hteq
+    simpa using congrArg Neg.neg h2
+  have h1 : (1 + t) • wedgeTwo (rationalPoint G.dir) (rationalPoint G.dirAlt) = 0 := by
+    rw [add_smul, one_smul, htr, add_neg_cancel]
+  exact wedgeTwo_dir_ne_zero G ((smul_eq_zero.1 h1).resolve_left (by linarith [ht]))
+
+omit [Module.Finite ℚ V] in
+/-- **The wedge with a generator kills the line**: two vectors that differ by an element of
+`span{a}` are carried to the same element of `⋀²V(ℝ)` by `c ↦ a ∧ c`. This is why a member's carrier
+depends on its class in `I^⊥/I` and not on the representative a chosen complement gives it. -/
+theorem wedgeLeft_eq_of_sub_mem_span {a c c' : realified V}
+    (h : c' - c ∈ Submodule.span ℝ ({a} : Set (realified V))) :
+    wedgeLeft a c' = wedgeLeft a c := by
+  obtain ⟨t, ht⟩ := Submodule.mem_span_singleton.1 h
+  have hc' : c' = c + t • a := by
+    rw [add_comm]
+    exact sub_eq_iff_eq_add.1 ht.symm
+  rw [hc', map_add, wedgeLeft_apply, wedgeLeft_apply]
+  have hzero : wedgeTwo a (t • a) = 0 := by
+    rw [wedgeTwo_smul_right]
+    exact smul_eq_zero.2 (Or.inr (wedgeTwo_self a))
+  rw [hzero, add_zero]
+
+omit [Module.Finite ℚ V] in
+omit [Module.Finite ℚ V] in
+/-- **A change of partner does not change the carrier**: if two presentations `F`, `F'` of one
+`ℚ`-isotropic line have the same generator, and the two cones are carried to images whose elements
+differ by elements of the line — which is what it means for them to present the same cone of classes
+in `I^⊥/I` — then the carriers in `⋀²V(ℝ)` are equal. This is the carrier-level form of a partner
+change: the complement `I^⊥/I ≅ ⟨gen, partner⟩^⊥` moves, but `gen ∧ ·` kills the difference. -/
+theorem ConicalMember.carrier_fibre_eq_of_class_eq (hBsym : BQ.IsSymm) {F F' : ConicalLine BQ Q}
+    (hgen : F'.gen = F.gen)
+    {σ : PointedCone ℝ (realified ↥F.space)} {σ' : PointedCone ℝ (realified ↥F'.space)}
+    (h1 : ∀ x ∈ (fun c : realified ↥F.space => realifyMap F.space c) ''
+        (σ : Set (realified ↥F.space)),
+      ∃ x' ∈ (fun c : realified ↥F'.space => realifyMap F'.space c) ''
+        (σ' : Set (realified ↥F'.space)), x' - x ∈ lineSpan F)
+    (h2 : ∀ x' ∈ (fun c : realified ↥F'.space => realifyMap F'.space c) ''
+        (σ' : Set (realified ↥F'.space)),
+      ∃ x ∈ (fun c : realified ↥F.space => realifyMap F.space c) ''
+        (σ : Set (realified ↥F.space)), x' - x ∈ lineSpan F) :
+    (ConicalMember.fibre F σ : ConicalMember BQ Q).carrier hBsym =
+      (ConicalMember.fibre F' σ' : ConicalMember BQ Q).carrier hBsym := by
+  have hgenR : rationalPoint F'.gen = rationalPoint F.gen := by rw [hgen]
+  rw [ConicalMember.carrier, ConicalMember.carrier, hgenR]
+  ext x
+  constructor
+  · rintro ⟨c, hc, rfl⟩
+    obtain ⟨c', hc', hdiff⟩ := h1 c hc
+    exact ⟨c', hc', wedgeLeft_eq_of_sub_mem_span hdiff⟩
+  · rintro ⟨c', hc', rfl⟩
+    obtain ⟨c, hc, hdiff⟩ := h2 c' hc'
+    exact ⟨c, hc, (wedgeLeft_eq_of_sub_mem_span hdiff).symm⟩
+
 end LeanCategories.Lattices.Valued
