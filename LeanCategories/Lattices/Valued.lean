@@ -9,6 +9,7 @@ public import LeanCategories.Lattices.Valued.Based
 public import LeanCategories.Lattices.Valued.BaseChangeIsometry
 public import LeanCategories.Lattices.Valued.Radical
 public import LeanCategories.Lattices.Valued.Sublattice
+public import LeanCategories.Lattices.Valued.ArrowLoci
 public import LeanCategories.Lattices.Valued.Discriminant
 public import LeanCategories.Lattices.Valued.DeterminantLine
 public import LeanCategories.Lattices.Valued.FittingIdeal

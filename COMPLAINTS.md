@@ -3557,3 +3557,40 @@ downstream assertions, computational observations, or downstream diagnostics.
   `fibreTrace_comp`, `fibreTrace_map_fibreInducedEquiv` and
   `exists_orbitFamily_of_traceOrbitCover`. Filed here because the GitHub connector cannot create
   issues: this entry is the issue.
+
+### #27 — the arrow-category locus closure, the `End`/`Aut` extraction for a `BC₂`-action, and a concrete torsion-free marking witness
+
+- **Need:** (a) `primitiveEmbeddingLocus.IsClosedUnderIsomorphisms`, i.e. primitivity inherited along
+  an arbitrary isomorphism of `Arrow (Lat_R)`, not only along one presented by `Arrow.isoMk`;
+  (b) the involution *as an isomorphism* `σ : L ≅ L` extracted from a `BC₂`-action, to match
+  `FOUNDATIONS.md` Definition 28.4's "equivalently, an isometry `σ : L → L` with `σ² = 1`" in the
+  object language rather than at the endomorphism-monoid level; (c) `exists_distinct_markings` as a
+  concrete instance at `rankOneLattice 1`, with the two markings visibly distinct.
+- **Evidence:** (a) Mathlib has `Arrow.isoMk (l) (r) (h)` and `CommaMorphism.left`/`.right`, but no
+  component-extraction lemma (`Comma.isIso_left`, `Comma.isIso_right` do not exist at the pinned
+  revision), so an arbitrary `e : f ≅ g` in `Arrow T` cannot be decomposed into end isomorphisms
+  without rebuilding the inverses by hand from `e.hom_inv_id` under `congrArg CommaMorphism.left`.
+  `primitiveEmbeddingLocus_of_arrow_isoMk` states the closure in the presentation `Arrow.isoMk`
+  actually supplies. (b) `Action.ρ g : End A.V` and `Action.ρAut g : Aut A.V` are stated through the
+  aliases `End`/`Aut`, which the elaborator will not unify with `A.V ⟶ A.V` / `A.V ≅ A.V` at
+  `implicit` transparency (`type mismatch ... has type End A.V but is expected to have type
+  A.V ⟶ A.V`, and the same for `Aut`), so `CoreHom.iso (A.ρ g)` is rejected; `BC2Action.gen_sq`
+  states `σ² = 1` in the action's own monoid instead. (c) `Module.IsTorsionFree.isSMulRegular`
+  needs `IsRegular (2 : ℤ)`, which is not an instance at this revision, and `rw`/`simp` do not see
+  through the `ModuleCat.of` carrier coercions of `rankOneLattice 1`
+  (`(-Pi.single 0 1) 0` stays unreduced, `LinearEquiv.neg ℤ` does not match `LinearEquiv.coe_neg`),
+  so `negIso_ne_refl` carries `h2 : ∀ y, (2 : ℤ) • y = 0 → y = 0` as a named hypothesis.
+- **Gap and impact:** the locus closure and the marking noncontractibility are theorems in the
+  `Arrow.isoMk` presentation and under a torsion-freeness hypothesis respectively, not in the
+  strongest available form; a consumer needing `IsClosedUnderIsomorphisms` or a `σ`-as-iso must
+  supply the missing extraction. No mathematics is weakened: `markingFibre_subsingleton_iff` is
+  stated with no hypothesis at all, and `negIso` is defined for every `W`-valued lattice.
+- **Coverage:** Mathlib searched at the pinned revision (`Comma.isIso_left`, `Comma.isIso_right`,
+  `Comma.hom_ext`, `Arrow.isoMk`, `Action.ρAut`, `End`, `Aut`, `Module.IsTorsionFree`,
+  `IsRegular`, `Pi.neg_apply`, `Pi.single_eq_same`); the repository searched for `changeValue_id`,
+  `changeValue_comp`, `Under.subsingleton`, `primitive completion`, `marking`. Not inspected: whether
+  an `IsRegular (2 : ℤ)` instance arrives with a later Mathlib move.
+- **Repair link:** upstream candidates `Comma.isIso_left`/`Comma.isIso_right` (then the closure
+  follows from `BilinModuleCat.IsPrimitiveEmbedding.of_iso`), an `End`/`Aut`-to-hom coercion instance
+  or `Action.ρIso`, and `IsRegular (2 : ℤ)` from `IsDomain`. Filed here because the GitHub connector
+  cannot create issues: this entry is the issue.

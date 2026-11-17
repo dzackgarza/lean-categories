@@ -9,6 +9,8 @@ public import LeanCategories.CategoryTheory.PathBicategory
 public import LeanCategories.CategoryTheory.PosetPathLaxFunctor
 public import LeanCategories.ForMathlib.CharacteristicTwoArfInvariant
 public import LeanCategories.ForMathlib.CosetTable
+public import LeanCategories.ForMathlib.CosliceGroupoid
+public import LeanCategories.ForMathlib.LinearMapCompl
 public import LeanCategories.ForMathlib.DoubleCosetOrbit
 public import LeanCategories.ForMathlib.ModularCuspsFiniteIndex
 public import LeanCategories.ForMathlib.ModularCuspsGL2
