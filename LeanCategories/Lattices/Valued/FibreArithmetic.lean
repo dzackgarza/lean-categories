@@ -162,6 +162,24 @@ omit [Module.Finite ℚ V] in
 theorem distinctTraces_eq_range :
     distinctTraces ψ F = Set.range (fun i : fibreWalls ψ F => fibreTrace (ψ ↑i) F) := rfl
 
+omit [Module.Finite ℚ V] in
+/-- **The trace is *equivariant*, not invariant.** Composing a wall form with an isometry `g` of
+`V` replaces the trace at `F` by the trace of `ψ` at the fibre `gF`, read back through `g`:
+`fibreTrace (ψ ∘ g) F = F.space ∩ g⁻¹ (ker ψ)`.
+
+No invariance of a trace under a `g` that moves the fibre is claimed or provable: `g` carries
+`F.space` to `g(F.space)`, which is the carrier of the image fibre `gF` and not of `F`, so the two
+traces live in different carriers and can only be compared through `g`. This is the exact form the
+counting input of Looijenga, Example 4.3 (b), pp. 17–18, has at a fibre (Example 6.4, p. 29): the
+walls in the `Γ`-orbit of a wall of the finite family are moved by `Γ`, so their traces at a
+*fixed* `F` are the traces of the finitely many orbit representatives at the *moving* fibres `gF`,
+and a statement that they are the traces at `F` itself is false whenever `Γ` is infinite. -/
+theorem fibreTrace_comp (ψ : V →ₗ[ℚ] ℚ) (g : V ≃ₗ[ℚ] V) :
+    fibreTrace (ψ.comp (g : V →ₗ[ℚ] V)) F =
+      Submodule.comap F.space.subtype (Submodule.comap (g : V →ₗ[ℚ] V) (LinearMap.ker ψ)) := by
+  ext x
+  simp [fibreTrace, Submodule.mem_comap, LinearMap.mem_ker]
+
 end Trace
 
 /-! ## Proportionality of forms with the same trace -/
