@@ -2638,6 +2638,39 @@ theorem isAdmissibleDecomposition_semifanArrangement {ι : Type*} (ψ : ι → V
       vSigmaPlane_semifanArrangement_eq_JH ψ hBQ hBsym F G h (hpos F) (hnd F) (hcut F)
         (semifanArrangement_isLocallyRational_of_sigPos ψ F (hpos F) (hnd F) (hcut F)))
 
+/-- **Example 6.4, p. 29, assembled from the source's hypotheses**: a form of signature `(2, n)` on
+`V` (`hsig`, `hnd`) and a finite union `ℋ` of `Γ`-orbits of `ℚ`-hyperplanes (`horbit`) give the
+admissible decomposition `Σ(ℋ)` of Definition 6.1. The signature `(1, n-1)` of every fibre (§1B,
+p. 11) and the nondegeneracy of its form are discharged, not assumed (`sigPos_fibreForm_eq_one`,
+`fibreForm_space_nondegenerate`), and so is the `Γ`-invariance
+(`semifanArrangement_gammaInvariant_of_finiteOrbits`).
+
+The one input left is condition (i) at each fibre, `hcut`: "the `H ∈ ℋ` containing `I` correspond to
+`ℚ`-hyperplanes in `I^⊥/I ⊗ I` of signature `(1, n-2)` and so according to example 4.3-b these
+decompose `C_{I,+}` into locally rational cones". This file proves it *without* a counting
+hypothesis at the fibre's own hyperplanes
+(`arrangementDecomposition_reducedLattice_isLocallyRational`, from the reduced lattice
+`(Λ ⊓ I^⊥)/(Λ ⊓ I)` of §1B, the arithmetic of `Γ_I` and the finite orbit family), and
+`semifanArrangement_isLocallyRational_of_traces` transfers that to the ambient-indexed `Σ(ℋ)` given
+the trace correspondence of the two index sets. What is not constructed is that correspondence at
+`Σ(ℋ)`: it is not injective on the ambient family (every `I ⊕ T ⊕ ℚ(f + k)` over one trace `T`), so
+it has to be built from the reduced-lattice quotient of the normals rather than from the ambient
+index set, and it is the outstanding step of this issue. -/
+theorem isAdmissibleDecomposition_semifanArrangement_of_signature {ι : Type*}
+    (ψ : ι → V →ₗ[ℚ] ℚ) {Γ : Set (V ≃ₗ[ℚ] V)}
+    (hBQ : ∀ u w : V, (associated Q) (rationalPoint u) (rationalPoint w) = (BQ u w : ℝ))
+    (hBsym : BQ.IsSymm) (hsig : sigPos Q = 2) (hnd : Q.Nondegenerate)
+    (horbit : IsFiniteUnionOfOrbits Γ ψ)
+    (hcut : ∀ F : ConicalLine BQ Q,
+      CutsFinitelyOnRational F.closure (fun i : fibreWalls ψ F => fibreFormC F (ψ ↑i))) :
+    IsAdmissibleDecomposition BQ Q Γ (semifanArrangement ψ) :=
+  isAdmissibleDecomposition_semifanArrangement ψ hBQ
+    (fun F => sigPos_fibreForm_eq_one hBQ hBsym hsig F)
+    (fun F => fibreForm_space_nondegenerate hBQ hBsym hnd F)
+    hcut
+    (semifanArrangement_gammaInvariant_of_finiteOrbits horbit hBQ
+      (fun F => sigPos_fibreForm_eq_one hBQ hBsym hsig F))
+
 end Example64
 
 end LeanCategories.Lattices.Valued
