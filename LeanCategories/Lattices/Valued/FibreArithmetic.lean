@@ -1557,6 +1557,105 @@ noncomputable def fibreInducedEquiv (hBsym : BQ.IsSymm) (F : ConicalLine BQ Q)
     simpa [LinearEquiv.symm_symm] using h
   right_inv y := fibreCarrierProj_comp_symm hBsym F g c hgen hgiso y
 
+omit [Module.Finite ℚ V] in
+/-- **The generator's inverse image**: an isometry carrying `gen` to `c • gen` with `c ≠ 0`
+carries `gen` back to `c⁻¹ • gen`. -/
+theorem fibreGen_symm (F : ConicalLine BQ Q) (g : V ≃ₗ[ℚ] V) {c : ℚ}
+    (hgen : g F.gen = c • F.gen) (hc : c ≠ 0) :
+    g.symm F.gen = c⁻¹ • F.gen := by
+  refine g.injective ?_
+  rw [LinearEquiv.apply_symm_apply, map_smul, hgen, smul_smul, inv_mul_cancel₀ hc, one_smul]
+
+omit [Module.Finite ℚ V] in
+/-- A carrier vector pairs with `gen` trivially, and an isometry carrying `gen` to a multiple of
+itself therefore keeps it trivially paired with the image: the `partner` correction of the
+projection of `g x` is zero for `x` in the carrier. -/
+theorem BQ_gen_generator_eq_zero (F : ConicalLine BQ Q) (g : V ≃ₗ[ℚ] V) {c : ℚ}
+    (hgen : g F.gen = c • F.gen) (hc : c ≠ 0)
+    (hgiso : ∀ x y : V, BQ (g x) (g y) = BQ x y)
+    (x : ↥F.space) : BQ F.gen (g (x : V)) = 0 := by
+  have hx : BQ F.gen (x : V) = 0 := ((mem_planeComplement_iff BQ).1 x.2).1
+  have h1 : BQ F.gen (g (x : V)) = BQ (g.symm F.gen) (x : V) := by
+    rw [← hgiso (g.symm F.gen) (x : V)]
+    simp
+  rw [h1, fibreGen_symm F g hgen hc]
+  simp only [map_smul, LinearMap.smul_apply, smul_eq_mul, hx, mul_zero]
+
+omit [Module.Finite ℚ V] in
+/-- **The induced carrier automorphism is the projection of the image**, with the `partner`
+correction vanishing on the carrier (`BQ_gen_generator_eq_zero`). -/
+theorem fibreInducedEquiv_apply_val (hBsym : BQ.IsSymm) (F : ConicalLine BQ Q)
+    (g : V ≃ₗ[ℚ] V) {c : ℚ} (hgen : g F.gen = c • F.gen) (hc : c ≠ 0)
+    (hgiso : ∀ x y : V, BQ (g x) (g y) = BQ x y) (x : ↥F.space) :
+    ((fibreInducedEquiv hBsym F g c hgen hc hgiso x : ↥F.space) : V) =
+      g (x : V) - BQ F.partner (g (x : V)) • F.gen := by
+  show ((fibreCarrierProj hBsym F (g (x : V)) : ↥F.space) : V) = _
+  rw [fibreCarrierProj_apply, BQ_gen_generator_eq_zero F g hgen hc hgiso x, zero_smul, sub_zero]
+
+omit [Module.Finite ℚ V] in
+/-- **`Stab(I)` transports the traces of the walls through `I`** — the equivariance of the trace
+under the *stabilizer* of the line, which is the one form of invariance that is true.
+
+Let `g` be an isometry with `g gen = c gen`, `c ≠ 0`, and let `e : ↥F.space ≃ ↥F.space` be its
+induced action on the carrier (`fibreInducedEquiv`). Then for a wall `ψ` through `I`,
+`e '' (F.space ⊓ ker ψ) = F.space ⊓ ker (ψ ∘ g⁻¹)`:
+
+a point `x` of the carrier is killed by `ψ` exactly when its image `π (g x)` is killed by
+`ψ ∘ g⁻¹`.
+The proof uses that `π (g x) - g x` is a multiple of `gen`, on which `ψ` vanishes because
+`I ≤ ker ψ`, and that `g⁻¹ gen` is again a multiple of `gen` (`fibreGen_symm`). This is where
+an isometry that moves `I` fails: for such a `g` the factor `π (g x) - g x` carries a `partner`
+component, `ψ` does not vanish on it, and no comparison at a fixed fibre exists —
+`fibreTrace_comp` states that general fact. -/
+theorem fibreTrace_map_fibreInducedEquiv (hBsym : BQ.IsSymm) (F : ConicalLine BQ Q)
+    (g : V ≃ₗ[ℚ] V) {c : ℚ} (hgen : g F.gen = c • F.gen) (hc : c ≠ 0)
+    (hgiso : ∀ x y : V, BQ (g x) (g y) = BQ x y)
+    (ψ : V →ₗ[ℚ] ℚ) (hI : F.line ≤ LinearMap.ker ψ) :
+    (fibreTrace ψ F).map
+        (fibreInducedEquiv hBsym F g c hgen hc hgiso).toLinearMap =
+      fibreTrace (ψ.comp (g.symm : V →ₗ[ℚ] V)) F := by
+  have hgen0 : ψ F.gen = 0 :=
+    hI (by rw [F.line_eq]; exact Submodule.subset_span (Set.mem_singleton _))
+  have hgen' : g.symm F.gen = c⁻¹ • F.gen := fibreGen_symm F g hgen hc
+  have hsymm0 : ψ (g.symm F.gen) = 0 := by
+    rw [hgen', map_smul, smul_eq_mul, hgen0, mul_zero]
+  have hzero : ∀ v : ↥F.space, BQ F.gen (g (v : V)) = 0 :=
+    fun v => BQ_gen_generator_eq_zero F g hgen hc hgiso v
+  have hzero' : ∀ v : ↥F.space, BQ F.gen (g.symm (v : V)) = 0 := by
+    intro v
+    have h1 : BQ F.gen (g.symm (v : V)) = BQ (g F.gen) (v : V) := by
+      rw [← hgiso F.gen (g.symm (v : V))]
+      simp
+    rw [h1, hgen, map_smul, LinearMap.smul_apply, smul_eq_mul]
+    have hv : BQ F.gen (v : V) = 0 := ((mem_planeComplement_iff BQ).1 v.2).1
+    rw [hv, mul_zero]
+  ext y
+  constructor
+  · rintro ⟨x, hx, rfl⟩
+    have hx' : ψ (x : V) = 0 := by simpa [fibreTrace, LinearMap.mem_ker] using hx
+    have hxval : (((fibreInducedEquiv hBsym F g c hgen hc hgiso x : ↥F.space) : V)) =
+        g (x : V) - BQ F.partner (g (x : V)) • F.gen := by
+      show ((fibreCarrierProj hBsym F (g (x : V)) : ↥F.space) : V) = _
+      rw [fibreCarrierProj_apply, hzero x, zero_smul, sub_zero]
+    show ψ (g.symm (((fibreInducedEquiv hBsym F g c hgen hc hgiso x : ↥F.space) : V))) = 0
+    rw [hxval]
+    simp only [map_sub, map_smul, LinearEquiv.symm_apply_apply, hx', hsymm0, hgen0, smul_eq_mul,
+      mul_zero, sub_zero]
+  · intro hy
+    have hy' : ψ (g.symm (y : V)) = 0 := by simpa [fibreTrace, LinearMap.mem_ker] using hy
+    refine ⟨(fibreInducedEquiv hBsym F g c hgen hc hgiso).symm y, ?_, ?_⟩
+    · have hval : (((fibreInducedEquiv hBsym F g c hgen hc hgiso).symm y : ↥F.space) : V) =
+          g.symm (y : V) - BQ F.partner (g.symm (y : V)) • F.gen := by
+        show ((fibreCarrierProj hBsym F (g.symm (y : V)) : ↥F.space) : V) = _
+        rw [fibreCarrierProj_apply, hzero' y, zero_smul, sub_zero]
+      have hgoal :
+          ψ (((fibreInducedEquiv hBsym F g c hgen hc hgiso).symm y : ↥F.space) : V) = 0 := by
+        rw [hval]
+        simp only [map_sub, map_smul, smul_eq_mul, hsymm0, hgen0, mul_zero, sub_zero]
+        exact hy'
+      simpa [fibreTrace, LinearMap.mem_ker] using hgoal
+    · simp
+
 end InducedAction
 
 section BasisFreeCaller
