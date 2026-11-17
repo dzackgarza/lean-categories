@@ -48,13 +48,32 @@ available for a locally rational decomposition, whose members are neither finite
 polyhedral cones of a fan; it is also why no least member, no support inclusion and no complete
 lattice of cones is assumed anywhere.
 
-**The fibre and the support space.** In a conical fibre `F` of a `ℚ`-isotropic line (Definition 6.1
-(i), p. 28) the two families `locus F` and `locus' F` are locally rational decompositions of the
-same carrier `F.closure = C_{I,+}` (Definition 6.1 (i)), so the refinement relation and the
-least-member statement hold fibre by fibre (`RefinesLocus`, `exists_least_mem_of_refines_fibre`),
-and `vSigma_mono` turns `σ ≤ σ'` into `V_σ ⊆ V_{σ'}`. That is Lemma 6.6's inclusion for the members
-whose support space Definition 6.1 (i) defines, namely the members that are not isotropic half lines
+**The fibre and the support space, and the scope of the fibre-wise relation.** In a conical fibre
+`F` of a `ℚ`-isotropic line the two families `locus F` and `locus' F` are locally rational
+decompositions of the same carrier `F.closure = C_{I,+}` (Definition 6.1 (i), p. 28), so the
+refinement relation and the least-member statement hold fibre by fibre (`RefinesLocus`,
+`exists_least_mem_of_refines_fibre`), and `vSigma_mono` turns `σ ≤ σ'` into
+`vSigma F σ ≤ vSigma F σ'`. That is Lemma 6.6's inclusion for the members whose support space
+Definition 6.1 (i) defines, namely the members that are not isotropic half lines
 (`vSigma_le_of_refines_of_not_isotropicHalfLine`).
+
+`RefinesLocus` is an assumption about one fibre at a time: for each `ℚ`-isotropic line `I`, the
+members of `Σ` inside `C_{I,+}` lie in members of `Σ'` inside `C_{I,+}`. It is *not* the statement
+that an ambient refinement of the two decompositions of the conical locus restricts to the fibres,
+and no such restriction theorem is proved here. Definition 6.1's ambient data is strictly more than
+its condition (i): the `Γ`-invariance of the collection and the compatibility condition (ii) across
+the lines of a `ℚ`-isotropic plane are properties of the collection as a whole, and the semifan of
+Alexeev--Engel, *Compact moduli of K3 surfaces*, arXiv 2101.12186v2, makes the same point by laying
+a compatibility condition at each 1-cusp on top of the fibre-wise tilings (Definition 7.14, text
+line 1597). So the passage from an admissible decomposition of the conical locus to this fibre-wise
+hypothesis is a hypothesis here, not a theorem.
+
+**The support-space comparison is span monotonicity of the case-(i) formula.** `vSigma` is
+Definition 6.1 (i)'s formula, and the source's `V_σ` is given by that case only when `σ` is not an
+isotropic half line; for `σ = C_{J,+}` it is the space of Lemma-Definition 4.5.
+`vSigma_le_of_refines` and its two wrappers compare `vSigma` at the least containing coarse member,
+which is the source's inclusion for the case-(i) members and is not attributed to the other case
+anywhere below.
 
 The source's principal instance is the refinement by the coarsest decomposition `Σ(bb)` ("This
 applies in particular to the case when `Σ'` is the Baily-Borel decomposition", text line 823);
@@ -62,14 +81,18 @@ applies in particular to the case when `Σ'` is the Baily-Borel decomposition", 
 
 ## Main declarations
 
-* `Refines`, `RefinesLocus`: refinement by containment of members, and its fibre-wise form.
+* `Refines`, `RefinesLocus`: refinement by containment of members, and its fibre-wise form, which is
+  a same-fibre assumption.
 * `IsLeastMem`: `σ'` is the least member of `S'` containing `σ`.
 * `exists_least_mem_of_le`: existence of `σ'`, from Definition 4.2 and `Module.Finite ℚ V`.
 * `IsLeastMem.eq`: it is unique, so that `σ ↦ σ'` is a function.
 * `exists_least_mem_of_refines`: the same, from a genuine refinement.
 * `exists_least_mem_facialDecomposition`: the source's `Σ' = Σ(bb)` instance.
 * `exists_least_mem_of_refines_fibre`: the fibre-wise form, step one of Lemma 6.6.
-* `vSigma_le_of_refines_of_not_isotropicHalfLine`: `V_σ ⊆ V_{σ'}`, step two of Lemma 6.6.
+* `vSigma_le_of_refines_of_not_isotropicHalfLine`: `V_σ ⊆ V_{σ'}` for the members of Definition 6.1
+  (i), step two of Lemma 6.6.
+* `vSigma_le_of_refines_of_isAdmissibleDecomposition`: the same from Definition 6.1 itself, with the
+  span inclusion stated for every member and its scope recorded.
 -/
 
 @[expose] public section
@@ -275,7 +298,12 @@ variable {V : Type} [AddCommGroup V] [Module ℚ V] [Module.Finite ℚ V]
 /-- **A refinement of two decompositions of the conical locus**: on every conical fibre, the members
 of the finer family lie in members of the coarser one. Looijenga, Lemma 6.6, p. 30, assumes exactly
 this, fibre by fibre, of "`Σ'` ... refined by `Σ`"; Definition 6.1 (i), p. 28, is what makes a
-conical-locus decomposition a family of decompositions of the fibres. -/
+conical-locus decomposition a family of decompositions of the fibres.
+
+This is a *same-fibre* assumption: it relates `locus F` and `locus' F` for each `F` separately and
+says nothing about how either family sits in the conical locus as a whole. In particular it is not a
+restriction theorem — nothing below derives it from an ambient refinement of the two collections,
+which would also have to account for `Γ`-invariance and for condition (ii) of Definition 6.1. -/
 def RefinesLocus {BQ : LinearMap.BilinForm ℚ V} {Q : QuadraticForm ℝ (realified V)}
     (locus locus' : ∀ F : ConicalLine BQ Q, Set (PointedCone ℝ (realified ↥F.space))) : Prop :=
   ∀ F : ConicalLine BQ Q, Refines (locus F) (locus' F)
@@ -305,12 +333,16 @@ theorem exists_least_mem_of_refines_fibre
     ∃ σ' : PointedCone ℝ (realified ↥F.space), IsLeastMem (locus' F) σ σ' :=
   exists_least_mem_of_refines (hcoarse F) (href F) hσ
 
-/-- **`V_σ ⊆ V_{σ'}` for the least containing coarse member in one fibre** (Looijenga, Lemma 6.6,
-p. 30, the inclusion `V_σ ⊂ V_{σ'}`): the `Σ`-support space of a member of the finer decomposition
-is contained in that of its least containing member in the coarser one, by monotonicity of the
-support space in the member (`vSigma_mono`). The support space `vSigma` is Definition 6.1 (i)'s
-formula; the inclusion is unconditional, and `vSigma_le_of_refines_of_not_isotropicHalfLine` below
-records the source's case restriction. -/
+/-- **The span inclusion `vSigma F σ ≤ vSigma F σ'` at the least containing coarse member of one
+fibre**: the case-(i) support formula of a member of the finer decomposition is contained in that of
+its least containing member in the coarser one, by monotonicity of that formula in the member
+(`vSigma_mono`). The inclusion is unconditional — no hypothesis on `σ` is consumed — so its exact
+meaning is *span monotonicity of `vSigma`*, Definition 6.1 (i)'s formula. It is the source's
+inclusion `V_σ ⊂ V_{σ'}` for the members that case (i) covers, i.e. those that are not isotropic
+half lines, and never for an isotropic half line, whose `V_σ` the source defines by the other case:
+`vSigma_le_of_refines_of_not_isotropicHalfLine` carries the source's case restriction, and
+`Semifan.vSigmaPlane_le_of_refines` is the comparison at the space Definition 6.1 (ii) gives the
+members `σ = C_{J,+}`. -/
 theorem vSigma_le_of_refines
     {BQ : LinearMap.BilinForm ℚ V} {Q : QuadraticForm ℝ (realified V)}
     {locus locus' : ∀ F : ConicalLine BQ Q, Set (PointedCone ℝ (realified ↥F.space))}
@@ -325,7 +357,10 @@ theorem vSigma_le_of_refines
 /-- **Looijenga, Lemma 6.6, p. 30, for the members that Definition 6.1 (i) covers**: if `σ` is a
 member of the finer fibre decomposition that is *not* an isotropic half line — so that its
 `Σ`-support space is `V_σ = I ⊕ ⟨σ⟩` of Definition 6.1 (i), which is `vSigma` — then the least
-member `σ'` of the coarser family containing it satisfies `V_σ ⊆ V_{σ'}`.
+member `σ'` of the coarser family containing it satisfies `V_σ ⊆ V_{σ'}`. This is the declaration
+whose conclusion is the source's geometric inclusion; the wrapper
+`vSigma_le_of_refines_of_isAdmissibleDecomposition` below is the same comparison without the case
+restriction in its statement, and its docstring records what that omission means.
 
 The hypothesis is the source's: Definition 6.1, p. 28, defines `V_σ` by case (i) only when `σ` is
 not an isotropic half line in `C_{I,+}`. For an isotropic half line the support space is the one of
@@ -346,11 +381,23 @@ theorem vSigma_le_of_refines_of_not_isotropicHalfLine
 
 /-- **Lemma 6.6, p. 30, from the source's hypothesis**: the coarse family is an *admissible*
 decomposition of the conical locus (Looijenga, Definition 6.1, p. 28), so condition (i) of
-Definition 6.1 supplies its locally rational decomposition on every fibre; with a genuine refinement
-of the finer family by it, every member `σ` of a fibre has a least coarse member `σ'` containing it,
-and `V_σ ⊆ V_{σ'}`. This is the shape in which the refinement step is consumed downstream: neither
-`Γ`-invariance nor condition (ii) of Definition 6.1 enters, only condition (i) and the refinement.
--/
+Definition 6.1 supplies its locally rational decomposition on every fibre; with the fibre-wise
+refinement of the finer family by it, every member `σ` of a fibre has a least coarse member `σ'`
+containing it, and `vSigma F σ ≤ vSigma F σ'`.
+
+**What the two halves of the conclusion say.** The least-member half holds for *every* member: it is
+a statement about cones, and no support space enters its proof. The second half is the span
+inclusion of `vSigma`, Definition 6.1 (i)'s formula — not a claim that `V_σ ⊆ V_{σ'}` in the
+source's sense for every member. Definition 6.1, p. 28, gives `V_σ` by case (i) only when `σ` is not
+an isotropic half line in `C_{I,+}`; for `σ = C_{J,+}` it is the space of Lemma-Definition 4.5,
+whose comparison is `Semifan.vSigmaPlane_le_of_refines`. This declaration carries no ray hypothesis
+because its proof consumes none, so it is the case-(i) inclusion stated for all members:
+`vSigma_le_of_refines_of_not_isotropicHalfLine` is the form that carries the source's restriction,
+and this one must not be read as extending Lemma 6.6 to the case-(ii) space.
+
+The hypothesis `href` is `RefinesLocus`, a same-fibre assumption (see its docstring): neither
+`Γ`-invariance nor condition (ii) of Definition 6.1 enters, and no ambient-refinement restriction is
+proved here. -/
 theorem vSigma_le_of_refines_of_isAdmissibleDecomposition
     {BQ : LinearMap.BilinForm ℚ V} {Q : QuadraticForm ℝ (realified V)}
     {Γ : Set (V ≃ₗ[ℚ] V)}
