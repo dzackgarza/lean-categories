@@ -358,6 +358,8 @@ public import LeanCategories.Lattices.Valued.CobleCusps
 public import LeanCategories.Lattices.Valued.D8Gluing
 public import LeanCategories.Lattices.Valued.EvenGluingGraph
 public import LeanCategories.Lattices.Valued.OrthogonalSumDiscriminant
+public import LeanCategories.Lattices.Valued.OverlatticeLattice
+public import LeanCategories.Lattices.Valued.OverlatticeDiscriminant
 public import LeanCategories.Modules.Flags
 public import LeanCategories.Lattices.Valued.FlagParabolic
 public import LeanCategories.Lattices.Valued.IsotropicReduction

@@ -38,6 +38,57 @@ does not justify weakening a dependent theorem or starting unrelated work.
 
 ## Mathematical issues
 
+### An overlattice had no lattice object, and the quotient of its metric dual diverges in `whnf` (#26)
+
+- **Need:** `A_M = M^∨/M` for an integral overlattice `M` of `L`, and Nikulin's §1.5 Prop. 1.5.1
+  (`A_M ≅ Γ^⊥/Γ`, `M = S ⊕_γ K`). `Overlattice R L` (`Gluing.lean:26`) is a subtype of a submodule
+  of the rational span with an integrality property, not an `IntegralLatticeCat`, so `M^∨/M` had
+  nothing to be a quotient of. **Half done: the object now exists.**
+- **Done — `OverlatticeLattice.lean`:** `Overlattice.pairing` (the ambient rationalized form read
+  back in `R` through integrality, `algebraMap_pairing` its defining property),
+  `Overlattice.bilinMap`, `bilinObject`, `lattice : IntegralLatticeCat R` with carrier
+  `↥M.carrier` (given `Module.Projective R ↥M.carrier`), `lattice_pairing`; and projectivity over a
+  PID, `isTorsionFree_carrier` + `moduleFinite_carrier` + `free_of_finite_torsionFree` +
+  `projective_of_pid`, so `latticeOfPID` and `exists_basis_gram` (a `Fin n`-basis from
+  `Module.basisOfFiniteTypeTorsionFree'`, with Gram matrix `M.pairing (b i) (b j)`, i.e. exactly
+  the ambient values by `algebraMap_pairing`). Axioms
+  `[propext, Classical.choice, Quot.sound]` throughout.
+- **Done — `OverlatticeDiscriminant.lean`:** `Overlattice.discMap : ↥M.dualSubmodule →ₗ A_L` and
+  `discMap_mem_glueOrthogonal : discMap x ∈ Γ^⊥` — the class map and its inclusion into the
+  orthogonal complement of the gluing subgroup. That is one half of `A_M ≅ Γ^⊥/Γ`.
+- **The block.** The other half needs the quotient as a codomain:
+
+  ```lean
+  noncomputable def discPsi : ↥M.dualSubmodule →ₗ[R] (L.obj.defect ⧸ M.glueSubgroup)
+  ```
+
+  It reports `(deterministic) timeout at 'whnf'` at 200000 heartbeats, and at 800000. The same
+  definition, written with `M` an implicit section variable and with only three declarations in the
+  file, elaborates in about 1.5 s; adding the three preceding declarations of
+  `OverlatticeDiscriminant.lean` to that file reproduces the divergence, and `M` explicit in the
+  short file does not. So the trigger is the `defeq` chain behind `M.glueSubgroup`
+  (`LinearMap.range` of `metricDualToDiscriminant ∘ M.toMetricDual`, whose type mentions
+  `metricDual R L`), the same `abbrev`-unfolding family as the `metricDual R (S ⊥ K)` trap this
+  issue hit before (`metricDual` and `rationalizedForm` are both `abbrev`s). Naming the lattices,
+  which fixed that one, does not fix this one; the workaround that did work upstream — prove the
+  statement without the offending term — is what the kernel/range step still needs.
+- **The mathematics, settled:** with `Γ = M.glueSubgroup` and `D = dualSubmodule M.carrier`,
+  `ker (mkQ Γ ∘ discMap) = M` (if `[x] ∈ Γ` then `x - m ∈ ker (metricDualToDiscriminant) =
+  range (toMetricDual) = integralImage ⊆ M`), and `range (mkQ Γ ∘ discMap) = Γ^⊥ ⧸ Γ` (every class
+  of `Γ^⊥` has a representative `y ∈ L^∨` pairing integrally with all of `M`, so `y ∈ D`). Both are
+  written out as Lean proof scripts that compile up to the divergent `discPsi`.
+- **Not started:** the primitive-embedding half (`S`, `K` primitive in `M`, `K = S^⊥`). With
+  `Overlattice.lattice` these become statable (`Module.IsTorsionFree R (M ⋯ ⧸ range …)` for
+  primitivity, TauCeti's shape in `Overlattice/Graph.lean`
+  `isTorsionFree_quotient_range_glueLeft`/`_glueRight` and `mem_glueAlongDiscriminant_left/right_iff`
+  for the coordinate intersections); they are not stated yet, so no statement changed.
+- **TauCeti:** has no equivalent of the missing object to port — `TauCeti.IntegralLattice V` is a
+  submodule of a fixed `ℚ`-vector space with no projectivity field, so an overlattice is a lattice
+  there for free. The gap here is the `Module.Projective` field of `LatticeCat`'s object property
+  (`Basic.lean:39`), and `Overlattice.projective_of_pid` closes it over a PID from finiteness and
+  torsion-freeness — no separate lattice representation was introduced.
+
+
 ### The quadratic refinement of an orthogonal sum's discriminant form diverges in `isDefEq` at the sum's `metricDual` — resolved, and the divergence located (#26)
 
 - **Status: resolved** by `evenDiscriminantQuadraticMap_orthogonalSum` in
