@@ -1352,6 +1352,195 @@ theorem semifanArrangement_arithmetic_fibre
 end ArithmeticCaller
 
 
+/-! ## The induced action of the line stabilizer, and the trace normals
+
+Looijenga §1B, p. 11 (text line 265): "The stabilizer `G_I` acts on `I^⊥/I ⊗ I` with image `Ḡ_I`
+the group of real orthogonal transformations of `I^⊥/I ⊗ I` that preserve `C_I`. The kernel `N_I`
+of this action consists of the transformations in `G_I` that act trivially on `I^⊥/I ⊗ I`", and at
+text line 269, for `I` defined over `ℚ`: "`Γ_I` is arithmetic in `G_I`. This implies that `Γ_{N_I}`
+defines a lattice in `I^⊥/I ⊗ I` (preserved by `Ḡ_I`, of course)". That is the source's `Γ̄_I` and
+`N_I`, and it is what Example 6.4, p. 29 uses at the fibre: the walls containing `I` are moved by
+`Γ_I` and their traces by `Γ̄_I`.
+
+The carrier of the fibre is the complement model `planeComplement BQ F.gen F.partner` of
+`I^⊥/I` (`ConicalLine.space`). `fibreCarrierProj` is the projection of `V` onto that model along
+the hyperbolic plane `⟨gen, partner⟩`; an isometry carrying `gen` to a nonzero multiple of itself
+acts on the model by `x ↦ fibreCarrierProj (g x)`, a `ℚ`-linear equivalence of the carrier, and it
+fixes the carrier pointwise exactly when it displaces every vector of `I^⊥` by a multiple of the
+isotropic generator — the source's `N_I` read on the model. -/
+
+section InducedAction
+
+variable {BQ : LinearMap.BilinForm ℚ V} {Q : QuadraticForm ℝ (realified V)}
+
+/-- **The projection of `V` onto the complement model `I^⊥/I` along the hyperbolic plane
+`⟨gen, partner⟩`**: `v - (v · partner) gen - (v · gen) partner`. The two corrections are the ones
+that make the result pair trivially with `gen` and with `partner`; for `v ∈ I^⊥` the second
+vanishes, and that is the projection of §1B, p. 11 used at the fibre. -/
+noncomputable def fibreCarrierProj (hBsym : BQ.IsSymm) (F : ConicalLine BQ Q) :
+    V →ₗ[ℚ] ↥F.space where
+  toFun v := ⟨v - BQ F.partner v • F.gen - BQ F.gen v • F.partner, by
+    have hpp : BQ F.partner F.gen = 1 := by rw [hBsym.eq]; exact F.pairing
+    rw [mem_planeComplement_iff]
+    refine ⟨?_, ?_⟩
+    · simp only [map_sub, map_smul, smul_eq_mul, F.gen_iso, F.pairing, hpp, mul_zero, mul_one]
+      ring
+    · simp only [map_sub, map_smul, smul_eq_mul, F.pairing, F.partner_iso, hpp, mul_one, mul_zero]
+      ring⟩
+  map_add' u v := by
+    refine Subtype.ext ?_
+    simp only [map_add, add_smul, Submodule.coe_add, Submodule.coe_mk]
+    abel
+  map_smul' c v := by
+    refine Subtype.ext ?_
+    simp only [map_smul, smul_sub, smul_smul, Submodule.coe_smul, Submodule.coe_mk,
+      RingHom.id_apply]
+    module
+
+omit [Module.Finite ℚ V] in
+@[simp] theorem fibreCarrierProj_apply (hBsym : BQ.IsSymm) (F : ConicalLine BQ Q) (v : V) :
+    ((fibreCarrierProj hBsym F v : ↥F.space) : V) =
+      v - BQ F.partner v • F.gen - BQ F.gen v • F.partner := rfl
+
+omit [Module.Finite ℚ V] in
+/-- The projection kills the isotropic generator: `π gen = 0` in the model. -/
+theorem fibreCarrierProj_gen (hBsym : BQ.IsSymm) (F : ConicalLine BQ Q) :
+    fibreCarrierProj hBsym F F.gen = 0 := by
+  refine Subtype.ext ?_
+  have hpp : BQ F.partner F.gen = 1 := by rw [hBsym.eq]; exact F.pairing
+  simp [fibreCarrierProj_apply, F.gen_iso, hpp]
+
+omit [Module.Finite ℚ V] in
+/-- The projection kills the hyperbolic partner as well: `π partner = 0`. With
+`fibreCarrierProj_gen` this says that the whole hyperbolic plane `⟨gen, partner⟩` is the kernel of
+the projection. -/
+theorem fibreCarrierProj_partner (hBsym : BQ.IsSymm) (F : ConicalLine BQ Q) :
+    fibreCarrierProj hBsym F F.partner = 0 := by
+  refine Subtype.ext ?_
+  have hpp : BQ F.partner F.gen = 1 := by rw [hBsym.eq]; exact F.pairing
+  simp [fibreCarrierProj_apply, F.partner_iso, F.pairing]
+
+omit [Module.Finite ℚ V] in
+/-- The projection fixes the model pointwise. -/
+theorem fibreCarrierProj_eq_self (hBsym : BQ.IsSymm) (F : ConicalLine BQ Q) (x : ↥F.space) :
+    fibreCarrierProj hBsym F (x : V) = x := by
+  refine Subtype.ext ?_
+  rw [fibreCarrierProj_apply]
+  have hx := (mem_planeComplement_iff BQ).1 x.2
+  rw [hx.1, hx.2]
+  simp
+
+omit [Module.Finite ℚ V] in
+/-- **Two vectors that differ by a multiple of the isotropic generator have the same projection**:
+`π` is the quotient map `I^⊥ → I^⊥/I` in the complement model, so it sees vectors only modulo
+`ℚ gen`. -/
+theorem fibreCarrierProj_eq_of_sub_mem_span (hBsym : BQ.IsSymm) (F : ConicalLine BQ Q) {v w : V}
+    (h : v - w ∈ Submodule.span ℚ ({F.gen} : Set V)) :
+    fibreCarrierProj hBsym F v = fibreCarrierProj hBsym F w := by
+  have hker : Submodule.span ℚ ({F.gen} : Set V) ≤ LinearMap.ker (fibreCarrierProj hBsym F) := by
+    rw [Submodule.span_le]
+    rintro y hy
+    rw [Set.mem_singleton_iff] at hy
+    subst hy
+    simpa using fibreCarrierProj_gen hBsym F
+  have hzero : fibreCarrierProj hBsym F (v - w) = 0 := LinearMap.mem_ker.1 (hker h)
+  rw [map_sub] at hzero
+  exact sub_eq_zero.1 hzero
+
+omit [Module.Finite ℚ V] in
+/-- **The trace form of a wall is the normal form of the projected normal.** For a wall whose form
+is the normal form of `v`, the trace form on the fibre is the normal form of the projection `π v`:
+on the model the two forms agree because every point of the carrier pairs with `gen` and with
+`partner` trivially. -/
+theorem fibreFormC_eq_normalForm_proj
+    (hBQ : ∀ u w : V, (associated Q) (rationalPoint u) (rationalPoint w) = (BQ u w : ℝ))
+    (hBsym : BQ.IsSymm) (F : ConicalLine BQ Q) (v : V) :
+    fibreFormC F (BQ v) = normalForm (fibreForm Q F.space) (fibreCarrierProj hBsym F v) := by
+  refine continuousLinearMap_eq_of_rationalPoint_eq fun x => ?_
+  rw [fibreFormC_eq_fibreTraceCLM, fibreTraceCLM_apply, realifiedForm_rationalPoint]
+  have hproj : BQ ((fibreCarrierProj hBsym F v : ↥F.space) : V) (x : V) = BQ v (x : V) := by
+    rw [fibreCarrierProj_apply]
+    have hx := (mem_planeComplement_iff BQ).1 x.2
+    simp only [map_sub, map_smul, LinearMap.sub_apply, LinearMap.smul_apply, smul_eq_mul,
+      hx.1, hx.2, mul_zero, sub_zero]
+  rw [normalForm_apply, associated_fibreForm_restrict hBQ F, restrictBilinForm_apply, hproj]
+  rfl
+
+omit [Module.Finite ℚ V] in
+/-- **The trace of a wall is the kernel of the normal form of its projected normal**: the form
+statement above, read on kernels. -/
+theorem fibreTrace_eq_ker_restrictBilinForm_proj (hBsym : BQ.IsSymm) (F : ConicalLine BQ Q)
+    (v : V) :
+    LinearMap.ker (restrictBilinForm BQ F.space (fibreCarrierProj hBsym F v) : ↥F.space →ₗ[ℚ] ℚ) =
+      LinearMap.ker ((BQ v).comp F.space.subtype) := by
+  ext x
+  rw [LinearMap.mem_ker, LinearMap.mem_ker, restrictBilinForm_apply]
+  have hproj : BQ ((fibreCarrierProj hBsym F v : ↥F.space) : V) (x : V) = BQ v (x : V) := by
+    rw [fibreCarrierProj_apply]
+    have hx := (mem_planeComplement_iff BQ).1 x.2
+    simp only [map_sub, map_smul, LinearMap.sub_apply, LinearMap.smul_apply, smul_eq_mul,
+      hx.1, hx.2, mul_zero, sub_zero]
+  rw [hproj]
+  rfl
+
+omit [Module.Finite ℚ V] in
+omit [Module.Finite ℚ V] in
+/-- **The induced action, composed with its inverse, is the identity**: `π (g (π (g⁻¹ x))) = x`.
+Both terms of the projection of `g⁻¹ x` collapse except the `gen` correction — `π` kills `gen`
+(`fibreCarrierProj_gen`), and `BQ gen (g⁻¹ x) = BQ (g gen) x = c · BQ gen x = 0` for `x` in the
+carrier — so `g (π (g⁻¹ x))` and `x` differ by a multiple of the isotropic generator, which
+`fibreCarrierProj_eq_of_sub_mem_span` cannot see. -/
+theorem fibreCarrierProj_comp_symm (hBsym : BQ.IsSymm) (F : ConicalLine BQ Q) (g : V ≃ₗ[ℚ] V)
+    (c : ℚ) (hgen : g F.gen = c • F.gen)
+    (hgiso : ∀ x y : V, BQ (g x) (g y) = BQ x y) (x : ↥F.space) :
+    fibreCarrierProj hBsym F
+      (g ((fibreCarrierProj hBsym F (g.symm (x : V)) : ↥F.space) : V)) = x := by
+  have hx : BQ F.gen (g.symm (x : V)) = 0 := by
+    have hiso : BQ (g F.gen) (x : V) = BQ F.gen (g.symm (x : V)) := by
+      rw [← hgiso F.gen (g.symm (x : V))]
+      simp
+    have hx0 : BQ F.gen (x : V) = 0 := ((mem_planeComplement_iff BQ).1 x.2).1
+    rw [← hiso, hgen]
+    simp only [map_smul, LinearMap.smul_apply, smul_eq_mul, hx0, mul_zero]
+  refine (fibreCarrierProj_eq_of_sub_mem_span hBsym F ?_).trans
+    (fibreCarrierProj_eq_self hBsym F x)
+  have hval : ((fibreCarrierProj hBsym F (g.symm (x : V)) : ↥F.space) : V) =
+      g.symm (x : V) - BQ F.partner (g.symm (x : V)) • F.gen := by
+    rw [fibreCarrierProj_apply, hx, zero_smul, sub_zero]
+  rw [hval, map_sub, map_smul, LinearEquiv.apply_symm_apply, hgen, smul_smul]
+  rw [show (x : V) - (BQ F.partner (g.symm (x : V)) * c) • F.gen - x
+      = (-(BQ F.partner (g.symm (x : V)) * c)) • F.gen by module]
+  exact Submodule.smul_mem _ _ (Submodule.subset_span (Set.mem_singleton _))
+
+omit [Module.Finite ℚ V] in
+/-- **The induced action of a line-preserving isometry on the fibre carrier** — the source's
+`Γ_I → Γ̄_I` (§1B, p. 11, text lines 265–269). An isometry `g` with `g gen = c gen` (`c ≠ 0`) acts
+on the complement model by `x ↦ π (g x)`; the inverse is `y ↦ π (g⁻¹ y)`, and both inverse laws are
+`fibreCarrierProj_comp_symm`, once for `g` and once for `g⁻¹`. Nothing here needs `g` to preserve
+the *partner* of the fibre, so this is the action of the line stabilizer `Γ_I` and not of a plane
+stabilizer. -/
+noncomputable def fibreInducedEquiv (hBsym : BQ.IsSymm) (F : ConicalLine BQ Q)
+    (g : V ≃ₗ[ℚ] V) (c : ℚ) (hgen : g F.gen = c • F.gen) (hc : c ≠ 0)
+    (hgiso : ∀ x y : V, BQ (g x) (g y) = BQ x y) :
+    ↥F.space ≃ₗ[ℚ] ↥F.space where
+  toFun x := fibreCarrierProj hBsym F (g x)
+  invFun y := fibreCarrierProj hBsym F (g.symm y)
+  map_add' x y := by simp only [Submodule.coe_add, map_add]
+  map_smul' a x := by simp only [Submodule.coe_smul, map_smul, RingHom.id_apply]
+  left_inv x := by
+    have hgen' : g.symm F.gen = c⁻¹ • F.gen := by
+      refine g.injective ?_
+      rw [LinearEquiv.apply_symm_apply, map_smul, hgen, smul_smul, inv_mul_cancel₀ hc, one_smul]
+    have hgiso' : ∀ x y : V, BQ (g.symm x) (g.symm y) = BQ x y := by
+      intro x y
+      rw [← hgiso (g.symm x) (g.symm y)]
+      simp
+    have h := fibreCarrierProj_comp_symm hBsym F g.symm c⁻¹ hgen' hgiso' x
+    simpa [LinearEquiv.symm_symm] using h
+  right_inv y := fibreCarrierProj_comp_symm hBsym F g c hgen hgiso y
+
+end InducedAction
+
 section BasisFreeCaller
 
 variable {BQ : LinearMap.BilinForm ℚ V} {Q : QuadraticForm ℝ (realified V)}
