@@ -32,16 +32,16 @@ of a metric-dual vector restricted to a coordinate is the functional of that coo
 discriminant class are the classes of the two coordinates), and `isEven_orthogonalSum` from
 `ScaleAndEvenness`.
 
-Still open in this file, and not claimed by it: that `evenDiscriminantDefectMap` is bijective
-(the defect-quotient equivalence `A_(S ⊥ K) ≃ A_S × A_K`), the transport of the quadratic
-refinement `evenDiscriminantQuadraticMap_orthogonalSum`
-(`q_(S ⊥ K)(z) = q_S(z₁) + q_K(z₂)`), and perfection of the sum's rationalized form
-`isFractionFieldPerfect_orthogonalSum`. The obstruction met on the first of these is recorded in
-`COMPLAINTS.md`: stating the transport at the sum's defect makes Lean diverge in `whnf` (a
-`maxHeartbeats` timeout at 1000000 and at 4000000 heartbeats, at the theorem's own line), while
-each of its two sides elaborates in about a second on its own; the identity itself is
-`rationalizedForm_orthogonalSum_fst_snd` read at a metric-dual representative, which is proved
-here.
+The transport of the quadratic refinement is proved here for classes with a chosen metric-dual
+representative: `evenDiscriminantQuadraticMap_orthogonalSum_metricDual` states
+`q_(S ⊥ K)(x) = q_S(x₁) + q_K(x₂)` for `x : (S ⊥ K)^♯`, which is the form in which the classes
+of an overlattice of `S ⊥ K` arise. What is not proved here is the same identity for an
+arbitrary class `z : A_(S ⊥ K)`, and with it `isFractionFieldPerfect_orthogonalSum` and
+bijectivity of `evenDiscriminantDefectMap` (the defect-quotient equivalence
+`A_(S ⊥ K) ≃ A_S × A_K`). The obstruction is recorded in `COMPLAINTS.md`: the statement of the
+general form elaborates in about a second, but its proof diverges in `whnf` as soon as a
+surjectivity witness for `metricDualToDiscriminant` (or `rieszToMetricDual`) is substituted into
+the goal — a `maxHeartbeats` timeout at 800000, 1000000 and 4000000 heartbeats.
 
 ## Port provenance
 
@@ -316,5 +316,27 @@ theorem evenDiscriminantDefectMap_metricDualToDiscriminant
         metricDualToDiscriminant R M ⟨orthogonalSumSpanSnd L M x, hx'⟩) := by
   rw [metricDualToDiscriminant, LinearMap.comp_apply, evenDiscriminantDefectMap_mk]
   exact evenDiscriminantRestrictionMap_metricDualToDiscriminant x hx hx'
+
+set_option maxHeartbeats 800000 in
+/-- **The quadratic refinement of an orthogonal sum is the sum of the two refinements** on a class
+with a chosen metric-dual representative. This is the form in which the discriminant classes of an
+overlattice of `S ⊥ K` arise: an element of the rational span, not an arbitrary quotient class. -/
+theorem evenDiscriminantQuadraticMap_orthogonalSum_metricDual
+    (hL : IsFractionFieldPerfect R L) (hM : IsFractionFieldPerfect R M)
+    (hLM : IsFractionFieldPerfect R (orthogonalSum L M))
+    (hEvenL : IsEven L) (hEvenM : IsEven M) (hEvenLM : IsEven (orthogonalSum L M))
+    (x : metricDual R (orthogonalSum L M))
+    (hx : orthogonalSumSpanFst L M x ∈ metricDual R L)
+    (hx' : orthogonalSumSpanSnd L M x ∈ metricDual R M) :
+    evenDiscriminantQuadraticMap (L := orthogonalSum L M) hLM hEvenLM
+        (metricDualToDiscriminant R (orthogonalSum L M) x) =
+      evenDiscriminantQuadraticMap (L := L) hL hEvenL
+          (metricDualToDiscriminant R L ⟨orthogonalSumSpanFst L M x, hx⟩) +
+        evenDiscriminantQuadraticMap (L := M) hM hEvenM
+          (metricDualToDiscriminant R M ⟨orthogonalSumSpanSnd L M x, hx'⟩) := by
+  rw [evenDiscriminantQuadraticMap_metricDualToDiscriminant (L := orthogonalSum L M) hLM hEvenLM,
+    evenDiscriminantQuadraticMap_metricDualToDiscriminant (L := L) hL hEvenL,
+    evenDiscriminantQuadraticMap_metricDualToDiscriminant (L := M) hM hEvenM,
+    rationalizedForm_orthogonalSum_fst_snd, map_add]
 
 end LeanCategories.Lattices.Valued
