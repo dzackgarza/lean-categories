@@ -25,6 +25,14 @@ This module supplies the incidence layer of the descent page's flag section
   `Stab_{O(L)}(P)` acts on the actual subtype `PlaneLines L P` of primitive isotropic lines whose
   submodule lies in `P` (`PlaneLines.instSMul`, `PlaneLines.instMulAction`): the incidence condition
   is available for the action, not assumed of it.
+* **The image of the plane stabilizer in the plane's automorphism group** (`planeStabilizerImage P`,
+  written `Δ` below): the range of `planeStabilizerRestrictHom`, the restriction of a plane
+  stabilizer element to an equivalence of `↥P.toSubmodule`. Its action on `PlaneLines L P`
+  (`instMulActionPlaneStabilizerImage`) is the transport of the line by the plane equivalence, and
+  `planeLineTransport_restrict_coe` identifies it with the ambient stabilizer action read through
+  the image. This is the group `sec-descent-flags` counts orbits for, and it is not `O(L)`'s
+  stabilizer turned into automorphisms of `P` by a choice of `GL(2, ℤ)` coordinates: the
+  coordinates are a later link.
 * **The double-coset space of the existing equivalence has an invariant subset**
   (`planeIncidenceCosets P V`): the cosets whose representatives carry `V` into `P`. Membership is
   *defined* through one representative, and `mem_planeIncidenceCosets_iff_forall` proves every
@@ -60,6 +68,20 @@ appears here. The descent page's `sec-descent-flags` reduces the flag count to t
 `Γ ∩ ρ⁻¹(F_{J,C})` and `ρ(Stab(P) ∩ Stab(L))` inside `ρ⁻¹(F_{J,C})`; that finite-index computation,
 and the transitivity statement about the plane stabilizer on the primitive lines of one fixed
 discriminant subgroup, remain owed by the parent.
+
+**Nor does it state the count.** `Δ` and its action are here, but the number of `Δ`-orbits on
+`PlaneLines L P` is not stated and must not be stated yet: it needs the two links that follow the
+image. First a `ℤ`-basis of `P` and the transport of `Δ` into `GL(2, ℤ)` in that basis — the basis
+is what turns `↥P.toSubmodule ≃ₗ[R] ↥P.toSubmodule` into a subgroup of `GL(2, ℤ)`, and `Δ` is only
+a subgroup of `GL(2, ℤ)` *after* that choice. Second the correspondence between `PlaneLines L P` and
+the `ℚ`-points of `P*` in the same basis, which is what makes the orbits of `Δ` on lines the cusps
+of a subgroup of `GL(2, ℤ)`; `ForMathlib/ModularCuspsGL2.lean` then gives finiteness and the bound
+`natCard_cuspOrbits_le_index_GL2`, still not an exact count. A count stated before the
+correspondence would be a count of a different object — for instance of `GL(2, ℤ)` itself, which
+the source says is not the `T_Co` image (there the image is a proper subgroup of the finite
+stabilizer, `|F/S| = 8`). Note also that the "adapted basis" the source asks for has no content for
+an isotropic plane: the form restricted to `P` vanishes identically, so every `ℤ`-basis of `P` is
+adapted.
 
 ## Search record (LC-09)
 
@@ -165,6 +187,341 @@ theorem orbitRel_iff {P : PrimitiveIsotropic L 2} {q q' : PlaneLines L P} :
     exact ⟨k, Subtype.ext hk⟩
 
 end PlaneLines
+
+
+/-! ## The image of the plane stabilizer in the plane's automorphism group
+
+`PlaneLines.instMulAction` above acts with the *whole* plane stabilizer
+`↥(MulAction.stabilizer (OrthogonalGroup L) P)`. The descent page's `sec-descent-flags` counts
+something else: the orbits of the *image* `Δ` of that stabilizer in the automorphism group of the
+plane, because the stabilizer's action on the lines of `P` factors through its restriction to `P`,
+and for `T_Co` the source records that integral image as a proper subgroup of the finite stabilizer
+(the parabolic `S` of `F`, `|F/S| = 8`). This section supplies that image and its action.
+
+**The target group.** `planeStabilizerRestrictHom P` lands in
+`↥P.toSubmodule ≃ₗ[R] ↥P.toSubmodule`, not in a separate `Aut(P)`: the two coincide, because `P` is
+isotropic, so the form restricted to `P` vanishes identically and every linear automorphism of the
+carrier `↥P.toSubmodule` preserves it. The development uses the submodule equivalence group because
+that is the group a later `ℤ`-basis of `P` reads off as `GL(2, ℤ)`; introducing a second name for
+`Aut(P)` here would add an identification with no content behind it.
+
+**Why the well-definedness is not free.** `δ ∈ Δ` is an automorphism of `P`, not of `L`
+(`O(L)`-elements do not enter `Aut(P)` in a way that could be lifted back), so
+`IsPrimitiveSubmodule.map_equiv_iff` cannot be applied to a line of `L` directly. The transport
+`planeSubmoduleTransport` is applied to the line inside `P`, and primitivity is carried across by
+`isPrimitiveSubmodule_comap_subtype_iff`, which proves that `L ⧸ q` is torsion-free exactly when
+`P ⧸ q` is for `q ≤ P` with `P` primitive. That is where the primitivity of the image lives, and it
+is why the action needs `[IsDomain R]` (the saturation form of primitivity) while the rest of the
+section does not.
+
+## Search record (LC-09)
+
+`scripts/formalization_corpus.py batch` at the manifest head used by this worktree, under
+`restriction isometry invariant submodule linear equivalence stabilizer`,
+`Submodule.equivMapOfInjective map_eq_top`, `MulAction.stabilizer map restrict monoid hom
+automorphism group`, `primitive submodule saturation image linear equivalence torsion free
+quotient`, `intermediate submodule primitive quotient torsion free transitivity`,
+`primitive vector image automorphism primitive sublattice`, `Submodule.equivMapOfInjective`,
+`hyperbolic partner isotropic vector` and `Projectivization.mk` (the last two for the still-open
+basis and line/`ℙ¹(ℚ)` links). No source has the image or the primitivity transport: the hits are
+Mathlib's `Submodule.equivMapOfInjective` and `Submodule.inclusion`, TauCeti's totally isotropic
+subspaces (field-level hyperbolic partners, which `Quotient.exists_hyperbolicPartner` already
+mirrors), and the repository's own `Sublattice.isPrimitiveSubmodule_iff_saturation_eq`,
+`IsPrimitiveSubmodule.map_equiv_iff` and `Sublattice.saturation`. Everything below is glue among
+those and `map_toSubmodule_eq_of_mem_planeStabilizer`.
+-/
+
+/-- The restriction of an element of the plane stabilizer to the plane. -/
+noncomputable def planeStabilizerRestrict {P : PrimitiveIsotropic L 2}
+    (g : ↥(MulAction.stabilizer (OrthogonalGroup L) P)) :
+    ↥P.toSubmodule ≃ₗ[R] ↥P.toSubmodule :=
+  (Submodule.equivMapOfInjective (p := P.toSubmodule)
+      (g.1.1 : L.obj.carrier →ₗ[R] L.obj.carrier) (LinearEquiv.injective g.1.1)).trans
+    (LinearEquiv.ofEq _ _ (map_toSubmodule_eq_of_mem_planeStabilizer g.2))
+
+theorem planeStabilizerRestrict_apply_coe {P : PrimitiveIsotropic L 2}
+    (g : ↥(MulAction.stabilizer (OrthogonalGroup L) P)) (x : ↥P.toSubmodule) :
+    (planeStabilizerRestrict g x : L.obj.carrier) = g.1.1 x := by
+  simp [planeStabilizerRestrict]
+
+theorem planeStabilizerRestrict_one {P : PrimitiveIsotropic L 2} :
+    planeStabilizerRestrict (1 : ↥(MulAction.stabilizer (OrthogonalGroup L) P)) = 1 := by
+  refine LinearEquiv.ext fun x => ?_
+  apply Subtype.ext
+  rw [planeStabilizerRestrict_apply_coe]
+  rfl
+
+theorem planeStabilizerRestrict_mul {P : PrimitiveIsotropic L 2}
+    (g h : ↥(MulAction.stabilizer (OrthogonalGroup L) P)) :
+    planeStabilizerRestrict (g * h) =
+      planeStabilizerRestrict g * planeStabilizerRestrict h := by
+  refine LinearEquiv.ext fun x => ?_
+  apply Subtype.ext
+  change ((planeStabilizerRestrict (g * h)) x : L.obj.carrier) =
+    ((planeStabilizerRestrict g) ((planeStabilizerRestrict h) x) : L.obj.carrier)
+  rw [planeStabilizerRestrict_apply_coe, planeStabilizerRestrict_apply_coe,
+    planeStabilizerRestrict_apply_coe]
+  rfl
+
+noncomputable def planeStabilizerRestrictHom (P : PrimitiveIsotropic L 2) :
+    ↥(MulAction.stabilizer (OrthogonalGroup L) P) →*
+      (↥P.toSubmodule ≃ₗ[R] ↥P.toSubmodule) where
+  toFun := planeStabilizerRestrict
+  map_one' := planeStabilizerRestrict_one
+  map_mul' := planeStabilizerRestrict_mul
+
+noncomputable def planeStabilizerImage (P : PrimitiveIsotropic L 2) :
+    Subgroup (↥P.toSubmodule ≃ₗ[R] ↥P.toSubmodule) :=
+  (planeStabilizerRestrictHom P).range
+
+theorem mem_planeStabilizerImage {P : PrimitiveIsotropic L 2}
+    {δ : ↥P.toSubmodule ≃ₗ[R] ↥P.toSubmodule} :
+    δ ∈ planeStabilizerImage P ↔ ∃ g, planeStabilizerRestrict g = δ :=
+  MonoidHom.mem_range
+
+/-- The image of the submodule `q ≤ P` under an equivalence of the plane. -/
+noncomputable def planeSubmoduleTransport {P : PrimitiveIsotropic L 2}
+    (δ : ↥P.toSubmodule ≃ₗ[R] ↥P.toSubmodule)
+    (q : Submodule R L.obj.carrier) (hq : q ≤ P.toSubmodule) : Submodule R L.obj.carrier :=
+  (P.toSubmodule.subtype.comp (δ.toLinearMap.comp (Submodule.inclusion hq))).range
+
+theorem mem_planeSubmoduleTransport {P : PrimitiveIsotropic L 2}
+    {δ : ↥P.toSubmodule ≃ₗ[R] ↥P.toSubmodule} {q : Submodule R L.obj.carrier}
+    {hq : q ≤ P.toSubmodule} {x : L.obj.carrier} :
+    x ∈ planeSubmoduleTransport δ q hq ↔
+      ∃ y : ↥q, (δ (Submodule.inclusion hq y) : L.obj.carrier) = x := by
+  simp [planeSubmoduleTransport, LinearMap.mem_range]
+
+theorem planeSubmoduleTransport_le {P : PrimitiveIsotropic L 2}
+    (δ : ↥P.toSubmodule ≃ₗ[R] ↥P.toSubmodule)
+    (q : Submodule R L.obj.carrier) (hq : q ≤ P.toSubmodule) :
+    planeSubmoduleTransport δ q hq ≤ P.toSubmodule := by
+  rintro x ⟨y, rfl⟩
+  exact (δ (Submodule.inclusion hq y)).2
+
+theorem planeSubmoduleTransportLinearMap_injective {P : PrimitiveIsotropic L 2}
+    (δ : ↥P.toSubmodule ≃ₗ[R] ↥P.toSubmodule)
+    (q : Submodule R L.obj.carrier) (hq : q ≤ P.toSubmodule) :
+    Function.Injective (P.toSubmodule.subtype.comp (δ.toLinearMap.comp
+      (Submodule.inclusion hq))) := by
+  intro a b hab
+  have h2 : δ (Submodule.inclusion hq a) = δ (Submodule.inclusion hq b) :=
+    Subtype.val_injective hab
+  have h3 : Submodule.inclusion hq a = Submodule.inclusion hq b := δ.injective h2
+  exact Subtype.ext (by simpa using congrArg Subtype.val h3)
+
+noncomputable def planeSubmoduleTransportEquiv {P : PrimitiveIsotropic L 2}
+    (δ : ↥P.toSubmodule ≃ₗ[R] ↥P.toSubmodule)
+    (q : Submodule R L.obj.carrier) (hq : q ≤ P.toSubmodule) :
+    ↥q ≃ₗ[R] ↥(planeSubmoduleTransport δ q hq) :=
+  LinearEquiv.ofInjective _ (planeSubmoduleTransportLinearMap_injective δ q hq)
+
+theorem planeSubmoduleTransport_finrank {P : PrimitiveIsotropic L 2}
+    (δ : ↥P.toSubmodule ≃ₗ[R] ↥P.toSubmodule)
+    (q : Submodule R L.obj.carrier) (hq : q ≤ P.toSubmodule) {k : ℕ}
+    (hk : Module.finrank R ↥q = k) :
+    Module.finrank R ↥(planeSubmoduleTransport δ q hq) = k := by
+  rw [← (planeSubmoduleTransportEquiv δ q hq).finrank_eq, hk]
+
+theorem planeSubmoduleTransport_isotropic {P : PrimitiveIsotropic L 2}
+    (δ : ↥P.toSubmodule ≃ₗ[R] ↥P.toSubmodule)
+    (q : Submodule R L.obj.carrier) (hq : q ≤ P.toSubmodule) :
+    IsIsotropicSubmodule L (planeSubmoduleTransport δ q hq) := by
+  intro x hx y hy
+  exact P.isotropic x (planeSubmoduleTransport_le δ q hq hx) y
+    (planeSubmoduleTransport_le δ q hq hy)
+
+/-- **Primitivity passes between `q` and `q` read inside a primitive `P`**: for `q ≤ P` with `P`
+primitive, `L ⧸ q` is torsion-free exactly when `P ⧸ q` is. The forward direction lifts a torsion
+element of `P ⧸ q` to `L ⧸ q`; the converse first pushes a torsion element of `L ⧸ q` into `P`
+using primitivity of `P`, then uses primitivity of `q` inside `P`. -/
+theorem isPrimitiveSubmodule_comap_subtype_iff {M : Type u} [AddCommGroup M] [Module R M]
+    [IsDomain R] {P q : Submodule R M} (hq : q ≤ P) (hP : IsPrimitiveSubmodule P) :
+    IsPrimitiveSubmodule (q.comap P.subtype) ↔ IsPrimitiveSubmodule q := by
+  have hPsat : saturation P = P := (isPrimitiveSubmodule_iff_saturation_eq P).mp hP
+  constructor
+  · intro hQP
+    rw [(isPrimitiveSubmodule_iff_saturation_eq (q.comap P.subtype))] at hQP
+    rw [(isPrimitiveSubmodule_iff_saturation_eq q)]
+    ext x
+    constructor
+    · intro hx
+      obtain ⟨a, ha, hax⟩ := mem_saturation_iff q x |>.mp hx
+      have haxP : a • x ∈ P := hq hax
+      have hxP : x ∈ P := by
+        rw [← hPsat]
+        exact mem_saturation_iff P x |>.mpr ⟨a, ha, haxP⟩
+      obtain ⟨b, hb, hbax⟩ : ∃ b : R, b ≠ 0 ∧ b • (⟨x, hxP⟩ : ↥P) ∈ q.comap P.subtype := by
+        refine ⟨a, ha, ?_⟩
+        rw [Submodule.mem_comap]
+        simpa using hax
+      have hmem : (⟨x, hxP⟩ : ↥P) ∈ saturation (q.comap P.subtype) :=
+        mem_saturation_iff (q.comap P.subtype) _ |>.mpr ⟨b, hb, hbax⟩
+      rw [hQP] at hmem
+      exact hmem
+    · intro hx
+      exact mem_saturation_iff q x |>.mpr ⟨1, one_ne_zero, by simpa using hx⟩
+  · intro hQ
+    rw [(isPrimitiveSubmodule_iff_saturation_eq (q.comap P.subtype))]
+    rw [(isPrimitiveSubmodule_iff_saturation_eq q)] at hQ
+    ext y
+    constructor
+    · intro hy
+      obtain ⟨a, ha, hay⟩ := mem_saturation_iff (q.comap P.subtype) y |>.mp hy
+      have hmem : a • (P.subtype y) ∈ q := by
+        have := hay
+        rwa [Submodule.mem_comap] at this
+      have hsat : P.subtype y ∈ saturation q :=
+        mem_saturation_iff q _ |>.mpr ⟨a, ha, hmem⟩
+      rw [hQ] at hsat
+      exact hsat
+    · intro hy
+      refine mem_saturation_iff (q.comap P.subtype) y |>.mpr ⟨1, one_ne_zero, ?_⟩
+      rw [Submodule.mem_comap]
+      simpa using hy
+
+theorem comap_planeSubmoduleTransport {P : PrimitiveIsotropic L 2}
+    (δ : ↥P.toSubmodule ≃ₗ[R] ↥P.toSubmodule) (q : Submodule R L.obj.carrier)
+    (hq : q ≤ P.toSubmodule) :
+    (planeSubmoduleTransport δ q hq).comap P.toSubmodule.subtype =
+      (q.comap P.toSubmodule.subtype).map (δ : ↥P.toSubmodule →ₗ[R] ↥P.toSubmodule) := by
+  ext y
+  constructor
+  · intro hy
+    rw [Submodule.mem_comap, mem_planeSubmoduleTransport] at hy
+    obtain ⟨z, hz⟩ := hy
+    refine Submodule.mem_map.mpr ⟨Submodule.inclusion hq z, ?_, ?_⟩
+    · rw [Submodule.mem_comap]
+      exact z.2
+    · exact Subtype.ext hz
+  · intro hy
+    rw [Submodule.mem_map] at hy
+    obtain ⟨w, hw, hwy⟩ := hy
+    rw [Submodule.mem_comap, mem_planeSubmoduleTransport]
+    refine ⟨⟨w.1, ?_⟩, ?_⟩
+    · rw [Submodule.mem_comap] at hw
+      exact hw
+    · conv_lhs => rw [show Submodule.inclusion hq ⟨w.1, (by
+          rw [Submodule.mem_comap] at hw; exact hw : w.1 ∈ q)⟩ = w from Subtype.ext rfl]
+      simpa using hwy
+
+theorem planeSubmoduleTransport_primitive [IsDomain R] {P : PrimitiveIsotropic L 2}
+    (δ : ↥P.toSubmodule ≃ₗ[R] ↥P.toSubmodule) (q : Submodule R L.obj.carrier)
+    (hq : q ≤ P.toSubmodule) (hqP : IsPrimitiveSubmodule q) :
+    IsPrimitiveSubmodule (planeSubmoduleTransport δ q hq) := by
+  rw [← isPrimitiveSubmodule_comap_subtype_iff (planeSubmoduleTransport_le δ q hq) P.primitive,
+    comap_planeSubmoduleTransport]
+  exact (IsPrimitiveSubmodule.map_equiv_iff δ _).mpr
+    ((isPrimitiveSubmodule_comap_subtype_iff hq P.primitive).mpr hqP)
+
+/-- **The image of a primitive isotropic line under an equivalence of the plane**, as a primitive
+isotropic line of `L` still lying in `P`. This is where the primitivity lives: `δ` is not an
+automorphism of `L`, so `IsPrimitiveSubmodule.map_equiv_iff` cannot be applied to the line directly;
+it is applied inside `P` after the sandwich `isPrimitiveSubmodule_comap_subtype_iff`. -/
+noncomputable def planeLineTransport [IsDomain R] {P : PrimitiveIsotropic L 2}
+    (δ : ↥(planeStabilizerImage P)) (q : PlaneLines L P) : PlaneLines L P :=
+  ⟨{ toSubmodule := planeSubmoduleTransport (δ : ↥P.toSubmodule ≃ₗ[R] ↥P.toSubmodule)
+        q.1.toSubmodule q.2
+     isotropic := planeSubmoduleTransport_isotropic _ _ _
+     finrank_eq := planeSubmoduleTransport_finrank _ _ _ q.1.finrank_eq
+     primitive := planeSubmoduleTransport_primitive _ _ _ q.1.primitive },
+   planeSubmoduleTransport_le _ _ _⟩
+
+/-- **The action of `Δ` on the incident lines is the action of the plane stabilizer read through
+the image**: an element of `Δ` is the restriction of an ambient stabilizer element, and the
+transported line is that element's translate. -/
+theorem planeLineTransport_restrict_coe [IsDomain R] {P : PrimitiveIsotropic L 2}
+    (g : ↥(MulAction.stabilizer (OrthogonalGroup L) P)) (q : PlaneLines L P)
+    (hmem : planeStabilizerRestrict g ∈ planeStabilizerImage P) :
+    (planeLineTransport (⟨planeStabilizerRestrict g, hmem⟩ :
+      ↥(planeStabilizerImage P)) q).1.toSubmodule = (g • q).1.toSubmodule := by
+  have h1 : (planeLineTransport (⟨planeStabilizerRestrict g, hmem⟩ : ↥(planeStabilizerImage P))
+        q).1.toSubmodule =
+      planeSubmoduleTransport (planeStabilizerRestrict g) q.1.toSubmodule q.2 := rfl
+  have h2 : (g • q).1.toSubmodule =
+      q.1.toSubmodule.map (g.1.1 : L.obj.carrier →ₗ[R] L.obj.carrier) := by
+    simp only [PlaneLines.coe_smul]
+    exact OrthogonalGroup.smul_submodule_eq_map g.1 q.1.toSubmodule
+  rw [h1, h2]
+  ext x
+  rw [mem_planeSubmoduleTransport, Submodule.mem_map]
+  constructor
+  · rintro ⟨y, hy⟩
+    refine ⟨y.1, y.2, ?_⟩
+    rw [← hy, planeStabilizerRestrict_apply_coe]
+    rfl
+  · rintro ⟨y, hy, rfl⟩
+    exact ⟨⟨y, hy⟩, planeStabilizerRestrict_apply_coe g _⟩
+
+theorem planeSubmoduleTransport_one {P : PrimitiveIsotropic L 2}
+    (q : Submodule R L.obj.carrier) (hq : q ≤ P.toSubmodule) :
+    planeSubmoduleTransport (1 : ↥P.toSubmodule ≃ₗ[R] ↥P.toSubmodule) q hq = q := by
+  ext x
+  rw [mem_planeSubmoduleTransport]
+  constructor
+  · rintro ⟨y, hy⟩
+    rw [show ((1 : ↥P.toSubmodule ≃ₗ[R] ↥P.toSubmodule) (Submodule.inclusion hq y) :
+      ↥P.toSubmodule) = Submodule.inclusion hq y from rfl] at hy
+    exact hy ▸ y.2
+  · intro hx
+    exact ⟨⟨x, hx⟩, rfl⟩
+
+theorem planeSubmoduleTransport_mul {P : PrimitiveIsotropic L 2}
+    (δ ε : ↥P.toSubmodule ≃ₗ[R] ↥P.toSubmodule)
+    (q : Submodule R L.obj.carrier) (hq : q ≤ P.toSubmodule) :
+    planeSubmoduleTransport (δ * ε) q hq =
+      planeSubmoduleTransport δ (planeSubmoduleTransport ε q hq)
+        (planeSubmoduleTransport_le ε q hq) := by
+  ext x
+  rw [mem_planeSubmoduleTransport]
+  constructor
+  · rintro ⟨y, hy⟩
+    refine ⟨⟨(ε (Submodule.inclusion hq y) : ↥P.toSubmodule), ?_⟩, ?_⟩
+    · rw [mem_planeSubmoduleTransport]
+      exact ⟨y, rfl⟩
+    · rw [show (δ * ε) (Submodule.inclusion hq y) =
+        δ (ε (Submodule.inclusion hq y)) from rfl] at hy
+      exact hy
+  · rintro ⟨z, hz⟩
+    obtain ⟨y, hy⟩ : ∃ y : ↥q, ε (Submodule.inclusion hq y) =
+        (⟨z.1, planeSubmoduleTransport_le ε q hq z.2⟩ : ↥P.toSubmodule) := by
+      have h := z.2
+      rw [mem_planeSubmoduleTransport] at h
+      obtain ⟨y, hy⟩ := h
+      exact ⟨y, Subtype.ext hy⟩
+    refine ⟨y, ?_⟩
+    rw [show (δ * ε) (Submodule.inclusion hq y) =
+      δ (ε (Submodule.inclusion hq y)) from rfl, hy]
+    exact hz
+
+/-- **`Δ` acts on the incident primitive isotropic lines.** The action is the transport of the line
+by the plane equivalence; `planeLineTransport` is where the primitivity of the image is proved, so
+the action lands in `PlaneLines` and is not a function into the ambient line type. -/
+noncomputable instance instSMulPlaneStabilizerImage [IsDomain R] {P : PrimitiveIsotropic L 2} :
+    SMul ↥(planeStabilizerImage P) (PlaneLines L P) :=
+  ⟨fun δ q => planeLineTransport δ q⟩
+
+/-- The action of `Δ` on the incident lines is an action, with the laws transported through
+`planeLineTransport`. -/
+noncomputable instance instMulActionPlaneStabilizerImage [IsDomain R] {P : PrimitiveIsotropic L 2} :
+    MulAction ↥(planeStabilizerImage P) (PlaneLines L P) where
+  smul := fun δ q => planeLineTransport δ q
+  one_smul q := by
+    apply Subtype.ext
+    apply PrimitiveIsotropic.ext
+    exact planeSubmoduleTransport_one q.1.toSubmodule q.2
+  mul_smul δ ε q := by
+    apply Subtype.ext
+    apply PrimitiveIsotropic.ext
+    exact planeSubmoduleTransport_mul (δ : ↥P.toSubmodule ≃ₗ[R] ↥P.toSubmodule)
+      (ε : ↥P.toSubmodule ≃ₗ[R] ↥P.toSubmodule) q.1.toSubmodule q.2
+
+/-- The incidence action of `Δ` is the transport of the underlying line. -/
+theorem planeStabilizerImage.coe_smul [IsDomain R] {P : PrimitiveIsotropic L 2}
+    (δ : ↥(planeStabilizerImage P)) (q : PlaneLines L P) :
+    (δ • q : PlaneLines L P).1.toSubmodule =
+      planeSubmoduleTransport (δ : ↥P.toSubmodule ≃ₗ[R] ↥P.toSubmodule) q.1.toSubmodule q.2 :=
+  rfl
 
 /-! ## The invariant subset of the double-coset space -/
 

@@ -38,8 +38,8 @@ does not justify weakening a dependent theorem or starting unrelated work.
 
 ## Mathematical issues
 
-### The per-plane line count of `#88` has no formal chain: the image of the plane stabilizer, the
-adapted basis and the line/`ℙ¹(ℚ)` correspondence are all absent
+### The per-plane line count of `#88` has no formal chain: the adapted basis and the line/`ℙ¹(ℚ)`
+correspondence are still absent (the image `Δ` and its action have landed)
 
 - **Need:** the number of orbits of the image `Δ ≤ Aut(P)` of the plane stabilizer
   `MulAction.stabilizer (OrthogonalGroup L) P` on the primitive `ℤ`-lines lying in a primitive
@@ -47,27 +47,37 @@ adapted basis and the line/`ℙ¹(ℚ)` correspondence are all absent
   `writing/coble/computations/discriminant-form-descent.md` at `b636d06011`. The count is for `Δ` and
   not for `Aut(P) ≅ GL(2, ℤ)`: the source records the `T_Co` integral parabolic image as a proper
   subgroup of the finite stabilizer with `|F/S| = 8`, so a `GL(2, ℤ)` count counts a different object.
-- **Evidence:** the four links of the chain and their state in the tree at `eefd1728`.
+- **Evidence:** the four links of the chain and their state in the tree at `eefd1728`, updated at
+  the commit that closed link 2 (`CuspPlaneIncidence.lean`, "the image of the plane stabilizer in
+  the plane's automorphism group").
   1. An adapted `ℤ`-basis of `P`: absent. The link is moreover weaker than it reads, because the
      restriction of the form to an *isotropic* plane is identically zero, so "adapted to the
      restriction" has no content here and what is needed is only `Basis (Fin 2) R ↥P.toSubmodule`.
-  2. `Δ` itself: absent. No `Subgroup (↥P.toSubmodule ≃ₗ[R] ↥P.toSubmodule)` and no restriction
-     homomorphism `↥(MulAction.stabilizer (OrthogonalGroup L) P) →* (↥P.toSubmodule ≃ₗ[R] …)` occurs
-     anywhere under `LeanCategories`; `CuspPlaneIncidence.lean:133-167` acts with the *full* plane
-     stabilizer, never through an image in `Aut(P)`.
+  2. `Δ` and its action on `PlaneLines`: **closed.** `planeStabilizerRestrictHom` (the restriction
+     `↥(MulAction.stabilizer (OrthogonalGroup L) P) →* (↥P.toSubmodule ≃ₗ[R] ↥P.toSubmodule)`,
+     multiplicativity as its own lemma `planeStabilizerRestrict_mul`) and
+     `planeStabilizerImage P = (planeStabilizerRestrictHom P).range` supply `Δ`; the action is
+     `instMulActionPlaneStabilizerImage` through `planeLineTransport`, and its well-definedness is
+     the primitivity transport `planeSubmoduleTransport_primitive`, via
+     `isPrimitiveSubmodule_comap_subtype_iff` (for `q ≤ P` with `P` primitive, `L ⧸ q` is
+     torsion-free exactly when `P ⧸ q` is) and `IsPrimitiveSubmodule.map_equiv_iff` applied inside
+     `P` — an automorphism of `P` is not one of `L`, so the equivalence cannot be applied to the
+     line directly. The action needs `[IsDomain R]` (the saturation form of primitivity). What
+     remains of this link is only the choice of a `ℤ`-basis of `P` and the coordinate transport of
+     `Δ` into `GL(2, ℤ)`.
   3. The correspondence `PlaneLines L P ↔ ℙ¹(ℚ)`: absent. `PlaneLines` (`CuspPlaneIncidence.lean:126`)
      is a subtype of `PrimitiveIsotropic L 1`, and nothing in the tree maps it to a projective line.
   4. The count: `ForMathlib/ModularCuspsGL2.lean:196` and `:201` give finiteness of the cusps of a
      finite-index `Γ : Subgroup (GL (Fin 2) ℤ)` and the bound `natCard_cuspOrbits_le_index_GL2`;
      there is no exact count, `[Γ.FiniteIndex]` is a hypothesis, and no subgroup of `GL (Fin 2) ℤ` is
      attached to a plane anywhere outside `ForMathlib/ModularCuspsGL2.lean`.
-- **Gap and impact:** the count cannot be stated at all until links 2 and 3 exist, so
-  `sec-descent-flags` has no formal content for the plane case. There is also a mathematical
-  obstruction that the source's wording hides: an automorphism of `P` is not an automorphism of `L`,
-  so the primitivity of a line in `L` must be transported separately through `Δ`, by way of
-  primitivity of the line in `P` (from `P` primitive in `L`) and the coprimality of its coordinates
-  in a `ℤ`-basis of `P`. The `Δ`-action on `PlaneLines L P` therefore has real content beyond "act by
-  the image", and the incidence layer that exists (`PlaneLines.instMulAction`) does not supply it.
+- **Gap and impact:** the count cannot be stated until links 1 and 3 exist, so `sec-descent-flags`
+  still has no formal content for the plane case. The mathematical obstruction the source's wording
+  hides — that an automorphism of `P` is not an automorphism of `L`, so the primitivity of a line in
+  `L` must be transported through `Δ` — is now discharged by
+  `planeSubmoduleTransport_primitive`; what stays open is that a line's *coordinates* in a basis of
+  `P` are not yet available, because no basis is chosen. Until link 3 exists an orbit of `Δ` on
+  `PlaneLines` is not a point of `ℙ¹(ℚ)` and the corpus cusp bound does not apply to it.
 - **Coverage:** Searched — `scripts/formalization_corpus.py` at the corpus head used on
   `2026-11-17`, under `isotropic plane primitive basis hyperbolic partner submodule`, `primitive
   vectors projective line rational points bijection`, `GL(2,Z) orbits on primitive vectors cusps`,
@@ -83,10 +93,13 @@ adapted basis and the line/`ℙ¹(ℚ)` correspondence are all absent
   the corpus (two queries returned `status=500 context deadline exceeded` on the first batch and were
   rerun individually with narrower terms). Gaps — the `T_Co` index `8` and the parabolic subgroup `S`
   are not formalized anywhere, so link 4 can be at best a bound even after links 2 and 3.
-- **Repair link:** `#88`'s remaining stage-1 work and its child `#171`. The order that does not
-  beg the question is: the restriction homomorphism and `Δ`, then the basis and the coordinate
-  transport of `Δ` into `GL(2, ℤ)`, then the `PlaneLines ↔ ℙ¹(ℚ)` correspondence, and only then any
-  count — with `natCard_cuspOrbits_le_index_GL2` read as what it is, a bound.
+- **Repair link:** `#88`'s remaining stage-1 work and its child `#171`. Link 2 landed in
+  `CuspPlaneIncidence.lean` (`planeStabilizerImage`, `planeLineTransport`,
+  `planeSubmoduleTransport_primitive`), with the axiom set of every declaration exactly
+  `[propext, Classical.choice, Quot.sound]`; the remaining order that does not beg the question is
+  the basis and the coordinate transport of `Δ` into `GL(2, ℤ)`, then the `PlaneLines ↔ ℙ¹(ℚ)`
+  correspondence, and only then any count — with `natCard_cuspOrbits_le_index_GL2` read as what it
+  is, a bound.
 
 ### No discriminant transport along a translate of an integral lattice
 
