@@ -181,23 +181,23 @@ theorem fibreFormC_fibreRay_eq_zero {BQ : LinearMap.BilinForm ℚ V}
     {Q : QuadraticForm ℝ (realified V)} (hBsym : BQ.IsSymm)
     (F : ConicalLine BQ Q) (G : ConicalPlane BQ) (h : F.line ≤ G.plane)
     (ψ : V →ₗ[ℚ] ℚ) (hψ : G.plane ≤ LinearMap.ker ψ) :
-    fibreFormC F ψ (rationalPoint (fibreRay hBsym F G)) = 0 := by
-  change realifiedForm ψ (realifyMap F.space (rationalPoint (fibreRay hBsym F G))) = 0
+    fibreFormC F ψ (rationalPoint (fibreRay hBsym F G h)) = 0 := by
+  change realifiedForm ψ (realifyMap F.space (rationalPoint (fibreRay hBsym F G h))) = 0
   rw [realifyMap_rationalPoint, realifiedForm_rationalPoint]
-  have hmem : ((fibreRay hBsym F G : ↥F.space) : V) ∈ G.plane := by
-    have hproj : ((fibreRayProj hBsym F G : ↥F.space) : V) ∈ G.plane := by
+  have hmem : ((fibreRay hBsym F G h : ↥F.space) : V) ∈ G.plane := by
+    have hproj : ((fibreRayProj hBsym F G h : ↥F.space) : V) ∈ G.plane := by
       rw [fibreRayProj_val hBsym F G h]
-      exact Submodule.sub_mem _ G.ray_mem
+      exact Submodule.sub_mem _ (F.planeRay_mem G h)
         (Submodule.smul_mem _ _ (F.gen_mem_plane G h))
-    rcases fibreRay_eq_or_neg hBsym F G with h' | h'
-    · have hcoe : ((fibreRay hBsym F G : ↥F.space) : V) =
-          ((fibreRayProj hBsym F G : ↥F.space) : V) := by rw [h']
+    rcases fibreRay_eq_or_neg hBsym F G h with h' | h'
+    · have hcoe : ((fibreRay hBsym F G h : ↥F.space) : V) =
+          ((fibreRayProj hBsym F G h : ↥F.space) : V) := by rw [h']
       rwa [hcoe]
-    · have hcoe : ((fibreRay hBsym F G : ↥F.space) : V) =
-          -((fibreRayProj hBsym F G : ↥F.space) : V) := by rw [h']; rfl
+    · have hcoe : ((fibreRay hBsym F G h : ↥F.space) : V) =
+          -((fibreRayProj hBsym F G h : ↥F.space) : V) := by rw [h']; rfl
       rw [hcoe]
       exact Submodule.neg_mem _ hproj
-  have hzero : ψ ((fibreRay hBsym F G : ↥F.space) : V) = 0 := by
+  have hzero : ψ ((fibreRay hBsym F G h : ↥F.space) : V) = 0 := by
     simpa using hψ hmem
   rw [hzero]
   norm_num
@@ -1084,12 +1084,12 @@ omit [Module.Finite ℚ V] in
 a `ℚ`-isotropic plane `J` in the fibre of `I` is contained in the kernel of the trace of every
 hyperplane of `H` containing `J`, as soon as a member of `Σ(H)` above `σ` meets the open cone. -/
 theorem supportSpace_halfLine_le_ker {ι : Type*} {ψ : ι → V →ₗ[ℚ] ℚ} (hBsym : BQ.IsSymm)
-    (F : ConicalLine BQ Q) (G : ConicalPlane BQ)
+    (F : ConicalLine BQ Q) (G : ConicalPlane BQ) (h : F.line ≤ G.plane)
     (τ : supportIndex (positiveCone.upper (fibreForm Q F.space) F.sheet) (semifanArrangement ψ F)
-      (PointedCone.hull ℝ ({rationalPoint (fibreRay hBsym F G)} : Set (realified ↥F.space))))
+      (PointedCone.hull ℝ ({rationalPoint (fibreRay hBsym F G h)} : Set (realified ↥F.space))))
     (i : fibreWalls ψ F)
-    (hi : fibreFormC F (ψ i) (rationalPoint (fibreRay hBsym F G)) = 0) :
-    supportSpace τ.1 (PointedCone.hull ℝ ({rationalPoint (fibreRay hBsym F G)} :
+    (hi : fibreFormC F (ψ i) (rationalPoint (fibreRay hBsym F G h)) = 0) :
+    supportSpace τ.1 (PointedCone.hull ℝ ({rationalPoint (fibreRay hBsym F G h)} :
       Set (realified ↥F.space))) ≤ LinearMap.ker ((fibreFormC F (ψ i)).toLinearMap) := by
   classical
   have hmem : τ.1 ∈ faceClosure (arrangementCells
@@ -1098,7 +1098,7 @@ theorem supportSpace_halfLine_le_ker {ι : Type*} {ψ : ι → V →ₗ[ℚ] ℚ
   obtain ⟨s, rfl⟩ := hcell
   have hle : τ.1 ≤ arrangementCone (fun j : fibreWalls ψ F => fibreFormC F (ψ j)) s ⊓ F.closure :=
     hface.le
-  have hvan : ∀ x ∈ PointedCone.hull ℝ ({rationalPoint (fibreRay hBsym F G)} :
+  have hvan : ∀ x ∈ PointedCone.hull ℝ ({rationalPoint (fibreRay hBsym F G h)} :
       Set (realified ↥F.space)), fibreFormC F (ψ i) x = 0 := by
     intro x hx
     obtain ⟨c, -, rfl⟩ := PointedCone.mem_hull_singleton.1 hx
@@ -1112,7 +1112,7 @@ theorem supportSpace_halfLine_le_ker {ι : Type*} {ψ : ι → V →ₗ[ℚ] ℚ
       (Submodule.mem_inf.1 (hle hx)).1 i
   rcases hs : s i with _ | _ | _
   · have hΨ : (fibreFormC F (ψ i)).toLinearMap ∈
-        supportForms τ.1 (PointedCone.hull ℝ ({rationalPoint (fibreRay hBsym F G)} :
+        supportForms τ.1 (PointedCone.hull ℝ ({rationalPoint (fibreRay hBsym F G h)} :
           Set (realified ↥F.space))) := by
       refine mem_supportForms.2 ⟨fun x hx => ?_, fun x hx => ?_⟩
       · have hx' := hsign x hx
@@ -1120,10 +1120,10 @@ theorem supportSpace_halfLine_le_ker {ι : Type*} {ψ : ι → V →ₗ[ℚ] ℚ
         simpa using hx'.ge
       · simpa using hvan x hx
     exact iInf_le (fun φ : supportForms τ.1 (PointedCone.hull ℝ
-      ({rationalPoint (fibreRay hBsym F G)} : Set (realified ↥F.space))) =>
+      ({rationalPoint (fibreRay hBsym F G h)} : Set (realified ↥F.space))) =>
       LinearMap.ker (φ : (realified ↥F.space) →ₗ[ℝ] ℝ)) ⟨_, hΨ⟩
   · have hΨ : -((fibreFormC F (ψ i)).toLinearMap) ∈
-        supportForms τ.1 (PointedCone.hull ℝ ({rationalPoint (fibreRay hBsym F G)} :
+        supportForms τ.1 (PointedCone.hull ℝ ({rationalPoint (fibreRay hBsym F G h)} :
           Set (realified ↥F.space))) := by
       refine mem_supportForms.2 ⟨fun x hx => ?_, fun x hx => ?_⟩
       · have hx' := hsign x hx
@@ -1133,11 +1133,11 @@ theorem supportSpace_halfLine_le_ker {ι : Type*} {ψ : ι → V →ₗ[ℚ] ℚ
       · change -(fibreFormC F (ψ i) x) = 0
         rw [hvan x hx, neg_zero]
     refine le_trans (iInf_le (fun φ : supportForms τ.1 (PointedCone.hull ℝ
-      ({rationalPoint (fibreRay hBsym F G)} : Set (realified ↥F.space))) =>
+      ({rationalPoint (fibreRay hBsym F G h)} : Set (realified ↥F.space))) =>
       LinearMap.ker (φ : (realified ↥F.space) →ₗ[ℝ] ℝ)) ⟨_, hΨ⟩) ?_
     rw [LinearMap.ker_neg]
   · have hΨ : (fibreFormC F (ψ i)).toLinearMap ∈
-        supportForms τ.1 (PointedCone.hull ℝ ({rationalPoint (fibreRay hBsym F G)} :
+        supportForms τ.1 (PointedCone.hull ℝ ({rationalPoint (fibreRay hBsym F G h)} :
           Set (realified ↥F.space))) := by
       refine mem_supportForms.2 ⟨fun x hx => ?_, fun x hx => ?_⟩
       · have hx' := hsign x hx
@@ -1145,7 +1145,7 @@ theorem supportSpace_halfLine_le_ker {ι : Type*} {ψ : ι → V →ₗ[ℚ] ℚ
         simpa using hx'
       · simpa using hvan x hx
     exact iInf_le (fun φ : supportForms τ.1 (PointedCone.hull ℝ
-      ({rationalPoint (fibreRay hBsym F G)} : Set (realified ↥F.space))) =>
+      ({rationalPoint (fibreRay hBsym F G h)} : Set (realified ↥F.space))) =>
       LinearMap.ker (φ : (realified ↥F.space) →ₗ[ℝ] ℝ)) ⟨_, hΨ⟩
 
 end HalfLineSupport
@@ -1771,10 +1771,10 @@ theorem hull_fibreRay_le_cell {ι : Type*} (ψ : ι → V →ₗ[ℚ] ℚ) (hBsy
     (F : ConicalLine BQ Q) (G : ConicalPlane BQ) (h : F.line ≤ G.plane)
     (hBQ : ∀ u w : V, (associated Q) (rationalPoint u) (rationalPoint w) = (BQ u w : ℝ))
     (hpos : sigPos (fibreForm Q F.space) = 1) :
-    PointedCone.hull ℝ ({rationalPoint (fibreRay hBsym F G)} : Set (realified ↥F.space)) ≤
+    PointedCone.hull ℝ ({rationalPoint (fibreRay hBsym F G h)} : Set (realified ↥F.space)) ≤
       arrangementCone (fun i : fibreWalls ψ F => fibreFormC F (ψ ↑i))
           (signPattern (fun i : fibreWalls ψ F => fibreFormC F (ψ ↑i))
-            (rationalPoint (fibreRay hBsym F G))) ⊓ F.closure := by
+            (rationalPoint (fibreRay hBsym F G h))) ⊓ F.closure := by
   refine le_inf ?_ ?_
   · refine Submodule.span_le.2 ?_
     rintro x hx
@@ -1797,10 +1797,10 @@ theorem exists_mem_semifanArrangement_halfLine_le {ι : Type*} (ψ : ι → V �
     (hBQ : ∀ u w : V, (associated Q) (rationalPoint u) (rationalPoint w) = (BQ u w : ℝ))
     (hpos : sigPos (fibreForm Q F.space) = 1) :
     ∃ τ ∈ semifanArrangement ψ F,
-      PointedCone.hull ℝ ({rationalPoint (fibreRay hBsym F G)} : Set (realified ↥F.space)) ≤ τ :=
+      PointedCone.hull ℝ ({rationalPoint (fibreRay hBsym F G h)} : Set (realified ↥F.space)) ≤ τ :=
   ⟨_, mem_semifanArrangement_cell ψ F
       (signPattern (fun i : fibreWalls ψ F => fibreFormC F (ψ ↑i))
-        (rationalPoint (fibreRay hBsym F G))),
+        (rationalPoint (fibreRay hBsym F G h))),
     hull_fibreRay_le_cell ψ hBsym F G h hBQ hpos⟩
 
 omit [Module.Finite ℚ V] in
@@ -1993,14 +1993,14 @@ theorem exists_mem_semifanArrangement_halfLine_meets
     (hnd : (fibreForm Q F.space).Nondegenerate)
     (hcut : CutsFinitelyOnRational F.closure (fun i : fibreWalls ψ F => fibreFormC F (ψ ↑i))) :
     ∃ τ ∈ semifanArrangement ψ F,
-      PointedCone.hull ℝ ({rationalPoint (fibreRay hBsym F G)} : Set (realified ↥F.space)) ≤ τ ∧
+      PointedCone.hull ℝ ({rationalPoint (fibreRay hBsym F G h)} : Set (realified ↥F.space)) ≤ τ ∧
       ((τ : Set (realified ↥F.space)) ∩
         positiveCone.upper (fibreForm Q F.space) F.sheet).Nonempty := by
   classical
-  set r : realified ↥F.space := rationalPoint (fibreRay hBsym F G) with hrdef
+  set r : realified ↥F.space := rationalPoint (fibreRay hBsym F G h) with hrdef
   have hr_closed : r ∈ closedSheet (fibreForm Q F.space) hpos F.sheet_pos :=
     (mem_closedSheet hpos F.sheet_pos).2
-      ⟨le_of_eq (fibreRay_isotropic hBQ hBsym F G h).symm, fibreRay_sheet_nonneg hBsym F G⟩
+      ⟨le_of_eq (fibreRay_isotropic hBQ hBsym F G h).symm, fibreRay_sheet_nonneg hBsym F G h⟩
   have hr_ne : r ≠ 0 := by
     rw [hrdef]
     exact rationalPoint_ne_zero (fibreRay_ne_zero hBsym F G h)
@@ -2019,7 +2019,7 @@ theorem exists_mem_semifanArrangement_halfLine_meets
   set P : PointedCone ℝ (realified ↥F.space) :=
     PointedCone.hull ℝ ({r, rationalPoint v} : Set (realified ↥F.space)) with hPdef
   have hP_rat : IsRationalCone P := by
-    refine ⟨{(fibreRay hBsym F G), v}, ?_⟩
+    refine ⟨{(fibreRay hBsym F G h), v}, ?_⟩
     rw [hPdef, hrdef]
     congr 1
     ext x
@@ -2043,7 +2043,7 @@ theorem exists_mem_semifanArrangement_halfLine_meets
       have hQr : (fibreForm Q F.space) r = 0 := by
         rw [hrdef]; exact fibreRay_isotropic hBQ hBsym F G h
       have hrt : 0 ≤ (associated (fibreForm Q F.space)) r F.sheet := by
-        rw [hrdef]; exact fibreRay_sheet_nonneg hBsym F G
+        rw [hrdef]; exact fibreRay_sheet_nonneg hBsym F G h
       have hvt : 0 < (associated (fibreForm Q F.space)) (rationalPoint v) F.sheet := hwU.2
       refine ⟨?_, ?_⟩
       · have hexp : (fibreForm Q F.space) (r + ε • rationalPoint v)
@@ -2161,15 +2161,15 @@ theorem vSigmaPlane_semifanArrangement_le_ker_wall {ι : Type*} (ψ : ι → V �
     (hnd : (fibreForm Q F.space).Nondegenerate)
     (hcut : CutsFinitelyOnRational F.closure (fun i : fibreWalls ψ F => fibreFormC F (ψ ↑i)))
     (i : fibreWalls ψ F)
-    (hi : fibreFormC F (ψ ↑i) (rationalPoint (fibreRay hBsym F G)) = 0) :
+    (hi : fibreFormC F (ψ ↑i) (rationalPoint (fibreRay hBsym F G h)) = 0) :
     vSigmaPlane hBsym F (semifanArrangement ψ F) G h ≤
       LinearMap.ker (realifiedFormC (ψ (i : ι))).toLinearMap := by
   obtain ⟨τ, hτmem, hτle, hτmeet⟩ :=
     exists_mem_semifanArrangement_halfLine_meets ψ hBsym F G h hBQ hpos hnd hcut
-  have hle := supportSpace_halfLine_le_ker (Q := Q) hBsym F G ⟨τ, hτmem, hτle, hτmeet⟩ i hi
+  have hle := supportSpace_halfLine_le_ker (Q := Q) hBsym F G h ⟨τ, hτmem, hτle, hτmeet⟩ i hi
   have hsub : sigmaSupportSpace (positiveCone.upper (fibreForm Q F.space) F.sheet)
-      (semifanArrangement ψ F) (PointedCone.hull ℝ ({rationalPoint (fibreRay hBsym F G)})) ≤
-      supportSpace τ (PointedCone.hull ℝ ({rationalPoint (fibreRay hBsym F G)})) :=
+      (semifanArrangement ψ F) (PointedCone.hull ℝ ({rationalPoint (fibreRay hBsym F G h)})) ≤
+      supportSpace τ (PointedCone.hull ℝ ({rationalPoint (fibreRay hBsym F G h)})) :=
     sigmaSupportSpace_le hτmem hτle hτmeet
   rw [vSigmaPlane]
   refine sup_le ?_ ?_
@@ -2204,8 +2204,8 @@ theorem sigmaSupportSpace_halfLine_le_ker_fibreRay {ι : Type*} (ψ : ι → V �
     (hnd : (fibreForm Q F.space).Nondegenerate)
     (hcut : CutsFinitelyOnRational F.closure (fun i : fibreWalls ψ F => fibreFormC F (ψ ↑i))) :
     sigmaSupportSpace (positiveCone.upper (fibreForm Q F.space) F.sheet) (semifanArrangement ψ F)
-        (PointedCone.hull ℝ ({rationalPoint (fibreRay hBsym F G)} : Set (realified ↥F.space))) ≤
-      LinearMap.ker ((associated (fibreForm Q F.space)) (rationalPoint (fibreRay hBsym F G))) := by
+        (PointedCone.hull ℝ ({rationalPoint (fibreRay hBsym F G h)} : Set (realified ↥F.space))) ≤
+      LinearMap.ker ((associated (fibreForm Q F.space)) (rationalPoint (fibreRay hBsym F G h))) := by
   obtain ⟨τ, hτmem, hτle, hτmeet⟩ :=
     exists_mem_semifanArrangement_halfLine_meets ψ hBsym F G h hBQ hpos hnd hcut
   refine (sigmaSupportSpace_le hτmem hτle hτmeet).trans ?_
@@ -2213,7 +2213,7 @@ theorem sigmaSupportSpace_halfLine_le_ker_fibreRay {ι : Type*} (ψ : ι → V �
   obtain ⟨s, rfl⟩ := hcell
   have hτclos : τ ≤ F.closure := hface.le.trans inf_le_right
   exact supportSpace_le_ker_associated_of_isotropic (Q := fibreForm Q F.space) hpos F.sheet_pos
-    (fibreRay_isotropic hBQ hBsym F G h) (fibreRay_sheet_nonneg hBsym F G) rfl
+    (fibreRay_isotropic hBQ hBsym F G h) (fibreRay_sheet_nonneg hBsym F G h) rfl
     (hτclos.trans (closure_le_closedSheet F hpos))
 
 /-- **The `Σ`-support space of the half line lies in the orthogonal complement of the plane's
@@ -2229,40 +2229,40 @@ theorem vSigmaPlane_semifanArrangement_le_ker_ray {ι : Type*} (ψ : ι → V �
     (hnd : (fibreForm Q F.space).Nondegenerate)
     (hcut : CutsFinitelyOnRational F.closure (fun i : fibreWalls ψ F => fibreFormC F (ψ ↑i))) :
     vSigmaPlane hBsym F (semifanArrangement ψ F) G h ≤
-      LinearMap.ker (associated Q (rationalPoint G.ray)) := by
+      LinearMap.ker (associated Q (rationalPoint (F.planeRay G h))) := by
   rw [vSigmaPlane]
   refine sup_le ?_ ?_
   · rw [lineSpan, Submodule.span_le]
     rintro x hx
     rw [Set.mem_singleton_iff] at hx
     subst hx
-    change (associated Q (rationalPoint G.ray)) (rationalPoint F.gen) = 0
+    change (associated Q (rationalPoint (F.planeRay G h))) (rationalPoint F.gen) = 0
     rw [hBQ]
-    exact_mod_cast G.isotropic G.ray G.ray_mem F.gen (F.gen_mem_plane G h)
+    exact_mod_cast G.isotropic (F.planeRay G h) (F.planeRay_mem G h) F.gen (F.gen_mem_plane G h)
   · intro z hz
     obtain ⟨y, hy, rfl⟩ := Submodule.mem_map.1 hz
     have hker := sigmaSupportSpace_halfLine_le_ker_fibreRay ψ hBsym F G h hBQ hpos hnd hcut hy
-    change (associated Q (rationalPoint G.ray)) (realifyMap F.space y) = 0
+    change (associated Q (rationalPoint (F.planeRay G h))) (realifyMap F.space y) = 0
     have hgen0 : (associated Q) (rationalPoint F.gen) (realifyMap F.space y) = 0 :=
       (mem_planePerp_iff.1 (realify_planeComplement_le_planePerp (Q := Q) (e := F.gen)
         (f := F.partner) hBQ ⟨y, rfl⟩)).1
-    have hproj : rationalPoint ((fibreRayProj hBsym F G : ↥F.space) : V) =
-        rationalPoint G.ray - (BQ G.ray F.partner : ℝ) • rationalPoint F.gen := by
+    have hproj : rationalPoint ((fibreRayProj hBsym F G h : ↥F.space) : V) =
+        rationalPoint (F.planeRay G h) - (BQ (F.planeRay G h) F.partner : ℝ) • rationalPoint F.gen := by
       rw [fibreRayProj_val hBsym F G h, map_sub]
       congr 1
-      exact rationalPoint_rat_smul (BQ G.ray F.partner) F.gen
-    have hshift : (associated Q) (rationalPoint G.ray) (realifyMap F.space y) =
-        (associated Q) (rationalPoint ((fibreRayProj hBsym F G : ↥F.space) : V))
+      exact rationalPoint_rat_smul (BQ (F.planeRay G h) F.partner) F.gen
+    have hshift : (associated Q) (rationalPoint (F.planeRay G h)) (realifyMap F.space y) =
+        (associated Q) (rationalPoint ((fibreRayProj hBsym F G h : ↥F.space) : V))
           (realifyMap F.space y) := by
       rw [hproj, LinearMap.BilinForm.sub_left, LinearMap.BilinForm.smul_left, hgen0, mul_zero,
         sub_zero]
     rw [hshift]
-    have hfib : (associated (fibreForm Q F.space)) (rationalPoint (fibreRayProj hBsym F G)) y =
-        (associated Q) (rationalPoint ((fibreRayProj hBsym F G : ↥F.space) : V))
+    have hfib : (associated (fibreForm Q F.space)) (rationalPoint (fibreRayProj hBsym F G h)) y =
+        (associated Q) (rationalPoint ((fibreRayProj hBsym F G h : ↥F.space) : V))
           (realifyMap F.space y) := by
       rw [associated_fibreForm, realifyMap_rationalPoint]
     rw [← hfib]
-    rcases fibreRay_eq_or_neg hBsym F G with h' | h'
+    rcases fibreRay_eq_or_neg hBsym F G h with h' | h'
     · have h0 := LinearMap.mem_ker.1 hker
       rw [h'] at h0
       exact h0
@@ -2282,9 +2282,9 @@ theorem vSigmaPlane_semifanArrangement_le_JH {ι : Type*} (ψ : ι → V →ₗ[
     (hcut : CutsFinitelyOnRational F.closure (fun i : fibreWalls ψ F => fibreFormC F (ψ ↑i))) :
     vSigmaPlane hBsym F (semifanArrangement ψ F) G h ≤
       (LinearMap.ker (associated Q (rationalPoint F.gen)) ⊓
-        LinearMap.ker (associated Q (rationalPoint G.ray))) ⊓
+        LinearMap.ker (associated Q (rationalPoint (F.planeRay G h)))) ⊓
         ⨅ i : {i : fibreWalls ψ F //
-            fibreFormC F (ψ ↑i) (rationalPoint (fibreRay hBsym F G)) = 0},
+            fibreFormC F (ψ ↑i) (rationalPoint (fibreRay hBsym F G h)) = 0},
           LinearMap.ker (realifiedFormC (ψ ((i.1 : fibreWalls ψ F) : ι))).toLinearMap :=
   le_inf
     (le_inf (vSigmaPlane_semifanArrangement_le_ker_gen ψ hBsym F G h hBQ)
@@ -2347,15 +2347,15 @@ fibre the walls containing `J`. -/
 theorem fibreFormC_fibreRay_eq_zero_of_vanishes_plane {ι : Type*} (ψ : ι → V →ₗ[ℚ] ℚ)
     (hBsym : BQ.IsSymm) (F : ConicalLine BQ Q) (G : ConicalPlane BQ) (h : F.line ≤ G.plane)
     {i : ι} (hi : ∀ v ∈ G.plane, ψ i v = 0) :
-    fibreFormC F (ψ i) (rationalPoint (fibreRay hBsym F G)) = 0 := by
+    fibreFormC F (ψ i) (rationalPoint (fibreRay hBsym F G h)) = 0 := by
   have hgen : F.gen ∈ G.plane := F.gen_mem_plane G h
-  have hz : ψ i ((fibreRay hBsym F G : ↥F.space) : V) = 0 := by
-    rcases fibreRay_eq_or_neg hBsym F G with h' | h'
-    · rw [h', fibreRayProj_val hBsym F G h, map_sub, map_smul, smul_eq_mul, hi _ G.ray_mem,
+  have hz : ψ i ((fibreRay hBsym F G h : ↥F.space) : V) = 0 := by
+    rcases fibreRay_eq_or_neg hBsym F G h with h' | h'
+    · rw [h', fibreRayProj_val hBsym F G h, map_sub, map_smul, smul_eq_mul, hi _ (F.planeRay_mem G h),
         hi _ hgen, mul_zero, sub_zero]
-    · rw [h', show ((-fibreRayProj hBsym F G : ↥F.space) : V)
-          = -((fibreRayProj hBsym F G : ↥F.space) : V) from rfl, map_neg,
-        fibreRayProj_val hBsym F G h, map_sub, map_smul, smul_eq_mul, hi _ G.ray_mem,
+    · rw [h', show ((-fibreRayProj hBsym F G h : ↥F.space) : V)
+          = -((fibreRayProj hBsym F G h : ↥F.space) : V) from rfl, map_neg,
+        fibreRayProj_val hBsym F G h, map_sub, map_smul, smul_eq_mul, hi _ (F.planeRay_mem G h),
         hi _ hgen, mul_zero, sub_zero, neg_zero]
   rw [fibreFormC_apply, realifyMap_rationalPoint, realifiedForm_rationalPoint, hz]
   norm_num
@@ -2366,29 +2366,29 @@ theorem fibreFormC_fibreRay_eq_zero_of_vanishes_plane {ι : Type*} (ψ : ι → 
 theorem vanishes_plane_of_fibreFormC_fibreRay_eq_zero {ι : Type*} (ψ : ι → V →ₗ[ℚ] ℚ)
     (hBsym : BQ.IsSymm) (F : ConicalLine BQ Q) (G : ConicalPlane BQ) (h : F.line ≤ G.plane)
     {i : ι} (hline : F.line ≤ LinearMap.ker (ψ i))
-    (hi : fibreFormC F (ψ i) (rationalPoint (fibreRay hBsym F G)) = 0) :
+    (hi : fibreFormC F (ψ i) (rationalPoint (fibreRay hBsym F G h)) = 0) :
     ∀ v ∈ G.plane, ψ i v = 0 := by
   have hgline : F.gen ∈ F.line := by
     rw [F.line_eq]
     exact Submodule.subset_span (Set.mem_singleton _)
   have hgen : ψ i F.gen = 0 := LinearMap.mem_ker.1 (hline hgline)
-  have hz : ψ i ((fibreRay hBsym F G : ↥F.space) : V) = 0 := by
-    have h0 : ((ψ i ((fibreRay hBsym F G : ↥F.space) : V) : ℚ) : ℝ) = 0 := by
+  have hz : ψ i ((fibreRay hBsym F G h : ↥F.space) : V) = 0 := by
+    have h0 : ((ψ i ((fibreRay hBsym F G h : ↥F.space) : V) : ℚ) : ℝ) = 0 := by
       rw [← realifiedForm_rationalPoint, ← realifyMap_rationalPoint, ← fibreFormC_apply]
       exact hi
     exact_mod_cast h0
-  have hray : ψ i G.ray = 0 := by
-    rcases fibreRay_eq_or_neg hBsym F G with h' | h'
+  have hray : ψ i (F.planeRay G h) = 0 := by
+    rcases fibreRay_eq_or_neg hBsym F G h with h' | h'
     · rw [h', fibreRayProj_val hBsym F G h, map_sub, map_smul, smul_eq_mul, hgen, mul_zero,
         sub_zero] at hz
       exact hz
-    · rw [h', show ((-fibreRayProj hBsym F G : ↥F.space) : V)
-          = -((fibreRayProj hBsym F G : ↥F.space) : V) from rfl, map_neg,
+    · rw [h', show ((-fibreRayProj hBsym F G h : ↥F.space) : V)
+          = -((fibreRayProj hBsym F G h : ↥F.space) : V) from rfl, map_neg,
         fibreRayProj_val hBsym F G h, map_sub, map_smul, smul_eq_mul, hgen,
         mul_zero, sub_zero, neg_eq_zero] at hz
       exact hz
   intro v hv
-  have hvspan : v ∈ Submodule.span ℚ ({F.gen, G.ray} : Set V) := by
+  have hvspan : v ∈ Submodule.span ℚ ({F.gen, F.planeRay G h} : Set V) := by
     rw [span_gen_ray_eq_plane F G h]
     exact hv
   obtain ⟨a, b, hab⟩ := Submodule.mem_span_pair.1 hvspan
@@ -2409,7 +2409,7 @@ theorem vSigmaPlane_semifanArrangement_le_JHspace {ι : Type*} (ψ : ι → V �
   refine le_inf inf_le_left (le_iInf fun i => ?_)
   exact inf_le_right.trans
     (iInf_le (fun j : {i : fibreWalls ψ F //
-        fibreFormC F (ψ ↑i) (rationalPoint (fibreRay hBsym F G)) = 0} =>
+        fibreFormC F (ψ ↑i) (rationalPoint (fibreRay hBsym F G h)) = 0} =>
         LinearMap.ker (realifiedFormC (ψ ((j.1 : fibreWalls ψ F) : ι))).toLinearMap)
       ⟨⟨i.1, fun x hx => LinearMap.mem_ker.2 (i.2 x (h hx))⟩,
         fibreFormC_fibreRay_eq_zero_of_vanishes_plane ψ hBsym F G h i.2⟩)
@@ -2417,10 +2417,11 @@ theorem vSigmaPlane_semifanArrangement_le_JHspace {ι : Type*} (ψ : ι → V �
 /-- **The fibre part of `J_ℋ`**: the vectors of the fibre of `I` orthogonal to the half line of `J`
 and killed by the trace of every wall containing `J`. -/
 noncomputable def fibreJH {ι : Type*} (ψ : ι → V →ₗ[ℚ] ℚ) (hBsym : BQ.IsSymm)
-    (F : ConicalLine BQ Q) (G : ConicalPlane BQ) : Submodule ℝ (realified ↥F.space) :=
-  LinearMap.ker (associated (fibreForm Q F.space) (rationalPoint (fibreRay hBsym F G))) ⊓
+    (F : ConicalLine BQ Q) (G : ConicalPlane BQ) (h : F.line ≤ G.plane) :
+    Submodule ℝ (realified ↥F.space) :=
+  LinearMap.ker (associated (fibreForm Q F.space) (rationalPoint (fibreRay hBsym F G h))) ⊓
     ⨅ i : {i : fibreWalls ψ F //
-        fibreFormC F (ψ ↑i) (rationalPoint (fibreRay hBsym F G)) = 0},
+        fibreFormC F (ψ ↑i) (rationalPoint (fibreRay hBsym F G h)) = 0},
       LinearMap.ker (fibreFormC F (ψ ↑i)).toLinearMap
 
 /-- **Every vector of `J_ℋ` is a multiple of the line's generator plus the image of a vector of the
@@ -2430,14 +2431,15 @@ theorem JH_le_lineSpan_sup_fibreJH {ι : Type*} (ψ : ι → V →ₗ[ℚ] ℚ)
     (hBQ : ∀ u w : V, (associated Q) (rationalPoint u) (rationalPoint w) = (BQ u w : ℝ))
     (hBsym : BQ.IsSymm) (F : ConicalLine BQ Q) (G : ConicalPlane BQ) (h : F.line ≤ G.plane) :
     JH (Q := Q) ψ G ≤
-      lineSpan F ⊔ (fibreJH (Q := Q) ψ hBsym F G).map (realifyMap F.space) := by
+      lineSpan F ⊔ (fibreJH (Q := Q) ψ hBsym F G h).map (realifyMap F.space) := by
   intro z hz
   obtain ⟨hzperp, hzwall⟩ := Submodule.mem_inf.1 hz
   rw [planePerpQ, Submodule.mem_iInf] at hzperp
   rw [Submodule.mem_iInf] at hzwall
   have hzgen : (associated Q) (rationalPoint F.gen) z = 0 :=
     hzperp ⟨F.gen, F.gen_mem_plane G h⟩
-  have hzray : (associated Q) (rationalPoint G.ray) z = 0 := hzperp ⟨G.ray, G.ray_mem⟩
+  have hzray : (associated Q) (rationalPoint (F.planeRay G h)) z = 0 :=
+    hzperp ⟨F.planeRay G h, F.planeRay_mem G h⟩
   set lam : ℝ := (associated Q) (rationalPoint F.partner) z with hlam
   have hgen : (associated Q) (rationalPoint F.gen) (rationalPoint F.gen) = 0 := by
     rw [hBQ, F.gen_iso]
@@ -2460,17 +2462,17 @@ theorem JH_le_lineSpan_sup_fibreJH {ι : Type*} (ψ : ι → V →ₗ[ℚ] ℚ)
   have hconf : realifyMap F.space y = z - lam • rationalPoint F.gen := hy
   have hgeny : (associated Q) (rationalPoint F.gen) (realifyMap F.space y) = 0 := by
     rw [hconf, map_sub, map_smul, smul_eq_mul, hzgen, hgen, mul_zero, sub_zero]
-  have hgene : (associated Q) (rationalPoint G.ray) (rationalPoint F.gen) = 0 := by
-    rw [hBQ, G.isotropic G.ray G.ray_mem F.gen (F.gen_mem_plane G h)]
+  have hgene : (associated Q) (rationalPoint (F.planeRay G h)) (rationalPoint F.gen) = 0 := by
+    rw [hBQ, G.isotropic (F.planeRay G h) (F.planeRay_mem G h) F.gen (F.gen_mem_plane G h)]
     norm_num
-  have hrayy : (associated Q) (rationalPoint G.ray) (realifyMap F.space y) = 0 := by
+  have hrayy : (associated Q) (rationalPoint (F.planeRay G h)) (realifyMap F.space y) = 0 := by
     rw [hconf, map_sub, map_smul, smul_eq_mul, hzray, hgene, mul_zero, sub_zero]
-  have hyker : (associated (fibreForm Q F.space)) (rationalPoint (fibreRay hBsym F G)) y = 0 := by
+  have hyker : (associated (fibreForm Q F.space)) (rationalPoint (fibreRay hBsym F G h)) y = 0 := by
     rw [associated_fibreForm, realifyMap_rationalPoint]
     exact (rationalPoint_fibreRay_val hBsym F G h (realifyMap F.space y)).2
       (by rw [hrayy, hgeny, mul_zero, sub_zero])
   have hywall : ∀ i : {i : fibreWalls ψ F //
-        fibreFormC F (ψ ↑i) (rationalPoint (fibreRay hBsym F G)) = 0},
+        fibreFormC F (ψ ↑i) (rationalPoint (fibreRay hBsym F G h)) = 0},
       y ∈ LinearMap.ker (fibreFormC F (ψ ↑i)).toLinearMap := by
     intro i
     change fibreFormC F (ψ ↑i) y = 0
@@ -2521,13 +2523,13 @@ ported sign-cell machine, TauCeti `Analysis/Convex/Polyhedron/SignCell/Interior.
 and TauCeti `Geometry/Convex/Cone/Face/Exposed.lean`; none carries this statement,
 and the primal route here needs none of them. -/
 theorem fibreJH_le_span_of_member {ι : Type*} (ψ : ι → V →ₗ[ℚ] ℚ) (hBsym : BQ.IsSymm)
-    (F : ConicalLine BQ Q) (G : ConicalPlane BQ)
+    (F : ConicalLine BQ Q) (G : ConicalPlane BQ) (h : F.line ≤ G.plane)
     (hpos : sigPos (fibreForm Q F.space) = 1)
     (hcut : CutsFinitelyOnRational F.closure (fun i : fibreWalls ψ F => fibreFormC F (ψ i)))
     (τ : supportIndex (positiveCone.upper (fibreForm Q F.space) F.sheet)
       (semifanArrangement ψ F)
-      (PointedCone.hull ℝ ({rationalPoint (fibreRay hBsym F G)} : Set (realified ↥F.space)))) :
-    fibreJH (Q := Q) ψ hBsym F G ≤ Submodule.span ℝ (τ.1 : Set (realified ↥F.space)) := by
+      (PointedCone.hull ℝ ({rationalPoint (fibreRay hBsym F G h)} : Set (realified ↥F.space)))) :
+    fibreJH (Q := Q) ψ hBsym F G h ≤ Submodule.span ℝ (τ.1 : Set (realified ↥F.space)) := by
   classical
   obtain ⟨σ, ⟨s, rfl⟩, hτσ⟩ := τ.2.1
   have hCsub : (positiveCone.upper (fibreForm Q F.space) F.sheet : Set (realified ↥F.space)) ⊆
@@ -2541,19 +2543,19 @@ theorem fibreJH_le_span_of_member {ι : Type*} (ψ : ι → V →ₗ[ℚ] ℚ) (
     (fun c hc x hx => positiveCone.smul_mem_upper (Q := fibreForm Q F.space) (t := F.sheet) hc hx)
     (zero_notMem_upper (fibreForm Q F.space) F.sheet) hCsub hcut hτσ τ.2.2.2
   have hBA : (⨅ i : {i : fibreWalls ψ F //
-        fibreFormC F (ψ ↑i) (rationalPoint (fibreRay hBsym F G)) = 0},
+        fibreFormC F (ψ ↑i) (rationalPoint (fibreRay hBsym F G h)) = 0},
         LinearMap.ker (fibreFormC F (ψ ↑i)).toLinearMap) ≤
       (⨅ i : {i : fibreWalls ψ F // τ.1 ≤ LinearMap.ker (fibreFormC F (ψ ↑i)).toLinearMap},
         LinearMap.ker (fibreFormC F (ψ ↑i)).toLinearMap) := by
     refine le_iInf fun j => ?_
-    have hrayτ : rationalPoint (fibreRay hBsym F G) ∈ τ.1 :=
+    have hrayτ : rationalPoint (fibreRay hBsym F G h) ∈ τ.1 :=
       τ.2.2.1 (Submodule.subset_span (Set.mem_singleton _))
     refine iInf_le_of_le ⟨j.1, ?_⟩ le_rfl
     have := j.2 hrayτ
     simpa [LinearMap.mem_ker] using this
-  have hfib : fibreJH (Q := Q) ψ hBsym F G ≤
+  have hfib : fibreJH (Q := Q) ψ hBsym F G h ≤
       (⨅ i : {i : fibreWalls ψ F //
-        fibreFormC F (ψ ↑i) (rationalPoint (fibreRay hBsym F G)) = 0},
+        fibreFormC F (ψ ↑i) (rationalPoint (fibreRay hBsym F G h)) = 0},
         LinearMap.ker (fibreFormC F (ψ ↑i)).toLinearMap) := inf_le_right
   exact hfib.trans (hBA.trans hgen)
 
@@ -2569,20 +2571,21 @@ theorem fibreJH_le_sigmaSupportSpace {ι : Type*} (ψ : ι → V →ₗ[ℚ] ℚ
     (hnd : (fibreForm Q F.space).Nondegenerate)
     (hcut : CutsFinitelyOnRational F.closure (fun i : fibreWalls ψ F => fibreFormC F (ψ i)))
     (hS : IsLocallyRationalDecomposition F.closure (semifanArrangement ψ F)) :
-    fibreJH (Q := Q) ψ hBsym F G ≤
+    fibreJH (Q := Q) ψ hBsym F G h ≤
       sigmaSupportSpace (positiveCone.upper (fibreForm Q F.space) F.sheet)
         (semifanArrangement ψ F)
-        (PointedCone.hull ℝ ({rationalPoint (fibreRay hBsym F G)} : Set (realified ↥F.space))) := by
+        (PointedCone.hull ℝ ({rationalPoint (fibreRay hBsym F G h)} :
+          Set (realified ↥F.space))) := by
   intro y hy
   obtain ⟨hyker, hywall⟩ := Submodule.mem_inf.1 hy
-  have hQr : (fibreForm Q F.space) (rationalPoint (fibreRay hBsym F G)) = 0 :=
+  have hQr : (fibreForm Q F.space) (rationalPoint (fibreRay hBsym F G h)) = 0 :=
     fibreRay_isotropic hBQ hBsym F G h
-  have hrne : rationalPoint (fibreRay hBsym F G) ≠ 0 :=
+  have hrne : rationalPoint (fibreRay hBsym F G h) ≠ 0 :=
     rationalPoint_ne_zero (fibreRay_ne_zero hBsym F G h)
-  have hsheet : 0 ≤ (associated (fibreForm Q F.space)) (rationalPoint (fibreRay hBsym F G))
+  have hsheet : 0 ≤ (associated (fibreForm Q F.space)) (rationalPoint (fibreRay hBsym F G h))
       F.sheet :=
-    fibreRay_sheet_nonneg hBsym F G
-  have hsheetC : rationalPoint (fibreRay hBsym F G) ∈
+    fibreRay_sheet_nonneg hBsym F G h
+  have hsheetC : rationalPoint (fibreRay hBsym F G h) ∈
       rationalClosure (closedSheet (fibreForm Q F.space) hpos F.sheet_pos) :=
     mem_rationalClosure.2 (subset_convexHull ℝ _ ⟨⟨_, Set.mem_univ _, rfl⟩,
       subset_closure ((mem_closedSheet hpos F.sheet_pos).2
@@ -2596,7 +2599,7 @@ theorem fibreJH_le_sigmaSupportSpace {ι : Type*} (ψ : ι → V →ₗ[ℚ] ℚ
     (ht := F.sheet_pos) hpos hnd hrne hQr hsheetC hS' (Submodule.mem_inf.2 ⟨hyker, ?_⟩)
   rw [Submodule.mem_iInf]
   intro τ
-  exact fibreJH_le_span_of_member ψ hBsym F G hpos hcut τ hy
+  exact fibreJH_le_span_of_member ψ hBsym F G h hpos hcut τ hy
 
 /-- **Example 6.4, p. 29: `J_{Σ(ℋ)} = J_ℋ`** — the support space of a plane's half line is the
 subspace the source attaches to the plane, with no hypothesis beyond the counting lemma at the
