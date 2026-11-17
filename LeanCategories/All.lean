@@ -8,6 +8,10 @@ public import LeanCategories
 public import LeanCategories.CategoryTheory.PathBicategory
 public import LeanCategories.CategoryTheory.PosetPathLaxFunctor
 public import LeanCategories.ForMathlib.CharacteristicTwoArfInvariant
+public import LeanCategories.ForMathlib.CosetTable
+public import LeanCategories.ForMathlib.DoubleCosetOrbit
+public import LeanCategories.ForMathlib.ModularCuspsFiniteIndex
+public import LeanCategories.ForMathlib.SchreierStabilizer
 public import LeanCategories.AlgebraicGeometry.RelativeProjHypothesis
 public import LeanCategories.AlgebraicGeometry.ValuationCurveData
 public import LeanCategories.AlgebraicGeometry.GeneralLinearGroupData
@@ -338,6 +342,7 @@ public import LeanCategories.Lattices.Valued.CuspIsotropic
 public import LeanCategories.Lattices.Valued.CuspVector
 public import LeanCategories.Lattices.Valued.CuspHomFibre
 public import LeanCategories.Lattices.Valued.CuspWorkedInstance
+public import LeanCategories.Lattices.Valued.CuspSchreierImage
 public import LeanCategories.Lattices.Valued.DiscriminantCharacteristic
 public import LeanCategories.Lattices.Valued.CobleLattice
 public import LeanCategories.Lattices.Valued.CobleCharacteristic

@@ -38,6 +38,42 @@ does not justify weakening a dependent theorem or starting unrelated work.
 
 ## Mathematical issues
 
+### No discriminant transport along a translate of an integral lattice
+
+- **Need:** the discriminant-form descent page (`writing/coble/computations/discriminant-form-descent.md`
+  at `b636d060`, `thm:discriminant-transport-functor`, item 3 of `thm:schreier-discriminant-image`)
+  needs, for `g` an isometry of an integral lattice `L` and `gL` the translated lattice on the same
+  rational space, the isomorphism of discriminant forms `α_g(L) : A_L → A_{gL}`, `[y] ↦ [g y]`, with
+  `α_{id} = id`, `α_{g₁g₂}(L) = α_{g₁}(g₂L) ∘ α_{g₂}(L)`, and `α_g(L) = ρ_L(g)` when `gL = L`. Each
+  Schreier loop `ρ_L(k_{s,p})` then factors through the translate `L_p = t_p L` into a composite of
+  such transports, which is what makes its image intermediate between two orbit points.
+- **Evidence:** the repository's owner of the discriminant module is the object
+  `IntegralLatticeCat` together with `OrthogonalGroup.discriminantRepresentation` at a *fixed*
+  lattice (`Lattices/Valued/DiscriminantAction.lean`, `Lattices/Valued/IsotropicDiscriminantAction.lean`);
+  the discriminant of a translate by an isometry has no owner. Searched (formalization-corpus API,
+  manifest head `6d97e8ad`): `discriminant of a translate of a lattice isometry` and `dual lattice of
+  an isometric image discriminant form`; found TauCeti `Algebra/Module/ZLattice/Shell.lean` and
+  `.../RealModel.lean`, whose lattice model carries its own dual inside a vector space, so their
+  transport is the trivial one and does not apply to a category whose objects carry their carriers;
+  `discriminant representation orthogonal group stabilizer image` returns only the TauCeti roadmap's
+  target signatures.
+- **Gap and impact:** `Lattices/Valued/CuspSchreierImage.lean` states
+  `discriminantRangeImage_eq_closure_schreier` with the discriminant actions at the single lattice
+  `L`, which is a true equality of the same image but does not expose the per-translate
+  factorisation. The gap is the readers' ability to check the page's composite
+  `α_{t_{sp}^{-1}}(L_{sp}) ∘ α_s(L_p) ∘ α_{t_p}(L)`; the generated subgroup itself is unaffected.
+  Consumers: the descent count over an orbit of lattices, and any later statement that identifies a
+  loop's discriminant action with a product of transport maps.
+- **Coverage:** the search above is over the indexed corpus only; Mathlib has no `A_{gL}` owner (its
+  `LinearAlgebra/IntegralLattice` neighbours are `Mathlib`'s own valued-lattice API, read directly).
+  Confidence: the absence is in the repository, which is what the ported statement needs; an
+  upstream Mathlib transport was not located.
+- **Repair link:** issue #88's `discriminantRangeImage_eq_closure_schreier`; the resolution is a
+  functor `α` on the translation groupoid of a valued bilinear space and the comparison
+  `α_g(L) = ρ_L(g)` at a self-isometry, which would let the Schreier image be restated as the page's
+  composite. Until then the single-lattice form stays, and the module docstring records the
+  differential.
+
 ### Mathlib has no symmetric monoidal structure on `SheafOfModules` and no `O_X`-algebra layer
 
 - **Need:** lean-categories#22 needs the category of quasi-coherent commutative `O_X`-algebras on an
