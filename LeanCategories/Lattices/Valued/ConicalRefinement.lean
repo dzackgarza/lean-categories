@@ -145,6 +145,29 @@ insertion lemma into an equality: a least member containing a relative interior 
 the shape in which the plane case of Lemma 6.6 uses it (a half line's relative interior point is
 contained in the half line, and the least member containing it is the half line). -/
 
+omit [Module.Finite ℚ V] in
+/-- **Nested members of a locally rational decomposition are faces of each other.** If `σ ≤ τ` and
+both are members, then `σ = σ ⊓ τ` is a face of `τ` by the pairwise-incidence half of the rational
+cone system (`inf_isFaceOf_of_isLocallyRationalDecomposition`).
+
+This is the axiom that excludes a *nested pair of cones that are not face-incident* from being a
+locally rational decomposition at all, and with it the family that `HasSubordinateRefinement`'s
+refutation was built on in the previous round: take `C₊` together with a proper sub-wedge
+`τ = C₊ ⊓ {φ ≥ 0}` (cut by a half-space, so `τ ⊓ C₊ = τ` is *not* a face of `C₊`). As members of
+one decomposition they would have to satisfy `τ.IsFaceOf C₊` by this lemma, and the restriction of
+Definition 4.2 to the rational subcone `C₊` requires exactly that face incidence; so the pair is not
+locally rational, and the coarse `{C̄, τ}`-shaped families of
+`tests/regression/ConicalRefinementSplit22.lean` are not admissible. -/
+theorem IsLocallyRationalDecomposition.isFaceOf_of_le {C : PointedCone ℝ (realified V)}
+    {S : Set (PointedCone ℝ (realified V))}
+    (hS : IsLocallyRationalDecomposition (rationalClosure C) S)
+    {σ τ : PointedCone ℝ (realified V)} (hσ : σ ∈ S) (hτ : τ ∈ S) (h : σ ≤ τ) :
+    σ.IsFaceOf τ := by
+  have hface : (σ ⊓ τ).IsFaceOf τ := by
+    rw [inf_comm]
+    exact inf_isFaceOf_of_isLocallyRationalDecomposition hS hτ hσ
+  rwa [inf_eq_left.2 h] at hface
+
 /-- **`σ'` is the least member of `S` containing the point `y`**. This is the point form of
 `FibreRefinement.IsLeastMem`, and the shape in which the insertion lemma is used: the source's
 "smallest member of `Σ'` that contains `σ`" is the least member containing `σ`'s relative interior
