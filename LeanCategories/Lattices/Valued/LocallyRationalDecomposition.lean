@@ -3772,10 +3772,13 @@ theorem sigmaSupportSpace_le {C : Set (realified V)}
     sigmaSupportSpace C S σ ≤ supportSpace τ σ :=
   iInf_le (fun τ : supportIndex C S σ => supportSpace τ.1 σ) ⟨τ, hτ, hστ, hC⟩
 
-/-- The support space of `σ` contains the span of `σ`. -/
+/-- The support space of `σ` contains the span of `σ`. The index of the open cone is not needed: the
+intersection is over the members of `S` above `σ`, and if there are none it is `⊤`; so the inequality
+holds for every family, which is the form the inclusion of Definition 6.1 (i)'s span formula in
+case (ii)'s value at an isotropic half line consumes
+(`vSigma_le_vSigmaPlane_of_hull_fibreRay`, lean-categories#169). -/
 theorem span_le_sigmaSupportSpace {C : Set (realified V)}
-    {S : Set (PointedCone ℝ (realified V))} {σ : PointedCone ℝ (realified V)}
-    (_τ : supportIndex C S σ) :
+    {S : Set (PointedCone ℝ (realified V))} {σ : PointedCone ℝ (realified V)} :
     Submodule.span ℝ (σ : Set (realified V)) ≤ sigmaSupportSpace C S σ :=
   le_iInf fun τ' => span_le_supportSpace τ'.2.2.1
 
@@ -3787,7 +3790,7 @@ theorem sigmaSupportSpace_eq_span_of_meets {C : Set (realified V)}
     {S : Set (PointedCone ℝ (realified V))} {σ : PointedCone ℝ (realified V)}
     (hσ : σ ∈ S) (hC : ((σ : Set (realified V)) ∩ C).Nonempty) :
     sigmaSupportSpace C S σ = Submodule.span ℝ (σ : Set (realified V)) := by
-  refine le_antisymm ?_ (span_le_sigmaSupportSpace ⟨σ, hσ, le_rfl, hC⟩)
+  refine le_antisymm ?_ span_le_sigmaSupportSpace
   exact (sigmaSupportSpace_le (σ := σ) (τ := σ) hσ le_rfl hC).trans_eq (supportSpace_self σ)
 
 
@@ -10264,7 +10267,7 @@ theorem sigmaSupportSpace_eq_inf_span_of_isotropic_of_inf_eq
       ((sigmaSupportSpace_le hτ' hστ' hτ'C).trans (supportSpace_le_span hστ'))
   have hXge : Submodule.span ℝ (σ : Set (realified V)) ≤
       sigmaSupportSpace (positiveCone.upper Q t) S σ :=
-    span_le_sigmaSupportSpace ⟨τ, hτ, hστ, hτC⟩
+    span_le_sigmaSupportSpace
   obtain ⟨hlt, hlt'⟩ :=
     sigmaSupportSpace_lt_span_of_isotropic hpos hnd hS hσ hστ hστ' hτ hτ' hτC hτ'C
   exact ⟨le_antisymm hXle (by rw [hinf]; exact hXge), hlt, hlt'⟩

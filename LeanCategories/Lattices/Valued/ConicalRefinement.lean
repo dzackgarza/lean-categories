@@ -80,11 +80,25 @@ would need either covering as an extra hypothesis on the pair (which is what the
 construction argument that the source does not give. This is #174's decision, recorded here rather
 than repaired: the pages that cite Lemma 6.6 cite it through the arrangement instance.
 
-Two further links are carried as hypotheses rather than proved, each recorded at its declaration:
-the clause of Definition 6.1 (ii) that `C_{J,+}` *is a member* of every admissible decomposition
-(the source's parenthetical "(so that the cone `C_{J,+} = C̄_J` in `⋀²J` is member of `Σ`)", which
-`IsAdmissibleDecomposition` does not carry), and the identification of Definition 6.1 (i)'s span
-formula at an isotropic half line with the plane support space `J_Σ` of case (ii).
+One link is carried as a hypothesis rather than proved, recorded at its declaration: the clause of
+Definition 6.1 (ii) that `C_{J,+}` *is a member* of every admissible decomposition (the source's
+parenthetical "(so that the cone `C_{J,+} = C̄_J` in `⋀²J` is member of `Σ`)", which
+`IsAdmissibleDecomposition` does not carry).
+
+The other link is **not** carried, because it is false: Definition 6.1 (i)'s span formula at an
+isotropic half line is *not* the plane support space `J_Σ` of case (ii). Case (i)'s value is
+`I ⊔ ⟨r⟩`, which lies in the plane `J` and is independent of the decomposition; case (ii)'s is
+`J_Σ = J^⊥ ⊓ ⋂ {H : J ⊆ H}`, which is `J^⊥` for the Baily–Borel family and equals `J` only when the
+family cuts `J` out of `J^⊥`. So the two agree exactly when `J_Σ = J`, and the gap between them is
+the window `J^⊥/J` — zero in signature `(2,2)`, positive from `(2,3)` on. The proved facts are the
+inclusion `vSigma_le_vSigmaPlane_of_hull_fibreRay`, the equality criterion
+`vSigmaPlane_eq_vSigma_of_sigmaSupportSpace_eq` (i.e. `J_Σ = J`), and the strictness
+`vSigma_lt_vSigmaPlane_facial_of_perp_witness`: a vector of `J^⊥ \ J` is in the case-(ii) value and
+not in the case-(i) span. Section "What the two cases of Definition 6.1 compute at an isotropic half
+line" writes both objects out. So case (ii) is the plane's comparison and lives at `vSigmaPlane`;
+what remains open there is the subordinate refinement *at a half line*, which is not the
+identification but a separate question — the half line has no relative interior point in the open
+cone, so the insertion lemma cannot reach it (the section "Lemma 6.6, case (ii)" records this).
 -/
 
 @[expose] public section
@@ -1157,28 +1171,42 @@ end SubordinateFromCovering
 
 /-! ## Lemma 6.6, case (ii): the plane case, from the covering clause
 
-With the subordinate refinement available at the half line `C_{J,+}` of a plane — its relative
-interior point is its generator (`isRelintPoint_hull_singleton`), and it is a member of the fine
-family by Definition 6.1 (ii)'s parenthetical clause — the comparison `J_Σ ≤ J_{Σ'}` of Lemma 6.6 is
-`vSigmaPlane_le_of_refines`, and the support-index comparison behind it is
+With the subordinate refinement available at a member `σ` of the fine family — a relative interior
+point of it that lies in the open cone, `isRelintPoint_hull_singleton` for a half line and
+`exists_subordinate_of_isRelintPoint` for the step from covering — the comparison `J_Σ ≤ J_{Σ'}` of
+Lemma 6.6 is `vSigmaPlane_le_of_refines`, and the support-index comparison behind it is
 `sigmaSupportSpace_le_of_hasSubordinateRefinement`. What the covering clause adds over the earlier
-statement of the plane case is that `S'` is an *arbitrary* coarse family, not only the Baily–Borel
-one (`vSigmaPlane_semifanArrangement_le_facial`). -/
+statement is that `S'` is an *arbitrary* coarse family, not only the Baily–Borel one
+(`vSigmaPlane_semifanArrangement_le_facial`).
+
+**Scope, and it is narrower than the name suggests.** The theorem below takes the point `r` of `σ`
+to
+lie in the open cone (`hxC`), which is what its derivation consumes: the relative interior point
+whose membership in `σ` the insertion lemma upgrades has to be a point of `C_{I,+}`. An *isotropic*
+half line never satisfies this — `positiveCone.upper` asks `Q r > 0` and an isotropic `r` has `Q r =
+0` — so this is the comparison at a member that meets the open cone, and **not** Lemma 6.6's case
+(ii) at `C_{J,+}`. Case (ii) at the half line is the open item: it needs a fine member between the
+half line and each coarse member above it that meets the open cone, and neither the insertion lemma
+nor this route supplies one, because the half line has no relative interior point in the open cone.
+The identification that would have made the case-(i) formula available there is false
+(`vSigma_lt_vSigmaPlane_facial_of_perp_witness`), so this is where #169 stands. -/
 
 section PlaneCase
 
 variable {BQ : LinearMap.BilinForm ℚ V} {Q : QuadraticForm ℝ (realified V)}
 
 omit [Module.Finite ℚ V] in
-/-- **Looijenga, Lemma 6.6, p. 30, case (ii) — the plane case — from the covering clause**: for two
-decompositions `S`, `S'` of the fibre of `I` with `S'` covered by `S`, the `Σ`-support space of the
-half line `C_{J,+}` relative to `S` is contained in the one relative to `S'`.
+/-- **The `Σ`-support space comparison at a member that meets the open cone, from the covering
+clause**:
+for two decompositions `S`, `S'` of the fibre of `I` with `S'` covered by `S`, the case-(ii) value
+of `σ = hull {r}` relative to `S` is contained in the one relative to `S'`.
 
 The hypotheses are: the covering clause pointwise (`hcov`), the fine decomposition's local
-rationality (`hS`, needed by the insertion lemma), Definition 6.1 (ii)'s membership clause for the
-half line at the fine family (`hidx`, the source's "(so that the cone `C_{J,+} = C̄_J` in `⋀²J` is
-member of `Σ`)", which `IsAdmissibleDecomposition` does not carry), and that the half line's
-generator lies in the open cone (`hxC`). -/
+rationality (`hS`, needed by the insertion lemma), that `σ` is a member of the fine family (`hmem`,
+Definition 6.1 (ii)'s parenthetical clause), and that the generator `r` lies in the open cone
+(`hxC`). **The last is why this is not case (ii) at a half line**: `hxC` asks `Q r > 0` on the cone
+`positiveCone.upper`, and an isotropic `r` has `Q r = 0`, so no isotropic half line satisfies it.
+See the section docstring for what case (ii) at the half line needs instead. -/
 theorem vSigmaPlane_le_of_covers (hBsym : BQ.IsSymm) (F : ConicalLine BQ Q)
     (G : ConicalPlane BQ) (hFG : F.line ≤ G.plane)
     {S S' : Set (PointedCone ℝ (realified ↥F.space))} {Cpb : PointedCone ℝ (realified ↥F.space)}
@@ -1239,12 +1267,17 @@ theorem ConicalMember.fibreVSigma_bot_le {F F' : ConicalLine BQ Q}
 `V_σ ⊆ V_{σ'}`, the three cases of Definition 6.1 (i) being discharged here and the isotropic half
 line, which is Definition 6.1 (ii)'s, being supplied by `hhalf`.
 
-`hhalf` is where case (ii) enters. It is not an assumption of the source — the source's Lemma 6.6
-covers the half line through condition (ii) of Definition 6.1 — but the development has no
-identification of the fibre's span formula at an isotropic half line with the plane support space,
-so the case is stated in the same shape as the others and discharged by
-`vSigmaPlane_le_of_covers` (the plane case, from the covering clause) in the setting where the half
-line is a member of the fine family. -/
+The isotropic half line is **excluded**, and no hypothesis supplies it: the fibre's span formula is
+not the source's `V_σ` at a half line, so there is nothing here for it to be equal to. `hline` is
+the source's own case restriction (Definition 6.1, p. 28, case (i) is "a member of the fibre that is
+not an isotropic half line"), and the half line's own comparison is case (ii), at the *plane*:
+`vSigmaPlane_le_of_covers`. The two cannot be fused into one statement, because the two objects
+differ — `vSigma_le_vSigmaPlane_of_hull_fibreRay` is the inclusion, `vSigma_le_realify_plane` places
+the span formula inside `J`, and `vSigma_lt_vSigmaPlane_facial_of_perp_witness` shows a vector of
+`J^⊥ \ J` on the case-(ii) side and not on the case-(i) side. The earlier version of this theorem
+carried a hypothesis `hhalf` supplying the half-line case in the span formula's shape; that
+hypothesis is withdrawn here rather than discharged, because what it asked for is false of the
+source's `V_σ`. -/
 theorem vSigma_le_of_refines_of_cases (hBQ : ∀ u w : V,
     (associated Q) (rationalPoint u) (rationalPoint w) = (BQ u w : ℝ))
     (hBsym : BQ.IsSymm) {Γ : Set (V ≃ₗ[ℚ] V)}
@@ -1253,17 +1286,182 @@ theorem vSigma_le_of_refines_of_cases (hBQ : ∀ u w : V,
     (D' : IsAdmissibleDecomposition BQ Q Γ locus')
     (href : RefinesConicalLocus (Q := Q) hBsym locus locus')
     (F : ConicalLine BQ Q) {σ : PointedCone ℝ (realified ↥F.space)} (hσ : σ ∈ locus F)
-    (hbot : σ ≠ ⊥)
-    (hhalf : IsIsotropicHalfLine (fibreForm Q F.space) σ →
-      ∃ (F' : ConicalLine BQ Q) (σ' : PointedCone ℝ (realified ↥F'.space)), σ' ∈ locus' F' ∧
-        vSigma F σ ≤ vSigma F' σ') :
+    (hbot : σ ≠ ⊥) (hline : ¬ IsIsotropicHalfLine (fibreForm Q F.space) σ) :
     ∃ (F' : ConicalLine BQ Q) (σ' : PointedCone ℝ (realified ↥F'.space)), σ' ∈ locus' F' ∧
-      vSigma F σ ≤ vSigma F' σ' := by
-  by_cases hline : IsIsotropicHalfLine (fibreForm Q F.space) σ
-  · exact hhalf hline
-  · exact vSigma_le_of_refinesConicalLocus hBQ hBsym D D' href F hσ ⟨hbot, hline⟩
+      vSigma F σ ≤ vSigma F' σ' :=
+  vSigma_le_of_refinesConicalLocus hBQ hBsym D D' href F hσ ⟨hbot, hline⟩
 
 end Export
+
+/-! ## What the two cases of Definition 6.1 compute at an isotropic half line
+
+Definition 6.1, p. 28, gives `V_σ` by *two* formulas, and at an isotropic half line they compute
+different subspaces. Written out as the development has them, with `r = fibreRay hBsym F G h` the
+class of the `ℚ`-isotropic plane `J = G.plane` in `I^⊥/I` and `σ = C_{J,+} = hull ℝ {r}`:
+
+* **case (i)'s span formula** (`vSigma`, `ConicalLocus.lean:850`) is `I ⊔ span ℝ σ = I ⊔ ⟨r⟩`
+  (`vSigma_hull_fibreRay`), which lies in the plane `J` (`vSigma_le_realify_plane`) and is `J` when
+  `r`'s class spans `J/I` — as it does, `J/I` being one-dimensional. It does not mention the
+  decomposition `Σ` at all;
+* **case (ii)'s value** (`vSigmaPlane`, `Semifan.lean:863`) is
+  `I ⊔ (supportSpace of σ relative to Σ)`, the Lemma-Definition 4.5 subspace read back into `I^⊥`.
+  It *does* mention `Σ`: it is `J_Σ = J^⊥ ⊓ ⋂ {H ∈ Σ's walls : J ⊆ H}`
+  (`vSigmaPlane_semifanArrangement_eq_JH`), which is `J^⊥` for the Baily–Borel decomposition
+  (`vSigmaPlane_eq_ker_inf_ker` with `ker_inf_ker_eq`).
+
+So the two agree only when `J_Σ = J`, i.e. when the fibre's decomposition separates `J` from the
+rest of `J^⊥`; the discrepancy lives in `J^⊥/J`, which is `0` in signature `(2,2)` (where the two
+therefore agree, the observation #174 records) and one-dimensional in signature `(2,3)`
+(`tests/regression/ConicalPlaneRefinement23.lean` computes `J ⊊ J^⊥` there). **No rewriting lemma
+can identify them**: the strictness is `vSigma_lt_vSigmaPlane_facial_of_perp_witness` below, which
+produces a vector of `J^⊥` outside `J` and shows it is in the case-(ii) value and not in the
+case-(i) span.
+
+What *is* true, and is the honest form of the identification, is the inclusion
+`vSigma_le_vSigmaPlane_of_hull_fibreRay`: case (i)'s span is contained in case (ii)'s support space
+for every family `Σ`. That is `span_le_supportSpace` of Lemma-Definition 4.5 at each member above
+the half line, and it is what makes the export's case (ii) sit at the plane: the number Lemma 6.6
+compares at a half line is `J_Σ`, not the span. -/
+
+section HalfLineIdentification
+
+variable {BQ : LinearMap.BilinForm ℚ V} {Q : QuadraticForm ℝ (realified V)}
+
+omit [Module.Finite ℚ V] in
+/-- **The real span of a half line is the span of its generator**: the half line is the `ℝ≥0`-span
+of `v`, and the `ℝ`-span of that is the `ℝ`-span of `v`. This is the only rewriting the span formula
+of case (i) needs at a half line. -/
+theorem span_hull_singleton (v : realified V) :
+    Submodule.span ℝ ((PointedCone.hull ℝ ({v} : Set (realified V)) : Set (realified V)))
+      = Submodule.span ℝ ({v} : Set (realified V)) := by
+  refine le_antisymm ?_ (Submodule.span_le.2 ?_)
+  · refine Submodule.span_le.2 ?_
+    intro x hx
+    exact PointedCone.hull_le_span ℝ (s := ({v} : Set (realified V))) hx
+  · intro x hx
+    rw [Set.mem_singleton_iff] at hx
+    rw [hx]
+    exact Submodule.subset_span (PointedCone.subset_hull (Set.mem_singleton v))
+
+omit [Module.Finite ℚ V] in
+/-- **Definition 6.1 (i)'s value at an isotropic half line**: the span formula is `I ⊔ ⟨r⟩`. -/
+theorem vSigma_hull_fibreRay (hBsym : BQ.IsSymm) (F : ConicalLine BQ Q) (G : ConicalPlane BQ)
+    (h : F.line ≤ G.plane) :
+    vSigma F (PointedCone.hull ℝ
+        ({rationalPoint (fibreRay hBsym F G h)} : Set (realified ↥F.space))) =
+      lineSpan F ⊔ Submodule.map (realifyMap F.space)
+        (Submodule.span ℝ ({rationalPoint (fibreRay hBsym F G h)} : Set (realified ↥F.space))) := by
+  rw [vSigma, span_hull_singleton]
+
+omit [Module.Finite ℚ V] in
+/-- **The relation between the two cases of Definition 6.1 at an isotropic half line**: case (i)'s
+span formula is contained in case (ii)'s value, `V_σ ⊂ J_Σ`. The containment is the one direction
+that holds without hypotheses on the family; the other direction fails whenever the fibre's
+decomposition does not separate `J` inside `J^⊥`
+(`vSigma_lt_vSigmaPlane_facial_of_perp_witness`). -/
+theorem vSigma_le_vSigmaPlane_of_hull_fibreRay (hBsym : BQ.IsSymm) (F : ConicalLine BQ Q)
+    (S : Set (PointedCone ℝ (realified ↥F.space))) (G : ConicalPlane BQ)
+    (h : F.line ≤ G.plane) :
+    vSigma F (PointedCone.hull ℝ
+        ({rationalPoint (fibreRay hBsym F G h)} : Set (realified ↥F.space))) ≤
+      vSigmaPlane hBsym F S G h := by
+  rw [vSigma, vSigmaPlane]
+  refine sup_le_sup_left ?_ _
+  exact Submodule.map_mono span_le_sigmaSupportSpace
+
+omit [Module.Finite ℚ V] in
+/-- **The equality criterion**: the two cases of Definition 6.1 agree at the half line exactly when
+the decomposition's support space at the half line is the half line's span — that is, exactly when
+`J_Σ = J`. This is the forward direction, which is the one the arrangement families satisfy when the
+walls through `J` cut it out; for the Baily–Borel family the hypothesis fails. -/
+theorem vSigmaPlane_eq_vSigma_of_sigmaSupportSpace_eq (hBsym : BQ.IsSymm) (F : ConicalLine BQ Q)
+    (S : Set (PointedCone ℝ (realified ↥F.space))) (G : ConicalPlane BQ) (h : F.line ≤ G.plane)
+    (hsupp : sigmaSupportSpace (positiveCone.upper (fibreForm Q F.space) F.sheet) S
+        (PointedCone.hull ℝ ({rationalPoint (fibreRay hBsym F G h)} : Set (realified ↥F.space))) =
+      Submodule.span ℝ
+        (PointedCone.hull ℝ ({rationalPoint (fibreRay hBsym F G h)} : Set (realified ↥F.space)) :
+          Set (realified ↥F.space))) :
+    vSigmaPlane hBsym F S G h = vSigma F (PointedCone.hull ℝ
+      ({rationalPoint (fibreRay hBsym F G h)} : Set (realified ↥F.space))) := by
+  rw [vSigmaPlane, vSigma, hsupp, span_hull_singleton]
+
+omit [Module.Finite ℚ V] in
+/-- **The half line's own vector lies in the plane.** `fibreRay` is the class of `J` in `I^⊥/I`
+(Looijenga §1B, p. 11), and its representative in the fibre is `planeRay - c • gen`
+(`fibreRayProj_val`), a combination of two vectors of `J`. This is what places Definition 6.1 (i)'s
+value at a half line inside `J`. -/
+theorem fibreRay_mem_plane (hBsym : BQ.IsSymm) (F : ConicalLine BQ Q) (G : ConicalPlane BQ)
+    (h : F.line ≤ G.plane) :
+    ((fibreRay hBsym F G h : ↥F.space) : V) ∈ G.plane := by
+  have hmem : ((fibreRayProj hBsym F G h : ↥F.space) : V) ∈ G.plane := by
+    rw [fibreRayProj_val hBsym F G h]
+    exact Submodule.sub_mem _ (F.planeRay_mem G h)
+      (Submodule.smul_mem _ _ (F.gen_mem_plane G h))
+  rcases fibreRay_eq_or_neg hBsym F G h with h' | h'
+  · rw [h']; exact hmem
+  · rw [h']
+    exact Submodule.neg_mem _ hmem
+
+omit [Module.Finite ℚ V] in
+/-- **Definition 6.1 (i)'s value at an isotropic half line is contained in the plane `J`**: the span
+formula is `I ⊔ ⟨r⟩` with both summands inside `J`. -/
+theorem vSigma_le_realify_plane (hBsym : BQ.IsSymm) (F : ConicalLine BQ Q) (G : ConicalPlane BQ)
+    (h : F.line ≤ G.plane) :
+    vSigma F (PointedCone.hull ℝ
+        ({rationalPoint (fibreRay hBsym F G h)} : Set (realified ↥F.space))) ≤
+      realify G.plane := by
+  have hpoint : ∀ v : V, v ∈ G.plane → rationalPoint v ∈ realify G.plane := by
+    intro v hv
+    rw [mem_realify_iff]
+    exact Submodule.subset_span ⟨v, hv, rfl⟩
+  have hmap : Submodule.map (realifyMap F.space)
+      (Submodule.span ℝ
+        ({rationalPoint (fibreRay hBsym F G h)} : Set (realified ↥F.space))) ≤
+      realify G.plane := by
+    refine Submodule.map_le_iff_le_comap.2 fun w hw => ?_
+    rw [Submodule.mem_comap]
+    obtain ⟨c, rfl⟩ := Submodule.mem_span_singleton.1 hw
+    rw [map_smul, realifyMap_rationalPoint]
+    exact Submodule.smul_mem _ _
+      (hpoint _ (fibreRay_mem_plane hBsym F G h))
+  rw [vSigma, span_hull_singleton]
+  refine sup_le ?_ hmap
+  rw [lineSpan]
+  refine Submodule.span_le.2 ?_
+  rintro _ rfl
+  exact hpoint _ (F.gen_mem_plane G h)
+
+/-- **The two cases of Definition 6.1 do *not* agree at an isotropic half line, and not for want of
+a
+rewriting lemma.** For the Baily–Borel decomposition the case-(ii) value is `J^⊥`
+(`vSigmaPlane_eq_ker_inf_ker` with `ker_inf_ker_eq`, whose right-hand side is
+`planePerpQ` bit for bit), while Definition 6.1 (i)'s span formula at the same half line is inside
+`J` (`vSigma_le_realify_plane`). So any vector of `J^⊥` outside `J` — which exists exactly when
+`J^⊥ ≠ J`, the case of signature `(2,3)` and above, `tests/regression/ConicalPlaneRefinement23.lean`
+`J_lt_perp` — separates the two subspaces, and `V_σ` differs between the cases by `J^⊥/J`.
+
+The correct statement of the identification is therefore the inclusion
+`vSigma_le_vSigmaPlane_of_hull_fibreRay`, and the equality holds exactly when the decomposition's
+support space at the half line is the half line's span
+(`vSigmaPlane_eq_vSigma_of_sigmaSupportSpace_eq`), i.e. when `J_Σ = J`. -/
+theorem vSigma_lt_vSigmaPlane_facial_of_perp_witness (hBQ : ∀ u w : V,
+    (associated Q) (rationalPoint u) (rationalPoint w) = (BQ u w : ℝ))
+    (hBsym : BQ.IsSymm) (F : ConicalLine BQ Q) (G : ConicalPlane BQ) (h : F.line ≤ G.plane)
+    (hpos : sigPos (fibreForm Q F.space) = 1)
+    (hnd : (fibreForm Q F.space).Nondegenerate)
+    {x : realified V} (hx : x ∈ planePerpQ (Q := Q) G) (hxJ : x ∉ realify G.plane) :
+    vSigma F (PointedCone.hull ℝ
+        ({rationalPoint (fibreRay hBsym F G h)} : Set (realified ↥F.space))) <
+      vSigmaPlane hBsym F (facialDecomposition F.closure) G h := by
+  have hperp : vSigmaPlane hBsym F (facialDecomposition F.closure) G h = planePerpQ (Q := Q) G := by
+    rw [vSigmaPlane_eq_ker_inf_ker hBQ hBsym F G h hpos hnd, ker_inf_ker_eq]
+    rfl
+  refine lt_of_le_of_ne (vSigma_le_vSigmaPlane_of_hull_fibreRay hBsym F _ G h) ?_
+  intro heq
+  have hxP : x ∈ vSigmaPlane hBsym F (facialDecomposition F.closure) G h := hperp ▸ hx
+  exact hxJ (vSigma_le_realify_plane hBsym F G h (heq.symm ▸ hxP))
+
+end HalfLineIdentification
 
 end AmbientRefinement
 
