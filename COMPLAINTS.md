@@ -38,6 +38,43 @@ does not justify weakening a dependent theorem or starting unrelated work.
 
 ## Mathematical issues
 
+### The quadratic refinement of an orthogonal sum's discriminant form: the transport statement diverges in `whnf` (#26)
+
+- **Need:** for even lattices `S`, `K` and `z ∈ A_(S ⊥ K)`,
+  `q_(S ⊥ K)(z) = q_S(z₁) + q_K(z₂)` where `(z₁, z₂) = evenDiscriminantDefectMap S K z`. This is
+  the ambient form of Nikulin, *Integral symmetric bilinear forms and some of their applications*,
+  Math. USSR Izv. 14 (1980), Prop. 1.5.1, p. 111 (`q_S ⊕ q_K` on `A_S ⊕ A_K`), and it is the last
+  input of #26's results 3 and 4: total isotropy of the gluing graph inside the discriminant form of
+  `S ⊥ K`, the overlattice it determines, its evenness, and the primitivity of the two factors.
+- **Evidence:** the identity holds on metric-dual representatives and is proved there — see
+  `orthogonalSumSpanFst`, `orthogonalSumSpanSnd` and `rationalizedForm_orthogonalSum` in
+  `LeanCategories/Lattices/Valued/OrthogonalSumDiscriminant.lean`, together with
+  `evenDiscriminantDefectMap_metricDualToDiscriminant` in the same file, which computes the two
+  coordinates of a class from a metric-dual representative. What does not elaborate is the theorem
+  whose *statement* combines `evenDiscriminantQuadraticMap (L := orthogonalSum L M) hLM hEvenLM z`
+  with the two factor refinements of `(evenDiscriminantDefectMap L M z).1` and `.2`: Lean 4.36.0
+  reports `(deterministic) timeout at 'whnf'` at the theorem's own line, at 200000, 1000000 and
+  4000000 heartbeats. Each piece elaborates in about a second on its own — the statement with the
+  sum's refinement alone, the statement with the two factor refinements applied to the projections
+  alone, and the two-sided statement without the sum's `hLM`/`hEvenLM` — so the divergence is in
+  elaborating the combination, not in the mathematics. The unfinished proof is preserved at
+  `.scratch/nik26/open-q-transport.lean`.
+- **Gap and impact:** without this theorem the gluing graph of an anti-isometry cannot be seen as a
+  subgroup of `A_(S ⊥ K)`, so `evenOverlatticeFromIsotropicSubgroup` cannot be applied and #26's
+  results 3 and 4 (glued lattice, evenness, discriminant form `Γ^⊥/Γ`, primitivity and
+  `K = S^⊥`) remain unproved. Results 1 and 2 of #26 do not depend on it and are proved
+  (`evenDiscriminantSubgroupGraph_isTotallyIsotropic_iff`,
+  `exists_evenDiscriminantSubgroupGraph_eq`).
+- **Coverage:** `whnf` was confirmed to terminate on `(orthogonalSum L M).obj.defect`,
+  `evenDiscriminantDefectMap L M z` and `(…).1` separately, and on the two-sided statement with the
+  factor refinements only. Not inspected: whether naming the combination through an intermediate
+  `def` (so that the statement mentions an opaque constant) avoids the divergence; the one attempt
+  at raising the heartbeat limit did not.
+- **Repair link:** #26. Resolved when `evenDiscriminantQuadraticMap_orthogonalSum` elaborates and is
+  proved; the natural candidate is to state it through an opaque abbreviation for the sum's
+  refinement `(orthogonalSum L M).obj.defect → Frac(R)/2R`, then `show` it back to
+  `evenDiscriminantQuadraticMap` inside the proof.
+
 ### The per-plane line count of `#88` has no formal chain: the adapted basis and the line/`ℙ¹(ℚ)`
 correspondence are still absent (the image `Δ` and its action have landed)
 

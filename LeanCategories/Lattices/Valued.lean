@@ -15,6 +15,7 @@ public import LeanCategories.Lattices.Valued.FittingIdeal
 public import LeanCategories.Lattices.Valued.DiscriminantFunctor
 public import LeanCategories.Lattices.Valued.Gluing
 public import LeanCategories.Lattices.Valued.EvenGluing
+public import LeanCategories.Lattices.Valued.OrthogonalSumDiscriminant
 public import LeanCategories.Lattices.Valued.GluingAction
 public import LeanCategories.Lattices.Valued.SmithNormalForm
 public import LeanCategories.Lattices.Valued.DiscriminantQuadratic

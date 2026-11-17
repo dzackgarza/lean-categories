@@ -5,6 +5,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import LeanCategories.Lattices.Valued.EvenGluing
+public import LeanCategories.Modules.Quadratic.Valued.Graph
 
 /-!
 # The orthogonal-sum discriminant splitting for the graph of an anti-isometry (#26)
@@ -17,12 +18,24 @@ orthogonal sum restricts, along each coordinate inclusion, to the adjoint of the
 corresponding factor — and defines the graph of an anti-isometry between the quadratic
 discriminant forms as a submodule of the product of the two defect quotients.
 
-This file proves only those restriction laws and defines the graph subgroup. The
-defect-quotient equivalence the restrictions induce, the transport of the quadratic
-discriminant form along it — the total isotropy of the graph inside the discriminant
-form of `S ⊥ K`, the overlattice the graph determines, its discriminant form
-`Γ^⊥/Γ`, and the primitive embedding of the two factors — is not proved here; those are
-the remaining results of #26 and are not claimed by this module.
+What this file proves:
+
+* the two restriction laws of the defect splitting (`evenDiscriminantFstRestriction`,
+  `evenDiscriminantSndRestriction`, `evenDiscriminantRestrictions_adjoint`) and the descended
+  map `evenDiscriminantDefectMap` on the defect of the orthogonal sum;
+* `evenDiscriminantSubgroupGraph_isTotallyIsotropic_iff`: for a subgroup `H ⊆ A_S` and a linear
+  map `γ : H → A_K`, the graph `Γ_γ ⊆ A_S × A_K` is totally isotropic for `q_S ⊕ q_K` exactly
+  when `q_K ∘ γ = -q_S|H` (Nikulin, Prop. 1.5.1, p. 111), from
+  `Modules/Quadratic/Valued/Graph.lean`;
+* `exists_evenDiscriminantSubgroupGraph_eq`: conversely, a totally isotropic subgroup of
+  `A_S × A_K` whose two projections are injective is the graph of an injective such `γ`
+  (Nikulin, §1.5, p. 111).
+
+Not proved here, and not claimed by this module: that `evenDiscriminantDefectMap` is an
+isomorphism (the defect-quotient equivalence), the transport of the quadratic discriminant form
+along it (the total isotropy of the graph inside the discriminant form of `S ⊥ K`), the
+overlattice the graph determines, its discriminant form `Γ^⊥/Γ`, and the primitive embedding of
+the two factors with `K = S^⊥`. Those are the remaining results of #26.
 
 Source: V. V. Nikulin, *Integral symmetric bilinear forms and some of their
 applications*, Math. USSR Izv. 14 (1980), §1.5, Prop. 1.5.1, p. 111.
@@ -219,12 +232,70 @@ theorem evenDiscriminantDefectMap_mk
       evenDiscriminantRestrictionMap L M f :=
   rfl
 
-end LeanCategories.Lattices.Valued
+/-! ## The graph of an anti-isometry of subgroups of discriminant forms
 
-#print axioms LeanCategories.Lattices.Valued.evenDiscriminantFstRestriction
-#print axioms LeanCategories.Lattices.Valued.evenDiscriminantFstRestriction_adjoint
-#print axioms LeanCategories.Lattices.Valued.evenDiscriminantSndRestriction
-#print axioms LeanCategories.Lattices.Valued.evenDiscriminantSndRestriction_adjoint
-#print axioms LeanCategories.Lattices.Valued.evenDiscriminantDefectMap
-#print axioms LeanCategories.Lattices.Valued.evenDiscriminantDefectMap_mk
-#print axioms LeanCategories.Lattices.Valued.evenDiscriminantAntiIsometryGraph
+Nikulin, §1.5, p. 111. For even lattices `S` and `K`, a subgroup `H ⊆ A_S` and a linear map
+`γ : H → A_K` with `q_K ∘ γ = -q_S|H`, the graph `Γ_γ ⊆ A_S ⊕ A_K` is isotropic for
+`q_S ⊕ q_K`; conversely a totally isotropic subgroup of `A_S ⊕ A_K` whose two projections are
+injective is such a graph. The two facts are the instances at `evenDiscriminantQuadraticMap` of
+`isTotallyIsotropic_quadraticGraph_iff` and
+`exists_quadraticGraph_eq_of_isTotallyIsotropic` of
+`Modules/Quadratic/Valued/Graph.lean`. -/
+
+variable (S K : IntegralLatticeCat R)
+
+/-- The orthogonal sum `q_S ⊕ q_K` of the two quadratic discriminant forms, as a quadratic
+module on the product of the two discriminant groups. -/
+noncomputable def evenDiscriminantOrthogonalSumQuadModule
+    (hS : IsFractionFieldPerfect R S) (hK : IsFractionFieldPerfect R K)
+    (hEvenS : IsEven S) (hEvenK : IsEven K) :
+    QuadModuleCat R (DoubleFractionValueQuotient R) :=
+  QuadModuleCat.ofQuadraticMap
+    (QuadraticMap.prod (evenDiscriminantQuadraticMap (L := S) hS hEvenS)
+      (evenDiscriminantQuadraticMap (L := K) hK hEvenK))
+
+/-- The graph `Γ_γ ⊆ A_S × A_K` of a linear map `γ` out of a subgroup `H ⊆ A_S`. -/
+noncomputable def evenDiscriminantSubgroupGraph
+    (H : Submodule R S.obj.defect) (γ : H →ₗ[R] K.obj.defect) :
+    Submodule R (S.obj.defect × K.obj.defect) :=
+  quadraticGraph H γ
+
+/-- A class lies in the graph exactly when it is `(x, γ x)`. -/
+theorem mem_evenDiscriminantSubgroupGraph_iff
+    {H : Submodule R S.obj.defect} {γ : H →ₗ[R] K.obj.defect}
+    {x : S.obj.defect} {y : K.obj.defect} :
+    (x, y) ∈ evenDiscriminantSubgroupGraph S K H γ ↔ ∃ hx : x ∈ H, γ ⟨x, hx⟩ = y :=
+  mem_quadraticGraph_iff
+
+/-- **The graph of an anti-isometry is isotropic** (Nikulin, Prop. 1.5.1, p. 111). The graph of
+`γ : H → A_K` is totally isotropic for `q_S ⊕ q_K` exactly when `γ` reverses the quadratic
+discriminant forms: `q_K (γ x) = -q_S x` for all `x ∈ H`. -/
+theorem evenDiscriminantSubgroupGraph_isTotallyIsotropic_iff
+    (hS : IsFractionFieldPerfect R S) (hK : IsFractionFieldPerfect R K)
+    (hEvenS : IsEven S) (hEvenK : IsEven K)
+    (H : Submodule R S.obj.defect) (γ : H →ₗ[R] K.obj.defect) :
+    (evenDiscriminantOrthogonalSumQuadModule (S := S) (K := K) hS hK hEvenS hEvenK).IsTotallyIsotropic
+        (evenDiscriminantSubgroupGraph S K H γ) ↔
+      ∀ x : H, evenDiscriminantQuadraticMap (L := K) hK hEvenK (γ x) =
+        -evenDiscriminantQuadraticMap (L := S) hS hEvenS ((x : H) : S.obj.defect) :=
+  isTotallyIsotropic_quadraticGraph_iff _ _ H γ
+
+/-- **Every isotropic subgroup with injective projections is such a graph** (Nikulin, §1.5,
+p. 111). A totally isotropic subgroup `N ≤ A_S × A_K` whose two projections to `A_S` and `A_K`
+are injective is the graph of an injective `γ : H → A_K` reversing the quadratic discriminant
+forms. -/
+theorem exists_evenDiscriminantSubgroupGraph_eq
+    (hS : IsFractionFieldPerfect R S) (hK : IsFractionFieldPerfect R K)
+    (hEvenS : IsEven S) (hEvenK : IsEven K)
+    (N : Submodule R (S.obj.defect × K.obj.defect))
+    (hN : (evenDiscriminantOrthogonalSumQuadModule (S := S) (K := K) hS hK hEvenS hEvenK).IsTotallyIsotropic N)
+    (h₁ : Function.Injective fun x : N => ((x : S.obj.defect × K.obj.defect)).1)
+    (h₂ : Function.Injective fun x : N => ((x : S.obj.defect × K.obj.defect)).2) :
+    ∃ (H : Submodule R S.obj.defect) (γ : H →ₗ[R] K.obj.defect),
+      Function.Injective γ ∧
+        (∀ x : H, evenDiscriminantQuadraticMap (L := K) hK hEvenK (γ x) =
+          -evenDiscriminantQuadraticMap (L := S) hS hEvenS ((x : H) : S.obj.defect)) ∧
+        N = evenDiscriminantSubgroupGraph S K H γ :=
+  exists_quadraticGraph_eq_of_isTotallyIsotropic _ _ N hN h₁ h₂
+
+end LeanCategories.Lattices.Valued
