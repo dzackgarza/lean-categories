@@ -363,19 +363,6 @@ theorem ConicalLine.gen_mem_plane (F : ConicalLine BQ Q) (G : ConicalPlane BQ)
   exact Submodule.subset_span (Set.mem_singleton F.gen)
 
 omit [Module.Finite ℚ V] in
-/-- **The class of a plane's ray in the fibre of one of its lines**: Looijenga §1B, p. 11 (text
-line 265), "`Λ²J` can be regarded as a line in `I ⊗ I^⊥/I`". The representative in the carrier
-`planeComplement` of the fibre is `ray - (ray · f) e`: the adjustment is along the hyperbolic
-partner `f` only, because `ray · e = 0` (both lie in the totally isotropic plane). -/
-theorem fibreRayProj_val (hBsym : BQ.IsSymm) (F : ConicalLine BQ Q) (G : ConicalPlane BQ)
-    (h : F.line ≤ G.plane) :
-    ((fibreRayProj hBsym F G h : ↥F.space) : V) = F.planeRay G h - BQ (F.planeRay G h) F.partner • F.gen := by
-  have hge : BQ (G.rayOf F.gen (F.gen_mem_of_le G h) F.gen_ne) F.gen = 0 := by
-    rw [hBsym.eq]
-    exact G.rayOf_pairing (F.gen_mem_of_le G h) F.gen_ne
-  simp only [fibreRayProj, fibreProj, ConicalLine.planeRay, hge, zero_smul, sub_zero]
-
-omit [Module.Finite ℚ V] in
 /-- **The half line of a plane is a nonzero isotropic ray of the fibre**, from its class: the fibre
 form is even (`fibreForm_fibreRay_eq`), so the half line inherits both properties of the class. -/
 theorem fibreRay_isotropic (hBQ : ∀ u w : V,

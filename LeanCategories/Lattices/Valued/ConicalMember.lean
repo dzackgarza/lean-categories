@@ -6,6 +6,7 @@ module
 
 public import LeanCategories.Lattices.Valued.Semifan
 public import Mathlib.LinearAlgebra.ExteriorPower.Basic
+public import Mathlib.LinearAlgebra.ExteriorPower.Basis
 
 /-!
 # Members of the conical locus, their support spaces and their isotropic centres
@@ -37,7 +38,11 @@ supplies
 * `ConicalMember`: **the common member type** — the apex `{0}` (the member `C_{{0}}` of Definition
   2.1), a cone in the fibre of a `ℚ`-isotropic line (Definition 6.1 case (i)), and the half line
   `C_{J,+}` of a `ℚ`-isotropic plane (case (ii)), the latter with the witnessing line `I ⊆ J` that
-  the source's condition (ii) makes immaterial;
+  the source's condition (ii) makes immaterial, *together with the coherence of the fibre's sheet
+  with the plane's orientation* (`ConicalPlane.IsPositiveAt`): the two are independent data, and
+  without the coherence the same oriented plane presents, in the fibre with the opposite sheet, as
+  the antipodal half line — `tests/regression/ConicalPlaneSplit22.lean` computes both carriers of
+  the two sheets of one fibre;
 * `ConicalMember.vSigma` and `ConicalMember.isotropicCenter`: `V_σ` and `I(σ)` **for every member**,
   in all three cases, the plane case taken relative to the decomposition as the source says
   ("this space not only depends on σ, but also on Σ");
@@ -51,7 +56,10 @@ supplies
   of every member there, `conicalLocusSet` is the source's union, and
   `ConicalMember.carrier_plane_eq_fibre` / `carrier_plane_le_fibre_closure` are §1B's identification
   of the two presentations of a half line and the sentence "`C_J` is contained in the boundary of
-  `C_I`";
+  `C_I`", and `carrier_plane_eq_positiveRay` is the carrier itself: at a coherent presentation the
+  plane member is carried to the closed ray `{t • r_J | 0 ≤ t}` of the positive generator of
+  Example 6.3, p. 29 (with `wedgeTwo_dir_ne_zero`: that generator is not zero), so two witnessing
+  lines of one plane give the same carrier (`ConicalMember.carrier_plane_eq_of_witness`);
 * **Example 6.2 in all three cases**: `vSigma` of the fibre's closed cone and of its open cone is
   `I^⊥` (`ConicalLine.vSigma_closure_eq_ker`, `ConicalLine.vSigma_cone_eq_ker`), of a plane's half
   line is `J^⊥` (`ConicalLine.vSigmaPlane_eq_ker_inf_ker`, in `Semifan`), and of the apex is `{0}`;
@@ -343,7 +351,17 @@ variable {BQ : LinearMap.BilinForm ℚ V} {Q : QuadraticForm ℝ (realified V)}
 
 /-- **The members of the conical locus**, Looijenga Definition 2.1 (p. 10) and Definition 6.1
 (p. 28): the apex, a member of the fibre of a `ℚ`-isotropic line, and the half line of a
-`ℚ`-isotropic plane at a witnessing line of it. -/
+`ℚ`-isotropic plane at a witnessing line of it.
+
+The plane case carries the *coherence* of the two pieces of presentation data, not just their
+incidence: the plane's orientation and the fibre's sheet are independent (`ConicalLine.sheet` and
+its negative are different `ConicalLine`s both containing the plane's lines), and the source's
+`C_J ⊂ ∂C_I` (§1B, p. 11) is the statement that the class of `r_J` pairs positively with the sheet
+(`ConicalPlane.IsPositiveAt`). Without it the same oriented plane would present, through a fibre
+with the opposite sheet, as the *antipodal* half line in `⋀²V(ℝ)` — which is not `C_J` —
+`tests/regression/ConicalPlaneSplit22.lean` computes both carriers and shows they differ. A plane
+member is therefore always a source-valid incidence presentation, and its carrier is the closed ray
+of the positive generator (`ConicalMember.carrier_plane_eq_positiveRay`). -/
 inductive ConicalMember (BQ : LinearMap.BilinForm ℚ V)
     (Q : QuadraticForm ℝ (realified V)) : Type
   /-- the apex `{0}`: the cone `C_{{0}}` at the zero isotropic subspace -/
@@ -352,9 +370,9 @@ inductive ConicalMember (BQ : LinearMap.BilinForm ℚ V)
   | fibre (F : ConicalLine BQ Q) (σ : PointedCone ℝ (realified ↥F.space)) :
       ConicalMember BQ Q
   /-- the half line `C_{J,+}` of a `ℚ`-isotropic plane, at a witnessing `ℚ`-isotropic line
-  `I ≤ J`: Definition 6.1 case (ii) -/
-  | plane (F : ConicalLine BQ Q) (G : ConicalPlane BQ) (h : F.line ≤ G.plane) :
-      ConicalMember BQ Q
+  `I ≤ J` whose sheet is coherent with the plane's orientation: Definition 6.1 case (ii) -/
+  | plane (F : ConicalLine BQ Q) (G : ConicalPlane BQ) (h : F.line ≤ G.plane)
+      (hcoh : G.IsPositiveAt F h) : ConicalMember BQ Q
 
 namespace ConicalMember
 
@@ -367,7 +385,7 @@ noncomputable def vSigma (hBsym : BQ.IsSymm)
     ConicalMember BQ Q → Submodule ℝ (realified V)
   | zero => ⊥
   | fibre F σ => LeanCategories.Lattices.Valued.vSigma F σ
-  | plane F G h => LeanCategories.Lattices.Valued.vSigmaPlane hBsym F (locus F) G h
+  | plane F G h _ => LeanCategories.Lattices.Valued.vSigmaPlane hBsym F (locus F) G h
 
 /-- **the isotropic centre `I(σ) = V_σ ∩ V_σ^⊥`** of any member (Definition 6.1, p. 28). -/
 noncomputable def isotropicCenter (hBsym : BQ.IsSymm)
@@ -396,9 +414,10 @@ theorem vSigma_plane_witness {Γ : Set (V ≃ₗ[ℚ] V)}
     {locus : ∀ F : ConicalLine BQ Q, Set (PointedCone ℝ (realified ↥F.space))}
     (D : IsAdmissibleDecomposition BQ Q Γ locus) (hBsym : BQ.IsSymm)
     (F F' : ConicalLine BQ Q) (G : ConicalPlane BQ)
-    (h : F.line ≤ G.plane) (h' : F'.line ≤ G.plane) :
-    (plane F G h : ConicalMember BQ Q).vSigma hBsym locus =
-      (plane F' G h' : ConicalMember BQ Q).vSigma hBsym locus :=
+    (h : F.line ≤ G.plane) (h' : F'.line ≤ G.plane)
+    (hcoh : G.IsPositiveAt F h) (hcoh' : G.IsPositiveAt F' h') :
+    (plane F G h hcoh : ConicalMember BQ Q).vSigma hBsym locus =
+      (plane F' G h' hcoh' : ConicalMember BQ Q).vSigma hBsym locus :=
   D.condition_ii hBsym F F' G h h'
 
 omit [Module.Finite ℚ V] in
@@ -427,7 +446,7 @@ refining the first above the half line `C_{J,+}`, the support space of the plane
 is `Semifan.vSigmaPlane_le_of_refines` read at the member type: the plane member's `V_σ` is the
 source's `J_Σ`, and it is monotone in `Σ`. -/
 theorem vSigma_plane_mono_of_refines (hBsym : BQ.IsSymm) (F : ConicalLine BQ Q)
-    (G : ConicalPlane BQ) (h : F.line ≤ G.plane)
+    (G : ConicalPlane BQ) (h : F.line ≤ G.plane) (hcoh : G.IsPositiveAt F h)
     {locus locus' : ∀ F : ConicalLine BQ Q, Set (PointedCone ℝ (realified ↥F.space))}
     (hidx : supportIndex (positiveCone.upper (fibreForm Q F.space) F.sheet) (locus F)
       (PointedCone.hull ℝ ({rationalPoint (fibreRay hBsym F G h)} :
@@ -439,8 +458,8 @@ theorem vSigma_plane_mono_of_refines (hBsym : BQ.IsSymm) (F : ConicalLine BQ Q)
         Set (realified ↥F.space)) ≤ τ ∧ τ ≤ τ'.1 ∧
         ((τ : Set (realified ↥F.space)) ∩
           (positiveCone.upper (fibreForm Q F.space) F.sheet : Set (realified ↥F.space))).Nonempty) :
-    (plane F G h : ConicalMember BQ Q).vSigma hBsym locus ≤
-      (plane F G h : ConicalMember BQ Q).vSigma hBsym locus' :=
+    (plane F G h hcoh : ConicalMember BQ Q).vSigma hBsym locus ≤
+      (plane F G h hcoh : ConicalMember BQ Q).vSigma hBsym locus' :=
   vSigmaPlane_le_of_refines hBsym F G h hidx hrefines
 
 end ConicalMember
@@ -461,10 +480,10 @@ source's "the support spaces are `{0}` and the orthogonal complements of the non
 theorem ConicalMember.vSigma_plane_facial (hBQ : ∀ u w : V,
     (associated Q) (rationalPoint u) (rationalPoint w) = (BQ u w : ℝ))
     (hBsym : BQ.IsSymm) (F : ConicalLine BQ Q) (G : ConicalPlane BQ)
-    (h : F.line ≤ G.plane)
+    (h : F.line ≤ G.plane) (hcoh : G.IsPositiveAt F h)
     (hpos : ∀ F : ConicalLine BQ Q, sigPos (fibreForm Q F.space) = 1)
     (hnd : ∀ F : ConicalLine BQ Q, (fibreForm Q F.space).Nondegenerate) :
-    (ConicalMember.plane F G h).vSigma hBsym (fun F => facialDecomposition F.closure) =
+    (ConicalMember.plane F G h hcoh).vSigma hBsym (fun F => facialDecomposition F.closure) =
       LinearMap.ker ((associated Q) (rationalPoint F.gen)) ⊓
         LinearMap.ker ((associated Q) (rationalPoint (F.planeRay G h))) :=
   vSigmaPlane_eq_ker_inf_ker hBQ hBsym F G h (hpos F) (hnd F)
@@ -503,13 +522,13 @@ admissible `Σ`, neither of which is used here. -/
 theorem ConicalMember.realify_plane_le_isotropicCenter_facial (hBQ : ∀ u w : V,
     (associated Q) (rationalPoint u) (rationalPoint w) = (BQ u w : ℝ))
     (hBsym : BQ.IsSymm) (F : ConicalLine BQ Q) (G : ConicalPlane BQ)
-    (h : F.line ≤ G.plane)
+    (h : F.line ≤ G.plane) (hcoh : G.IsPositiveAt F h)
     (hpos : ∀ F : ConicalLine BQ Q, sigPos (fibreForm Q F.space) = 1)
     (hnd : ∀ F : ConicalLine BQ Q, (fibreForm Q F.space).Nondegenerate) :
     realify G.plane ≤
-      (ConicalMember.plane F G h).isotropicCenter hBsym
+      (ConicalMember.plane F G h hcoh).isotropicCenter hBsym
         (fun F => facialDecomposition F.closure) := by
-  have hv := ConicalMember.vSigma_plane_facial hBQ hBsym F G h hpos hnd
+  have hv := ConicalMember.vSigma_plane_facial hBQ hBsym F G h hcoh hpos hnd
   rw [ConicalMember.isotropicCenter, hv, LeanCategories.Lattices.Valued.isotropicCenter]
   set Kg := LinearMap.ker ((associated Q) (rationalPoint F.gen)) with hKg
   set Kr := LinearMap.ker ((associated Q) (rationalPoint (F.planeRay G h))) with hKr
@@ -655,6 +674,17 @@ theorem wedgeTwo_linear_comb (a b c d : ℝ) (x y : realified V) :
   rw [hlin, map_add, map_smul, map_smul, wedgeLeft_apply, wedgeLeft_apply, h1, h2]
   module
 
+omit [Module.Finite ℚ V] in
+theorem wedgeTwo_add_right (a b c : realified V) :
+    wedgeTwo a (b + c) = wedgeTwo a b + wedgeTwo a c := by
+  rw [wedgeTwo_swap, wedgeTwo_add_left, wedgeTwo_swap a b, wedgeTwo_swap a c]
+  abel
+
+omit [Module.Finite ℚ V] in
+theorem wedgeTwo_smul_right (c : ℝ) (a b : realified V) :
+    wedgeTwo a (c • b) = c • wedgeTwo a b := by
+  rw [wedgeTwo_swap, wedgeTwo_smul_left, wedgeTwo_swap a b, smul_neg, neg_neg]
+
 section RayOf
 
 variable {BQ : LinearMap.BilinForm ℚ V}
@@ -701,6 +731,52 @@ theorem wedgeTwo_rayOf (G : ConicalPlane BQ) {g : V} (hg : g ∈ G.plane) (hg0 :
       norm_num
     rw [hcoef, one_smul]
 
+omit [Module.Finite ℚ V] in
+/-- In `⋀²` of the real form of a plane, the wedge of the two vectors of the positive basis is the
+basis vector at the full set of the two indices of the basis of the plane, hence not zero. -/
+theorem wedgeTwo_planeBasis_ne_zero (G : ConicalPlane BQ) :
+    wedgeTwo (rationalPoint (G.basis 0)) (rationalPoint (G.basis 1)) ≠ 0 := by
+  classical
+  have hcard : (Finset.univ : Finset (Fin 2)).card = 2 := by simp
+  set s : Set.powersetCard (Fin 2) 2 := ⟨(Finset.univ : Finset (Fin 2)), hcard⟩ with hs
+  have hne : ((G.basis.baseChange ℝ).exteriorPower 2) s ≠ 0 := Module.Basis.ne_zero _ s
+  rw [exteriorPower.basis_apply ℝ 2 (G.basis.baseChange ℝ) s] at hne
+  have hidx' : (id : Fin 2 → Fin 2) =
+      Finset.orderEmbOfFin (Finset.univ : Finset (Fin 2)) hcard :=
+    Finset.orderEmbOfFin_unique hcard (fun x => Finset.mem_univ x) strictMono_id
+  have hidx : ∀ i, Set.powersetCard.ofFinEmbEquiv.symm s i = i := by
+    intro i
+    rw [Set.powersetCard.ofFinEmbEquiv_symm_apply, ← hidx']
+    rfl
+  have hfun : (⇑(G.basis.baseChange ℝ) ∘ Set.powersetCard.ofFinEmbEquiv.symm s) =
+      ![rationalPoint (G.basis 0), rationalPoint (G.basis 1)] := by
+    funext i
+    rw [Function.comp_apply, hidx i]
+    fin_cases i <;> simp [Module.Basis.baseChange_apply, rationalPoint_apply]
+  rw [exteriorPower.ιMulti_family, hfun] at hne
+  exact hne
+
+omit [Module.Finite ℚ V] in
+/-- **The positive rational generator `r_J = dir ∧ dirAlt` of an oriented plane is not zero**: by
+Example 6.3, p. 29, it generates the line `⋀²J(ℚ)`, so the two half lines of `⋀²J(ℝ) − {0}` are its
+positive and negative multiples, and `{t • r_J | 0 ≤ t}` is one of them. -/
+theorem wedgeTwo_dir_ne_zero (G : ConicalPlane BQ) :
+    wedgeTwo (rationalPoint G.dir) (rationalPoint G.dirAlt) ≠ 0 := by
+  classical
+  have hne := wedgeTwo_planeBasis_ne_zero G
+  have hinj : Function.Injective ⇑(exteriorPower.map 2 (realifyMap G.plane)) :=
+    exteriorPower.map_injective_field (realifyMap_injective G.plane)
+  have hmap : exteriorPower.map 2 (realifyMap G.plane)
+      (wedgeTwo (rationalPoint (G.basis 0)) (rationalPoint (G.basis 1))) =
+      wedgeTwo (rationalPoint G.dir) (rationalPoint G.dirAlt) := by
+    rw [wedgeTwo, wedgeTwo, exteriorPower.map_apply_ιMulti]
+    congr 1
+    funext i
+    fin_cases i <;>
+      simp [ConicalPlane.dir, ConicalPlane.dirAlt, realifyMap_rationalPoint]
+  intro h
+  exact hne (hinj (by rw [hmap, map_zero]; exact h))
+
 end RayOf
 
 
@@ -719,20 +795,103 @@ noncomputable def ConicalMember.carrier (hBsym : BQ.IsSymm) :
   | zero => {0}
   | fibre F σ => wedgeLeft (rationalPoint F.gen) ''
       ((fun c : realified ↥F.space => realifyMap F.space c) '' (σ : Set (realified ↥F.space)))
-  | plane F G hw => wedgeLeft (rationalPoint F.gen) ''
+  | plane F G hw _ => wedgeLeft (rationalPoint F.gen) ''
       ((fun c : realified ↥F.space => realifyMap F.space c) ''
         (PointedCone.hull ℝ ({rationalPoint (fibreRay hBsym F G hw)} :
           Set (realified ↥F.space)) : Set (realified ↥F.space)))
+
+omit [Module.Finite ℚ V] in
+/-- The pointed hull of a singleton is the closed ray generated by the vector. -/
+theorem mem_hull_singleton {M : Type*} [AddCommGroup M] [Module ℝ M] {x y : M} :
+    y ∈ (PointedCone.hull ℝ ({x} : Set M) : Set M) ↔ ∃ t : ℝ, 0 ≤ t ∧ t • x = y := by
+  rw [PointedCone.hull, SetLike.mem_coe, Submodule.mem_span_singleton]
+  exact ⟨fun ⟨a, ha⟩ => ⟨(a : ℝ), a.2, ha⟩, fun ⟨t, ht, h⟩ => ⟨⟨t, ht⟩, h⟩⟩
+
+omit [Module.Finite ℚ V] in
+/-- **The class of the plane's ray in the fibre, carried to `⋀²V(ℝ)` by `e ⊗ c ↦ e ∧ c`, is the
+wedge `e ∧ ρ`** of the line's generator with the ray: the projection `fibreProj` moves the ray by a
+multiple of `e`, which the wedge kills. -/
+theorem wedgeLeft_fibreRayProj (hBsym : BQ.IsSymm) (F : ConicalLine BQ Q) (G : ConicalPlane BQ)
+    (h : F.line ≤ G.plane) :
+    wedgeLeft (rationalPoint F.gen)
+        (realifyMap F.space (rationalPoint (fibreRayProj hBsym F G h))) =
+      wedgeTwo (rationalPoint F.gen) (rationalPoint (F.planeRay G h)) := by
+  rw [realifyMap_rationalPoint, fibreRayProj_val, map_sub, rationalPoint_rat_smul, map_sub,
+    wedgeLeft_apply, wedgeLeft_apply, wedgeTwo_smul_right, wedgeTwo_self, smul_zero, sub_zero]
+
+omit [Module.Finite ℚ V] in
+/-- The same vector, written with the positive generator of the plane: `g ∧ ρ = r_J`
+(`wedgeTwo_rayOf`). -/
+theorem wedgeLeft_gen_fibreRayProj (hBsym : BQ.IsSymm) (F : ConicalLine BQ Q)
+    (G : ConicalPlane BQ) (h : F.line ≤ G.plane) :
+    wedgeLeft (rationalPoint F.gen)
+        (realifyMap F.space (rationalPoint (fibreRayProj hBsym F G h))) =
+      wedgeTwo (rationalPoint G.dir) (rationalPoint G.dirAlt) := by
+  rw [wedgeLeft_fibreRayProj]
+  exact wedgeTwo_rayOf G (F.gen_mem_of_le G h) F.gen_ne
+
+omit [Module.Finite ℚ V] in
+/-- **The carrier of a plane member at a witnessing line is the closed ray over the wedge of its
+fibre half line with the line's generator**: `ConicalMember.carrier` carries the cone
+`PointedCone.hull {fibreRay}` to `⋀²V(ℝ)` by the linear map `e ∧ ·`, and a linear image of the cone
+hull of one vector is the cone hull of its image. -/
+theorem ConicalMember.mem_carrier_plane_iff (hBsym : BQ.IsSymm) (F : ConicalLine BQ Q)
+    (G : ConicalPlane BQ) (h : F.line ≤ G.plane) (hcoh : G.IsPositiveAt F h)
+    (x : ⋀[ℝ]^2 (realified V)) :
+    x ∈ (ConicalMember.plane F G h hcoh : ConicalMember BQ Q).carrier hBsym ↔
+      ∃ t : ℝ, 0 ≤ t ∧ t • (wedgeLeft (rationalPoint F.gen)
+        (realifyMap F.space (rationalPoint (fibreRay hBsym F G h)))) = x := by
+  simp only [ConicalMember.carrier, Set.mem_image]
+  constructor
+  · rintro ⟨y, ⟨c, hc, rfl⟩, rfl⟩
+    rw [mem_hull_singleton] at hc
+    obtain ⟨t, ht, rfl⟩ := hc
+    exact ⟨t, ht, by rw [map_smul, map_smul]⟩
+  · rintro ⟨t, ht, rfl⟩
+    refine ⟨realifyMap F.space (t • rationalPoint (fibreRay hBsym F G h)), ?_, ?_⟩
+    · exact ⟨t • rationalPoint (fibreRay hBsym F G h),
+        mem_hull_singleton.2 ⟨t, ht, rfl⟩, rfl⟩
+    · rw [map_smul, map_smul]
+
+omit [Module.Finite ℚ V] in
+/-- **The carrier of a plane member at a coherent presentation is the closed ray of the positive
+rational generator**: Example 6.3, p. 29, `r_J ∈ ⋀²J(ℚ)` generates `C_J`, and §1B, p. 11, embeds
+`⋀²J` in the fibre of every line of `J`; with the sheet coherent with the orientation, the `C_J`
+that arrives is the positive one. -/
+theorem ConicalMember.carrier_plane_eq_positiveRay (hBsym : BQ.IsSymm) (F : ConicalLine BQ Q)
+    (G : ConicalPlane BQ) (h : F.line ≤ G.plane) (hcoh : G.IsPositiveAt F h) :
+    (ConicalMember.plane F G h hcoh : ConicalMember BQ Q).carrier hBsym =
+      {x : ⋀[ℝ]^2 (realified V) |
+        ∃ t : ℝ, 0 ≤ t ∧ t • wedgeTwo (rationalPoint G.dir) (rationalPoint G.dirAlt) = x} := by
+  refine Set.ext fun x => ?_
+  rw [ConicalMember.mem_carrier_plane_iff, Set.mem_ofPred]
+  refine exists_congr fun t => ?_
+  rw [fibreRay_eq_fibreRayProj_of_isPositiveAt hBsym F G h hcoh,
+    wedgeLeft_gen_fibreRayProj hBsym F G h]
+
+omit [Module.Finite ℚ V] in
+/-- **The two source-valid presentations of a plane give the same carrier**: condition (ii) of
+Definition 6.1 asks for independence of the line `I ⊆ J`, and at the level of the carrier in
+`⋀²V(ℝ)` that is now a theorem — both coherent presentations carry `C_{J,+}` to the closed ray of
+the same positive generator. -/
+theorem ConicalMember.carrier_plane_eq_of_witness (hBsym : BQ.IsSymm) (F F' : ConicalLine BQ Q)
+    (G : ConicalPlane BQ) (h : F.line ≤ G.plane) (h' : F'.line ≤ G.plane)
+    (hcoh : G.IsPositiveAt F h) (hcoh' : G.IsPositiveAt F' h') :
+    (ConicalMember.plane F G h hcoh : ConicalMember BQ Q).carrier hBsym =
+      (ConicalMember.plane F' G h' hcoh' : ConicalMember BQ Q).carrier hBsym := by
+  rw [ConicalMember.carrier_plane_eq_positiveRay hBsym F G h hcoh,
+    ConicalMember.carrier_plane_eq_positiveRay hBsym F' G h' hcoh']
 
 omit [Module.Finite ℚ V] in
 /-- **The two presentations of a plane's half line give the same subset of `⋀²V(ℝ)`**: the plane
 member and the fibre member whose cone is the class of the plane's ray are carried to the same
 set — §1B, p. 11, "`Λ²J` can be regarded as a line in `I ⊗ I^⊥/I`". -/
 theorem ConicalMember.carrier_plane_eq_fibre (hBsym : BQ.IsSymm)
-    (F : ConicalLine BQ Q) (G : ConicalPlane BQ) (_h : F.line ≤ G.plane) :
-    (ConicalMember.plane F G _h : ConicalMember BQ Q).carrier hBsym =
+    (F : ConicalLine BQ Q) (G : ConicalPlane BQ) (h : F.line ≤ G.plane)
+    (hcoh : G.IsPositiveAt F h) :
+    (ConicalMember.plane F G h hcoh : ConicalMember BQ Q).carrier hBsym =
       (ConicalMember.fibre F (PointedCone.hull ℝ
-        ({rationalPoint (fibreRay hBsym F G _h)} : Set (realified ↥F.space))) :
+        ({rationalPoint (fibreRay hBsym F G h)} : Set (realified ↥F.space))) :
         ConicalMember BQ Q).carrier hBsym := rfl
 
 omit [Module.Finite ℚ V] in
@@ -752,10 +911,10 @@ of any of its lines. The class of the plane's ray is a point of `C_{I,+}`
 theorem ConicalMember.carrier_plane_le_fibre_closure (hBQ : ∀ u w : V,
     (associated Q) (rationalPoint u) (rationalPoint w) = (BQ u w : ℝ))
     (hBsym : BQ.IsSymm) (F : ConicalLine BQ Q) (G : ConicalPlane BQ) (h : F.line ≤ G.plane)
-    (hpos : sigPos (fibreForm Q F.space) = 1) :
-    (ConicalMember.plane F G h : ConicalMember BQ Q).carrier hBsym ⊆
+    (hcoh : G.IsPositiveAt F h) (hpos : sigPos (fibreForm Q F.space) = 1) :
+    (ConicalMember.plane F G h hcoh : ConicalMember BQ Q).carrier hBsym ⊆
       (ConicalMember.fibre F F.closure : ConicalMember BQ Q).carrier hBsym := by
-  rw [ConicalMember.carrier_plane_eq_fibre]
+  rw [ConicalMember.carrier_plane_eq_fibre hBsym F G h hcoh]
   refine ConicalMember.carrier_fibre_mono hBsym F ?_
   rw [PointedCone.hull]
   refine Submodule.span_le.2 ?_
@@ -765,13 +924,18 @@ theorem ConicalMember.carrier_plane_le_fibre_closure (hBQ : ∀ u w : V,
   exact fibreRay_mem_closure hBQ hBsym F G h hpos
 
 /-- **The conical locus of Definition 2.1, p. 10, inside `⋀²V(ℝ)`**: the union of the apex, the open
-cones `C_I` of the `ℚ`-isotropic lines and the half lines `C_{J,+}` of the `ℚ`-isotropic planes. -/
+cones `C_I` of the `ℚ`-isotropic lines and the half lines `C_{J,+}` of the `ℚ`-isotropic planes, the
+latter at the presentations coherent with their orientation (`ConicalPlane.IsPositiveAt`). The
+incoherent presentations would contribute the antipode of `C_J`, which is the conical locus of the
+other component of `D` ("If we replace `D` by its complex conjugate (the other component), then the
+conical locus is replaced by its antipode", Definition 2.1, p. 10). -/
 noncomputable def conicalLocusSet (hBsym : BQ.IsSymm) : Set (⋀[ℝ]^2 (realified V)) :=
   ({0} : Set (⋀[ℝ]^2 (realified V))) ∪
     (⋃ (F : ConicalLine BQ Q),
       (ConicalMember.fibre F F.cone : ConicalMember BQ Q).carrier hBsym) ∪
-    (⋃ (F : ConicalLine BQ Q) (G : ConicalPlane BQ) (h : F.line ≤ G.plane),
-      (ConicalMember.plane F G h : ConicalMember BQ Q).carrier hBsym)
+    (⋃ (F : ConicalLine BQ Q) (G : ConicalPlane BQ) (h : F.line ≤ G.plane)
+        (hcoh : G.IsPositiveAt F h),
+      (ConicalMember.plane F G h hcoh : ConicalMember BQ Q).carrier hBsym)
 
 omit [Module.Finite ℚ V] in
 /-- The apex is a point of the conical locus. -/
@@ -790,11 +954,13 @@ theorem carrier_cone_subset_conicalLocusSet (hBsym : BQ.IsSymm) (F : ConicalLine
 omit [Module.Finite ℚ V] in
 /-- The half line of every `ℚ`-isotropic plane is part of the conical locus. -/
 theorem carrier_plane_subset_conicalLocusSet (hBsym : BQ.IsSymm)
-    (F : ConicalLine BQ Q) (G : ConicalPlane BQ) (h : F.line ≤ G.plane) :
-    (ConicalMember.plane F G h : ConicalMember BQ Q).carrier hBsym ⊆
+    (F : ConicalLine BQ Q) (G : ConicalPlane BQ) (h : F.line ≤ G.plane)
+    (hcoh : G.IsPositiveAt F h) :
+    (ConicalMember.plane F G h hcoh : ConicalMember BQ Q).carrier hBsym ⊆
       conicalLocusSet (Q := Q) hBsym := by
   intro x hx
-  exact Or.inr (Set.mem_iUnion.2 ⟨F, Set.mem_iUnion.2 ⟨G, Set.mem_iUnion.2 ⟨h, hx⟩⟩⟩)
+  exact Or.inr (Set.mem_iUnion.2 ⟨F, Set.mem_iUnion.2 ⟨G, Set.mem_iUnion.2
+    ⟨h, Set.mem_iUnion.2 ⟨hcoh, hx⟩⟩⟩⟩)
 
 end Carrier
 
