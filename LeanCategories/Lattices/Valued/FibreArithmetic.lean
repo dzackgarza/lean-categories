@@ -58,11 +58,15 @@ than assuming it.
 * `semifanArrangementTraces` and `semifanArrangementTraces_eq`: `Σ(ℋ)` of Example 6.4 indexed by
   the fibre's own traces, equal to the ambient-indexed `semifanArrangement` of `SemifanArrangement`.
 * `CutsFinitelyOnTraces`: the duplicate-insensitive counting interface;
-  `cutsFinitelyOnRational_traceForm_iff` reads it as `CutsFinitelyOnRational` of the trace-indexed
-  family, so every consumer of the latter applies to it;
+  `cutsFinitelyOnRational_iff_cutsFinitelyOnTraces` reads it as `CutsFinitelyOnRational` of any
+  trace-indexed family, so every consumer of the latter applies to it;
   `cutsFinitelyOnTraces_orbitFamily` derives it from the reduced lattice and the orbit family of
-  §1B — no local-finiteness or counting certificate is assumed.
-* `semifanArrangementTraces_isLocallyRational_of_arithmetic`: condition (i) of Definition 6.1 for
+  §1B — no local-finiteness or counting certificate is assumed — and
+  `cutsFinitelyOnRational_of_cutsFinitelyOnTraces` (with `_of_finite`) states exactly when the trace
+  count implies the *ambient-indexed* count the existing consumers take: when no trace is repeated
+  infinitely often. For an infinite `ℋ` that is what fails, and it is why the ambient count is not
+  the source's hypothesis.
+* `semifanArrangementTraces_isLocallyRational_of_orbitFamily`: condition (i) of Definition 6.1 for
   `Σ(ℋ)` at a fibre, from that arithmetic input alone.
 * the half-line chain at an **actual isotropic ray** of the Lorentzian fibre
   (`semifanArrangement_ray_meets`, `sigmaSupportSpace_ray_le_ker`, `traceKernel_le_span_of_member`):
@@ -667,6 +671,47 @@ theorem CutsFinitelyOnTraces.mono {S S' : Set (Submodule ℚ ↥F.space)}
     exact hT
   · intro a _ b _ hab
     exact Subtype.ext (congrArg (fun T : S' => (T.1 : Submodule ℚ ↥F.space)) hab)
+
+omit [Module.Finite ℚ V] in
+/-- A finite ambient family has finitely many distinct traces. -/
+theorem finite_distinctTraces {ι : Type*} [Finite ι] (ψ : ι → V →ₗ[ℚ] ℚ)
+    (F : ConicalLine BQ Q) : (distinctTraces ψ F).Finite :=
+  Set.finite_range _
+
+omit [Module.Finite ℚ V] in
+/-- **The trace count gives the ambient-indexed count when no trace is repeated infinitely often.**
+This is the exact sense in which the duplicate-insensitive count *applies to the existing
+`CutsFinitelyOnRational F.closure (fun i : fibreWalls ψ F => fibreFormC F (ψ ↑i))` consumers*: they
+hold as soon as each trace has finitely many ambient walls over it. For an infinite `ℋ` that
+condition is what fails, and with it the index count — not the source's statement, which counts
+traces. -/
+theorem cutsFinitelyOnRational_of_cutsFinitelyOnTraces {ι : Type*}
+    (ψ : ι → V →ₗ[ℚ] ℚ) (F : ConicalLine BQ Q)
+    (hcut : CutsFinitelyOnTraces F (distinctTraces ψ F))
+    (hfib : ∀ T : distinctTraces ψ F,
+      {i : fibreWalls ψ F | fibreTrace (ψ ↑i) F = T.1}.Finite) :
+    CutsFinitelyOnRational F.closure (fun i : fibreWalls ψ F => fibreFormC F (ψ ↑i)) := by
+  intro P hP hPle
+  have hfinT : {T : distinctTraces ψ F | TraceCutsOn F T.1 P}.Finite := hcut P hP hPle
+  have hcover : {i : fibreWalls ψ F | CutsOn (fibreFormC F (ψ ↑i)).toLinearMap P} ⊆
+      ⋃ T ∈ {T : distinctTraces ψ F | TraceCutsOn F T.1 P},
+        {i : fibreWalls ψ F | fibreTrace (ψ ↑i) F = T.1} := by
+    intro i hi
+    have hi' : CutsOn (fibreFormC F (ψ ↑i)).toLinearMap P := hi
+    refine Set.mem_iUnion₂.2 ⟨traceProj ψ F i, ⟨(ψ ↑i).comp F.space.subtype, rfl, ?_⟩, rfl⟩
+    rw [fibreFormC_eq_fibreTraceCLM] at hi'
+    exact hi'
+  exact Set.Finite.subset (hfinT.biUnion fun T _ => hfib T) hcover
+
+omit [Module.Finite ℚ V] in
+/-- **The trace count gives the ambient-indexed count for a finite ambient family**, where every
+trace is repeated only finitely often. -/
+theorem cutsFinitelyOnRational_of_cutsFinitelyOnTraces_of_finite {ι : Type*} [Finite ι]
+    (ψ : ι → V →ₗ[ℚ] ℚ) (F : ConicalLine BQ Q)
+    (hcut : CutsFinitelyOnTraces F (distinctTraces ψ F)) :
+    CutsFinitelyOnRational F.closure (fun i : fibreWalls ψ F => fibreFormC F (ψ ↑i)) :=
+  cutsFinitelyOnRational_of_cutsFinitelyOnTraces ψ F hcut
+    fun _ => Set.Finite.subset (Set.toFinite _) (Set.subset_univ _)
 
 end TraceCounting
 
