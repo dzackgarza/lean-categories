@@ -46,6 +46,12 @@ supplies
   of the plane;
 * `ConicalMember.vSigma_mono_member`: **Lemma 6.6** for the member-level containments — the apex
   below everything, and the fibre and plane cases of the refinement;
+* **the conical locus inside `⋀²V(ℝ)`** (Definition 2.1, p. 10): `wedgeTwo`/`wedgeLeft` are the
+  inclusion `e ⊗ c ↦ e ∧ c` of a fibre `I^⊥/I` into `⋀²V(ℝ)`, `ConicalMember.carrier` is the image
+  of every member there, `conicalLocusSet` is the source's union, and
+  `ConicalMember.carrier_plane_eq_fibre` / `carrier_plane_le_fibre_closure` are §1B's identification
+  of the two presentations of a half line and the sentence "`C_J` is contained in the boundary of
+  `C_I`";
 * **Example 6.2 in all three cases**: `vSigma` of the fibre's closed cone and of its open cone is
   `I^⊥` (`ConicalLine.vSigma_closure_eq_ker`, `ConicalLine.vSigma_cone_eq_ker`), of a plane's half
   line is `J^⊥` (`ConicalLine.vSigmaPlane_eq_ker_inf_ker`, in `Semifan`), and of the apex is `{0}`;
@@ -414,6 +420,28 @@ theorem vSigma_fibre_mono (hBsym : BQ.IsSymm)
     (fibre F σ : ConicalMember BQ Q).vSigma hBsym locus ≤
       (fibre F σ' : ConicalMember BQ Q).vSigma hBsym locus :=
   vSigma_mono h
+
+omit [Module.Finite ℚ V] in
+/-- **Lemma 6.6, p. 30, the plane case**: for two decompositions of the fibre of `I`, the second
+refining the first above the half line `C_{J,+}`, the support space of the plane member grows. This
+is `Semifan.vSigmaPlane_le_of_refines` read at the member type: the plane member's `V_σ` is the
+source's `J_Σ`, and it is monotone in `Σ`. -/
+theorem vSigma_plane_mono_of_refines (hBsym : BQ.IsSymm) (F : ConicalLine BQ Q)
+    (G : ConicalPlane BQ) (h : F.line ≤ G.plane)
+    {locus locus' : ∀ F : ConicalLine BQ Q, Set (PointedCone ℝ (realified ↥F.space))}
+    (hidx : supportIndex (positiveCone.upper (fibreForm Q F.space) F.sheet) (locus F)
+      (PointedCone.hull ℝ ({rationalPoint (fibreRay hBsym F G)} :
+        Set (realified ↥F.space))))
+    (hrefines : ∀ τ' : supportIndex (positiveCone.upper (fibreForm Q F.space) F.sheet)
+      (locus' F) (PointedCone.hull ℝ ({rationalPoint (fibreRay hBsym F G)} :
+        Set (realified ↥F.space))),
+      ∃ τ ∈ locus F, PointedCone.hull ℝ ({rationalPoint (fibreRay hBsym F G)} :
+        Set (realified ↥F.space)) ≤ τ ∧ τ ≤ τ'.1 ∧
+        ((τ : Set (realified ↥F.space)) ∩
+          (positiveCone.upper (fibreForm Q F.space) F.sheet : Set (realified ↥F.space))).Nonempty) :
+    (plane F G h : ConicalMember BQ Q).vSigma hBsym locus ≤
+      (plane F G h : ConicalMember BQ Q).vSigma hBsym locus' :=
+  vSigmaPlane_le_of_refines hBsym F G h hidx hrefines
 
 end ConicalMember
 
