@@ -3578,6 +3578,39 @@ downstream assertions, computational observations, or downstream diagnostics.
   `exists_orbitFamily_of_traceOrbitCover`. Filed here because the GitHub connector cannot create
   issues: this entry is the issue.
 
+### #27 — the morphism-level comparison between `BC2Action` and `EquivariantLatticeCat`
+
+- **Need:** the functor half of the comparison proved in `ArrowLoci.lean` §4. On objects the two
+  models coincide: `equivariantCore : EquivariantLatticeCat Rc BC2 → Action (Core
+  (FiniteProjectiveLatticeCat Rc Rc)) BC2` and `coreToEquivariant` are mutually inverse
+  (`coreToEquivariant_equivariantCore`, `equivariantCore_coreToEquivariant`). What is missing is the
+  transport of *morphisms*, which would make the comparison the equivalence on the core-full
+  subcategory that it should be.
+- **Evidence:** `Action (Core C) G`'s hom-types are `CoreHom`s (isomorphisms of `C`) by
+  construction, while `Action.Hom` for `C` itself is an arbitrary `C`-morphism with a commutation
+  condition, so the object-level maps do not extend to a functor on all morphisms. The two
+  constructions needed are (i) post-composition of an action with a functor of the action categories,
+  `Action C G ⥤ Action D G` from `F : C ⥤ D` (object `V ↦ F.obj V`, `ρ g ↦ End.of (F.map (ρ g).asHom)`,
+  morphism `φ ↦ F.map φ.hom`, with `Action.Hom.comm` transported by `F.map_comp`), and (ii) the
+  inclusion `Core (FiniteProjectiveLatticeCat Rc Rc) ⥤ Core (LatticeCat Rc Rc)` of the cores of a
+  full subcategory and its ambient category. Mathlib has `Action.forget`, `Action.Hom`,
+  `Action.hom_ext` and `Action.ρAut`, and no `Action.mapFunctor`/`Action.res` for an
+  action-category-level functor.
+- **Gap and impact:** without (i)+(ii) the comparison is an object bijection only; a consumer cannot
+  transport an action morphism across the two models, and cannot conclude that the core-valued finite
+  model is the core-full subcategory `BC2Action`'s base cut down to finite lattices. No statement in
+  the tree depends on the missing half: the round trips are proved for objects and nothing claims
+  more.
+- **Coverage:** searched Mathlib at the pinned revision for `Action.mapFunctor`, `Action.res`,
+  `Action.forget`, `Action.Hom`, `Action.instCategory`, `Core.inclusion`, `ιOfLE`,
+  `ObjectProperty.ιOfLE`; searched the repository for `EquivariantLatticeCat`, `toCoreAction`,
+  `mapFunctor`. Not inspected: whether `Action`'s functor-category equivalence
+  (`Action V G ≌ (SingleObj G ⥤ V)`) gives (i) more cheaply than the direct construction.
+- **Repair link:** add `Action.mapFunctor` and the core inclusion to `ForMathlib/ActionCore.lean`, then
+  the comparison functor `Action (Core (FiniteProjectiveLatticeCat Rc Rc)) BC2 ⥤ BC2Action Rc Rc` and
+  its faithfulness (`Core.inclusion` is faithful) close the item. Filed here because the GitHub
+  connector cannot create issues: this entry is the issue.
+
 ### #27 — the arrow-category locus closure, the `End`/`Aut` extraction for a `BC₂`-action, and a concrete torsion-free marking witness
 
 - **Need:** (a) `primitiveEmbeddingLocus.IsClosedUnderIsomorphisms`, i.e. primitivity inherited along
@@ -3591,20 +3624,26 @@ downstream assertions, computational observations, or downstream diagnostics.
   revision), so an arbitrary `e : f ≅ g` in `Arrow T` cannot be decomposed into end isomorphisms
   without rebuilding the inverses by hand from `e.hom_inv_id` under `congrArg CommaMorphism.left`.
   `primitiveEmbeddingLocus_of_arrow_isoMk` states the closure in the presentation `Arrow.isoMk`
-  actually supplies. (b) `Action.ρ g : End A.V` and `Action.ρAut g : Aut A.V` are stated through the
-  aliases `End`/`Aut`, which the elaborator will not unify with `A.V ⟶ A.V` / `A.V ≅ A.V` at
-  `implicit` transparency (`type mismatch ... has type End A.V but is expected to have type
-  A.V ⟶ A.V`, and the same for `Aut`), so `CoreHom.iso (A.ρ g)` is rejected; `BC2Action.gen_sq`
-  states `σ² = 1` in the action's own monoid instead. (c) `Module.IsTorsionFree.isSMulRegular`
+  actually supplies. (b) **RESOLVED** — `End` in this revision is a *structure*
+  (`CategoryTheory.End` with field `asHom`, constructor `End.of`), not an abbreviation for `X ⟶ X`,
+  so `CoreHom.iso (A.ρ g)` cannot elaborate: the projection `End.asHom` is the bridge and the
+  failure is a missing projection, not a missing lemma. `Core.endOfIso` (`End.of ∘ CoreHom.mk`) and
+  `Core.isoOfEnd` (`·.asHom.iso`) in `ForMathlib/ActionCore.lean` are the two directions;
+  `BC2Action.involutionOf` now reads the involution out of a `BC₂`-action *as an isometry*
+  (`σ : L ≅ L`, with `involutionOf_involutive : σ ≪≫ σ = Iso.refl L`), `BC2Action.ofInvolution`
+  builds the action from such an isometry, and `involutionOf_ofInvolution` /
+  `ofInvolution_involutionOf` are the two round trips. `Action.isIso_gen` independently proves that
+  the generator of *any* `C₂`-action is invertible (an involutive endomorphism is an automorphism,
+  `IsIso.mk ⟨f, h, h⟩`). `BC2Action.gen_sq` remains as the monoid-level statement it was. (c) `Module.IsTorsionFree.isSMulRegular`
   needs `IsRegular (2 : ℤ)`, which is not an instance at this revision, and `rw`/`simp` do not see
   through the `ModuleCat.of` carrier coercions of `rankOneLattice 1`
   (`(-Pi.single 0 1) 0` stays unreduced, `LinearEquiv.neg ℤ` does not match `LinearEquiv.coe_neg`),
   so `negIso_ne_refl` carries `h2 : ∀ y, (2 : ℤ) • y = 0 → y = 0` as a named hypothesis.
 - **Gap and impact:** the locus closure and the marking noncontractibility are theorems in the
   `Arrow.isoMk` presentation and under a torsion-freeness hypothesis respectively, not in the
-  strongest available form; a consumer needing `IsClosedUnderIsomorphisms` or a `σ`-as-iso must
-  supply the missing extraction. No mathematics is weakened: `markingFibre_subsingleton_iff` is
-  stated with no hypothesis at all, and `negIso` is defined for every `W`-valued lattice.
+  strongest available form; a consumer needing `IsClosedUnderIsomorphisms` must supply the missing
+  extraction. No mathematics is weakened: `markingFibre_subsingleton_iff` is stated with no
+  hypothesis at all, and `negIso` is defined for every `W`-valued lattice. Item (b) is closed.
 - **Coverage:** Mathlib searched at the pinned revision (`Comma.isIso_left`, `Comma.isIso_right`,
   `Comma.hom_ext`, `Arrow.isoMk`, `Action.ρAut`, `End`, `Aut`, `Module.IsTorsionFree`,
   `IsRegular`, `Pi.neg_apply`, `Pi.single_eq_same`); the repository searched for `changeValue_id`,

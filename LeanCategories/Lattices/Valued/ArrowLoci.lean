@@ -7,6 +7,8 @@ module
 public import LeanCategories.Lattices.Valued.Sublattice
 public import LeanCategories.Lattices.Valued.ChangeValue
 public import LeanCategories.Lattices.Valued.Standard
+public import LeanCategories.Lattices.Valued.Equivariant
+public import LeanCategories.ForMathlib.ActionCore
 public import LeanCategories.ForMathlib.CosliceGroupoid
 public import LeanCategories.ForMathlib.LinearMapCompl
 public import Mathlib.CategoryTheory.Comma.Arrow
@@ -485,9 +487,7 @@ theorem negIso_ne_refl {L : LatticeCat ℤ ℤ}
 abbrev BC2 : Type := Multiplicative (ZMod 2)
 
 /-- The two elements of `C₂`: every element is the identity or the generator. -/
-theorem bc2_eq_one_or_gen (g : BC2) : g = 1 ∨ g = Multiplicative.ofAdd 1 := by
-  revert g
-  decide
+theorem bc2_eq_one_or_gen (g : BC2) : g = 1 ∨ g = Multiplicative.ofAdd 1 := C2.eq_one_or_gen g
 
 /-- An action of `BC₂` on a lattice, i.e. a functor `BC₂ → Lat_R^≃` (`FOUNDATIONS.md`
 Definition 28.4, as amended by the foundations audit: the action lands in the core). -/
@@ -506,6 +506,69 @@ theorem gen_sq (A : BC2Action R W) :
     A.ρ (Multiplicative.ofAdd 1) * A.ρ (Multiplicative.ofAdd 1) = 1 := by
   have hgen : (Multiplicative.ofAdd 1 : BC2) * Multiplicative.ofAdd 1 = 1 := by decide
   rw [← map_mul, hgen, map_one]
+
+/-- The isometry of the lattice by which the generator of `C₂` acts. This is Definition 28.4's
+"equivalently, it is an isometry `σ : L → L` with `σ² = 1`" read in the object language: because the
+action lands in the core, its generator is invertible, and this is that inverse-carrying isometry,
+not merely an endomorphism. -/
+def involutionOf (A : BC2Action R W) : A.V.of ≅ A.V.of :=
+  (A.ρ (Multiplicative.ofAdd 1)).asHom.iso
+
+/-- The extracted isometry squares to the identity. -/
+theorem involutionOf_involutive (A : BC2Action R W) :
+    involutionOf A ≪≫ involutionOf A = Iso.refl A.V.of := by
+  have h := Action.comp_self_gen A
+  have h2 := congrArg CoreHom.iso h
+  rw [CategoryTheory.coreCategory_comp_iso] at h2
+  simpa [involutionOf] using h2
+
+/-- **The constructor: an involutive isometry of a lattice defines a `BC₂`-action.** With
+`involutionOf` this makes `BC₂`-actions on `L` and involutions of `L` inverse to each other on the
+nose (`involutionOf_ofInvolution`, `ofInvolution_involutionOf`), so `BC₂ → Lat_R^≃` is not merely
+stateable as a functor but has its objects constructed from the lattice-theoretic data. -/
+def ofInvolution (L : LatticeCat R W) (σ : L ≅ L) (hσ : σ ≪≫ σ = Iso.refl L) :
+    BC2Action R W where
+  V := ⟨L⟩
+  ρ :=
+    { toFun := fun g => if g = 1 then 1 else Core.endOfIso σ
+      map_one' := by simp
+      map_mul' := by
+        have hsq : Core.endOfIso σ * Core.endOfIso σ = 1 := Core.endOfIso_mul_self σ hσ
+        intro a b
+        rcases C2.eq_one_or_gen a with rfl | rfl <;> rcases C2.eq_one_or_gen b with rfl | rfl
+        · simp
+        · simp
+        · simp
+        · rw [C2.gen_mul_self]
+          simp [hsq] }
+
+/-- The generator of the constructed action is the isometry it was built from. -/
+theorem ofInvolution_gen (L : LatticeCat R W) (σ : L ≅ L) (hσ : σ ≪≫ σ = Iso.refl L) :
+    (ofInvolution L σ hσ).ρ (Multiplicative.ofAdd 1) = Core.endOfIso σ := by
+  change (if (Multiplicative.ofAdd 1 : BC2) = 1 then 1 else Core.endOfIso σ) = Core.endOfIso σ
+  simp
+
+/-- One round trip: the isometry read off the constructed action is the one it was built from. -/
+theorem involutionOf_ofInvolution (L : LatticeCat R W) (σ : L ≅ L)
+    (hσ : σ ≪≫ σ = Iso.refl L) : involutionOf (ofInvolution L σ hσ) = σ := by
+  rw [involutionOf, ofInvolution_gen]
+  rfl
+
+/-- The other round trip: the action rebuilt from its own involution is the action. -/
+theorem ofInvolution_involutionOf (A : BC2Action R W) :
+    ofInvolution A.V.of (involutionOf A) (involutionOf_involutive A) = A := by
+  cases A with
+  | mk V ρ =>
+    cases V with
+    | mk L =>
+      refine Action.ext' rfl (heq_of_eq ?_)
+      apply MonoidHom.ext
+      intro g
+      rcases C2.eq_one_or_gen g with rfl | rfl
+      · exact (map_one ρ).symm
+      · rw [ofInvolution_gen]
+        apply End.ext
+        rfl
 
 end BC2Action
 
@@ -577,5 +640,129 @@ theorem antiIsometry_comp {L₁ L₂ L₃ : LatticeCat R W}
   intro x y
   simp only [LinearMap.comp_apply]
   rw [hψ, hφ, neg_neg]
+
+/-! ## 4. The comparison with `EquivariantLatticeCat`
+
+`Lattices/Valued/Equivariant.lean` owns the finite model
+`EquivariantLatticeCat R G = Action (FiniteProjectiveLatticeCat R R) G`: a `G`-action by
+endomorphisms on the category of *finite, `R`-valued* lattices.
+`BC2Action R W` is `Action (Core (LatticeCat R W)) BC2`: an action on *all projective `W`-valued*
+lattices landing in the core. They differ in three places, and the core is not one of them:
+
+* **The core costs nothing for `C₂`.** `Action.isIso_gen` proves that the generator of any
+  `C₂`-action satisfies `ρ σ * ρ σ = 1`, hence is invertible, so *every* `C₂`-action in a
+  category `C` is an action in `Core C`; `Action.toCoreAction` changes the codomain without moving
+  the object. The foundations audit's requirement that Definition 28.4's actions land in the core is
+  therefore a
+  theorem for `C₂` and not a hypothesis, and it is the involution law of the `(−1)` change-of-value-
+  module functor (`negValueChange_comp_self`) that supplies it at the level of `Lat_R`.
+* **The value module.** `BC2Action R W` keeps `W`; `EquivariantLatticeCat R G` fixes `W = R`. Since
+  the `(−1)` change-of-value-module functor is the anti-isometry mechanism, `W` is not a parameter
+  one can silently specialize.
+* **Finiteness.** `EquivariantLatticeCat`'s objects are finite-carrier; `BC2Action`'s are not.
+
+**What the comparison is.** On objects the two models *coincide*: `equivariantCore` and
+`coreToEquivariant` are mutually inverse bijections between `EquivariantLatticeCat Rc BC2` and
+`Action (Core (FiniteProjectiveLatticeCat Rc Rc)) BC2`, the latter being the base of
+`BC2Action Rc Rc` cut down to finite lattices, and both round trips are proved
+(`coreToEquivariant_equivariantCore`, `equivariantCore_coreToEquivariant`). They differ only on
+*morphisms*: every morphism in the core-valued model is an isomorphism of lattices by construction,
+while a morphism of `C₂`-actions in `EquivariantLatticeCat` need not be invertible. So the
+comparison is **an equivalence on the core-full subcategory** — `Core (EquivariantLatticeCat Rc
+BC2)` against the core-valued finite model — and its object half is proved here; the functor on
+morphisms (post-composition of an action with a functor of the action categories, plus the
+inclusion `Core (FiniteProjectiveLatticeCat) ⥤ Core (LatticeCat)`) is not built, and is recorded
+in `COMPLAINTS.md`. It is *not* a full embedding and *not* an equivalence of the non-core model with
+`BC2Action`, and the hypothesis that cannot be dropped is finiteness (together with `W = R`). -/
+
+section Comparison
+
+variable (Rc : Type) [CommRing Rc]
+
+/-- Every finite projective `C₂`-action's generator is an automorphism: the core condition of
+Definition 28.4 is automatic for `C₂` even in the non-core model. -/
+theorem equivariantLatticeCat_gen_isIso (A : EquivariantLatticeCat Rc BC2) :
+    IsIso (A.ρ (Multiplicative.ofAdd 1)).asHom :=
+  Action.isIso_gen A
+
+/-- The underlying lattice of a finite projective `C₂`-action. -/
+def equivariantLat (A : EquivariantLatticeCat Rc BC2) : LatticeCat Rc Rc :=
+  A.V.obj
+
+/-- It is finite, which is the hypothesis `BC2Action` does not carry. -/
+theorem equivariantLat_finite (A : EquivariantLatticeCat Rc BC2) :
+    Module.Finite Rc (equivariantLat Rc A).obj.carrier :=
+  A.V.property
+
+/-- The finite non-core model, core-valued, on the same lattices. -/
+def equivariantCore (A : EquivariantLatticeCat Rc BC2) :
+    Action (Core (FiniteProjectiveLatticeCat Rc Rc)) BC2 :=
+  Action.toCoreAction A
+
+@[simp]
+theorem equivariantCore_obj (A : EquivariantLatticeCat Rc BC2) :
+    (equivariantCore Rc A).V.of = A.V := rfl
+
+/-- The core-valued action and the finite model sit on the same lattice, on the nose. -/
+@[simp]
+theorem equivariantCore_lat (A : EquivariantLatticeCat Rc BC2) :
+    (equivariantCore Rc A).V.of.obj = equivariantLat Rc A := rfl
+
+/-- The reverse object map: a core-valued action is an action by endomorphisms on the same
+lattice. -/
+def coreToEquivariant (A : Action (Core (FiniteProjectiveLatticeCat Rc Rc)) BC2) :
+    EquivariantLatticeCat Rc BC2 where
+  V := A.V.of
+  ρ :=
+    { toFun := fun g => End.of (A.ρ g).asHom.iso.hom
+      map_one' := by
+        apply End.ext
+        simp
+      map_mul' := by
+        intro a b
+        apply End.ext
+        simp [End.mul_asHom, CategoryTheory.coreCategory_comp_iso, Iso.trans_hom] }
+
+@[simp]
+theorem coreToEquivariant_V (A : Action (Core (FiniteProjectiveLatticeCat Rc Rc)) BC2) :
+    (coreToEquivariant Rc A).V = A.V.of := rfl
+
+/-- The generator survives the round trip through the core-valued model. -/
+theorem coreToEquivariant_equivariantCore_gen (A : EquivariantLatticeCat Rc BC2) :
+    (coreToEquivariant Rc (equivariantCore Rc A)).ρ (Multiplicative.ofAdd 1) =
+      A.ρ (Multiplicative.ofAdd 1) := by
+  change End.of (Core.isoOfEnd (Core.endOfIso (Action.genIso A))).hom =
+    A.ρ (Multiplicative.ofAdd 1)
+  rw [show Core.isoOfEnd (Core.endOfIso (Action.genIso A)) = Action.genIso A from rfl,
+    Action.genIso_hom]
+
+
+/-- The two object maps are inverse on objects: composing the finite model into the core-valued one
+and back returns the action. -/
+theorem coreToEquivariant_equivariantCore (A : EquivariantLatticeCat Rc BC2) :
+    coreToEquivariant Rc (equivariantCore Rc A) = A := by
+  refine Action.ext' rfl (heq_of_eq ?_)
+  apply MonoidHom.ext
+  intro g
+  rcases C2.eq_one_or_gen g with rfl | rfl
+  · exact (map_one A.ρ).symm
+  · exact coreToEquivariant_equivariantCore_gen Rc A
+
+/-- The other round trip: core-valued actions and the finite model coincide on objects. -/
+theorem equivariantCore_coreToEquivariant
+    (A : Action (Core (FiniteProjectiveLatticeCat Rc Rc)) BC2) :
+    equivariantCore Rc (coreToEquivariant Rc A) = A := by
+  refine Action.ext' rfl (heq_of_eq ?_)
+  apply MonoidHom.ext
+  intro g
+  rcases C2.eq_one_or_gen g with rfl | rfl
+  · exact (map_one _).symm
+  · apply End.ext
+    apply Core.hom_ext
+    change (asIso ((A.ρ (Multiplicative.ofAdd 1)).asHom.iso.hom)).hom =
+      (A.ρ (Multiplicative.ofAdd 1)).asHom.iso.hom
+    rw [asIso_hom]
+
+end Comparison
 
 end LeanCategories.Lattices.Valued

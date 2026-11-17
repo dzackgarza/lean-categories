@@ -7,6 +7,7 @@ module
 public import LeanCategories
 public import LeanCategories.CategoryTheory.PathBicategory
 public import LeanCategories.CategoryTheory.PosetPathLaxFunctor
+public import LeanCategories.ForMathlib.ActionCore
 public import LeanCategories.ForMathlib.CharacteristicTwoArfInvariant
 public import LeanCategories.ForMathlib.CosetTable
 public import LeanCategories.ForMathlib.CosliceGroupoid
