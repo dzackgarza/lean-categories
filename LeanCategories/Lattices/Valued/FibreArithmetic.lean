@@ -1134,4 +1134,67 @@ theorem semifanArrangement_arithmetic_fibre
 
 end ArithmeticCaller
 
+
+section BasisFreeCaller
+
+variable {BQ : LinearMap.BilinForm ℚ V} {Q : QuadraticForm ℝ (realified V)}
+variable {ι : Type*}
+
+/-- **The fibre-level caller with the reduced lattice's basis supplied by the library.** Same as
+`semifanArrangement_arithmetic_fibre`, without the fibre basis `bs` and its identification `hbs` as
+inputs: `exists_basis_reducedLattice` produces them from the ambient lattice
+`Λ = span ℤ (range bs₀)` and the reduced lattice `(Λ ⊓ I^⊥)/(Λ ⊓ I)` of Looijenga §1B, p. 11. -/
+theorem semifanArrangement_arithmetic_fibre_of_basis
+    (hBQsym : BQ.IsSymm)
+    (hBQ : ∀ u w : V, (associated Q) (rationalPoint u) (rationalPoint w) = (BQ u w : ℝ))
+    (hsig : sigPos Q = 2) (hnd : Q.Nondegenerate) (F : ConicalLine BQ Q)
+    {κ₀ : Type} [Finite κ₀] (bs₀ : Module.Basis κ₀ ℚ V)
+    (hint₀ : ∀ x ∈ Submodule.span ℤ (Set.range bs₀), ∀ y ∈ Submodule.span ℤ (Set.range bs₀),
+      ∃ n : ℤ, BQ x y = (n : ℚ))
+    (ΓI : Set (↥F.space ≃ₗ[ℚ] ↥F.space))
+    (hone : (1 : ↥F.space ≃ₗ[ℚ] ↥F.space) ∈ ΓI)
+    (H₀ : Finset (Submodule ℚ ↥F.space))
+    (hΓΛ : ∀ e ∈ ΓI, Submodule.map ((e : ↥F.space →ₗ[ℚ] ↥F.space).restrictScalars ℤ)
+      (reducedLattice hBQsym F (Submodule.span ℤ (Set.range bs₀))) =
+        reducedLattice hBQsym F (Submodule.span ℤ (Set.range bs₀)))
+    (hΓiso : ∀ e ∈ ΓI, ∀ x y : ↥F.space,
+      restrictBilinForm BQ F.space (e x) (e y) = restrictBilinForm BQ F.space x y)
+    (gen : ↥(orbitFamily H₀ ΓI) → ↥F.space)
+    (hgen : ∀ ℓ : ↥(orbitFamily H₀ ΓI), gen ℓ ≠ 0 ∧
+      reducedLattice hBQsym F (Submodule.span ℤ (Set.range bs₀)) ⊓ ℓ.1.restrictScalars ℤ =
+        Submodule.span ℤ ({gen ℓ} : Set ↥F.space))
+    (ψ : ι → V →ₗ[ℚ] ℚ)
+    (hsub : distinctTraces ψ F ⊆ orbitFamilyTraces BQ F gen)
+    {ρ : ↥F.space} (hρ : fibreForm Q F.space (rationalPoint ρ) = 0) (hρ0 : ρ ≠ 0)
+    (hρsheet : 0 ≤ (associated (fibreForm Q F.space)) (rationalPoint ρ) F.sheet) :
+    IsLocallyRationalDecomposition F.closure (semifanArrangement ψ F) ∧
+      sigmaSupportSpace (positiveCone.upper (fibreForm Q F.space) F.sheet)
+          (semifanArrangementTraces ψ F)
+          (PointedCone.hull ℝ ({rationalPoint ρ} : Set (realified ↥F.space))) ≤
+        LinearMap.ker ((associated (fibreForm Q F.space)) (rationalPoint ρ)) ∧
+      (∀ τ : supportIndex (positiveCone.upper (fibreForm Q F.space) F.sheet)
+          (semifanArrangementTraces ψ F)
+          (PointedCone.hull ℝ ({rationalPoint ρ} : Set (realified ↥F.space))),
+        (⨅ T : {T : distinctTraces ψ F // traceForm ψ F T (rationalPoint ρ) = 0},
+            LinearMap.ker (traceForm ψ F T.1).toLinearMap) ≤
+          Submodule.span ℝ (τ.1 : Set (realified ↥F.space))) := by
+  classical
+  obtain ⟨κ, hκ, bs, hbs⟩ := exists_basis_reducedLattice hBQsym F bs₀
+  haveI : Fintype κ := hκ
+  have hΓΛ' : ∀ e ∈ ΓI, Submodule.map ((e : ↥F.space →ₗ[ℚ] ↥F.space).restrictScalars ℤ)
+      (Submodule.span ℤ (Set.range bs)) = Submodule.span ℤ (Set.range bs) := by
+    intro e he
+    rw [hbs]
+    exact hΓΛ e he
+  have hgen' : ∀ ℓ : ↥(orbitFamily H₀ ΓI), gen ℓ ≠ 0 ∧
+      Submodule.span ℤ (Set.range bs) ⊓ ℓ.1.restrictScalars ℤ =
+        Submodule.span ℤ ({gen ℓ} : Set ↥F.space) := by
+    intro ℓ
+    obtain ⟨h1, h2⟩ := hgen ℓ
+    exact ⟨h1, by rw [hbs]; exact h2⟩
+  exact semifanArrangement_arithmetic_fibre hBQsym hBQ hsig hnd F bs₀ hint₀ bs hbs ΓI hone H₀
+    hΓΛ' hΓiso gen hgen' ψ hsub hρ hρ0 hρsheet
+
+end BasisFreeCaller
+
 end LeanCategories.Lattices.Valued
