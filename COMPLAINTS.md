@@ -3316,3 +3316,23 @@ downstream assertions, computational observations, or downstream diagnostics.
   and the fibre's own hyperplane family is the index there.
 - **Repair link:** (a) then unblocks the unconditional Example 6.4; (b) is the remaining choice step of
   Lemma 6.6; (c) is a separate bound on isotropic subspaces.
+
+### `toLine_toSubmodule` at `cobleLine` does not synthesize `cobleLatticeCarrierTorsionFree` (#88)
+
+- **Need:** the span of the Coble line as a submodule, `cobleLine.toSubmodule = span ℤ {coblePlaneV}`,
+  which the flag-incidence specialization `cobleLine_le_coblePlane` needs in order to prove
+  `cobleLine ≤ coblePlane` from the two displayed spans.
+- **Evidence:** `PrimitiveIsotropicVector.toLine_toSubmodule` (`CuspVector.lean:117`) applied to
+  `cobleVector` fails with `synthInstanceFailed: NoZeroSMulDivisors ℤ ↑cobleLattice.obj.carrier`,
+  while `#synth NoZeroSMulDivisors ℤ ↑cobleLattice.obj.carrier` in the same file returns
+  `cobleLatticeCarrierTorsionFree` (`CobleLattice.lean:343`). Reproduced in a three-line probe
+  importing only `LeanCategories.Lattices.Valued.CobleCusps`. Passing the instance explicitly
+  (`@PrimitiveIsotropicVector.toLine_toSubmodule ℤ _ _ cobleLattice cobleLatticeCarrierTorsionFree
+  cobleVector`) elaborates.
+- **Gap and impact:** papercut, not a missing instance: the instance is found by `#synth`, so the
+  failure is in elaborating the lemma's implicit instance argument at this carrier, and every consumer
+  of `cobleLine`'s span has to name the instance itself. Nothing mathematical is lost.
+- **Coverage:** `CuspPlaneIncidence.cobleLine_le_coblePlane` names the instance; the same shape did not
+  appear at `PrimitiveIsotropic.act`, whose `R` stays a variable.
+- **Repair link:** a restatement of `toLine_toSubmodule` at `cobleLine` in `CobleCusps` (or naming the
+  instance in that file's own `cobleLine`-level span lemma) would remove the papercut for later users.

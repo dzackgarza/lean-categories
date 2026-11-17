@@ -30,6 +30,15 @@ decompositions of §6 live on.
   (Definition 4.2, p. 17) is `ConicalLine.closure`. The half-line `C_J` of a `ℚ`-isotropic plane is
   carried by `ConicalPlane`, and its class in the fibre of a line `I ⊆ J` is `fibreRay` (§1B: `Λ²J`
   is a line in `I ⊗ I^⊥/I`).
+* **the oriented plane, §1A p. 10 and Example 6.3 p. 29**: `ConicalPlane` carries the plane together
+  with the *positive rational generator* `r_J ∈ ⋀²J(ℚ)` of the distinguished component `C_J` of
+  `⋀²J(ℝ) − {0}`, realised as the ordered basis `(dir, dirAlt)` of `J` with `r_J = dir ∧ dirAlt`. Its
+  ray in the fibre of a witnessing line `I = ℚ g` is *derived* from `r_J`, not stored:
+  `ConicalPlane.rayOf` is the vector `ρ ∈ J` with `g ∧ ρ = r_J`, and `fibreRayProj` is its class in
+  `I^⊥/I`. (The carrier at `55966097` stored one vector required to lie outside *every* line of the
+  plane, so it had no instance at all: `I = ⟨ray⟩` is a line of the plane containing `ray`. See
+  `tests/regression/ConicalPlaneSplit22.lean` for the recorded contradiction and a genuine plane on
+  a split space of signature `(2,2)` with two witnessing lines.)
 * **Definition 6.1, p. 28** (text line 769): `IsAdmissibleDecomposition`, with `Γ`-invariance of the
   collection (`IsGammaInvariantLocus`), condition (i) — the members of `Σ` in `C_{I,+}` are a
   locally rational decomposition of it, Definition 4.2 through
@@ -376,9 +385,25 @@ noncomputable def closure : PointedCone ℝ (realified ↥(planeComplement BQ F.
 
 end ConicalLine
 
-/-- A `ℚ`-isotropic plane of the conical locus with the choice of its half-line `C_{J,+}`
-(Definition 2.1, p. 10; the cone `C_J` is a half-line in `Λ²J(ℝ)`). `ray` is a `ℚ`-rational
-generator of `J/I` for every isotropic line `I ≤ J`. -/
+/-- **An oriented `ℚ`-isotropic plane of the conical locus**: Looijenga §1A, p. 10, with the
+positive rational generator of Example 6.3, p. 29.
+
+The data of the source is the *positive rational generator* `r_J ∈ ⋀²J(ℚ)`. The choice of the
+component `D` "determines an orientation of `J(ℝ)`. This means that the punctured line
+`⋀²J(ℝ) − {0}` has a distinguished component. We shall denote this component by `C_J`" (§1A,
+p. 10), and Example 6.3 (p. 29) asks for a positive rational generator `r_J` for every plane `J`;
+the half line `C_J` is then `{t • r_J | 0 < t}`.
+
+`r_J` is carried by the ordered `ℚ`-basis `(dir, dirAlt)` of `J` with `r_J = dir ∧ dirAlt`: every
+generator of `⋀²J(ℚ)` is the wedge of a basis, and exchanging the two vectors negates the wedge, so
+an orientation of `J` is exactly an ordered basis up to the sign of its wedge.
+
+**The plane's ray in a fibre is derived, not stored.** A single vector cannot generate `J` modulo
+*every* line of `J`: a vector that generates `J` modulo `I` must lie outside `I`, so no vector does
+so for `I = ℚ ray` itself — which is exactly what the discarded field `ray_not_mem_of_line`
+demanded, and that field made the carrier empty. `rayOf` instead computes the ray relative to each
+witnessing line `I = ℚ g` from `r_J`: it is the vector `ρ ∈ J` with `g ∧ ρ = r_J`, so that `g ⊗ ρ`
+is the image of `r_J` under the inclusion `⋀²J ⊂ I ⊗ I^⊥/I` of §1B, p. 11. -/
 structure ConicalPlane (BQ : LinearMap.BilinForm ℚ V) where
   /-- the isotropic plane -/
   plane : Submodule ℚ V
@@ -386,20 +411,185 @@ structure ConicalPlane (BQ : LinearMap.BilinForm ℚ V) where
   isotropic : ∀ x ∈ plane, ∀ y ∈ plane, BQ x y = 0
   /-- it is a plane -/
   two_dim : Module.finrank ℚ ↥plane = 2
-  /-- a `ℚ`-rational direction of the half-line -/
-  ray : V
-  ray_mem : ray ∈ plane
-  ray_ne : ray ≠ 0
-  /-- the ray generates the plane over each of its isotropic lines -/
-  ray_not_mem_of_line : ∀ (I : Submodule ℚ V), I ≤ plane → Module.finrank ℚ ↥I = 1 → ray ∉ I
+  /-- the positively oriented basis `(e, f)` of `J`: its wedge `e ∧ f` is the positive rational
+  generator `r_J ∈ ⋀²J(ℚ)` of Example 6.3, p. 29 -/
+  basis : Module.Basis (Fin 2) ℚ ↥plane
 
 namespace ConicalPlane
 
 variable {BQ : LinearMap.BilinForm ℚ V} (G : ConicalPlane BQ)
 
-omit [Module.Finite ℚ V] in
-theorem ray_iso : BQ G.ray G.ray = 0 :=
-  G.isotropic G.ray G.ray_mem G.ray G.ray_mem
+omit [Module.Finite ℚ V]
+
+/-- The first vector `e` of the positive basis of the plane. -/
+noncomputable def dir : V := (G.basis 0 : V)
+
+/-- The second vector `f` of the positive basis of the plane; the positive rational generator of
+`⋀²J(ℚ)` is `dir ∧ dirAlt`. -/
+noncomputable def dirAlt : V := (G.basis 1 : V)
+
+theorem dir_mem : G.dir ∈ G.plane := (G.basis 0).2
+
+theorem dirAlt_mem : G.dirAlt ∈ G.plane := (G.basis 1).2
+
+theorem dir_iso : BQ G.dir G.dir = 0 := G.isotropic G.dir G.dir_mem G.dir G.dir_mem
+
+theorem dirAlt_iso : BQ G.dirAlt G.dirAlt = 0 :=
+  G.isotropic G.dirAlt G.dirAlt_mem G.dirAlt G.dirAlt_mem
+
+theorem dir_pairing : BQ G.dir G.dirAlt = 0 :=
+  G.isotropic G.dir G.dir_mem G.dirAlt G.dirAlt_mem
+
+theorem dir_ne : G.dir ≠ 0 := by
+  intro h
+  exact G.basis.ne_zero 0 (Subtype.ext h)
+
+theorem dirAlt_ne : G.dirAlt ≠ 0 := by
+  intro h
+  exact G.basis.ne_zero 1 (Subtype.ext h)
+
+/-- The coordinates of a vector of the plane are the coordinates of its class in the positive
+basis. -/
+theorem repr_eq (x : ↥G.plane) :
+    (x : V) = G.basis.repr x 0 • G.dir + G.basis.repr x 1 • G.dirAlt := by
+  have h := G.basis.sum_repr x
+  rw [Fin.sum_univ_two] at h
+  rw [← h]
+  simp [dir, dirAlt]
+
+theorem repr_zero_eq_zero_of_eq_zero {x : ↥G.plane} (h : (x : V) = 0) :
+    G.basis.repr x 0 = 0 ∧ G.basis.repr x 1 = 0 := by
+  have hx : x = 0 := Subtype.ext h
+  rw [hx]
+  simp
+
+/-- **The ray of the plane in the fibre of a witnessing line** `I = ℚ g` (`g ∈ J`, `g ≠ 0`): the
+vector `ρ ∈ J` with `g ∧ ρ = r_J`, written in the positive basis `(e, f)` of `J`. If the coefficient
+`a` of `g` along `e` does not vanish, `ρ = a⁻¹ f`; if it does, `g` is a multiple `b f` of `f` and
+`ρ = −b⁻¹ e`. The class of `ρ` in the reduction `I^⊥/I` is the image of `r_J` under the inclusion
+`⋀²J ⊂ I ⊗ I^⊥/I` of §1B, p. 11, and it is a ray: a positive rescaling of `g` rescales `ρ` by the
+inverse positive scalar, so the half line is unchanged. -/
+noncomputable def rayOf (g : V) (hg : g ∈ G.plane) (_hg0 : g ≠ 0) : V :=
+  if G.basis.repr ⟨g, hg⟩ 0 = 0 then -(G.basis.repr ⟨g, hg⟩ 1)⁻¹ • G.dir
+  else (G.basis.repr ⟨g, hg⟩ 0)⁻¹ • G.dirAlt
+
+/-- The ray written with a nonvanishing coefficient along `e`. -/
+theorem rayOf_eq_smul_dirAlt {g : V} (hg : g ∈ G.plane) (hg0 : g ≠ 0)
+    (h : G.basis.repr ⟨g, hg⟩ 0 ≠ 0) :
+    G.rayOf g hg hg0 = (G.basis.repr ⟨g, hg⟩ 0)⁻¹ • G.dirAlt := by
+  rw [rayOf]
+  simp only [h, ite_false]
+
+/-- The ray written when `g` is a multiple of `f`. -/
+theorem rayOf_eq_smul_dir {g : V} (hg : g ∈ G.plane) (hg0 : g ≠ 0)
+    (h : G.basis.repr ⟨g, hg⟩ 0 = 0) :
+    G.rayOf g hg hg0 = -(G.basis.repr ⟨g, hg⟩ 1)⁻¹ • G.dir := by
+  rw [rayOf]
+  simp only [h, ite_true]
+
+/-- In the second case of `rayOf`, the coefficient along `f` does not vanish. -/
+theorem repr_one_ne_zero_of_repr_zero_eq_zero {g : V} (hg : g ∈ G.plane) (hg0 : g ≠ 0)
+    (h : G.basis.repr ⟨g, hg⟩ 0 = 0) : G.basis.repr ⟨g, hg⟩ 1 ≠ 0 := by
+  intro hb
+  apply hg0
+  have := G.repr_eq ⟨g, hg⟩
+  rw [h, hb] at this
+  simpa using this
+
+theorem rayOf_mem {g : V} (hg : g ∈ G.plane) (hg0 : g ≠ 0) : G.rayOf g hg hg0 ∈ G.plane := by
+  by_cases h : G.basis.repr ⟨g, hg⟩ 0 = 0
+  · rw [rayOf_eq_smul_dir G hg hg0 h]
+    exact Submodule.smul_mem _ _ G.dir_mem
+  · rw [rayOf_eq_smul_dirAlt G hg hg0 h]
+    exact Submodule.smul_mem _ _ G.dirAlt_mem
+
+theorem rayOf_ne {g : V} (hg : g ∈ G.plane) (hg0 : g ≠ 0) : G.rayOf g hg hg0 ≠ 0 := by
+  by_cases h : G.basis.repr ⟨g, hg⟩ 0 = 0
+  · rw [rayOf_eq_smul_dir G hg hg0 h]
+    have hb := G.repr_one_ne_zero_of_repr_zero_eq_zero hg hg0 h
+    have hb' : -((G.basis.repr ⟨g, hg⟩ 1)⁻¹) ≠ 0 := by
+      simp [hb]
+    simpa using smul_ne_zero hb' G.dir_ne
+  · rw [rayOf_eq_smul_dirAlt G hg hg0 h]
+    have ha : (G.basis.repr ⟨g, hg⟩ 0)⁻¹ ≠ 0 := by simp [h]
+    simpa using smul_ne_zero ha G.dirAlt_ne
+
+/-- The ray pairs trivially with the line's generator: both lie in the totally isotropic plane. -/
+theorem rayOf_pairing {g : V} (hg : g ∈ G.plane) (hg0 : g ≠ 0) :
+    BQ g (G.rayOf g hg hg0) = 0 :=
+  G.isotropic g hg (G.rayOf g hg hg0) (G.rayOf_mem hg hg0)
+
+theorem rayOf_iso {g : V} (hg : g ∈ G.plane) (hg0 : g ≠ 0) :
+    BQ (G.rayOf g hg hg0) (G.rayOf g hg hg0) = 0 :=
+  G.isotropic (G.rayOf g hg hg0) (G.rayOf_mem hg hg0) (G.rayOf g hg hg0) (G.rayOf_mem hg hg0)
+
+/-- The ray does not lie on the line it is taken relative to. -/
+theorem rayOf_not_mem_span {g : V} (hg : g ∈ G.plane) (hg0 : g ≠ 0) :
+    G.rayOf g hg hg0 ∉ Submodule.span ℚ ({g} : Set V) := by
+  intro hmem
+  obtain ⟨c, hc⟩ := Submodule.mem_span_singleton.1 hmem
+  have hsub : (⟨c • g, G.plane.smul_mem c hg⟩ : ↥G.plane)
+      = ⟨G.rayOf g hg hg0, G.rayOf_mem hg hg0⟩ := Subtype.ext hc
+  have hsm : (⟨c • g, G.plane.smul_mem c hg⟩ : ↥G.plane) = c • ⟨g, hg⟩ := Subtype.ext rfl
+  set a : ℚ := G.basis.repr ⟨g, hg⟩ 0 with ha
+  set b : ℚ := G.basis.repr ⟨g, hg⟩ 1 with hb
+  have hz10 : G.basis.repr (G.basis 0) 1 = 0 := by
+    rw [G.basis.repr_self]
+    simp
+  have hz01 : G.basis.repr (G.basis 1) 0 = 0 := by
+    rw [G.basis.repr_self]
+    simp
+  by_cases h : a = 0
+  · have hb0 : b ≠ 0 := G.repr_one_ne_zero_of_repr_zero_eq_zero hg hg0 h
+    have hray : (⟨G.rayOf g hg hg0, G.rayOf_mem hg hg0⟩ : ↥G.plane)
+        = -(b⁻¹) • G.basis 0 := by
+      have h1 : (⟨G.rayOf g hg hg0, G.rayOf_mem hg hg0⟩ : ↥G.plane)
+          = ⟨-(b⁻¹) • G.dir, G.plane.smul_mem _ G.dir_mem⟩ :=
+        Subtype.ext (rayOf_eq_smul_dir G hg hg0 h)
+      rw [h1]
+      rfl
+    have h1 := congrArg (fun x : ↥G.plane => G.basis.repr x 1) hsub
+    rw [hsm, hray] at h1
+    simp only [map_smul, Finsupp.smul_apply, smul_eq_mul, ← hb, hz10, mul_zero] at h1
+    have hc0 : c = 0 := by
+      rcases mul_eq_zero.1 h1 with h' | h'
+      · exact h'
+      · exact absurd h' hb0
+    apply G.rayOf_ne hg hg0
+    rw [← hc, hc0, zero_smul]
+  · have hray : (⟨G.rayOf g hg hg0, G.rayOf_mem hg hg0⟩ : ↥G.plane)
+        = a⁻¹ • G.basis 1 := by
+      have h1 : (⟨G.rayOf g hg hg0, G.rayOf_mem hg hg0⟩ : ↥G.plane)
+          = ⟨a⁻¹ • G.dirAlt, G.plane.smul_mem _ G.dirAlt_mem⟩ :=
+        Subtype.ext (rayOf_eq_smul_dirAlt G hg hg0 h)
+      rw [h1]
+      rfl
+    have h1 := congrArg (fun x : ↥G.plane => G.basis.repr x 0) hsub
+    rw [hsm, hray] at h1
+    simp only [map_smul, Finsupp.smul_apply, smul_eq_mul, ← ha, hz01, mul_zero] at h1
+    have hc0 : c = 0 := by
+      rcases mul_eq_zero.1 h1 with h' | h'
+      · exact h'
+      · exact absurd h' h
+    apply G.rayOf_ne hg hg0
+    rw [← hc, hc0, zero_smul]
+
+theorem span_dir_eq : Submodule.span ℚ ({G.dir, G.dirAlt} : Set V) = G.plane := by
+  refine le_antisymm ?_ ?_
+  · refine Submodule.span_le.2 ?_
+    intro x hx
+    rcases Set.mem_insert_iff.1 hx with rfl | hx
+    · exact G.dir_mem
+    · rw [Set.mem_singleton_iff] at hx
+      subst hx
+      exact G.dirAlt_mem
+  · intro x hx
+    rw [show x = G.basis.repr ⟨x, hx⟩ 0 • G.dir + G.basis.repr ⟨x, hx⟩ 1 • G.dirAlt
+      from G.repr_eq ⟨x, hx⟩]
+    exact Submodule.add_mem _
+      (Submodule.smul_mem _ _ (Submodule.subset_span (Set.mem_insert _ _)))
+      (Submodule.smul_mem _ _
+        (Submodule.subset_span (Set.mem_insert_of_mem _ (Set.mem_singleton _))))
 
 end ConicalPlane
 
@@ -426,11 +616,60 @@ noncomputable def fibreProj (F : ConicalLine BQ Q) (x : V) : ↥F.space :=
         F.partner_iso, hxf]
       ring⟩
 
-/-- The class of a `ℚ`-isotropic plane's ray in the conical fibre of one of its lines, *without* the
-choice of half line: Looijenga §1B, p. 11 (text line 265), "`Λ²J` can be regarded as a line in
-`I ⊗ I^⊥/I`". -/
-noncomputable def fibreRayProj (F : ConicalLine BQ Q) (G : ConicalPlane BQ) : ↥F.space :=
-  fibreProj hBsym F G.ray
+omit [Module.Finite ℚ V] in
+/-- The generator of a witnessing line `I ≤ J` lies in the plane. -/
+theorem ConicalLine.gen_mem_of_le (F : ConicalLine BQ Q) (G : ConicalPlane BQ)
+    (h : F.line ≤ G.plane) : F.gen ∈ G.plane := by
+  refine h ?_
+  rw [F.line_eq]
+  exact Submodule.subset_span (Set.mem_singleton F.gen)
+
+/-- **The ray of an oriented plane in the fibre of a witnessing line**, as a `ℚ`-vector of `V`: the
+vector `ρ ∈ J` with `F.gen ∧ ρ = r_J` (`ConicalPlane.rayOf`). Its class in the fibre is
+`fibreRayProj`. -/
+noncomputable def ConicalLine.planeRay (F : ConicalLine BQ Q) (G : ConicalPlane BQ)
+    (h : F.line ≤ G.plane) : V :=
+  G.rayOf F.gen (F.gen_mem_of_le G h) F.gen_ne
+
+omit [Module.Finite ℚ V] in
+theorem ConicalLine.planeRay_mem (F : ConicalLine BQ Q) (G : ConicalPlane BQ)
+    (h : F.line ≤ G.plane) : F.planeRay G h ∈ G.plane :=
+  G.rayOf_mem (F.gen_mem_of_le G h) F.gen_ne
+
+omit [Module.Finite ℚ V] in
+theorem ConicalLine.planeRay_ne (F : ConicalLine BQ Q) (G : ConicalPlane BQ)
+    (h : F.line ≤ G.plane) : F.planeRay G h ≠ 0 :=
+  G.rayOf_ne (F.gen_mem_of_le G h) F.gen_ne
+
+omit [Module.Finite ℚ V] in
+theorem ConicalLine.planeRay_self (F : ConicalLine BQ Q) (G : ConicalPlane BQ)
+    (h : F.line ≤ G.plane) : BQ (F.planeRay G h) (F.planeRay G h) = 0 :=
+  G.rayOf_iso (F.gen_mem_of_le G h) F.gen_ne
+
+omit [Module.Finite ℚ V] in
+theorem ConicalLine.planeRay_gen (F : ConicalLine BQ Q) (G : ConicalPlane BQ)
+    (h : F.line ≤ G.plane) : BQ F.gen (F.planeRay G h) = 0 :=
+  G.rayOf_pairing (F.gen_mem_of_le G h) F.gen_ne
+
+omit [Module.Finite ℚ V] in
+/-- The ray of the plane in the fibre of `I` does not lie in `I` (the true form of the discarded
+field `ConicalPlane.ray_not_mem_of_line`, whose quantifier over all lines of the plane no vector
+satisfies). -/
+theorem ConicalLine.planeRay_not_mem_line (F : ConicalLine BQ Q) (G : ConicalPlane BQ)
+    (h : F.line ≤ G.plane) : F.planeRay G h ∉ F.line := by
+  rw [F.line_eq]
+  exact G.rayOf_not_mem_span (F.gen_mem_of_le G h) F.gen_ne
+
+/-- **The class of the plane's ray in the conical fibre of one of its lines**, *without* the choice
+of half line: Looijenga §1B, p. 11 (text line 265), "`Λ²J` can be regarded as a line in
+`I ⊗ I^⊥/I`". It is the class of `G.rayOf` at the line's generator: the vector `ρ ∈ J` with
+`gen ∧ ρ = r_J`, so that `gen ⊗ ρ` is the image of the positive generator `r_J` of `⋀²J(ℚ)`
+(`ConicalPlane.basis`) under the inclusion of §1B. The scan is the one of `fibreProj`: the
+adjustment is along the hyperbolic partner only, because `ρ · gen = 0` (both lie in the totally
+isotropic plane). -/
+noncomputable def fibreRayProj (F : ConicalLine BQ Q) (G : ConicalPlane BQ)
+    (h : F.line ≤ G.plane) : ↥F.space :=
+  fibreProj hBsym F (G.rayOf F.gen (F.gen_mem_of_le G h) F.gen_ne)
 
 /-- **The half line `C_{J,+}` of a `ℚ`-isotropic plane in the fibre of one of its lines**: the class
 of the plane's ray, or its opposite, whichever lies on the **closed sheet** of the fibre's cone —
@@ -442,15 +681,17 @@ inclusion, `C_J` is contained in the boundary of `C_I`". The fibre `ConicalLine`
 of the closed sheet of `C_I` (`0 < r · t` for a positive `t` in signature `(1, n-1)`, so the two
 have opposite signs at `t`); this is that half line. It is the member `σ = C_{J,+}` of Definition
 6.1 (ii), the one whose `Σ`-support space the definition names. -/
-noncomputable def fibreRay (F : ConicalLine BQ Q) (G : ConicalPlane BQ) : ↥F.space :=
-  if 0 ≤ (associated (fibreForm Q F.space)) (rationalPoint (fibreRayProj hBsym F G)) F.sheet
-  then fibreRayProj hBsym F G else -fibreRayProj hBsym F G
+noncomputable def fibreRay (F : ConicalLine BQ Q) (G : ConicalPlane BQ)
+    (h : F.line ≤ G.plane) : ↥F.space :=
+  if 0 ≤ (associated (fibreForm Q F.space)) (rationalPoint (fibreRayProj hBsym F G h)) F.sheet
+  then fibreRayProj hBsym F G h else -fibreRayProj hBsym F G h
 
 omit [Module.Finite ℚ V] in
 /-- The half line is one of the two generators of the plane's class in the fibre. -/
-theorem fibreRay_eq_or_neg (F : ConicalLine BQ Q) (G : ConicalPlane BQ) :
-    fibreRay hBsym F G = fibreRayProj hBsym F G ∨
-      fibreRay hBsym F G = -fibreRayProj hBsym F G := by
+theorem fibreRay_eq_or_neg (F : ConicalLine BQ Q) (G : ConicalPlane BQ)
+    (h : F.line ≤ G.plane) :
+    fibreRay hBsym F G h = fibreRayProj hBsym F G h ∨
+      fibreRay hBsym F G h = -fibreRayProj hBsym F G h := by
   rw [fibreRay]
   split_ifs with h
   · exact Or.inl rfl
@@ -458,8 +699,9 @@ theorem fibreRay_eq_or_neg (F : ConicalLine BQ Q) (G : ConicalPlane BQ) :
 
 omit [Module.Finite ℚ V] in
 /-- **The half line lies on the closed sheet of the fibre's cone**: `0 ≤ r · t`. -/
-theorem fibreRay_sheet_nonneg (F : ConicalLine BQ Q) (G : ConicalPlane BQ) :
-    0 ≤ (associated (fibreForm Q F.space)) (rationalPoint (fibreRay hBsym F G)) F.sheet := by
+theorem fibreRay_sheet_nonneg (F : ConicalLine BQ Q) (G : ConicalPlane BQ)
+    (h : F.line ≤ G.plane) :
+    0 ≤ (associated (fibreForm Q F.space)) (rationalPoint (fibreRay hBsym F G h)) F.sheet := by
   rw [fibreRay]
   split_ifs with h
   · exact h
@@ -467,19 +709,34 @@ theorem fibreRay_sheet_nonneg (F : ConicalLine BQ Q) (G : ConicalPlane BQ) :
     linarith [lt_of_not_ge h]
 
 omit [Module.Finite ℚ V] in
+/-- **The half line is the class of `r_J` itself** when that class already lies on the closed sheet
+of the fibre's cone: the source's `C_J ⊂ ∂C_I` (§1B, p. 11), `C_J` being the half line of the
+positive rational generator `r_J` (`ConicalPlane.basis`). No sign is changed in that case, so the
+half line the plane contributes to the fibre of `I` is the image of `r_J` and not of `-r_J`. -/
+theorem fibreRay_eq_fibreRayProj_of_nonneg (F : ConicalLine BQ Q) (G : ConicalPlane BQ)
+    (h : F.line ≤ G.plane)
+    (hC : 0 ≤ (associated (fibreForm Q F.space))
+      (rationalPoint (fibreRayProj hBsym F G h)) F.sheet) :
+    fibreRay hBsym F G h = fibreRayProj hBsym F G h := by
+  rw [fibreRay]
+  simp only [hC, ite_true]
+
+omit [Module.Finite ℚ V] in
 /-- The fibre form does not see which of the two generators is taken: it is even. -/
-theorem fibreForm_fibreRay_eq (F : ConicalLine BQ Q) (G : ConicalPlane BQ) :
-    (fibreForm Q F.space) (rationalPoint (fibreRay hBsym F G)) =
-      (fibreForm Q F.space) (rationalPoint (fibreRayProj hBsym F G)) := by
-  rcases fibreRay_eq_or_neg hBsym F G with h | h
+theorem fibreForm_fibreRay_eq (F : ConicalLine BQ Q) (G : ConicalPlane BQ)
+    (hF : F.line ≤ G.plane) :
+    (fibreForm Q F.space) (rationalPoint (fibreRay hBsym F G hF)) =
+      (fibreForm Q F.space) (rationalPoint (fibreRayProj hBsym F G hF)) := by
+  rcases fibreRay_eq_or_neg hBsym F G hF with h | h
   · rw [h]
   · rw [h, map_neg, QuadraticMap.map_neg]
 
 omit [Module.Finite ℚ V] in
 /-- The half line is not zero when the plane's class is not zero. -/
 theorem fibreRay_ne_zero_of (F : ConicalLine BQ Q) (G : ConicalPlane BQ)
-    (h : fibreRayProj hBsym F G ≠ 0) : fibreRay hBsym F G ≠ 0 := by
-  rcases fibreRay_eq_or_neg hBsym F G with h' | h'
+    (hF : F.line ≤ G.plane) (h : fibreRayProj hBsym F G hF ≠ 0) :
+    fibreRay hBsym F G hF ≠ 0 := by
+  rcases fibreRay_eq_or_neg hBsym F G hF with h' | h'
   · rw [h']; exact h
   · rw [h']
     simpa using h
@@ -522,7 +779,7 @@ noncomputable def vSigmaPlane {BQ : LinearMap.BilinForm ℚ V} {Q : QuadraticFor
     (S : Set (PointedCone ℝ (realified ↥F.space)))
     (G : ConicalPlane BQ) (_h : F.line ≤ G.plane) : Submodule ℝ (realified V) :=
   lineSpan F ⊔ (sigmaSupportSpace (positiveCone.upper (fibreForm Q F.space) F.sheet) S
-    (PointedCone.hull ℝ ({rationalPoint (fibreRay hBsym F G)} :
+    (PointedCone.hull ℝ ({rationalPoint (fibreRay hBsym F G _h)} :
       Set (realified ↥F.space)))).map (realifyMap F.space)
 
 /-- The isotropic center `I(σ) = V_σ ∩ V_σ^⊥` of a member of a conical fibre (Definition 6.1,
