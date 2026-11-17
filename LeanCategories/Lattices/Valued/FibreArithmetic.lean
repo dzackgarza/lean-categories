@@ -69,10 +69,19 @@ than assuming it.
 * `semifanArrangementTraces_isLocallyRational_of_orbitFamily`: condition (i) of Definition 6.1 for
   `Σ(ℋ)` at a fibre, from that arithmetic input alone.
 * the half-line chain at an **actual isotropic ray** of the Lorentzian fibre
-  (`semifanArrangement_ray_meets`, `sigmaSupportSpace_ray_le_ker`, `traceKernel_le_span_of_member`):
-  the statements of `SemifanArrangement` that quantify over `ConicalPlane` — which is empty in the
-  current development — are re-stated at a ray `ρ` of the fibre with `fibreForm Q F.space
+  (`semifanArrangementTraces_ray_meets`, `sigmaSupportSpace_ray_le_ker`,
+  `iInf_traceKernel_le_span_of_member`,
+  `sigmaSupportSpace_ray_le_traceKernels`, `sigmaSupportSpace_ray_eq`): the statements of
+  `SemifanArrangement` that quantify over `ConicalPlane` — which is empty in the current
+  development — are re-stated at a ray `ρ` of the fibre with `fibreForm Q F.space
   (rationalPoint ρ) = 0`, so that they rest on the fibre's own Lorentzian geometry.
+* `sigmaSupportSpace_ray_eq`: **`J_{Σ(ℋ)} = J_ℋ` at an actual isotropic ray**, Example 6.4, p. 29 —
+  the support space of the ray is the intersection of the kernel of its own metric dual with the
+  common kernels `rayTraceKernels` of the distinct trace forms vanishing at it. The reverse
+  inclusion is the source's Lemma-Definition 4.5 (`inf_ker_iInf_span_le_sigmaSupportSpace`, no
+  minimal-member or local-finiteness input) fed by `iInf_traceKernel_le_span_of_member`; the trace
+  count enters only through the nonemptiness of the support index, so an ambient family that repeats
+  a wall infinitely often needs no finite-multiplicity premise.
 -/
 
 @[expose] public section
@@ -1015,6 +1024,159 @@ theorem iInf_traceKernel_le_span_of_member
   have := j.2 hrayτ
   simpa [LinearMap.mem_ker] using this
 
+section RayTraceKernels
+
+omit [Module.Finite ℚ V]
+
+/-- **The common kernel of the distinct trace forms vanishing at a point of the fibre** — the
+`J_ℋ` side of Looijenga, Example 6.4, p. 29: `A = ⨅ {ker (traceForm T) | T ∈ distinctTraces,
+T(r) = 0}`. It is written as its own definition because the intersection over the subtype of traces
+is expensive to elaborate inside a longer statement. The intersection is over a *set* of traces, so
+an ambient family that repeats a wall does not change it. -/
+noncomputable def rayTraceKernels (ψ : ι → V →ₗ[ℚ] ℚ) (F : ConicalLine BQ Q) (ρ : ↥F.space) :
+    Submodule ℝ (realified ↥F.space) :=
+  ⨅ T : {T : distinctTraces ψ F // traceForm ψ F T (rationalPoint ρ) = 0},
+    LinearMap.ker (traceForm ψ F T.1).toLinearMap
+
+/-- **`J_{Σ(ℋ)} ⊆ J_ℋ` at an actual isotropic ray, wall by wall**: the support space of the ray
+inside one member `τ` of `Σ(ℋ)` is contained in the kernel of the trace form of every distinct
+trace vanishing at the ray. This is `supportSpace_halfLine_le_ker` (Looijenga, Example 6.4, p. 29)
+with the fibre's own trace index and a vector of the Lorentzian fibre in place of a `ConicalPlane`:
+the member is a face of a sign cell, so the trace form is one-signed on it — where the sign is zero
+the form vanishes on the whole member, and elsewhere the form or its negative is nonnegative on `τ`
+and zero on the ray, so it is a form of `supportForms τ ⟨r⟩`. -/
+theorem supportSpace_ray_le_traceKernel
+    {ρ : ↥F.space}
+    (τ : supportIndex (positiveCone.upper (fibreForm Q F.space) F.sheet)
+      (semifanArrangementTraces ψ F)
+      (PointedCone.hull ℝ ({rationalPoint ρ} : Set (realified ↥F.space))))
+    (T : distinctTraces ψ F) (hT : traceForm ψ F T (rationalPoint ρ) = 0) :
+    supportSpace τ.1 (PointedCone.hull ℝ ({rationalPoint ρ} : Set (realified ↥F.space))) ≤
+      LinearMap.ker (traceForm ψ F T).toLinearMap := by
+  classical
+  have hmem : τ.1 ∈ faceClosure (arrangementCells (traceForm ψ F) F.closure) := τ.2.1
+  obtain ⟨cell, hcell, hface⟩ := mem_faceClosure.1 hmem
+  obtain ⟨s, rfl⟩ := hcell
+  have hle : τ.1 ≤ arrangementCone (traceForm ψ F) s ⊓ F.closure := hface.le
+  have hvan : ∀ x ∈ PointedCone.hull ℝ ({rationalPoint ρ} : Set (realified ↥F.space)),
+      traceForm ψ F T x = 0 := by
+    intro x hx
+    obtain ⟨c, -, rfl⟩ := PointedCone.mem_hull_singleton.1 hx
+    rw [ContinuousLinearMap.map_smul, smul_eq_mul, hT, mul_zero]
+  have hsign : ∀ x ∈ τ.1, match s T with
+      | SignType.zero => traceForm ψ F T x = 0
+      | SignType.neg => traceForm ψ F T x ≤ 0
+      | SignType.pos => 0 ≤ traceForm ψ F T x := by
+    intro x hx
+    exact (mem_arrangementCone (traceForm ψ F)).1 (Submodule.mem_inf.1 (hle hx)).1 T
+  rcases hs : s T with _ | _ | _
+  · have hΨ : (traceForm ψ F T).toLinearMap ∈
+        supportForms τ.1 (PointedCone.hull ℝ ({rationalPoint ρ} : Set (realified ↥F.space))) := by
+      refine mem_supportForms.2 ⟨fun x hx => ?_, fun x hx => ?_⟩
+      · have hx' := hsign x hx
+        simp only [hs] at hx'
+        simpa using hx'.ge
+      · simpa using hvan x hx
+    exact iInf_le (fun φ : supportForms τ.1 (PointedCone.hull ℝ
+      ({rationalPoint ρ} : Set (realified ↥F.space))) =>
+      LinearMap.ker (φ : (realified ↥F.space) →ₗ[ℝ] ℝ)) ⟨_, hΨ⟩
+  · have hΨ : -((traceForm ψ F T).toLinearMap) ∈
+        supportForms τ.1 (PointedCone.hull ℝ ({rationalPoint ρ} : Set (realified ↥F.space))) := by
+      refine mem_supportForms.2 ⟨fun x hx => ?_, fun x hx => ?_⟩
+      · have hx' := hsign x hx
+        simp only [hs] at hx'
+        change 0 ≤ -(traceForm ψ F T x)
+        linarith
+      · change -(traceForm ψ F T x) = 0
+        rw [hvan x hx, neg_zero]
+    refine le_trans (iInf_le (fun φ : supportForms τ.1 (PointedCone.hull ℝ
+      ({rationalPoint ρ} : Set (realified ↥F.space))) =>
+      LinearMap.ker (φ : (realified ↥F.space) →ₗ[ℝ] ℝ)) ⟨_, hΨ⟩) ?_
+    rw [LinearMap.ker_neg]
+  · have hΨ : (traceForm ψ F T).toLinearMap ∈
+        supportForms τ.1 (PointedCone.hull ℝ ({rationalPoint ρ} : Set (realified ↥F.space))) := by
+      refine mem_supportForms.2 ⟨fun x hx => ?_, fun x hx => ?_⟩
+      · have hx' := hsign x hx
+        simp only [hs] at hx'
+        simpa using hx'
+      · simpa using hvan x hx
+    exact iInf_le (fun φ : supportForms τ.1 (PointedCone.hull ℝ
+      ({rationalPoint ρ} : Set (realified ↥F.space))) =>
+      LinearMap.ker (φ : (realified ↥F.space) →ₗ[ℝ] ℝ)) ⟨_, hΨ⟩
+
+end RayTraceKernels
+
+/-- **`J_{Σ(ℋ)} ⊆ J_ℋ` at an actual isotropic ray** — the half of Example 6.4, p. 29 that the
+traces supply: the support space of the ray is contained in the common kernel of the trace forms of
+the distinct traces vanishing at it. The index is a `Set` of traces, so this is the duplicate-free
+statement; it holds without any finiteness premise on the ambient walls, and the only counting input
+is `CutsFinitelyOnTraces`-derived — the existence of one member above the ray through the open cone
+(`semifanArrangementTraces_ray_meets`) — which is what makes the support-space index nonempty. -/
+theorem sigmaSupportSpace_ray_le_traceKernels
+    (hpos : sigPos (fibreForm Q F.space) = 1)
+    (hnd : (fibreForm Q F.space).Nondegenerate)
+    (hcut : CutsFinitelyOnRational F.closure (traceForm ψ F))
+    {ρ : ↥F.space} (hρ : fibreForm Q F.space (rationalPoint ρ) = 0) (hρ0 : ρ ≠ 0)
+    (hρsheet : 0 ≤ (associated (fibreForm Q F.space)) (rationalPoint ρ) F.sheet) :
+    sigmaSupportSpace (positiveCone.upper (fibreForm Q F.space) F.sheet)
+        (semifanArrangementTraces ψ F)
+        (PointedCone.hull ℝ ({rationalPoint ρ} : Set (realified ↥F.space))) ≤
+      rayTraceKernels ψ F ρ := by
+  obtain ⟨τ, hτmem, hτle, hτmeet⟩ :=
+    semifanArrangementTraces_ray_meets (ψ := ψ) hpos hnd hcut hρ hρ0 hρsheet
+  rw [rayTraceKernels]
+  refine (sigmaSupportSpace_le hτmem hτle hτmeet).trans (le_iInf fun T => ?_)
+  exact supportSpace_ray_le_traceKernel ⟨τ, hτmem, hτle, hτmeet⟩ T.1 T.2
+
+/-- **Looijenga, Example 6.4, p. 29, at an actual isotropic ray of the fibre:
+`J_{Σ(ℋ)} = J_ℋ`.** For a nonzero isotropic ray `r = ρ` of the Lorentzian fibre, the support space
+of `r` in `Σ(ℋ)` is the intersection of the kernel of its own metric dual `B(r, -)` with the common
+kernels of the distinct trace forms vanishing at `r`:
+
+  `J_{Σ(ℋ),r} = ker B(r, -) ⊓ ⨅ {ker (traceForm T) | T ∈ distinctTraces, T(r) = 0}`.
+
+Both inclusions are now available: the two upper bounds are `sigmaSupportSpace_ray_le_ker` and
+`sigmaSupportSpace_ray_le_traceKernels`, and the reverse inclusion combines the memberwise primal
+bound `iInf_traceKernel_le_span_of_member` with the source's reverse inclusion for a locally
+rational decomposition, `inf_ker_iInf_span_le_sigmaSupportSpace` (Lemma-Definition 4.5, p. 19),
+which needs no minimal-member or local-finiteness witness. The trace count enters only through the
+nonemptiness of the support index, so an ambient family that repeats a wall infinitely often costs
+nothing. -/
+theorem sigmaSupportSpace_ray_eq
+    (hpos : sigPos (fibreForm Q F.space) = 1)
+    (hnd : (fibreForm Q F.space).Nondegenerate)
+    (hcut : CutsFinitelyOnRational F.closure (traceForm ψ F))
+    (hS : IsLocallyRationalDecomposition F.closure (semifanArrangementTraces ψ F))
+    {ρ : ↥F.space} (hρ : fibreForm Q F.space (rationalPoint ρ) = 0) (hρ0 : ρ ≠ 0)
+    (hρsheet : 0 ≤ (associated (fibreForm Q F.space)) (rationalPoint ρ) F.sheet) :
+    sigmaSupportSpace (positiveCone.upper (fibreForm Q F.space) F.sheet)
+        (semifanArrangementTraces ψ F)
+        (PointedCone.hull ℝ ({rationalPoint ρ} : Set (realified ↥F.space))) =
+      LinearMap.ker ((associated (fibreForm Q F.space)) (rationalPoint ρ)) ⊓
+        rayTraceKernels ψ F ρ := by
+  refine le_antisymm
+    (le_inf (sigmaSupportSpace_ray_le_ker (ψ := ψ) hpos hnd hcut hρ hρ0 hρsheet)
+      (sigmaSupportSpace_ray_le_traceKernels (ψ := ψ) hpos hnd hcut hρ hρ0 hρsheet)) ?_
+  have hS' : IsLocallyRationalDecomposition
+      (rationalClosure (closedSheet (fibreForm Q F.space) hpos F.sheet_pos))
+      (semifanArrangementTraces ψ F) := by
+    rw [← ConicalLine.closure_eq_closedSheet F hpos]
+    exact hS
+  have heC : rationalPoint ρ ∈
+      rationalClosure (closedSheet (fibreForm Q F.space) hpos F.sheet_pos) := by
+    rw [← ConicalLine.closure_eq_closedSheet F hpos]
+    exact rationalPoint_mem_closure_of_isotropic hpos hρ hρsheet
+  have hA : rayTraceKernels ψ F ρ ≤
+      ⨅ τ : supportIndex (positiveCone.upper (fibreForm Q F.space) F.sheet)
+        (semifanArrangementTraces ψ F)
+        (PointedCone.hull ℝ ({rationalPoint ρ} : Set (realified ↥F.space))),
+        Submodule.span ℝ (τ.1 : Set (realified ↥F.space)) := by
+    rw [rayTraceKernels]
+    exact le_iInf fun τ => iInf_traceKernel_le_span_of_member (ψ := ψ) hpos hcut τ
+  refine (inf_le_inf_left _ hA).trans ?_
+  exact inf_ker_iInf_span_le_sigmaSupportSpace (Q := fibreForm Q F.space) (t := F.sheet)
+    (e := rationalPoint ρ) (ht := F.sheet_pos) hpos hnd (rationalPoint_ne_zero hρ0) hρ heC hS'
+
 end RaySupport
 
 
@@ -1119,7 +1281,8 @@ lie in the `Γ_I`-orbit family of the reduced lattice) gives, at the fibre:
 * `J_{Σ(ℋ),r} ⊆ ⟨r⟩^⊥` for an actual isotropic ray `r = ρ` of the fibre;
 * the common kernel of the traces through `r` lies in the span of every member above `r` meeting the
   open cone — the primal form of the description of a member by its walls, which is the half of
-  `J_{Σ(ℋ)} = J_ℋ` that needs the counting.
+  `J_{Σ(ℋ)} = J_ℋ` that needs the counting;
+* that equality itself, `J_{Σ(ℋ),r} = ker B(r, -) ∩ rayTraceKernels`.
 
 No local-finiteness, trace-equivalence or local-rationality certificate is supplied, and the ray is
 a vector of the Lorentzian fibre rather than a `ConicalPlane`. -/
@@ -1158,7 +1321,12 @@ theorem semifanArrangement_arithmetic_fibre
           (PointedCone.hull ℝ ({rationalPoint ρ} : Set (realified ↥F.space))),
         (⨅ T : {T : distinctTraces ψ F // traceForm ψ F T (rationalPoint ρ) = 0},
             LinearMap.ker (traceForm ψ F T.1).toLinearMap) ≤
-          Submodule.span ℝ (τ.1 : Set (realified ↥F.space))) := by
+          Submodule.span ℝ (τ.1 : Set (realified ↥F.space))) ∧
+      sigmaSupportSpace (positiveCone.upper (fibreForm Q F.space) F.sheet)
+          (semifanArrangementTraces ψ F)
+          (PointedCone.hull ℝ ({rationalPoint ρ} : Set (realified ↥F.space))) =
+        LinearMap.ker ((associated (fibreForm Q F.space)) (rationalPoint ρ)) ⊓
+          rayTraceKernels ψ F ρ := by
   classical
   have hpos : sigPos (fibreForm Q F.space) = 1 :=
     sigPos_fibreForm_eq_one hBQ hBQsym hsig F
@@ -1172,10 +1340,14 @@ theorem semifanArrangement_arithmetic_fibre
     intro T
     exact ⟨(ψ ↑(traceRep ψ F T)).comp F.space.subtype, traceRep_spec ψ F T,
       fibreFormC_eq_fibreTraceCLM (ψ ↑(traceRep ψ F T)) F⟩
-  exact ⟨semifanArrangement_isLocallyRational_of_orbitFamily hBQsym hBQ hsig hnd F bs₀ hint₀ bs
-      hbs ΓI hone H₀ hΓΛ hΓiso gen hgen ψ hsub,
-    sigmaSupportSpace_ray_le_ker (ψ := ψ) hpos hndF hcut hρ hρ0 hρsheet,
-    fun τ => iInf_traceKernel_le_span_of_member (ψ := ψ) hpos hcut τ⟩
+  have hloc : IsLocallyRationalDecomposition F.closure (semifanArrangementTraces ψ F) :=
+    semifanArrangementTraces_isLocallyRational_of_orbitFamily hBQsym hBQ hsig hnd F bs₀ hint₀ bs
+      hbs ΓI hone H₀ hΓΛ hΓiso gen hgen ψ hsub
+  refine ⟨?_, sigmaSupportSpace_ray_le_ker (ψ := ψ) hpos hndF hcut hρ hρ0 hρsheet,
+    fun τ => iInf_traceKernel_le_span_of_member (ψ := ψ) hpos hcut τ, ?_⟩
+  · rw [← semifanArrangementTraces_eq]
+    exact hloc
+  · exact sigmaSupportSpace_ray_eq (ψ := ψ) hpos hndF hcut hloc hρ hρ0 hρsheet
 
 end ArithmeticCaller
 
@@ -1222,7 +1394,12 @@ theorem semifanArrangement_arithmetic_fibre_of_basis
           (PointedCone.hull ℝ ({rationalPoint ρ} : Set (realified ↥F.space))),
         (⨅ T : {T : distinctTraces ψ F // traceForm ψ F T (rationalPoint ρ) = 0},
             LinearMap.ker (traceForm ψ F T.1).toLinearMap) ≤
-          Submodule.span ℝ (τ.1 : Set (realified ↥F.space))) := by
+          Submodule.span ℝ (τ.1 : Set (realified ↥F.space))) ∧
+      sigmaSupportSpace (positiveCone.upper (fibreForm Q F.space) F.sheet)
+          (semifanArrangementTraces ψ F)
+          (PointedCone.hull ℝ ({rationalPoint ρ} : Set (realified ↥F.space))) =
+        LinearMap.ker ((associated (fibreForm Q F.space)) (rationalPoint ρ)) ⊓
+          rayTraceKernels ψ F ρ := by
   classical
   obtain ⟨κ, hκ, bs, hbs⟩ := exists_basis_reducedLattice hBQsym F bs₀
   haveI : Fintype κ := hκ
