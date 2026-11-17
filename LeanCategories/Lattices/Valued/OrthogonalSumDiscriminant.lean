@@ -32,30 +32,53 @@ of a metric-dual vector restricted to a coordinate is the functional of that coo
 discriminant class are the classes of the two coordinates), and `isEven_orthogonalSum` from
 `ScaleAndEvenness`.
 
-The transport of the quadratic refinement is proved here for classes with a chosen metric-dual
-representative: `evenDiscriminantQuadraticMap_orthogonalSum_metricDual` states
-`q_(S ⊥ K)(x) = q_S(x₁) + q_K(x₂)` for `x : (S ⊥ K)^♯`, which is the form in which the classes
-of an overlattice of `S ⊥ K` arise. What is not proved here is the same identity for an
-arbitrary class `z : A_(S ⊥ K)`, and with it `isFractionFieldPerfect_orthogonalSum` and
-bijectivity of `evenDiscriminantDefectMap` (the defect-quotient equivalence
-`A_(S ⊥ K) ≃ A_S × A_K`). The obstruction is recorded in `COMPLAINTS.md`: the statement of the
-general form elaborates in about a second, but its proof diverges in `whnf` as soon as a
-surjectivity witness for `metricDualToDiscriminant` (or `rieszToMetricDual`) is substituted into
-the goal — a `maxHeartbeats` timeout at 800000, 1000000 and 4000000 heartbeats.
+The transport of the quadratic refinement is proved twice, in the two forms its consumers need.
+`evenDiscriminantQuadraticMap_orthogonalSum_metricDual` states
+`q_(S ⊥ K)(x) = q_S(x₁) + q_K(x₂)` for `x : (S ⊥ K)^♯`, a class with a chosen metric-dual
+representative. `evenDiscriminantQuadraticMap_orthogonalSum` states the same identity for an
+arbitrary class `z : A_(S ⊥ K)` along the defect splitting, which is the form the gluing graph
+`Γ_γ ⊆ A_S ⊕ A_K` needs: a graph is a subgroup of `A_S ⊕ A_K`, not of `(S ⊥ K)^♯`.
+
+The general form was long blocked, and both the resolution and the cause of the block are worth
+recording. The identity is proved through `rieszEmbedding` alone: the two coordinates of a Riesz
+vector are the Riesz vectors of the two coordinate restrictions
+(`orthogonalSumSpanFst_rieszEmbedding`, `orthogonalSumSpanSnd_rieszEmbedding`), so it reduces to
+`rationalizedForm_orthogonalSum_fst_snd` at a single element of the rational span, and the class is
+handled by `Submodule.Quotient.induction_on` on its representative. No `metricDual` coercion, no
+`LinearEquiv` supplied by a surjectivity witness and no `mem_metricDual_orthogonalSum_iff` occurs
+in the proofs below, and that is the whole of why they elaborate.
+
+The earlier route went through `metricDualToDiscriminant` and a surjectivity witness. Its block was
+not the substitution: `obtain ⟨x, rfl⟩ := metricDualToDiscriminant_surjective …` is cheap, and so is
+the same witness at a single lattice. It was `isDefEq` between two presentations of
+`metricDual R (S ⊥ K)` when the lattice arguments of `mem_metricDual_orthogonalSum_iff` are left to
+unification — `metricDual` and `rationalizedForm` (`Lattices/Valued/MetricDual.lean:34`,
+`Rationalization.lean:54`) are both `abbrev`s, so `whnf` runs through them into
+`orthogonalSum`'s `bilinMap` at unsolved lattice metavariables, and it does not terminate within
+4000000 heartbeats; naming the lattices (`(L := L) (M := M)`) makes it instant. `COMPLAINTS.md`
+carries the minimal divergent goal state and the diagnosis.
+
+`isFractionFieldPerfect_orthogonalSum` and `rationalizedForm_orthogonalSum_prodEquiv` supply the
+perfection hypothesis at the sum, in the joint product coordinates of the rational span.
 
 ## Port provenance
 
 The splitting of the rational span and of the form follows `TauCetiProject/TauCeti` (Apache 2.0,
-© The Tau Ceti contributors), `TauCeti/LinearAlgebra/IntegralLattice/Overlattice/Graph.lean`
-(`discriminantGroupOrthogonalSumEquiv`, `discriminantQuadraticIsometryOrthogonalSum`,
-`mem_dualCarrier_orthogonalSum_iff`) and its `Overlattice/Dual.lean`
-(`mem_dualCarrier_orthogonalSum_iff`, `dual_orthogonalSumIntermediateCarrier`). TauCeti carries a
-lattice as a submodule of a rational space `V` fixed in advance, so for it the orthogonal sum's
-ambient space is literally `V × W` and the splitting of the dual carriers is a one-line
-calculation; here the ambient space is `Frac(R) ⊗ (L.carrier × M.carrier)`, and the product
-decomposition `TensorProduct.prodRight` is what has to be inserted. The Mathlib lemma used for
-that is `TensorProduct.prodRight` (`LinearAlgebra/TensorProduct/Prod.lean`); the quadratic
-refinement's transport is not in Mathlib and is proved here.
+© The Tau Ceti contributors), whose `LinearAlgebra/IntegralLattice/Discriminant/Operations.lean`
+carries `mem_dualCarrier_orthogonalSum`, `dualCarrier_orthogonalSum`,
+`orthogonalSumDualCarrierEquiv`, `discriminantGroupOrthogonalSumEquiv` and the quadratic isometry
+`discriminantQuadraticIsometryOrthogonalSum` — the transport proved below is the port of that
+isometry's `map_app'`, which is consumed in `Overlattice/Graph.lean` (`glueAlongDiscriminant` and
+`exists_eq_glueAlongDiscriminant`, Nikulin Prop. 1.6.1); `Overlattice/Dual.lean` supplies
+`dual_orthogonalSumIntermediateCarrier`. TauCeti carries a lattice as a submodule of a rational
+space `V` fixed in advance, so for it the orthogonal sum's ambient space is literally `V × W`, the
+splitting of the dual carriers is a one-line calculation, and its transport proof closes on a
+representative with `orthogonalSum_form`, `prod_apply` and `ring`. Here the ambient space is
+`Frac(R) ⊗ (L.carrier × M.carrier)`, so the representative has to be replaced by a Riesz vector:
+`TensorProduct.prodRight` (`Mathlib/LinearAlgebra/TensorProduct/Prod.lean`) splits both the span
+and the dual, and `orthogonalSumSpanFst_rieszEmbedding`/`orthogonalSumSpanSnd_rieszEmbedding` stand
+in for TauCeti's componentwise `dualCarrier` membership. The general transport is therefore a port
+with a changed proof, not a Mathlib gap filled from scratch.
 
 ## LC-09 search record
 
@@ -66,6 +89,25 @@ Queries over the formalization corpus (`scripts/formalization_corpus.py search`)
 (TauCeti `Overlattice/Dual.lean`), `QuadraticMap.prod IsometryEquiv neg` (Mathlib
 `LinearAlgebra/QuadraticForm/Prod.lean` — the product form itself, used directly),
 `isotropic subgroup overlattice discriminant q|H^perp/H` (TauCeti roadmap import list only).
+Added in the transport unit: repository-wide `rg` for `isFractionFieldPerfect_orthogonalSum`,
+`evenDiscriminantDefectMap_surjective`, `rationalSpanProdEquiv`, `rationalizedForm_orthogonalSum`,
+`rationalizedForm.*[Ii]nject` and `SeparatingLeft.*rationalizedForm` — the last two matter, because
+the repository has `SeparatingLeft` proofs (`ReductionDiscriminant`, `PrimitiveReduction`) but
+nothing deriving an *element* equality from pairings against lattice vectors, which is why
+`orthogonalSumSpanFst_rieszEmbedding` is proved by `TensorProduct.inductionOn`; and
+`rationalSpanProdEquiv` is the `R`-linear predecessor of `orthogonalSumSpanProdEquiv`
+(`JordanRecursion.lean:58`, reused rather than restated, and recorded above). Mathlib source on
+disk: `TensorProduct.tmul_eq_smul_one_tmul` (`Defs.lean:315`, the `a ⊗ₜ x = a • (1 ⊗ₜ x)` step),
+`TensorProduct.prodRight_tmul` (`Prod.lean:50`, `rfl`), `TensorProduct.span_tmul_eq_top`
+(`Defs.lean:418`, found and not needed), `Module.dualProdDualEquivDual` (`Dual/Lemmas.lean:89`,
+found and not needed — the two dual coordinates are split by hand along `LinearMap.inl`/`inr`).
+Corpus: `discriminant form of an orthogonal sum is the orthogonal sum of discriminant forms`,
+`riesz embedding orthogonal sum coordinate restriction`,
+`fraction field perfect orthogonal sum nondegenerate`, `discriminantQuadraticIsometryOrthogonalSum`
+and `dualCarrier orthogonal sum product isometry quadratic discriminant`. The fourth returned
+`Discriminant/Operations.lean`, the port source named in the provenance above — a file the earlier
+record did not name, and which settles that the transport is a port; the others returned no
+declaration-level hit.
 Mathlib's `TensorProduct.prodRight` is used directly; no statement that the discriminant form of
 an orthogonal sum is the orthogonal sum of the discriminant forms exists upstream.
 -/
@@ -249,6 +291,116 @@ theorem mem_metricDual_orthogonalSum_iff (x : RationalSpan R (orthogonalSum L M)
       orthogonalSumSpanSnd_toRationalSpan]
     exact add_mem (hleft s) (hright k)
 
+/-! ## The product decomposition of the rational span
+
+`orthogonalSumSpanFst` and `orthogonalSumSpanSnd` give the two coordinates separately. For the
+perfectness of the sum's rationalized form the two coordinates are needed jointly, as a
+`Frac(R)`-linear equivalence; that is what makes the correlation map of the sum the composite of
+the two correlation maps with the product-dual splitting, and hence a bijection.
+
+`JordanRecursion.rationalSpanProdEquiv` is the same `TensorProduct.prodRight` decomposition with
+`R`-scalars only (`S := R`); it is stated there at a single lattice vector, which is what the
+fractional-ideal layer needs. The equivalence here is the `Frac(R)`-linear one (`S := Frac(R)`),
+because `rationalizedForm` is `Frac(R)`-bilinear and its coordinates have to be `Frac(R)`-linear
+functionals for the dual arguments below. The two are the same map on the same carrier. -/
+
+/-- The rational span of an orthogonal sum splits, `Frac(R)`-linearly, as the product of the
+rational spans of the two factors. -/
+noncomputable def orthogonalSumSpanProdEquiv :
+    RationalSpan R (orthogonalSum L M) ≃ₗ[FractionRing R]
+      (RationalSpan R L × RationalSpan R M) :=
+  TensorProduct.prodRight R (FractionRing R) (FractionRing R) L.obj.carrier M.obj.carrier
+
+omit [IsDomain R] in
+@[simp]
+theorem orthogonalSumSpanProdEquiv_tmul (a : FractionRing R)
+    (z : ↥(orthogonalSum L M).obj.carrier) :
+    orthogonalSumSpanProdEquiv (a ⊗ₜ[R] z) = (a ⊗ₜ[R] z.1, a ⊗ₜ[R] z.2) :=
+  rfl
+
+/-- **The rationalized form of an orthogonal sum is the sum of the two forms**, in the product
+coordinates. `rationalizedForm_orthogonalSum_fst_snd` states the same identity along
+`orthogonalSumSpanFst`/`orthogonalSumSpanSnd`, and `JordanRecursion.rationalizedForm_orthogonalSum`
+is the case where the second argument is a lattice vector. The version below is the one the
+perfectness of the sum needs: both arguments arbitrary, so that the identity can be evaluated at
+the preimages `orthogonalSumSpanProdEquiv.symm (w, 0)` of an arbitrary functional. -/
+theorem rationalizedForm_orthogonalSum_prodEquiv (u v : RationalSpan R (orthogonalSum L M)) :
+    rationalizedForm R (orthogonalSum L M) u v =
+      rationalizedForm R L (orthogonalSumSpanProdEquiv u).1 (orthogonalSumSpanProdEquiv v).1 +
+        rationalizedForm R M (orthogonalSumSpanProdEquiv u).2
+          (orthogonalSumSpanProdEquiv v).2 := by
+  induction u using TensorProduct.inductionOn with
+  | tmul a z =>
+    induction v using TensorProduct.inductionOn with
+    | tmul b z' =>
+      rw [orthogonalSumSpanProdEquiv_tmul, orthogonalSumSpanProdEquiv_tmul, rationalizedForm_tmul,
+        rationalizedForm_tmul, rationalizedForm_tmul, orthogonalSum_pairing_carrier, map_add,
+        mul_add]
+    | add v₁ v₂ h₁ h₂ =>
+      rw [LinearMap.map_add, h₁, h₂]
+      simp only [map_add, Prod.fst_add, Prod.snd_add]
+      abel
+  | add u₁ u₂ h₁ h₂ =>
+    rw [LinearMap.map_add, LinearMap.add_apply, h₁, h₂]
+    simp only [map_add, LinearMap.add_apply, Prod.fst_add, Prod.snd_add]
+    abel
+
+/-- **Fraction-field perfection is preserved by orthogonal sums.** The rationalized form of the
+sum is, in the product coordinates, the composite of the two correlation maps of the factors with
+the product-dual splitting, so bijectivity of the factors' correlation maps implies bijectivity of
+the sum's: injectivity by evaluating at the preimages of `(w, 0)` and `(0, w)`, surjectivity by
+solving each coordinate separately. -/
+theorem isFractionFieldPerfect_orthogonalSum (hL : IsFractionFieldPerfect R L)
+    (hM : IsFractionFieldPerfect R M) :
+    IsFractionFieldPerfect R (orthogonalSum L M) := by
+  constructor
+  · intro u v huv
+    apply (orthogonalSumSpanProdEquiv (L := L) (M := M)).injective
+    refine Prod.ext ?_ ?_
+    · have hinj : Function.Injective (rationalizedForm R L) := hL.1
+      apply hinj
+      apply LinearMap.ext
+      intro w
+      have h := LinearMap.congr_fun huv ((orthogonalSumSpanProdEquiv (L := L) (M := M)).symm
+        (w, 0))
+      rw [rationalizedForm_orthogonalSum_prodEquiv,
+        rationalizedForm_orthogonalSum_prodEquiv] at h
+      simpa using h
+    · have hinj : Function.Injective (rationalizedForm R M) := hM.1
+      apply hinj
+      apply LinearMap.ext
+      intro w
+      have h := LinearMap.congr_fun huv ((orthogonalSumSpanProdEquiv (L := L) (M := M)).symm
+        (0, w))
+      rw [rationalizedForm_orthogonalSum_prodEquiv,
+        rationalizedForm_orthogonalSum_prodEquiv] at h
+      simpa using h
+  · intro φ
+    set φ' : Module.Dual (FractionRing R) (RationalSpan R L × RationalSpan R M) :=
+      φ.comp (orthogonalSumSpanProdEquiv (L := L) (M := M)).symm.toLinearMap with hφ'
+    let ψ₁ : Module.Dual (FractionRing R) (RationalSpan R L) :=
+      φ'.comp (LinearMap.inl (FractionRing R) (RationalSpan R L) (RationalSpan R M))
+    let ψ₂ : Module.Dual (FractionRing R) (RationalSpan R M) :=
+      φ'.comp (LinearMap.inr (FractionRing R) (RationalSpan R L) (RationalSpan R M))
+    refine ⟨(orthogonalSumSpanProdEquiv (L := L) (M := M)).symm
+      ((rationalAdjointEquiv R L hL).symm ψ₁, (rationalAdjointEquiv R M hM).symm ψ₂), ?_⟩
+    apply LinearMap.ext
+    intro v
+    have h1 : rationalizedForm R L ((rationalAdjointEquiv R L hL).symm ψ₁)
+        (orthogonalSumSpanProdEquiv v).1 = ψ₁ (orthogonalSumSpanProdEquiv v).1 := by
+      change (rationalAdjointEquiv R L hL) ((rationalAdjointEquiv R L hL).symm ψ₁) _ = _
+      rw [LinearEquiv.apply_symm_apply]
+    have h2 : rationalizedForm R M ((rationalAdjointEquiv R M hM).symm ψ₂)
+        (orthogonalSumSpanProdEquiv v).2 = ψ₂ (orthogonalSumSpanProdEquiv v).2 := by
+      change (rationalAdjointEquiv R M hM) ((rationalAdjointEquiv R M hM).symm ψ₂) _ = _
+      rw [LinearEquiv.apply_symm_apply]
+    rw [rationalizedForm_orthogonalSum_prodEquiv, LinearEquiv.apply_symm_apply, h1, h2]
+    simp only [ψ₁, ψ₂, LinearMap.comp_apply, LinearMap.inl_apply, LinearMap.inr_apply]
+    rw [← map_add]
+    rw [show ((orthogonalSumSpanProdEquiv v).1, 0) + (0, (orthogonalSumSpanProdEquiv v).2) =
+      orthogonalSumSpanProdEquiv v from by simp]
+    simp [hφ', LinearEquiv.symm_apply_apply]
+
 /-! ## The value dual, the defect and the quadratic refinement -/
 
 /-- A metric-dual vector of an orthogonal sum is integral against a first-factor vector exactly
@@ -317,7 +469,6 @@ theorem evenDiscriminantDefectMap_metricDualToDiscriminant
   rw [metricDualToDiscriminant, LinearMap.comp_apply, evenDiscriminantDefectMap_mk]
   exact evenDiscriminantRestrictionMap_metricDualToDiscriminant x hx hx'
 
-set_option maxHeartbeats 800000 in
 /-- **The quadratic refinement of an orthogonal sum is the sum of the two refinements** on a class
 with a chosen metric-dual representative. This is the form in which the discriminant classes of an
 overlattice of `S ⊥ K` arise: an element of the rational span, not an arbitrary quotient class. -/
@@ -338,5 +489,107 @@ theorem evenDiscriminantQuadraticMap_orthogonalSum_metricDual
     evenDiscriminantQuadraticMap_metricDualToDiscriminant (L := L) hL hEvenL,
     evenDiscriminantQuadraticMap_metricDualToDiscriminant (L := M) hM hEvenM,
     rationalizedForm_orthogonalSum_fst_snd, map_add]
+
+/-! ## The Riesz realizations of the two coordinates
+
+The transport of the quadratic refinement to an arbitrary class of `A_(S ⊥ K)` needs one fact
+about the Riesz realization: the two coordinates of the Riesz vector of a functional on the sum are
+the Riesz vectors of its two coordinate restrictions. Pairing the identity against lattice vectors
+and using injectivity of the rationalized form proves it, and — this is the point — it is a
+statement about `RationalSpan` alone. No class of a metric dual and no surjectivity witness of
+`metricDualToDiscriminant` is introduced anywhere, which is what clears the `whnf` divergence
+recorded in `COMPLAINTS.md`.
+
+The vector-level identity `evenDiscriminantQuadraticMap_orthogonalSum` then follows on a
+representative `Submodule.Quotient.induction_on`, by `evenDiscriminantDefectMap_mk` for the two
+coordinates and the splitting of the rationalized form. -/
+
+/-- **The first coordinate of a Riesz vector.** The first coordinate of the Riesz vector of a
+functional on the sum is the Riesz vector of the functional's restriction to the first factor. -/
+theorem orthogonalSumSpanFst_rieszEmbedding (hL : IsFractionFieldPerfect R L)
+    (hLM : IsFractionFieldPerfect R (orthogonalSum L M))
+    (f : (orthogonalSum L M).obj.valueDual) :
+    orthogonalSumSpanFst L M (rieszEmbedding R (orthogonalSum L M) hLM f) =
+      rieszEmbedding R L hL (evenDiscriminantFstRestriction L M f) := by
+  have hinj : Function.Injective (rationalizedForm R L) := hL.1
+  apply hinj
+  apply LinearMap.ext
+  intro w
+  induction w using TensorProduct.inductionOn with
+  | tmul a x =>
+    rw [TensorProduct.tmul_eq_smul_one_tmul, LinearMap.map_smul, LinearMap.map_smul]
+    congr 1
+    rw [show (1 : FractionRing R) ⊗ₜ[R] x = toRationalSpan R L x from rfl]
+    have h := rationalizedForm_orthogonalSum_fst_snd
+      (rieszEmbedding R (orthogonalSum L M) hLM f)
+      (toRationalSpan R (orthogonalSum L M) ((x, 0) : ↥(orthogonalSum L M).obj.carrier))
+    rw [orthogonalSumSpanFst_toRationalSpan, orthogonalSumSpanSnd_toRationalSpan] at h
+    simp only [map_zero, add_zero] at h
+    rw [← h, rationalizedForm_rieszEmbedding R (orthogonalSum L M) hLM f
+        ((x, 0) : ↥(orthogonalSum L M).obj.carrier),
+      rationalizedForm_rieszEmbedding R L hL (evenDiscriminantFstRestriction L M f) x]
+    rfl
+  | add w₁ w₂ h₁ h₂ => simp only [map_add, h₁, h₂]
+
+/-- **The second coordinate of a Riesz vector.** The second coordinate of the Riesz vector of a
+functional on the sum is the Riesz vector of the functional's restriction to the second factor. -/
+theorem orthogonalSumSpanSnd_rieszEmbedding (hM : IsFractionFieldPerfect R M)
+    (hLM : IsFractionFieldPerfect R (orthogonalSum L M))
+    (f : (orthogonalSum L M).obj.valueDual) :
+    orthogonalSumSpanSnd L M (rieszEmbedding R (orthogonalSum L M) hLM f) =
+      rieszEmbedding R M hM (evenDiscriminantSndRestriction L M f) := by
+  have hinj : Function.Injective (rationalizedForm R M) := hM.1
+  apply hinj
+  apply LinearMap.ext
+  intro w
+  induction w using TensorProduct.inductionOn with
+  | tmul a y =>
+    rw [TensorProduct.tmul_eq_smul_one_tmul, LinearMap.map_smul, LinearMap.map_smul]
+    congr 1
+    rw [show (1 : FractionRing R) ⊗ₜ[R] y = toRationalSpan R M y from rfl]
+    have h := rationalizedForm_orthogonalSum_fst_snd
+      (rieszEmbedding R (orthogonalSum L M) hLM f)
+      (toRationalSpan R (orthogonalSum L M) ((0, y) : ↥(orthogonalSum L M).obj.carrier))
+    rw [orthogonalSumSpanFst_toRationalSpan, orthogonalSumSpanSnd_toRationalSpan] at h
+    simp only [map_zero, zero_add] at h
+    rw [← h, rationalizedForm_rieszEmbedding R (orthogonalSum L M) hLM f
+        ((0, y) : ↥(orthogonalSum L M).obj.carrier),
+      rationalizedForm_rieszEmbedding R M hM (evenDiscriminantSndRestriction L M f) y]
+    rfl
+  | add w₁ w₂ h₁ h₂ => simp only [map_add, h₁, h₂]
+
+/-- **The quadratic refinement of an orthogonal sum is the sum of the two refinements.**
+For every class `z` of the discriminant form of `S ⊥ K`,
+`q_(S ⊥ K)(z) = q_S(z₁) + q_K(z₂)` along the defect splitting `z ↦ (z₁, z₂)`. This is Nikulin,
+*Integral symmetric bilinear forms and some of their applications*, Math. USSR Izv. 14 (1980),
+§1.5, Prop. 1.5.1, p. 111: the quadratic form of the orthogonal sum is `q_S ⊕ q_K` under the
+identification `A_(S ⊥ K) = A_S × A_K`.
+
+`evenDiscriminantQuadraticMap_orthogonalSum_metricDual` is the same identity on a class with a
+chosen metric-dual representative; this version is stated over an arbitrary class, which is the
+form the gluing graph `Γ_γ ⊆ A_S ⊕ A_K` needs. -/
+theorem evenDiscriminantQuadraticMap_orthogonalSum
+    (hL : IsFractionFieldPerfect R L) (hM : IsFractionFieldPerfect R M)
+    (hLM : IsFractionFieldPerfect R (orthogonalSum L M))
+    (hEvenL : IsEven L) (hEvenM : IsEven M) (hEvenLM : IsEven (orthogonalSum L M))
+    (z : (orthogonalSum L M).obj.defect) :
+    evenDiscriminantQuadraticMap (L := orthogonalSum L M) hLM hEvenLM z =
+      evenDiscriminantQuadraticMap (L := L) hL hEvenL (evenDiscriminantDefectMap L M z).1 +
+        evenDiscriminantQuadraticMap (L := M) hM hEvenM (evenDiscriminantDefectMap L M z).2 := by
+  induction z using Submodule.Quotient.induction_on with
+  | _ f =>
+    change doubleFractionValueProjection R
+        (rationalizedForm R (orthogonalSum L M)
+          (rieszEmbedding R (orthogonalSum L M) hLM f)
+          (rieszEmbedding R (orthogonalSum L M) hLM f)) =
+      doubleFractionValueProjection R
+          (rationalizedForm R L (rieszEmbedding R L hL (evenDiscriminantFstRestriction L M f))
+            (rieszEmbedding R L hL (evenDiscriminantFstRestriction L M f))) +
+        doubleFractionValueProjection R
+          (rationalizedForm R M (rieszEmbedding R M hM (evenDiscriminantSndRestriction L M f))
+            (rieszEmbedding R M hM (evenDiscriminantSndRestriction L M f)))
+    rw [rationalizedForm_orthogonalSum_fst_snd,
+      orthogonalSumSpanFst_rieszEmbedding (L := L) (M := M) hL hLM f,
+      orthogonalSumSpanSnd_rieszEmbedding (L := L) (M := M) hM hLM f, map_add]
 
 end LeanCategories.Lattices.Valued

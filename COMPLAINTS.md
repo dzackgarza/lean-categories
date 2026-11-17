@@ -38,46 +38,74 @@ does not justify weakening a dependent theorem or starting unrelated work.
 
 ## Mathematical issues
 
-### The quadratic refinement of an orthogonal sum's discriminant form: the transport statement diverges in `whnf` (#26)
+### The quadratic refinement of an orthogonal sum's discriminant form diverges in `isDefEq` at the sum's `metricDual` — resolved, and the divergence located (#26)
 
-- **Need:** for even lattices `S`, `K` and `z ∈ A_(S ⊥ K)`,
+- **Status: resolved** by `evenDiscriminantQuadraticMap_orthogonalSum` in
+  `LeanCategories/Lattices/Valued/OrthogonalSumDiscriminant.lean`, together with
+  `orthogonalSumSpanFst_rieszEmbedding`, `orthogonalSumSpanSnd_rieszEmbedding`,
+  `rationalizedForm_orthogonalSum_prodEquiv` and `isFractionFieldPerfect_orthogonalSum` in the same
+  file. Axiom audit: `[propext, Classical.choice, Quot.sound]`. The entry is kept because the
+  divergence below is a live trap for the next lemma about the sum's `metricDual`, and because the
+  diagnosis it carried (a diverging substitution of a surjectivity witness) was wrong in a way that
+  cost a session.
+- **Need (met):** for even lattices `S`, `K` and `z ∈ A_(S ⊥ K)`,
   `q_(S ⊥ K)(z) = q_S(z₁) + q_K(z₂)` where `(z₁, z₂) = evenDiscriminantDefectMap S K z`. This is
   the ambient form of Nikulin, *Integral symmetric bilinear forms and some of their applications*,
   Math. USSR Izv. 14 (1980), Prop. 1.5.1, p. 111 (`q_S ⊕ q_K` on `A_S ⊕ A_K`), and it is the last
-  input of #26's results 3 and 4: total isotropy of the gluing graph inside the discriminant form of
-  `S ⊥ K`, the overlattice it determines, its evenness, and the primitivity of the two factors.
-- **Evidence:** the identity holds on metric-dual representatives and is proved there:
-  `evenDiscriminantQuadraticMap_orthogonalSum_metricDual` in
-  `LeanCategories/Lattices/Valued/OrthogonalSumDiscriminant.lean` (it is
-  `rationalizedForm_orthogonalSum_fst_snd` read at a representative), together with
-  `orthogonalSumSpanFst`, `orthogonalSumSpanSnd` and
-  `evenDiscriminantDefectMap_metricDualToDiscriminant` in the same file. What does not elaborate
-  is the general statement over `z : A_(S ⊥ K)`, whose proof must replace `z` by a metric-dual
-  class. The failure is not in the statement — that elaborates in about a second, including the
-  case with the sum's `hLM`/`hEvenLM` present — but in the substitution: rewriting the goal by
-  `Submodule.Quotient.mk f = metricDualToDiscriminant (rieszToMetricDual f)` (a definitional
-  identity), or `obtain ⟨x, rfl⟩` on `metricDualToDiscriminant_surjective`, makes Lean 4.36.0
-  report `(deterministic) timeout at 'whnf'` (and once at `«synthesize pending MVars»`) at 200000,
-  800000, 1000000 and 4000000 heartbeats. The likely cause is that `whnf` of `rieszToMetricDual`
-  unfolds `rationalAdjointEquiv`, i.e. `LinearEquiv.ofBijective` applied to the rationalized form,
-  at the sum's carrier. The unfinished proof is preserved at `.scratch/nik26/open-q-transport.lean`
-  and `.scratch/nik26/qa.lean` (the metric-dual half is the second of these, and it compiles).
-- **Gap and impact:** without this theorem the gluing graph of an anti-isometry cannot be seen as a
-  subgroup of `A_(S ⊥ K)`, so `evenOverlatticeFromIsotropicSubgroup` cannot be applied and #26's
-  results 3 and 4 (glued lattice, evenness, discriminant form `Γ^⊥/Γ`, primitivity and
-  `K = S^⊥`) remain unproved. Results 1 and 2 of #26 do not depend on it and are proved
-  (`evenDiscriminantSubgroupGraph_isTotallyIsotropic_iff`,
-  `exists_evenDiscriminantSubgroupGraph_eq`).
-- **Coverage:** `whnf` was confirmed to terminate on `(orthogonalSum L M).obj.defect`,
-  `evenDiscriminantDefectMap L M z` and `(…).1` separately, on the two-sided statement with the
-  factor refinements only, and on the metric-dual level statement (which is proved). Raising the
-  heartbeat limit does not help. Not inspected: whether `erw`/`conv` in place of `rw` on the
-  definitional identity avoids the unfolding, and whether a `LinearEquiv`-free spelling of the
-  surjectivity witness (avoiding `rieszToMetricDual`) does.
-- **Repair link:** #26. Resolved when `evenDiscriminantQuadraticMap_orthogonalSum` elaborates and is
-  proved; the natural candidate is to state it through an opaque abbreviation for the sum's
-  refinement `(orthogonalSum L M).obj.defect → Frac(R)/2R`, then `show` it back to
-  `evenDiscriminantQuadraticMap` inside the proof.
+  input of #26's results 3 and 4.
+- **What the proof needed:** nothing from the metric dual. `rieszEmbedding` alone suffices: the two
+  coordinates of a Riesz vector are the Riesz vectors of the two coordinate restrictions
+  (`orthogonalSumSpanFst_rieszEmbedding`, `orthogonalSumSpanSnd_rieszEmbedding`), the identity then
+  reduces to `rationalizedForm_orthogonalSum_fst_snd` at one element of the rational span, and the
+  class is handled by `Submodule.Quotient.induction_on` on its representative. No `metricDual`
+  coercion, no `LinearEquiv` supplied by a surjectivity witness and no
+  `mem_metricDual_orthogonalSum_iff` occurs in the proof.
+- **Evidence — the actual divergence, reproduced.** It is not the substitution of a witness:
+  `obtain ⟨x, rfl⟩ := metricDualToDiscriminant_surjective R (S ⊥ K) hLM z` followed by `rfl`
+  succeeds at `maxHeartbeats 200000`, and `metricDualToDiscriminant_surjective` at a single factor
+  is instant. It is `isDefEq` between two presentations of `metricDual R (S ⊥ K)` when the lattice
+  arguments are left to unification. Minimal divergent goal state (Lean 4.36.0, this checkout,
+  `maxHeartbeats 200000`; reported as `(deterministic) timeout at 'whnf'` and at `'isDefEq'`):
+
+  ```lean
+  example (v : RationalSpan R (orthogonalSum L M))
+      (hv : v ∈ metricDual R (orthogonalSum L M)) : True := by
+    obtain ⟨hx, hx'⟩ :=
+      (mem_metricDual_orthogonalSum_iff (⟨v, hv⟩ : metricDual R (orthogonalSum L M))).mp hv
+    trivial
+  ```
+
+  With `mem_metricDual_orthogonalSum_iff (L := L) (M := M) (x := v)` — the lattices named rather
+  than inferred — the same three lines elaborate instantly, so the loop is unification-driven and
+  not term-driven. **Responsible declarations:** `metricDual`
+  (`Lattices/Valued/MetricDual.lean:34`, itself an `abbrev`, body
+  `(rationalizedForm R L).dualSubmodule (integralImage R L)`) together with `rationalizedForm`
+  (`Lattices/Valued/Rationalization.lean:54`), also an `abbrev`, so `whnf` runs through both into
+  `LinearMap.compr₂ (BilinearMap.baseChange …) (AlgebraTensorModule.rid …).toLinearMap`. At
+  `L := orthogonalSum L M` that exposes `orthogonalSum`'s `bilinMap` (`Constructions.lean:230`) at
+  unsolved lattice metavariables, and `isDefEq` does not terminate there within 4000000 heartbeats.
+  Raising the limit does not help; naming the lattices does. Nothing in Mathlib's `Dual` or
+  `TensorProduct` neighbourhood is at fault: the same `isDefEq` at a plain lattice is instant, and
+  `metricDual R (S ⊥ K) = metricDual R (S ⊥ K)` is `rfl`-fast.
+- **Consequence for later work:** a lemma stated at the sum and taking a `metricDual`-membership
+  hypothesis must be applied with `(L := …) (M := …)` explicit. This is why the metric-dual half of
+  the file (`metricDualToValueDual_orthogonalSum_fst` and below) takes
+  `hx : orthogonalSumSpanFst L M x ∈ metricDual R L` as a named hypothesis: it is never discharged
+  from `x.2`.
+- **Coverage:** reproduced with the `whnf`, `isDefEq` and `«synthesize pending MVars»` reports; the
+  statement alone (with `sorry`) elaborates at 200000 heartbeats, so the earlier claim that the
+  statement was cheap held, and the claim that the witness substitution was at fault did not. Not
+  inspected: whether a `noncomputable def` (rather than `abbrev`) spelling of `rationalizedForm`
+  removes the trap; left open because changing it touches every file in `Lattices/Valued`, and the
+  workaround is one line.
+- **Still unfinished in #26:** result 3, the overlattice discriminant theorem `A_M ≅ Γ^⊥/Γ` (`M`
+  the overlattice attached to the graph `Γ_γ`), and result 4, primitivity of the two factors with
+  `K = S^⊥`. Neither can be stated yet: the repository has no lattice structure on an
+  `Overlattice R L`, so `A_M = M^∨/M` has no object to be about, and
+  `isotropicSubquotientQuadraticMap` (`QuadraticSubquotient.lean:151`) builds the refinement of
+  `D^⊥/D` only for `D` cut out by a submodule of the carrier, not for an arbitrary isotropic
+  subgroup of `A_L`. The cleared route supplies result 3's two inputs (`q_S ⊕ q_K` over an
+  arbitrary class, and perfection at the sum), not its statement.
 
 ### The per-plane line count of `#88` has no formal chain: the adapted basis and the line/`ℙ¹(ℚ)`
 correspondence are still absent (the image `Δ` and its action have landed)
