@@ -168,6 +168,38 @@ theorem IsLocallyRationalDecomposition.isFaceOf_of_le {C : PointedCone ℝ (real
     exact inf_isFaceOf_of_isLocallyRationalDecomposition hS hτ hσ
   rwa [inf_eq_left.2 h] at hface
 
+omit [Module.Finite ℚ V] in
+/-- **Two members of a locally rational decomposition whose relative interiors meet are equal.**
+Given `x` in the relative interior of both `σ` and `τ`, the insertion lemma gives `σ ≤ τ` (from
+`x ∈ relint σ` and `x ∈ τ`) and `τ ≤ σ` (from `x ∈ relint τ` and `x ∈ σ`), so the two coincide.
+
+This is the relative interiors being pairwise disjoint, and it is what makes `τ ↦` "the member whose
+relative interior contains `x`" well defined on a locally rational decomposition. It is a
+consequence of the face axiom through `le_of_isRelintPoint`; no field of
+`IsLocallyRationalDecomposition` beyond `restriction` (via
+`inf_isFaceOf_of_isLocallyRationalDecomposition`) is used, and in particular no partition of `C₊` by
+relative interiors has to be assumed. -/
+theorem IsLocallyRationalDecomposition.eq_of_common_isRelintPoint {C : PointedCone ℝ (realified V)}
+    {S : Set (PointedCone ℝ (realified V))}
+    (hS : IsLocallyRationalDecomposition (rationalClosure C) S)
+    {σ τ : PointedCone ℝ (realified V)} (hσ : σ ∈ S) (hτ : τ ∈ S) {x : realified V}
+    (hxσ : IsRelintPoint σ x) (hxτ : IsRelintPoint τ x) : σ = τ :=
+  le_antisymm (hS.le_of_isRelintPoint (σ := σ) (σ' := τ) hσ hτ hxσ hxτ.1)
+    (hS.le_of_isRelintPoint (σ := τ) (σ' := σ) hτ hσ hxτ hxσ.1)
+
+omit [Module.Finite ℚ V] in
+/-- **The member whose relative interior contains a point is unique**: two members of a locally
+rational decomposition whose relative interiors both contain `x` are the same member. -/
+theorem IsLocallyRationalDecomposition.existsUnique_mem_isRelintPoint
+    {C : PointedCone ℝ (realified V)} {S : Set (PointedCone ℝ (realified V))}
+    (hS : IsLocallyRationalDecomposition (rationalClosure C) S) {x : realified V}
+    (hx : ∃ σ ∈ S, IsRelintPoint σ x) :
+    ∃! σ : PointedCone ℝ (realified V), σ ∈ S ∧ IsRelintPoint σ x := by
+  obtain ⟨σ, hσ, hxσ⟩ := hx
+  refine ⟨σ, ⟨hσ, hxσ⟩, ?_⟩
+  rintro τ ⟨hτ, hxτ⟩
+  exact (hS.eq_of_common_isRelintPoint (σ := σ) (τ := τ) (x := x) hσ hτ hxσ hxτ).symm
+
 /-- **`σ'` is the least member of `S` containing the point `y`**. This is the point form of
 `FibreRefinement.IsLeastMem`, and the shape in which the insertion lemma is used: the source's
 "smallest member of `Σ'` that contains `σ`" is the least member containing `σ`'s relative interior
