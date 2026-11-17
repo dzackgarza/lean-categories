@@ -346,6 +346,7 @@ public import LeanCategories.Lattices.Valued.CuspHomFibre
 public import LeanCategories.Lattices.Valued.CuspWorkedInstance
 public import LeanCategories.Lattices.Valued.CuspSchreierImage
 public import LeanCategories.Lattices.Valued.CuspPlaneIncidence
+public import LeanCategories.Lattices.Valued.CuspFlagFiniteness
 public import LeanCategories.Lattices.Valued.DiscriminantCharacteristic
 public import LeanCategories.Lattices.Valued.CobleLattice
 public import LeanCategories.Lattices.Valued.CobleCharacteristic

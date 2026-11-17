@@ -872,4 +872,167 @@ theorem AmbientResidueData.mM_le_M (D : AmbientResidueData R L) : D.mM ≤ D.M :
   exact D.M.smul_mem D.m hy
 
 
+/-! ## The three-factor composite of a completed loop
+
+`thm:schreier-discriminant-image` item 3 factorizes `ρ_L(k_{s,p})` through the discriminant
+isometries `α` between the translated lattices of the orbit. This section supplies each factor and
+its action on classes:
+
+* `orbitAlphaTo g : A_L ≃ A_{gL}` and `orbitAlphaTrans a g k h : A_{gL} ≃ A_{kL}`, the transports
+  of `orbitLatticeIso` and `orbitTransportIso` to the discriminant module;
+* `orbitAlphaTo_mk`, `orbitAlphaTrans_mk`, `orbitAlphaTo_symm_mk`: their action on
+  `Submodule.Quotient.mk` classes, stated through the carriers `orbitCarrierEquiv` and
+  `orbitTransportEquiv`;
+* `schreierLoop_symm_apply`: the carrier identity behind the factorized formula. The loop's inverse
+  acts on the rational span as `(((t_sp)⁻¹ s) t_p)⁻¹ = t_p⁻¹ (s⁻¹ t_sp)`; the contragredient
+  composite of the three carriers acts as `t_p⁻¹ (s⁻¹ (t_sp y))`; they agree by `mul_inv_rev` and
+  `mul_apply_eq_comp`;
+* `loopDefectEquiv` (the loop's action on `A_L`) and `orbitLoopComposite` (the three-factor
+  composite `α_{t_sp}(L)⁻¹ ∘ α_s(L_p) ∘ α_{t_p}(L)`).
+
+**What is not yet proved**: the identity
+`loopDefectEquiv D t ht s p = orbitLoopComposite D t ht s p`. Every ingredient is present and
+`Submodule.Quotient.induction_on` reduces it to the pointwise comparison of two value-dual maps,
+which `schreierLoop_symm_apply` closes. The step that does not
+elaborate is the assembly: rewriting with the `_mk` lemmas forces `isDefEq` checks between
+`(orbitLattice g).obj.valueDual` and `L.obj.valueDual`, whose `Submodule.Quotient.module` instances
+carry different `Submodule` arguments, and those checks exhaust the heartbeat budget even at
+3000000. The fix is a recording change, not a mathematical one: state the value-dual level composite
+as its own opaque definition so that the `mk`-level rewrites become syntactic. -/
+
+
+theorem actOnValueDual_apply (g : OrthogonalGroup L) (f : L.obj.valueDual)
+    (y : L.obj.carrier) :
+    OrthogonalGroup.actOnValueDual g f y = f (g.1.symm y) := rfl
+
+omit [IsDomain R] in
+theorem discriminantValueDualEquiv_apply_comp (e : L ≅ M) (f : L.obj.valueDual) :
+    discriminantValueDualEquiv e f =
+      f.comp (latticeIsoLinearEquiv e).symm.toLinearMap := rfl
+
+omit [IsDomain R] in
+theorem discriminantValueDualEquiv_symm_apply_comp (e : L ≅ M) (f : M.obj.valueDual) :
+    (discriminantValueDualEquiv e).symm f =
+      f.comp (latticeIsoLinearEquiv e).toLinearMap := by
+  rw [LinearEquiv.symm_apply_eq, discriminantValueDualEquiv_apply_comp]
+  ext x
+  simp
+
+omit [IsDomain R] in
+theorem discriminantCarrierEquiv_symm_mk (e : L ≅ M) (f : M.obj.valueDual) :
+    (discriminantCarrierEquiv e).symm (Submodule.Quotient.mk f) =
+      Submodule.Quotient.mk (f.comp (latticeIsoLinearEquiv e).toLinearMap) := by
+  rw [LinearEquiv.symm_apply_eq, discriminantCarrierEquiv_mk,
+    discriminantValueDualEquiv_apply_comp]
+  refine congrArg Submodule.Quotient.mk ?_
+  ext x
+  simp
+
+/-- The inverse ambient transport, read on the rational span. -/
+theorem orbitTransportEquiv_symm_apply_coe (a g k : AmbientOrthogonalGroup L)
+    (h : ambientTranslate L k = (ambientTranslate L g).map (a.1).toLinearMap)
+    (x : ↥(ambientTranslate L k)) :
+    ((orbitTransportEquiv a g k h).symm x : RationalSpan R L) = a.1.symm x.1 := by
+  apply a.1.injective
+  have h2 : a.1 ((orbitTransportEquiv a g k h).symm x).1 = x.1 := by
+    rw [← orbitTransportEquiv_apply_coe (a := a) (g := g) (k := k) (h := h)
+      (x := (orbitTransportEquiv a g k h).symm x)]
+    exact congrArg Subtype.val (LinearEquiv.apply_symm_apply _ x)
+  rw [h2]
+  exact (a.1.apply_symm_apply x.1).symm
+
+/-- `α_g(L)`: the discriminant transport from `L` to the translate `gL`. -/
+noncomputable def orbitAlphaTo (g : AmbientOrthogonalGroup L) :
+    L.obj.defect ≃ₗ[R] (orbitLattice g).obj.defect :=
+  discriminantCarrierEquiv (orbitLatticeIso g)
+
+/-- `α_a(L₀)`: the discriminant transport between two translates of `L`, along an ambient `a`. -/
+noncomputable def orbitAlphaTrans (a g k : AmbientOrthogonalGroup L)
+    (h : ambientTranslate L k = (ambientTranslate L g).map (a.1).toLinearMap) :
+    (orbitLattice g).obj.defect ≃ₗ[R] (orbitLattice k).obj.defect :=
+  discriminantCarrierEquiv (orbitTransportIso a g k h)
+
+@[simp] theorem orbitAlphaTo_def (g : AmbientOrthogonalGroup L) :
+    orbitAlphaTo (L := L) g = discriminantCarrierEquiv (orbitLatticeIso g) := rfl
+
+@[simp] theorem orbitAlphaTrans_def (a g k : AmbientOrthogonalGroup L)
+    (h : ambientTranslate L k = (ambientTranslate L g).map (a.1).toLinearMap) :
+    orbitAlphaTrans (L := L) a g k h =
+      discriminantCarrierEquiv (orbitTransportIso a g k h) := rfl
+
+theorem orbitAlphaTo_mk (g : AmbientOrthogonalGroup L) (f : L.obj.valueDual) :
+    orbitAlphaTo g (Submodule.Quotient.mk f) =
+      Submodule.Quotient.mk (f.comp (orbitCarrierEquiv g).symm.toLinearMap) := by
+  rw [orbitAlphaTo_def, discriminantCarrierEquiv_mk, discriminantValueDualEquiv_apply_comp]
+  rfl
+
+theorem orbitAlphaTo_symm_mk (g : AmbientOrthogonalGroup L)
+    (f : (orbitLattice g).obj.valueDual) :
+    (orbitAlphaTo g).symm (Submodule.Quotient.mk f) =
+      Submodule.Quotient.mk (f.comp (orbitCarrierEquiv g).toLinearMap) := by
+  rw [orbitAlphaTo_def, discriminantCarrierEquiv_symm_mk]
+  rfl
+
+theorem orbitAlphaTrans_mk (a g k : AmbientOrthogonalGroup L)
+    (h : ambientTranslate L k = (ambientTranslate L g).map (a.1).toLinearMap)
+    (f : (orbitLattice g).obj.valueDual) :
+    orbitAlphaTrans a g k h (Submodule.Quotient.mk f) =
+      Submodule.Quotient.mk (f.comp (orbitTransportEquiv a g k h).symm.toLinearMap) := by
+  rw [orbitAlphaTrans_def, discriminantCarrierEquiv_mk, discriminantValueDualEquiv_apply_comp]
+  rfl
+
+set_option maxHeartbeats 1000000 in
+/-- The loop's inverse, read on the rational span of `L`. -/
+theorem schreierLoop_symm_apply (D : AmbientResidueData R L)
+    (t : D.ResiduePoint → ↥D.G) (ht : ∀ q, t q • D.baseResidue = q)
+    (s : ↥D.G) (p : D.ResiduePoint) (y : L.obj.carrier) :
+    toRationalSpan R L
+        (((stabilizerOrthogonal (schreierLoop D t ht s p).1.1
+          (translate_eq_of_mem_stabilizer D (schreierLoop D t ht s p))).1).symm y) =
+      (t p).1.1.symm ((s.1).1.symm ((t (s • p)).1.1 (toRationalSpan R L y))) := by
+  have hloop : (schreierLoop D t ht s p).1.1 =
+      (t (s • p)).1⁻¹ * s.1 * (t p).1 := rfl
+  have hcoe : (((schreierLoop D t ht s p).1.1).1) =
+      (((t (s • p)).1.1)⁻¹ * (s.1).1) * (t p).1.1 := by
+    rw [hloop]
+    simp
+  have h := stabilizerOrthogonal_val_toRationalSpan
+    (g := (schreierLoop D t ht s p).1.1)
+    (translate_eq_of_mem_stabilizer D (schreierLoop D t ht s p))
+    (((stabilizerOrthogonal (schreierLoop D t ht s p).1.1
+      (translate_eq_of_mem_stabilizer D (schreierLoop D t ht s p))).1).symm y)
+  simp only [LinearEquiv.apply_symm_apply] at h
+  have h' : toRationalSpan R L
+      (((stabilizerOrthogonal (schreierLoop D t ht s p).1.1
+        (translate_eq_of_mem_stabilizer D (schreierLoop D t ht s p))).1).symm y) =
+      ((((schreierLoop D t ht s p).1.1).1)).symm (toRationalSpan R L y) := by
+    rw [h, LinearEquiv.symm_apply_apply]
+  rw [h', hcoe, LinearEquiv.symm_apply_eq]
+  simp only [mul_apply_eq_comp, LinearEquiv.apply_symm_apply]
+  exact (LinearEquiv.symm_apply_apply _ _).symm
+
+/-- The completed loop `k_{s,p}`, as an element of `O(L)`. -/
+noncomputable def loopOrthogonal (D : AmbientResidueData R L)
+    (t : D.ResiduePoint → ↥D.G) (ht : ∀ q, t q • D.baseResidue = q)
+    (s : ↥D.G) (p : D.ResiduePoint) : OrthogonalGroup L :=
+  residueStabilizerHom D (schreierLoop D t ht s p)
+
+/-- The loop's discriminant action, as a transformation of `A_L`. -/
+noncomputable def loopDefectEquiv (D : AmbientResidueData R L)
+    (t : D.ResiduePoint → ↥D.G) (ht : ∀ q, t q • D.baseResidue = q)
+    (s : ↥D.G) (p : D.ResiduePoint) :
+    L.obj.defect ≃ₗ[R] L.obj.defect :=
+  OrthogonalGroup.actOnDefect (loopOrthogonal D t ht s p)
+
+/-- **The three-factor composite** `α_{t_sp}(L)⁻¹ ∘ α_s(L_p) ∘ α_{t_p}(L)`, as a discriminant
+transformation of `L`. -/
+noncomputable def orbitLoopComposite (D : AmbientResidueData R L)
+    (t : D.ResiduePoint → ↥D.G) (ht : ∀ q, t q • D.baseResidue = q)
+    (s : ↥D.G) (p : D.ResiduePoint) :
+    L.obj.defect ≃ₗ[R] L.obj.defect :=
+  ((orbitAlphaTo (L := L) (t p).1).trans
+    (orbitAlphaTrans (L := L) s.1 (t p).1 (t (s • p)).1
+      (D.translate_smul_eq t ht s p).symm)).trans
+    (orbitAlphaTo (L := L) (t (s • p)).1).symm
+
 end LeanCategories.Lattices.Valued
