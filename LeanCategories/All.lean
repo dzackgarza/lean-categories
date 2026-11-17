@@ -362,6 +362,7 @@ public import LeanCategories.Lattices.Valued.ConicalLocus
 public import LeanCategories.Lattices.Valued.Semifan
 public import LeanCategories.Lattices.Valued.ConicalMember
 public import LeanCategories.Lattices.Valued.SemifanArrangement
+public import LeanCategories.Lattices.Valued.FibreArithmetic
 public import LeanCategories.Lattices.Valued.EvenReduction
 public import LeanCategories.Lattices.Valued.DiscriminantIsotropic
 public import LeanCategories.Lattices.Valued.DiscriminantQuotient
