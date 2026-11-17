@@ -55,6 +55,13 @@ becomes the arithmetic statement that an arithmetic group has finitely many orbi
 level set (a genus/class-number statement, Borel–Harish-Chandra for the double cosets
 `Γ_I \ O(I^⊥/I) / Stab`), which the tree does not contain. So `hsub` is derived at `U ⊕ U` and is
 a genuine extra hypothesis for `I_{2,9}`; see the report in `results/issue-172-report.md`.
+
+#167's `StabilizerTransitiveOnWallsThroughLine` (`FibreArithmetic.lean`, **(HT′)**) is the candidate
+hypothesis in the shape of the ambient family, and it is neither used here nor available in general:
+what the transfer needs is the fibre-internal `hTrans`. The statement below is also not literally
+#167's `TraceOrbitCover`, whose `ΓI` must be the `fibreInducedEquiv`-image of `Stab_Γ(I)` for the
+given `Γ`: `ΓI` here may be the whole isometry group of the fibre, and passing to a subgroup is the
+arithmetic step the rank decides.
 -/
 
 @[expose] public section

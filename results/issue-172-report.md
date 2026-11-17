@@ -111,6 +111,30 @@ tree.
 extension theorem on 1-dimensional subspaces — but the consumer's `Γ_I` is arithmetic, and it is
 exactly the passage from `O` to `Γ_I` that the rank decides.)
 
+## 3b. Relation to #167's `(HT′)` and `TraceOrbitCover`
+
+While this was being decided, #167 landed, in `FibreArithmetic.lean`, the gap in exactly the two
+shapes #172 asks about:
+
+* `StabilizerTransitiveOnWallsThroughLine BQ ψ Γ F j` (`:1678`) — **(HT′)**, the candidate
+  hypothesis: any two isometries of `Γ` whose walls `g Hⱼ` contain `I` differ by an element of `Γ`
+  that preserves the line `I` (and `gen` up to a nonzero rational scalar), preserves `BQ`, and
+  carries one wall to the other;
+* `TraceOrbitCover hBsym ψ Γ F` (`:1693`) and `exists_orbitFamily_of_traceOrbitCover` — the
+  conclusion, with `ΓI` tied to `Γ` and `I` by `fibreInducedEquiv`.
+
+The verdict above bears on both:
+
+* **(HT′) is not what makes the proof work, and #172's own record shows it can fail.** The transfer
+  uses only that every wall of the orbit has a trace normal of the *same fibre value*
+  (`fibreForm_fibreCarrierProj_of_gen_perp`) together with transitivity of the fibre's isometries on
+  that value; nothing about how `Γ_I` moves the ambient walls enters.
+* The statement proved here is **not literally `TraceOrbitCover`**: its `ΓI` is the set of *all*
+  isometries of the restricted form, not the `fibreInducedEquiv`-image of `Stab_Γ(I)` for a specific
+  `Γ`. The hand computation of §4 supplies the missing identification in the integral case — the
+  trace set is finite, so `TraceOrbitCover` holds with `H₀` the trace set itself and `ΓI = {1}` —
+  but that identification is not the part that is formalized.
+
 ## 4. Consequence for #167
 
 * **On `U ⊕ U` the hypothesis `hsub` is derived.** Not only is the trace set one orbit: for the
