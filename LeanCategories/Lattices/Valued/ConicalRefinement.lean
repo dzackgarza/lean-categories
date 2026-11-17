@@ -22,7 +22,13 @@ type IV*, arXiv math/0201218v2 (2002), text version
 > `π_σ D`.
 
 The parent issue is lean-categories#162; this module is the part owed by #169. The source calls the
-proof of the lemma straightforward, and the three steps it leaves implicit are:
+proof of the lemma straightforward. It is not: the refinement the lemma needs carries a *covering*
+clause that the source's definitions do not state, and lean-categories#174 decides that the clause
+is not derivable from them but that every decomposition the source constructs has it — so refinement
+for these objects includes it, and the arrangement instance is proved. See "The refinement relation"
+below, and "What is not in this module" for the gap that leaves.
+
+The three steps the source leaves implicit are:
 
 1. **the insertion lemma** (`IsLocallyRationalDecomposition.le_of_isRelintPoint`, and its leastness
    form `eq_of_isLeastMem_of_isRelintPoint`): a member of a decomposition that contains a point of
@@ -44,22 +50,41 @@ proof of the lemma straightforward, and the three steps it leaves implicit are:
    crosses strata, and it is where the ambient refinement — containment of members in the conical
    locus, not a same-fibre containment — is consumed.
 
-## The refinement relation
+## The refinement relation: containment *and* covering
 
 `RefinesConicalLocus` below is the source's hypothesis "`Σ'` is refined by `Σ`" at the geometric
-object: every member of the finer collection lies, as a cone of the conical locus inside `⋀²V(ℝ)`,
-in a member of the coarser one. It is *not* `FibreRefinement.RefinesLocus`, which relates the two
-families fibre by fibre and is therefore a strictly stronger hypothesis on each fibre and no
-statement at all across strata; and it is not `Semifan.sigmaSupportSpace_le_of_refines`'s
-support-index domination, which assumes a containment between supports.
+object, in the form lean-categories#174 decides: **two** fields, `containment` — every member of the
+finer collection lies, as a cone of the conical locus inside `⋀²V(ℝ)`, in a member of the coarser
+one, which is the source's own gloss at text line 603 — and `covering` (`CoversConicalLocus`) —
+every coarse member is the union of the fine members it contains. The second is not in the source:
+Definition 4.2 (`:481`) asks only that the union of a decomposition's members be `C₊`, the §4 gloss
+is containment only, and Lemma 6.6 is stated without proof. #174 decides that covering is **not
+derivable** from Definition 4.2 and Definition 6.1 as stated, that **every decomposition the source
+constructs has it** (`Σ(bb)` and `Σ(ℋ)` are stratifications of `C₊`), and that refinement for these
+objects therefore includes it. That is a definitional choice justified by the constructions, not an
+assumption inside a theorem; the docstring of `CoversConicalLocus` records the decision and the
+source lines, and the arrangement instance is *proved* here
+(`arrangementDecomposition_eq_sUnion_of_mem`, `semifanArrangement_refinesConicalLocus`).
 
-## What is not in this module
+`RefinesConicalLocus` is *not* `FibreRefinement.RefinesLocus`, which relates the two families fibre
+by fibre and is therefore a strictly stronger hypothesis on each fibre and no statement at all
+across strata; and it is not `Semifan.sigmaSupportSpace_le_of_refines`'s support-index domination,
+which assumes a containment between supports.
 
-The zero case and the plane case of Lemma 6.6 are the next unit; the plane case reduces, by
-Definition 6.1 (ii), to `J_Σ ⊆ J_{Σ'}` for the same plane, which is the comparison in item 2 above,
-and it additionally needs the clause of Definition 6.1 (ii) that `C_{J,+}` *is a member* of every
-admissible decomposition — the source's parenthetical "(so that the cone `C_{J,+} = C̄_J` in `⋀²J` is
-member of `Σ`)", which `IsAdmissibleDecomposition` does not carry today.
+## What is not in this module: the general-class gap
+
+**Looijenga's Lemma 6.6 for an arbitrary pair of admissible decompositions is not derivable from his
+definitions, and this module does not assert it.** The covering clause is carried for the pairs the
+programme uses and proved for arrangement families; the statement for a general admissible pair
+would need either covering as an extra hypothesis on the pair (which is what the field is) or a
+construction argument that the source does not give. This is #174's decision, recorded here rather
+than repaired: the pages that cite Lemma 6.6 cite it through the arrangement instance.
+
+Two further links are carried as hypotheses rather than proved, each recorded at its declaration:
+the clause of Definition 6.1 (ii) that `C_{J,+}` *is a member* of every admissible decomposition
+(the source's parenthetical "(so that the cone `C_{J,+} = C̄_J` in `⋀²J` is member of `Σ`)", which
+`IsAdmissibleDecomposition` does not carry), and the identification of Definition 6.1 (i)'s span
+formula at an isotropic half line with the plane support space `J_Σ` of case (ii).
 -/
 
 @[expose] public section
@@ -326,22 +351,26 @@ and the facial decomposition at every other fibre, with `Γ` trivial.
   half line is a proper sub-wedge `[0, ε]`: the fine members above the half line are `τ` (wider) and
   `C̄`, and neither lies in `[0, ε]`.
 
-So the hypothesis is genuinely extra as a hypothesis. What is *not* settled by this family is whether
-Lemma 6.6's plane-case *conclusion* `J_Σ ≤ J_{Σ'}` can also fail: in a `(2,2)` model every half
-line's support space is the plane itself, so both sides agree there. A refutation needs a fibre of
-signature `(1, n−1)` with `n ≥ 3`, where `J^⊥ ⊋ J`, and the value at the fibre where the coarse
-member above the half line contains no fine one. That is the open question, and it is why the plane
-case is not stated in this module.
+So the hypothesis is genuinely extra as a hypothesis, and it is not derivable from Definition 6.1.
+That is half of what lean-categories#174 decides; the other half is that every decomposition the
+source constructs *does* satisfy the covering clause, so refinement for these objects carries it
+(`RefinesConicalLocus.covering`), and the subordinate refinement is then a theorem of the covering
+clause rather than an extra hypothesis: `exists_subordinate_of_isRelintPoint` below, whose witness
+is the fine member that covering inserts through a relative interior point of `σ`, the insertion
+lemma upgrading that point membership to containment. The plane case of Lemma 6.6 is stated from it
+(`vSigmaPlane_le_of_covers`), for an arbitrary coarse family rather than only the Baily–Borel one.
 
-**Why the insertion lemma cannot supply it either.** The insertion lemma compares two members of one
+**Why the insertion lemma alone cannot supply it.** The insertion lemma compares two members of one
 family: the rational-cone-system axiom it uses — two members meet along a common face — is an axiom
 *within* a decomposition, and there is no counterpart relating a member of one decomposition to a
-member of another. The only cross-family input is the refinement itself.
+member of another. The only cross-family input is the refinement itself, and what the covering
+clause adds is a same-family member to apply the insertion lemma to.
 -/
 
 section Subordinate
 
-variable {C : Set (realified V)} {S S' : Set (PointedCone ℝ (realified V))}
+variable {C : Set (realified V)} {Cpb : PointedCone ℝ (realified V)}
+  {S S' : Set (PointedCone ℝ (realified V))}
 
 /-- **The subordinate refinement of a support index**: every member of the coarse family above `σ`
 that meets the open cone contains a member of the fine family above `σ` that meets it. This is
@@ -349,13 +378,14 @@ verbatim the hypothesis of `Semifan.sigmaSupportSpace_le_of_refines`, named here
 is explicit. It is a statement about *members*; no support space, support index or containment of
 support spaces occurs in it.
 
-**It is kept as a hypothesis, and it is not derivable from Definition 6.1.** The section docstring
-above gives the family that decides this: on the split model of signature `(2,2)` the members
-`{C̄, τ} ∪ faces` at the fibre of `I = ⟨e₀⟩` pass both conditions of Definition 6.1 (with `Γ`
-trivial) and fail this hypothesis against a coarse family whose member above the half line is a
-proper sub-wedge. The plane case of Lemma 6.6 therefore rests on this hypothesis in the present
-development, and `tests/regression/ConicalRefinementSplit22.lean` exercises the line case that does
-not. -/
+**It is not derivable from Definition 6.1, and it is derived from the covering clause instead.** The
+section docstring above gives the family that decides the first half: on the split model of
+signature `(2,2)` the members `{C̄, τ} ∪ faces` at the fibre of `I = ⟨e₀⟩` pass both conditions of
+Definition 6.1 (with `Γ` trivial) and fail this hypothesis against a coarse family whose member
+above the half line is a proper sub-wedge. The second half is lean-categories#174's decision:
+refinement for the decompositions the source constructs carries the covering clause, and
+`exists_subordinate_of_isRelintPoint` below produces this hypothesis from it.
+`tests/regression/ConicalRefinementSplit22.lean` exercises the line case, which consumes neither. -/
 def HasSubordinateRefinement (C : Set (realified V)) (S S' : Set (PointedCone ℝ (realified V)))
     (σ : PointedCone ℝ (realified V)) : Prop :=
   ∀ τ' : supportIndex C S' σ, ∃ τ ∈ S, σ ≤ τ ∧ τ ≤ τ'.1 ∧
@@ -712,32 +742,81 @@ section AmbientRefinement
 
 variable {BQ : LinearMap.BilinForm ℚ V} {Q : QuadraticForm ℝ (realified V)}
 
-/-- **Genuine global refinement of two admissible decompositions of the conical locus**: every
-member of the finer collection is contained, as a cone of the conical locus inside `⋀²V(ℝ)`
-(`ConicalMember.carrier`), in a member of the coarser one. This is the source's "`Σ'` ... is
-refined by `Σ`" (Looijenga, Lemma 6.6, p. 30): a relation between the two collections as
-collections of cones in the conical locus, with no support space and no support index in it.
+/-- **The covering clause of refinement**: each member of the coarse collection is the union of the
+members of the fine collection that it contains — "every member of `Σ'` is the union of the members
+of `Σ` it contains".
 
-It is strictly stronger on each fibre than the fibre-wise `FibreRefinement.RefinesLocus` (which
-it implies, up to the fibre presentation of the containing member) and strictly weaker than
-`Semifan.sigmaSupportSpace_le_of_refines`'s support-index domination, which assumes the inclusion of
-supports that Lemma 6.6 concludes. `σ ≠ ⊥` is carried because the apex is contained in every carrier
-while its support space is `{0}`, so it is not a case-(i) member at all. -/
-def RefinesConicalLocus (hBsym : BQ.IsSymm)
+**This clause is a definitional choice, not a theorem, and the docstring says why.** It is not in
+the source. Looijenga's §4 gloss of "refined by" is containment of members and nothing more
+(`.tmp-sources/looijenga-math0201218v2.md:603`: *"So every `σ ∈ Σ` is contained in a member of
+`Σ'`"*); Definition 4.2 (`:481`) asks of a decomposition only that the union of its members be `C₊`;
+and Lemma 6.6 (text line 821) is stated without proof. lean-categories#174 decides the frontier
+question: the covering clause is **not derivable** from Definition 4.2 and Definition 6.1 as the
+source states them — four routes from admissibility to it are closed, each by a proof in this
+repository — but **every decomposition the source constructs has it**, because `Σ(bb)` (Example 6.2,
+p. 29) and `Σ(ℋ)` (Example 6.4, p. 29) are stratifications of `C₊` by locally finite families, and a
+chamber of a coarser arrangement is the union of the chambers of a finer one inside it. Refinement
+for *these* objects therefore includes covering, and that is the relation this programme uses. It is
+a definitional choice justified by the constructions, not an assumption inside a theorem: the
+instance the programme uses is proved (`arrangementDecomposition_eq_sUnion_of_mem` for arrangements,
+`semifanArrangement_refinesConicalLocus` at the conical locus), and the statement for an arbitrary
+pair of admissible decompositions is recorded as a gap in the module docstring, not assumed here.
+
+The union is taken in `⋀²V(ℝ)` through `ConicalMember.carrier`, because the two collections live on
+*different* conical fibres: a fine member is a cone of `realified ↥F.space` and a coarse one of
+`realified ↥F'.space`, so their intersection is not a set-theoretic union of cones. The carrier is
+this file's established common currency for comparing members across fibres (it is what
+`RefinesConicalLocus.containment` compares), and on one fibre it is faithful: `c ↦ wedgeLeft e c` is
+injective there, the cone being transverse to the line (`lineSpan_inf_realify_space`). -/
+def CoversConicalLocus (hBsym : BQ.IsSymm)
     (locus locus' : ∀ F : ConicalLine BQ Q, Set (PointedCone ℝ (realified ↥F.space))) : Prop :=
-  ∀ (F : ConicalLine BQ Q) (σ : PointedCone ℝ (realified ↥F.space)), σ ∈ locus F → σ ≠ ⊥ →
-    ∃ (F' : ConicalLine BQ Q) (σ' : PointedCone ℝ (realified ↥F'.space)), σ' ∈ locus' F' ∧
-      (ConicalMember.fibre F σ).carrier hBsym ⊆ (ConicalMember.fibre F' σ').carrier hBsym
+  ∀ (F' : ConicalLine BQ Q) (τ' : PointedCone ℝ (realified ↥F'.space)), τ' ∈ locus' F' →
+    (ConicalMember.fibre F' τ').carrier hBsym ⊆
+      ⋃₀ { T : Set (⋀[ℝ]^2 (realified V)) |
+        ∃ (F : ConicalLine BQ Q) (σ : PointedCone ℝ (realified ↥F.space)), σ ∈ locus F ∧
+          (ConicalMember.fibre F σ).carrier hBsym ⊆
+            (ConicalMember.fibre F' τ').carrier hBsym ∧
+          T = (ConicalMember.fibre F σ).carrier hBsym }
+
+omit [Module.Finite ℚ V] in
+theorem coversConicalLocus_iff {hBsym : BQ.IsSymm}
+    {locus locus' : ∀ F : ConicalLine BQ Q, Set (PointedCone ℝ (realified ↥F.space))} :
+    CoversConicalLocus (Q := Q) hBsym locus locus' ↔
+      ∀ (F' : ConicalLine BQ Q) (τ' : PointedCone ℝ (realified ↥F'.space)), τ' ∈ locus' F' →
+        (ConicalMember.fibre F' τ').carrier hBsym ⊆
+          ⋃₀ { T : Set (⋀[ℝ]^2 (realified V)) |
+            ∃ (F : ConicalLine BQ Q) (σ : PointedCone ℝ (realified ↥F.space)), σ ∈ locus F ∧
+              (ConicalMember.fibre F σ).carrier hBsym ⊆
+                (ConicalMember.fibre F' τ').carrier hBsym ∧
+              T = (ConicalMember.fibre F σ).carrier hBsym } :=
+  Iff.rfl
+
+/-- **Refinement of two admissible decompositions of the conical locus, in the form this programme
+uses**: the source's containment of members (`containment`, Looijenga §4, text line 603) *and* the
+covering clause (`covering`, `CoversConicalLocus`). The two are stated together because
+lean-categories#174 decides that the covering clause is part of what refinement means for the
+decompositions Looijenga constructs — see `CoversConicalLocus` for the decision, the source lines it
+rests on, and what is not derivable. -/
+structure RefinesConicalLocus (hBsym : BQ.IsSymm)
+    (locus locus' : ∀ F : ConicalLine BQ Q, Set (PointedCone ℝ (realified ↥F.space))) : Prop where
+  /-- The source's gloss: every fine member lies in a coarse member. -/
+  containment : ∀ (F : ConicalLine BQ Q) (σ : PointedCone ℝ (realified ↥F.space)),
+    σ ∈ locus F → σ ≠ ⊥ →
+      ∃ (F' : ConicalLine BQ Q) (σ' : PointedCone ℝ (realified ↥F'.space)), σ' ∈ locus' F' ∧
+        (ConicalMember.fibre F σ).carrier hBsym ⊆ (ConicalMember.fibre F' σ').carrier hBsym
+  /-- The covering clause: every coarse member is the union of the fine members it contains. -/
+  covering : CoversConicalLocus hBsym locus locus'
 
 omit [Module.Finite ℚ V] in
 theorem refinesConicalLocus_iff {hBsym : BQ.IsSymm}
     {locus locus' : ∀ F : ConicalLine BQ Q, Set (PointedCone ℝ (realified ↥F.space))} :
     RefinesConicalLocus (Q := Q) hBsym locus locus' ↔
-      ∀ (F : ConicalLine BQ Q) (σ : PointedCone ℝ (realified ↥F.space)), σ ∈ locus F → σ ≠ ⊥ →
-        ∃ (F' : ConicalLine BQ Q) (σ' : PointedCone ℝ (realified ↥F'.space)), σ' ∈ locus' F' ∧
-          (ConicalMember.fibre F σ).carrier hBsym ⊆
-            (ConicalMember.fibre F' σ').carrier hBsym :=
-  Iff.rfl
+      ((∀ (F : ConicalLine BQ Q) (σ : PointedCone ℝ (realified ↥F.space)), σ ∈ locus F → σ ≠ ⊥ →
+          ∃ (F' : ConicalLine BQ Q) (σ' : PointedCone ℝ (realified ↥F'.space)), σ' ∈ locus' F' ∧
+            (ConicalMember.fibre F σ).carrier hBsym ⊆
+              (ConicalMember.fibre F' σ').carrier hBsym) ∧
+        CoversConicalLocus hBsym locus locus') :=
+  ⟨fun h => ⟨h.containment, h.covering⟩, fun h => ⟨h.1, h.2⟩⟩
 
 /-- **Looijenga, Lemma 6.6, p. 30, case (i) — the line case — on actual admissible decompositions.**
 Let `Σ` and `Σ'` be admissible decompositions of the conical locus (Definition 6.1, p. 28) with `Σ'`
@@ -764,7 +843,7 @@ theorem vSigma_le_of_refinesConicalLocus (hBQ : ∀ u w : V,
     (hcase : IsCaseIFibre F σ) :
     ∃ (F' : ConicalLine BQ Q) (σ' : PointedCone ℝ (realified ↥F'.space)),
       σ' ∈ locus' F' ∧ vSigma F σ ≤ vSigma F' σ' := by
-  obtain ⟨F', σ', hσ', hsub⟩ := href F σ hσ hcase.1
+  obtain ⟨F', σ', hσ', hsub⟩ := href.containment F σ hσ hcase.1
   exact ⟨F', σ', hσ', vSigma_le_of_carrier_subset hBQ hBsym hcase.1 hsub⟩
 
 /-! ## The plane case against the source's principal coarse family
@@ -815,6 +894,376 @@ theorem vSigmaPlane_semifanArrangement_le_facial {ι : Type*} (ψ : ι → V →
         ⟨F.planeRay G h, F.planeRay_mem G h⟩)
 
 end PrincipalCoarse
+
+/-! ## The arrangement instance of the covering clause
+
+Looijenga's Example 6.4, p. 29: `Σ(ℋ)` is cut out of `C₊` by the traces of the hyperplanes of `ℋ`
+(`semifanArrangement` at each fibre, `arrangementDecomposition` in general). Two such families with
+`ℋ' ⊆ ℋ` — the coarser one cut by a subfamily of the forms — are the pair `#169` needs, and on them
+the covering clause is not an extra hypothesis but a sign-pattern computation: a cell of the coarse
+arrangement is the set of points whose signs on `ℋ'` are given, so it is the union of the cells of
+the fine arrangement refining it, and the members of the decomposition are faces of cells, so a
+coarse *member* is the union of the fine members inside it.
+
+The one point that is not the naive sign-pattern union is the face-closure. A coarse member `τ'` is
+a face of some coarse cell `C'` (`faceClosure`, Definition 4.2's completion at text line 483), and
+the fine members inside `τ'` through a point `x ∈ τ'` are *not* the fine cell at `x`: that cell lies
+in `C'` but need not lie in `τ'`. What works is the intersection `F_x ⊓ τ'`, which is a face of
+`F_x` (`isFaceOf_inf_restrict` — a face of a cone restricts to a face of any subcone inside it),
+hence a fine member, and contains `x` and lies in `τ'`. That is the sense in which "every stratum of
+`ℋ` lies in the closure of one stratum of `ℋ'`", and it is why the argument needs no facet theory of
+polyhedral cones. -/
+
+section ArrangementCovering
+
+open LeanCategories.Analysis.Convex
+
+omit [Module.Finite ℚ V] in
+/-- **A face of a cone restricts to a face of any subcone inside it.** If `F` is a face of `C` and
+`P ≤ C`, then `P ⊓ F` is a face of `P`: a positive combination of two points of `P` that lands in
+`P ⊓ F` lands in `F`, and the face property of `F` in `C` applies because `P ≤ C`. -/
+theorem isFaceOf_inf_restrict {F C P : PointedCone ℝ (realified V)} (h : F.IsFaceOf C)
+    (hle : P ≤ C) : (P ⊓ F).IsFaceOf P where
+  le := inf_le_left
+  mem_of_smul_add_mem := by
+    intro x y a hx hy ha hxy
+    exact ⟨hx, h.mem_of_smul_add_mem (hle hx) (hle hy) ha hxy.2⟩
+
+omit [Module.Finite ℚ V] in
+/-- **The cell of the finer arrangement at a point lies in the coarse cell of any pattern the point
+specializes**: if `x` lies in the coarse cell of the pattern `s'` and `y` lies in the fine cell of
+`x`'s own sign pattern, then `y` lies in the coarse cell of `s'`. Both are read through
+`mem_arrangementCone_iff_specializes`: the fine signs at `y` are `0` or the fine signs at `x`, which
+are `0` or `s'` on the coarse indices. -/
+theorem arrangementCone_le_of_mem_signPattern {ι ι' : Type*} {φ : ι → (realified V) →L[ℝ] ℝ}
+    {φ' : ι' → (realified V) →L[ℝ] ℝ} {ν : ι' → ι} (hν : ∀ i, φ' i = φ (ν i))
+    {s' : ι' → SignType} {x y : realified V}
+    (hx : x ∈ arrangementCone φ' s') (hy : y ∈ arrangementCone φ (signPattern φ x)) :
+    y ∈ arrangementCone φ' s' := by
+  rw [mem_arrangementCone_iff_specializes] at hx hy ⊢
+  intro i
+  rw [hν i]
+  have hxi : SignType.sign (φ (ν i) x) = 0 ∨ SignType.sign (φ (ν i) x) = s' i := by
+    have h := hx i
+    rw [hν i] at h
+    exact h
+  have hyi : SignType.sign (φ (ν i) y) = 0 ∨
+      SignType.sign (φ (ν i) y) = SignType.sign (φ (ν i) x) := hy (ν i)
+  rcases hxi with h0 | hs
+  · rcases hyi with h | h
+    · exact Or.inl h
+    · exact Or.inl (h.trans h0)
+  · rcases hyi with h | h
+    · exact Or.inl h
+    · exact Or.inr (h.trans hs)
+
+omit [Module.Finite ℚ V] in
+/-- The fine cell at a point of a coarse cell lies in the coarse cell. -/
+theorem arrangementCone_signPattern_inf_le {ι ι' : Type*} {φ : ι → (realified V) →L[ℝ] ℝ}
+    {φ' : ι' → (realified V) →L[ℝ] ℝ} {ν : ι' → ι} (hν : ∀ i, φ' i = φ (ν i))
+    {Cplus : PointedCone ℝ (realified V)} {s' : ι' → SignType} {x : realified V}
+    (hx : x ∈ arrangementCone φ' s' ⊓ Cplus) :
+    arrangementCone φ (signPattern φ x) ⊓ Cplus ≤ arrangementCone φ' s' ⊓ Cplus := by
+  intro y hy
+  exact ⟨arrangementCone_le_of_mem_signPattern hν hx.1 hy.1, hy.2⟩
+
+omit [Module.Finite ℚ V] in
+/-- **The covering clause for two arrangement decompositions, pointwise**: every point of a member
+of the coarse arrangement decomposition `Σ(ℋ')` lies in a member of the fine one `Σ(ℋ)` that it
+contains.
+
+The fine member is `F_x ⊓ τ'`, the fine cell at `x` intersected with `τ'`: it lies in `τ'` and
+contains `x`, and it is a member because `F_x` is a cell and `τ'` is a face of a coarse cell `C'`
+that contains `F_x`. -/
+theorem exists_mem_arrangementDecomposition_le_of_mem {ι ι' : Type*}
+    {φ : ι → (realified V) →L[ℝ] ℝ} {φ' : ι' → (realified V) →L[ℝ] ℝ} {ν : ι' → ι}
+    (hν : ∀ i, φ' i = φ (ν i))
+    {Cplus : PointedCone ℝ (realified V)} {τ' : PointedCone ℝ (realified V)}
+    (hτ' : τ' ∈ arrangementDecomposition φ' Cplus) {x : realified V} (hx : x ∈ τ') :
+    ∃ σ ∈ arrangementDecomposition φ Cplus, x ∈ σ ∧ σ ≤ τ' := by
+  obtain ⟨C', ⟨s', rfl⟩, hface⟩ := mem_faceClosure.1 hτ'
+  have hxC' : x ∈ arrangementCone φ' s' ⊓ Cplus := hface.le hx
+  exact ⟨arrangementCone φ (signPattern φ x) ⊓ Cplus ⊓ τ',
+    mem_faceClosure.2 ⟨arrangementCone φ (signPattern φ x) ⊓ Cplus, ⟨signPattern φ x, rfl⟩,
+      isFaceOf_inf_restrict hface (arrangementCone_signPattern_inf_le hν hxC')⟩,
+    ⟨⟨mem_arrangementCone_signPattern φ x, hxC'.2⟩, hx⟩, inf_le_right⟩
+
+omit [Module.Finite ℚ V] in
+/-- **The covering clause for two arrangement decompositions, as a union**: each coarse member
+is the union of the fine members it contains. -/
+theorem arrangementDecomposition_eq_sUnion {ι ι' : Type*} {φ : ι → (realified V) →L[ℝ] ℝ}
+    {φ' : ι' → (realified V) →L[ℝ] ℝ} {ν : ι' → ι} (hν : ∀ i, φ' i = φ (ν i))
+    {Cplus : PointedCone ℝ (realified V)} {τ' : PointedCone ℝ (realified V)}
+    (hτ' : τ' ∈ arrangementDecomposition φ' Cplus) :
+    (τ' : Set (realified V)) =
+      ⋃₀ { T : Set (realified V) |
+        ∃ σ ∈ arrangementDecomposition φ Cplus, σ ≤ τ' ∧ T = (σ : Set (realified V)) } := by
+  refine Set.eq_of_subset_of_subset ?_ ?_
+  · intro x hx
+    obtain ⟨σ, hσ, hxσ, hle⟩ := exists_mem_arrangementDecomposition_le_of_mem hν hτ' hx
+    exact Set.mem_sUnion.2 ⟨(σ : Set (realified V)), ⟨σ, hσ, hle, rfl⟩, hxσ⟩
+  · refine Set.sUnion_subset ?_
+    rintro T ⟨σ, -, hle, rfl⟩
+    exact SetLike.coe_subset_coe.2 hle
+
+omit [Module.Finite ℚ V] in
+/-- **The containment half for two arrangement decompositions**: every fine member lies in a coarse
+member, namely the coarse cell of its sign pattern restricted to the subfamily. -/
+theorem exists_mem_arrangementDecomposition_of_mem {ι ι' : Type*}
+    {φ : ι → (realified V) →L[ℝ] ℝ} {φ' : ι' → (realified V) →L[ℝ] ℝ} {ν : ι' → ι}
+    (hν : ∀ i, φ' i = φ (ν i)) {Cplus : PointedCone ℝ (realified V)}
+    {σ : PointedCone ℝ (realified V)} (hσ : σ ∈ arrangementDecomposition φ Cplus) :
+    ∃ τ' ∈ arrangementDecomposition φ' Cplus, σ ≤ τ' := by
+  obtain ⟨C, ⟨s, rfl⟩, hface⟩ := mem_faceClosure.1 hσ
+  refine ⟨arrangementCone φ' (fun i => s (ν i)) ⊓ Cplus,
+    mem_faceClosure.2 ⟨_, ⟨fun i => s (ν i), rfl⟩, PointedCone.IsFaceOf.refl _⟩,
+    hface.le.trans ?_⟩
+  intro y hy
+  obtain ⟨hycell, hyP⟩ := Submodule.mem_inf.1 hy
+  refine Submodule.mem_inf.2 ⟨?_, hyP⟩
+  rw [mem_arrangementCone_iff_specializes] at hycell ⊢
+  intro i
+  have hyi : SignType.sign (φ (ν i) y) = 0 ∨ SignType.sign (φ (ν i) y) = s (ν i) := hycell (ν i)
+  rw [hν i]
+  exact hyi
+
+end ArrangementCovering
+
+/-! ## The arrangement instance at the conical locus
+
+`Σ(ℋ)` at every fibre is `semifanArrangement ψ`, and the coarser family cut by a subfamily
+`ℋ' = ψ'` of the same hyperplanes is `semifanArrangement ψ'`; the walls containing a given line are
+carried along by `fibreWallsMap`. Both families live on the *same* fibre, so the carrier comparison
+of `ConicalMember.carrier` that `RefinesConicalLocus` asks for is a restatement of the cone
+inclusion in that fibre (`carrier_fibre_mono`). -/
+
+section SemifanInstance
+
+variable {BQ : LinearMap.BilinForm ℚ V} {Q : QuadraticForm ℝ (realified V)}
+
+omit [Module.Finite ℚ V] in
+/-- **The inclusion of wall families**: the hyperplanes of `ℋ'` are among those of `ℋ`, so the
+traces of the coarse family on a fibre are indexed by a subset of the traces of the fine one. -/
+def fibreWallsMap {ι ι' : Type*} {ψ : ι → V →ₗ[ℚ] ℚ} {ψ' : ι' → V →ₗ[ℚ] ℚ} {ν : ι' → ι}
+    (hν : ∀ i, ψ' i = ψ (ν i)) (F : ConicalLine BQ Q) :
+    fibreWalls ψ' F → fibreWalls ψ F :=
+  fun i => ⟨ν i.1, by rw [← hν i.1]; exact i.2⟩
+
+omit [Module.Finite ℚ V] in
+/-- The trace forms agree along the inclusion of wall families. -/
+theorem fibreWallsMap_form {ι ι' : Type*} {ψ : ι → V →ₗ[ℚ] ℚ} {ψ' : ι' → V →ₗ[ℚ] ℚ}
+    {ν : ι' → ι} (hν : ∀ i, ψ' i = ψ (ν i)) (F : ConicalLine BQ Q) (i : fibreWalls ψ' F) :
+    fibreFormC F (ψ' i.1) = fibreFormC F (ψ (fibreWallsMap (Q := Q) hν F i).1) := by
+  rw [fibreWallsMap, hν i.1]
+
+omit [Module.Finite ℚ V] in
+/-- **A smaller member of a fibre has a smaller carrier**. -/
+theorem carrier_fibre_mono {hBsym : BQ.IsSymm} {F : ConicalLine BQ Q}
+    {σ τ : PointedCone ℝ (realified ↥F.space)} (h : σ ≤ τ) :
+    (ConicalMember.fibre F σ).carrier hBsym ⊆ (ConicalMember.fibre F τ).carrier hBsym := by
+  rintro v ⟨_, ⟨c, hc, rfl⟩, rfl⟩
+  exact ⟨_, ⟨c, h hc, rfl⟩, rfl⟩
+
+omit [Module.Finite ℚ V] in
+/-- **The arrangement instance of the covering clause** (lean-categories#169, decided by #174):
+for two families of hyperplanes with `ℋ' ⊆ ℋ`, the arrangement decomposition `Σ(ℋ)` refines
+`Σ(ℋ')` in the programme's sense — containment of members *and* the covering clause. -/
+theorem semifanArrangement_refinesConicalLocus {ι ι' : Type*} {ψ : ι → V →ₗ[ℚ] ℚ}
+    {ψ' : ι' → V →ₗ[ℚ] ℚ} {ν : ι' → ι}
+    (hBsym : BQ.IsSymm) (hν : ∀ i, ψ' i = ψ (ν i)) :
+    RefinesConicalLocus (Q := Q) hBsym (semifanArrangement ψ) (semifanArrangement ψ') where
+  containment := by
+    intro F σ hσ _
+    have hσ' : σ ∈ arrangementDecomposition
+        (fun i : fibreWalls ψ F => fibreFormC F (ψ i)) F.closure := by
+      simpa only [semifanArrangement] using hσ
+    obtain ⟨τ', hτ', hle⟩ := exists_mem_arrangementDecomposition_of_mem
+      (φ := fun i : fibreWalls ψ F => fibreFormC F (ψ i))
+      (φ' := fun i : fibreWalls ψ' F => fibreFormC F (ψ' i))
+      (ν := fibreWallsMap (Q := Q) hν F) (fibreWallsMap_form hν F) hσ'
+    exact ⟨F, τ', by simpa only [semifanArrangement] using hτ', carrier_fibre_mono hle⟩
+  covering := by
+    intro F' τ' hτ' v hv
+    have hτ'' : τ' ∈ arrangementDecomposition
+        (fun i : fibreWalls ψ' F' => fibreFormC F' (ψ' i)) F'.closure := by
+      simpa only [semifanArrangement] using hτ'
+    obtain ⟨w, hw, rfl⟩ := hv
+    obtain ⟨c, hc, rfl⟩ := hw
+    obtain ⟨σ, hσ, hcσ, hle⟩ := exists_mem_arrangementDecomposition_le_of_mem
+      (φ := fun i : fibreWalls ψ F' => fibreFormC F' (ψ i))
+      (φ' := fun i : fibreWalls ψ' F' => fibreFormC F' (ψ' i))
+      (ν := fibreWallsMap (Q := Q) hν F') (fibreWallsMap_form hν F') hτ'' hc
+    exact Set.mem_sUnion.2 ⟨_, ⟨F', σ, by simpa only [semifanArrangement] using hσ,
+      carrier_fibre_mono hle, rfl⟩, ⟨_, ⟨c, hcσ, rfl⟩, rfl⟩⟩
+
+end SemifanInstance
+
+/-! ## The subordinate refinement from the covering clause
+
+This is the step lean-categories#169 asks for by name: `HasSubordinateRefinement` — the hypothesis
+`Semifan.sigmaSupportSpace_le_of_refines` consumes, and with it the plane case of Lemma 6.6 —
+derived from the covering clause rather than assumed.
+
+The derivation is two lines of mathematics and no polyhedral geometry. Covering at the coarse member
+`τ'` inserts a fine member `σ_x` through any point `x` of `τ'` that one names, inside `τ'`; if that
+point is a *relative interior* point of a fine member `σ`, the insertion lemma of this file
+(`IsLocallyRationalDecomposition.le_of_isRelintPoint`) upgrades the point membership to
+`σ ≤ σ_x`. So `σ_x` is a fine member between `σ` and `τ'`, which is exactly
+`HasSubordinateRefinement`.
+
+What is *not* used: closedness of the members. The docstring of the earlier section names closure of
+rational cones (`IsRationalCone.isClosed`) as an input of the route through the trace argument; that
+route is what the covering clause replaces, and this derivation does not need it. -/
+
+section SubordinateFromCovering
+
+variable {C : Set (realified V)} {Cpb : PointedCone ℝ (realified V)}
+  {S S' : Set (PointedCone ℝ (realified V))}
+
+omit [Module.Finite ℚ V] in
+/-- **A relative interior point of a half line is its generator.** The proper faces of `hull {v}`
+are `{0}`, so a nonzero `v` lies in none of them. -/
+theorem isRelintPoint_hull_singleton {v : realified V} (hv : v ≠ 0) :
+    IsRelintPoint (PointedCone.hull ℝ ({v} : Set (realified V))) v := by
+  refine ⟨PointedCone.subset_hull (Set.mem_singleton v), ?_⟩
+  intro F hF hvF
+  refine le_antisymm hF.le ?_
+  rw [PointedCone.hull]
+  exact Submodule.span_le.2 (by rintro _ rfl; exact hvF)
+
+omit [Module.Finite ℚ V] in
+/-- **The subordinate refinement, from the covering clause and the insertion lemma.** Let `S` be a
+locally rational decomposition, `S'` a family each of whose members is covered by the members of `S`
+inside it (`hcov` — the pointwise form of the covering clause, which
+`exists_mem_arrangementDecomposition_le_of_mem` supplies for arrangement families), and `σ ∈ S` a
+member with a relative interior point `x` in the open cone. Then every member of `S'` above `σ`
+contains a member of `S` above `σ` meeting the open cone: `HasSubordinateRefinement`.
+
+The witness is the fine member through `x` that covering supplies, and the containment `σ ≤ σ_x` is
+the insertion lemma, which is available because that witness is a member of the *same* family as
+`σ`. This is the cross-family insertion the earlier section of this module records as unavailable
+from the insertion lemma alone: covering is what supplies the same-family member to apply it to. -/
+theorem exists_subordinate_of_isRelintPoint
+    (hS : IsLocallyRationalDecomposition (rationalClosure Cpb) S)
+    (hcov : ∀ (τ' : PointedCone ℝ (realified V)), τ' ∈ S' → ∀ x ∈ τ', ∃ σ ∈ S, x ∈ σ ∧ σ ≤ τ')
+    {σ : PointedCone ℝ (realified V)} (hσ : σ ∈ S) {x : realified V}
+    (hx : IsRelintPoint σ x) (hxC : x ∈ C) :
+    HasSubordinateRefinement C S S' σ := by
+  rintro ⟨τ', hτ', hστ', -⟩
+  obtain ⟨σx, hσx, hxσx, hle⟩ := hcov τ' hτ' x (hστ' hx.mem)
+  exact ⟨σx, hσx, hS.le_of_isRelintPoint hσ hσx hx hxσx, hle, ⟨x, hxσx, hxC⟩⟩
+
+end SubordinateFromCovering
+
+/-! ## Lemma 6.6, case (ii): the plane case, from the covering clause
+
+With the subordinate refinement available at the half line `C_{J,+}` of a plane — its relative
+interior point is its generator (`isRelintPoint_hull_singleton`), and it is a member of the fine
+family by Definition 6.1 (ii)'s parenthetical clause — the comparison `J_Σ ≤ J_{Σ'}` of Lemma 6.6 is
+`vSigmaPlane_le_of_refines`, and the support-index comparison behind it is
+`sigmaSupportSpace_le_of_hasSubordinateRefinement`. What the covering clause adds over the earlier
+statement of the plane case is that `S'` is an *arbitrary* coarse family, not only the Baily–Borel
+one (`vSigmaPlane_semifanArrangement_le_facial`). -/
+
+section PlaneCase
+
+variable {BQ : LinearMap.BilinForm ℚ V} {Q : QuadraticForm ℝ (realified V)}
+
+omit [Module.Finite ℚ V] in
+/-- **Looijenga, Lemma 6.6, p. 30, case (ii) — the plane case — from the covering clause**: for two
+decompositions `S`, `S'` of the fibre of `I` with `S'` covered by `S`, the `Σ`-support space of the
+half line `C_{J,+}` relative to `S` is contained in the one relative to `S'`.
+
+The hypotheses are: the covering clause pointwise (`hcov`), the fine decomposition's local
+rationality (`hS`, needed by the insertion lemma), Definition 6.1 (ii)'s membership clause for the
+half line at the fine family (`hidx`, the source's "(so that the cone `C_{J,+} = C̄_J` in `⋀²J` is
+member of `Σ`)", which `IsAdmissibleDecomposition` does not carry), and that the half line's
+generator lies in the open cone (`hxC`). -/
+theorem vSigmaPlane_le_of_covers (hBsym : BQ.IsSymm) (F : ConicalLine BQ Q)
+    (G : ConicalPlane BQ) (hFG : F.line ≤ G.plane)
+    {S S' : Set (PointedCone ℝ (realified ↥F.space))} {Cpb : PointedCone ℝ (realified ↥F.space)}
+    (hS : IsLocallyRationalDecomposition (rationalClosure Cpb) S)
+    (hcov : ∀ (τ' : PointedCone ℝ (realified ↥F.space)), τ' ∈ S' → ∀ x ∈ τ',
+      ∃ σ ∈ S, x ∈ σ ∧ σ ≤ τ')
+    (hmem : PointedCone.hull ℝ
+      ({rationalPoint (fibreRay hBsym F G hFG)} : Set (realified ↥F.space)) ∈ S)
+    (hxne : rationalPoint (fibreRay hBsym F G hFG) ≠ 0)
+    (hxC : (rationalPoint (fibreRay hBsym F G hFG) : realified ↥F.space) ∈
+      positiveCone.upper (fibreForm Q F.space) F.sheet) :
+    vSigmaPlane hBsym F S G hFG ≤ vSigmaPlane hBsym F S' G hFG := by
+  have hidx : supportIndex (positiveCone.upper (fibreForm Q F.space) F.sheet) S
+      (PointedCone.hull ℝ {rationalPoint (fibreRay hBsym F G hFG)}) :=
+    ⟨_, hmem, le_rfl,
+      ⟨_, PointedCone.subset_hull (Set.mem_singleton _), hxC⟩⟩
+  exact vSigmaPlane_le_of_refines hBsym F G hFG hidx
+    (exists_subordinate_of_isRelintPoint
+      (C := positiveCone.upper (fibreForm Q F.space) F.sheet) (Cpb := Cpb)
+      (σ := PointedCone.hull ℝ {rationalPoint (fibreRay hBsym F G hFG)})
+      hS hcov hmem (isRelintPoint_hull_singleton hxne) hxC)
+
+end PlaneCase
+
+/-! ## The exported statement, and what its four cases need
+
+Lemma 6.6 says: for `σ ∈ Σ` and `σ'` the smallest member of `Σ'` containing `σ`, `V_σ ⊆ V_{σ'}`.
+The four cases are the shapes a member of the conical locus takes in Definition 6.1, and the
+development supplies three of them: the line case, which is `vSigma_le_of_refinesConicalLocus` and
+carries the cross-stratum case with it (the containment of carriers there is a comparison in
+`⋀²V(ℝ)`, so the containing member may sit in another fibre); the plane case, which is
+`vSigmaPlane_le_of_covers`; and the apex, for which the support is `{0}`
+(`ConicalMember.fibreVSigma_bot`). The isotropic half line is the one member shape whose value is
+*not* Definition 6.1 (i)'s span formula — the source routes it through case (ii) — so the case-(ii)
+comparison is fed into the export as the hypothesis `hhalf`, in the same shape as the other cases;
+`vSigmaPlane_le_of_covers` is what discharges it in the arrangement setting, and what is still
+missing to discharge it unconditionally is the identification of the fibre's span formula at an
+isotropic half line with the plane support space `J_Σ` (the two are different submodules as the
+development stands, and `ConicalMember.fibreVSigma`'s docstring records why the source separates
+them). -/
+
+section Export
+
+variable {BQ : LinearMap.BilinForm ℚ V} {Q : QuadraticForm ℝ (realified V)}
+
+omit [Module.Finite ℚ V] in
+/-- **Looijenga, Lemma 6.6, p. 30, case (ii) at the member level: the apex has support `{0}`**, so
+its inclusion in any other support space is immediate. -/
+theorem ConicalMember.fibreVSigma_bot_le {F F' : ConicalLine BQ Q}
+    {σ' : PointedCone ℝ (realified ↥F'.space)} :
+    ConicalMember.fibreVSigma F (⊥ : PointedCone ℝ (realified ↥F.space)) ≤
+      ConicalMember.fibreVSigma F' σ' := by
+  rw [ConicalMember.fibreVSigma_bot]
+  exact bot_le
+
+/-- **Looijenga, Lemma 6.6, p. 30, exported on two actual admissible decompositions**: for a member
+`σ` of the fine decomposition at a fibre, there is a member `σ'` of the coarse decomposition with
+`V_σ ⊆ V_{σ'}`, the three cases of Definition 6.1 (i) being discharged here and the isotropic half
+line, which is Definition 6.1 (ii)'s, being supplied by `hhalf`.
+
+`hhalf` is where case (ii) enters. It is not an assumption of the source — the source's Lemma 6.6
+covers the half line through condition (ii) of Definition 6.1 — but the development has no
+identification of the fibre's span formula at an isotropic half line with the plane support space,
+so the case is stated in the same shape as the others and discharged by
+`vSigmaPlane_le_of_covers` (the plane case, from the covering clause) in the setting where the half
+line is a member of the fine family. -/
+theorem vSigma_le_of_refines_of_cases (hBQ : ∀ u w : V,
+    (associated Q) (rationalPoint u) (rationalPoint w) = (BQ u w : ℝ))
+    (hBsym : BQ.IsSymm) {Γ : Set (V ≃ₗ[ℚ] V)}
+    {locus locus' : ∀ F : ConicalLine BQ Q, Set (PointedCone ℝ (realified ↥F.space))}
+    (D : IsAdmissibleDecomposition BQ Q Γ locus)
+    (D' : IsAdmissibleDecomposition BQ Q Γ locus')
+    (href : RefinesConicalLocus (Q := Q) hBsym locus locus')
+    (F : ConicalLine BQ Q) {σ : PointedCone ℝ (realified ↥F.space)} (hσ : σ ∈ locus F)
+    (hbot : σ ≠ ⊥)
+    (hhalf : IsIsotropicHalfLine (fibreForm Q F.space) σ →
+      ∃ (F' : ConicalLine BQ Q) (σ' : PointedCone ℝ (realified ↥F'.space)), σ' ∈ locus' F' ∧
+        vSigma F σ ≤ vSigma F' σ') :
+    ∃ (F' : ConicalLine BQ Q) (σ' : PointedCone ℝ (realified ↥F'.space)), σ' ∈ locus' F' ∧
+      vSigma F σ ≤ vSigma F' σ' := by
+  by_cases hline : IsIsotropicHalfLine (fibreForm Q F.space) σ
+  · exact hhalf hline
+  · exact vSigma_le_of_refinesConicalLocus hBQ hBsym D D' href F hσ ⟨hbot, hline⟩
+
+end Export
 
 end AmbientRefinement
 
