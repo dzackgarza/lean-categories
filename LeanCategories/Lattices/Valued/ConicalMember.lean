@@ -376,15 +376,46 @@ inductive ConicalMember (BQ : LinearMap.BilinForm ℚ V)
 
 namespace ConicalMember
 
+/-- **The support space of a fibre member at the member type**: Definition 6.1 (i)'s span formula,
+with the two degenerate shapes of the case reconciled. A member of a fibre that is the *zero* cone
+is the apex `C_{{0}}` of Definition 2.1 — `ConicalMember.carrier` carries it to the same point
+`{0}` of `⋀²V(ℝ)` as `ConicalMember.zero` (`ConicalMember.carrier_fibre_bot`) — so its support is
+`{0}`, not the `lineSpan F` that the span formula returns at `σ = ⊥`: the formula is the source's
+`V_σ` only for a nonzero member of the fibre that is not an isotropic half line (Definition 6.1,
+p. 28, case (i)), and both degenerate shapes are excluded from that case (Looijenga routes the
+half lines through case (ii)). -/
+noncomputable def fibreVSigma (F : ConicalLine BQ Q)
+    (σ : PointedCone ℝ (realified ↥F.space)) : Submodule ℝ (realified V) := by
+  classical
+  exact if σ = ⊥ then ⊥ else LeanCategories.Lattices.Valued.vSigma F σ
+
+omit [Module.Finite ℚ V] in
+/-- **The zero member of a fibre has the apex's support space**, removing the baseline defect that
+assigned one and the same carrier `{0}` the two supports `{0}` and `lineSpan F`. -/
+@[simp] theorem fibreVSigma_bot (F : ConicalLine BQ Q) :
+    fibreVSigma F (⊥ : PointedCone ℝ (realified ↥F.space)) = ⊥ := by
+  classical
+  simp [fibreVSigma]
+
+omit [Module.Finite ℚ V] in
+/-- On a nonzero member of a fibre the member-level support space *is* Definition 6.1 (i)'s span
+formula. -/
+theorem fibreVSigma_of_ne {F : ConicalLine BQ Q}
+    {σ : PointedCone ℝ (realified ↥F.space)} (h : σ ≠ ⊥) :
+    fibreVSigma F σ = LeanCategories.Lattices.Valued.vSigma F σ := by
+  classical
+  simp [fibreVSigma, h]
+
 /-- **the support space `V_σ` of every member of the conical locus**, Definition 6.1, p. 28. Case
-(i) is `ConicalLocus.vSigma` of the fibre; case (ii) is `ConicalLocus.vSigmaPlane`, which the
-source computes relative to the decomposition (hence the argument `locus`); the apex is `{0}`,
-Definition 2.1's convention `V_{{0}} = {0}`. -/
+(i) is `ConicalLocus.vSigma` of the fibre, taken at `fibreVSigma` so that the fibre's zero member
+gets the apex's support; case (ii) is `ConicalLocus.vSigmaPlane`, which the source computes relative
+to the decomposition (hence the argument `locus`); the apex is `{0}`, Definition 2.1's convention
+`V_{{0}} = {0}`. -/
 noncomputable def vSigma (hBsym : BQ.IsSymm)
     (locus : ∀ F : ConicalLine BQ Q, Set (PointedCone ℝ (realified ↥F.space))) :
     ConicalMember BQ Q → Submodule ℝ (realified V)
   | zero => ⊥
-  | fibre F σ => LeanCategories.Lattices.Valued.vSigma F σ
+  | fibre F σ => fibreVSigma F σ
   | plane F G h _ => LeanCategories.Lattices.Valued.vSigmaPlane hBsym F (locus F) G h
 
 /-- **the isotropic centre `I(σ) = V_σ ∩ V_σ^⊥`** of any member (Definition 6.1, p. 28). -/
@@ -430,15 +461,35 @@ theorem vSigma_zero_le (hBsym : BQ.IsSymm)
   exact bot_le
 
 omit [Module.Finite ℚ V] in
+/-- **The zero member of a fibre and the apex have the same support space**: the reconciliation of
+the two presentations of the point `{0}` of the conical locus, and the statement that one carrier no
+longer carries two support spaces. -/
+@[simp] theorem vSigma_fibre_bot (hBsym : BQ.IsSymm)
+    (locus : ∀ F : ConicalLine BQ Q, Set (PointedCone ℝ (realified ↥F.space)))
+    (F : ConicalLine BQ Q) :
+    (fibre F ⊥ : ConicalMember BQ Q).vSigma hBsym locus = ⊥ :=
+  fibreVSigma_bot F
+
+omit [Module.Finite ℚ V] in
 /-- **Lemma 6.6, p. 30, the fibre case**: for two members of the fibre of one `ℚ`-isotropic line
 with `σ ⊆ σ'`, the support spaces are nested — the containment of the members gives the containment
-of their spans. -/
+of their spans. The zero member is the apex on both sides, so it is handled separately
+(`vSigma_fibre_bot`). -/
 theorem vSigma_fibre_mono (hBsym : BQ.IsSymm)
     (locus : ∀ F : ConicalLine BQ Q, Set (PointedCone ℝ (realified ↥F.space)))
     (F : ConicalLine BQ Q) {σ σ' : PointedCone ℝ (realified ↥F.space)} (h : σ ≤ σ') :
     (fibre F σ : ConicalMember BQ Q).vSigma hBsym locus ≤
-      (fibre F σ' : ConicalMember BQ Q).vSigma hBsym locus :=
-  vSigma_mono h
+      (fibre F σ' : ConicalMember BQ Q).vSigma hBsym locus := by
+  by_cases hσ : σ = ⊥
+  · subst hσ
+    rw [vSigma_fibre_bot]
+    exact bot_le
+  · have hσ' : σ' ≠ ⊥ := fun h' => hσ (le_bot_iff.1 (h' ▸ h))
+    rw [show (fibre F σ : ConicalMember BQ Q).vSigma hBsym locus
+        = LeanCategories.Lattices.Valued.vSigma F σ from fibreVSigma_of_ne hσ,
+      show (fibre F σ' : ConicalMember BQ Q).vSigma hBsym locus
+        = LeanCategories.Lattices.Valued.vSigma F σ' from fibreVSigma_of_ne hσ']
+    exact vSigma_mono h
 
 omit [Module.Finite ℚ V] in
 /-- **Lemma 6.6, p. 30, the plane case**: for two decompositions of the fibre of `I`, the second
@@ -499,8 +550,16 @@ theorem ConicalMember.lineSpan_le_isotropicCenter_cone (hBQ : ∀ u w : V,
     (hBsym : BQ.IsSymm) (F : ConicalLine BQ Q)
     (locus : ∀ F : ConicalLine BQ Q, Set (PointedCone ℝ (realified ↥F.space))) :
     lineSpan F ≤ (ConicalMember.fibre F F.cone).isotropicCenter hBsym locus := by
+  have hne : (F.cone : PointedCone ℝ (realified ↥F.space)) ≠ ⊥ := by
+    intro hbot
+    have hmem : F.sheet ∈ (F.cone : PointedCone ℝ (realified ↥F.space)) :=
+      PointedCone.subset_hull ⟨F.sheet_pos, by
+        rw [QuadraticMap.associated_eq_self_apply]; exact F.sheet_pos⟩
+    rw [hbot] at hmem
+    have hzero : F.sheet = 0 := by simpa using hmem
+    exact (ne_of_gt F.sheet_pos) (by rw [hzero]; simp)
   have hv : (ConicalMember.fibre F F.cone).vSigma hBsym locus
-      = LeanCategories.Lattices.Valued.vSigma F F.cone := rfl
+      = LeanCategories.Lattices.Valued.vSigma F F.cone := fibreVSigma_of_ne hne
   rw [ConicalMember.isotropicCenter, hv, ConicalLine.vSigma_cone_eq_ker hBQ hBsym F,
     LeanCategories.Lattices.Valued.isotropicCenter]
   refine le_inf (lineSpan_le_ker_gen hBQ F) ?_
@@ -807,6 +866,39 @@ theorem mem_hull_singleton {M : Type*} [AddCommGroup M] [Module ℝ M] {x y : M}
   rw [PointedCone.hull, SetLike.mem_coe, Submodule.mem_span_singleton]
   exact ⟨fun ⟨a, ha⟩ => ⟨(a : ℝ), a.2, ha⟩, fun ⟨t, ht, h⟩ => ⟨⟨t, ht⟩, h⟩⟩
 
+omit [Module.Finite ℚ V] in
+/-- The wedge with a zero right factor vanishes. -/
+theorem wedgeTwo_zero_right (a : realified V) : wedgeTwo a 0 = 0 := by
+  have h : wedgeTwo a (0 : realified V) = wedgeTwo a ((0 : ℝ) • (0 : realified V)) := by
+    rw [zero_smul]
+  rw [h, wedgeTwo_smul_right, zero_smul]
+
+omit [Module.Finite ℚ V] in
+/-- **The zero member of a fibre is carried to the apex**: both are the single point `{0}` of
+`⋀²V(ℝ)`. With `ConicalMember.vSigma_fibre_bot` this is the pair of facts that reconciles the two
+presentations of that point: one carrier, one support space. It is also why the apex is the *only*
+member of an admissible decomposition carried to `{0}`: the fibre's zero member is the apex, and it
+is not a case-(i) member (`not_isCaseIFibre_bot`). -/
+@[simp] theorem ConicalMember.carrier_fibre_bot (hBsym : BQ.IsSymm) (F : ConicalLine BQ Q) :
+    (ConicalMember.fibre F (⊥ : PointedCone ℝ (realified ↥F.space)) :
+        ConicalMember BQ Q).carrier hBsym =
+      (ConicalMember.zero : ConicalMember BQ Q).carrier hBsym := by
+  ext x
+  constructor
+  · intro hx
+    obtain ⟨y, hy, rfl⟩ := hx
+    obtain ⟨c, hc, rfl⟩ := hy
+    have hc0 : c = 0 := by simpa using hc
+    subst hc0
+    change wedgeTwo (rationalPoint F.gen) (realifyMap F.space 0) = 0
+    rw [map_zero, wedgeTwo_zero_right]
+  · intro hx
+    have hx0 : x = 0 := by
+      have hmem : x ∈ ({0} : Set (⋀[ℝ]^2 (realified V))) := hx
+      simpa using hmem
+    subst hx0
+    refine ⟨realifyMap F.space 0, ⟨0, by simp, rfl⟩, ?_⟩
+    rw [map_zero, wedgeLeft_apply, wedgeTwo_zero_right]
 omit [Module.Finite ℚ V] in
 /-- **The class of the plane's ray in the fibre, carried to `⋀²V(ℝ)` by `e ⊗ c ↦ e ∧ c`, is the
 wedge `e ∧ ρ`** of the line's generator with the ray: the projection `fibreProj` moves the ray by a

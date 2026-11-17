@@ -366,6 +366,8 @@ public import LeanCategories.Lattices.Valued.ConicalLocus
 public import LeanCategories.Lattices.Valued.FibreRefinement
 public import LeanCategories.Lattices.Valued.Semifan
 public import LeanCategories.Lattices.Valued.ConicalMember
+public import LeanCategories.Lattices.Valued.ConicalMemberDescent
+public import LeanCategories.Lattices.Valued.ConicalMemberDescentTests
 public import LeanCategories.Lattices.Valued.SemifanArrangement
 public import LeanCategories.Lattices.Valued.FibreArithmetic
 public import LeanCategories.Lattices.Valued.FibreRefinementTests
