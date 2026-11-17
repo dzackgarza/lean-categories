@@ -3336,3 +3336,41 @@ downstream assertions, computational observations, or downstream diagnostics.
   appear at `PrimitiveIsotropic.act`, whose `R` stays a variable.
 - **Repair link:** a restatement of `toLine_toSubmodule` at `cobleLine` in `CobleCusps` (or naming the
   instance in that file's own `cobleLine`-level span lemma) would remove the papercut for later users.
+
+### The transfer of the ambient orbit count to a fibre's traces needs transitivity of `Stab_Γ(I)` on the walls through `I` (#167)
+
+- **Need:** for a fibre `F` at a `ℚ`-isotropic line `I`, that
+  `distinctTraces ψ F ⊆ orbitFamilyTraces BQ F gen` — the one hypothesis `hsub` that
+  `semifanArrangement_arithmetic_fibre` (`FibreArithmetic.lean:1288`) and its two
+  `IsLocallyRational` callers still take, and the first acceptance bullet of #167 — be derived from
+  the ambient arithmetic input `IsFiniteUnionOfOrbits Γ ψ` alone. The group-theoretic form of the
+  missing statement is `StabilizerTransitiveOnWallsThroughLine` (`FibreArithmetic.lean`): any two
+  isometries of `Γ` carrying `I` into one orbit representative `Hⱼ` differ by an element of `Γ` that
+  preserves `I`, its generator up to a nonzero rational scalar, the form, and one wall to the other.
+  Its trace-level consequence is `TraceOrbitCover`, and `exists_orbitFamily_of_traceOrbitCover`
+  turns that into an orbit family of hyperplanes.
+- **Evidence:** `(distinctTraces ψ F).Finite` is **false** — a single ambient orbit can give
+  infinitely many distinct traces at one fibre. With `V = ℚe ⊕ ℚf ⊕ ℚu ⊕ ℚw`,
+  `e·f = 1`, `u² = -1`, `w² = 2`, `I = ℚe`, `Γ ⊇ O(ℤu ⊕ ℤw)` and `ψ_g = BQ(g u, ·)`, the walls
+  `g u^⊥` all contain `I` and their traces at `I` are the positive lines spanned by `(4,3)`,
+  `(24,17)`, `(140,99)`, … from the Pell automorphs of `⟨-1,2⟩`, pairwise distinct; `permutes` holds
+  with `ρ` = left multiplication and `d ≡ 1`, `finite_orbits` with `s = {1}` and `g = i⁻¹`.
+  `fibreTrace_comp` (`FibreArithmetic.lean:177`) is why no invariance under a fibre-moving isometry
+  exists to contradict this; `fibreTrace_map_fibreInducedEquiv` (`:1610`) is the true equivariance,
+  under `Stab(I)` only.
+- **Gap and impact:** the transfer needs transitivity of `Γ` on the *pairs* `(H, I')` with
+  `I' ⊆ H`, `H ∈ ℋ`, `I'` in the `Γ`-orbit of `I` — strictly stronger than transitivity on primitive
+  isotropic lines. The repository proves the line form for `U ⊕ U` only
+  (`CuspWorkedInstance.exists_isometry_apply_eq`, `CuspWorkedInstance.lean:633`, orbit form
+  `:1169`); for `B = I_{2,9}` no transitivity statement of either kind exists (`CobleCusps.lean`
+  contains none, and its docstring at `:33` puts the orbit count out of scope). No attempt was made
+  to derive it here.
+- **Coverage:** `FibreArithmetic.lean`'s `semifanArrangement_arithmetic_fibre` and
+  `semifanArrangement_arithmetic_fibre_of_basis` take `hsub`; `isAdmissibleDecomposition_semifanArrangement_of_signature`
+  (`SemifanArrangement.lean:2667`) takes the ambient-indexed `hcut`, which the trace route replaces.
+- **Repair link:** a pair-transitivity theorem for `O(I_{2,9})` on the `ℚ`-hyperplanes through one
+  primitive isotropic line, stated in the shape `StabilizerTransitiveOnWallsThroughLine` for a wall
+  family with `IsFiniteUnionOfOrbits`; then `TraceOrbitCover` and `hsub` follow from
+  `fibreTrace_comp`, `fibreTrace_map_fibreInducedEquiv` and
+  `exists_orbitFamily_of_traceOrbitCover`. Filed here because the GitHub connector cannot create
+  issues: this entry is the issue.
