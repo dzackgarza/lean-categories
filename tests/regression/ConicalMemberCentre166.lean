@@ -563,6 +563,35 @@ theorem flip_generator :
       -wedgeTwo (rationalPoint v0) (rationalPoint v2) := by
   rw [ConicalPlane.flip_wedge, splitPlane_dir, splitPlane_dirAlt]
 
+/-- **The comparison in the model**: the flipped plane's ray at `lineI` is the negative of the ray,
+moved along the line by `planeRayFlipCoeff`, which here is `0` because the generator is a basis
+vector. -/
+theorem planeRay_flip_lineI :
+    lineI.planeRay splitPlane.flip lineI_le
+      = -(lineI.planeRay splitPlane lineI_le)
+        + planeRayFlipCoeff lineI splitPlane lineI_le • lineI.gen :=
+  ConicalLine.planeRay_flip lineI splitPlane lineI_le
+
+/-- The coefficient of the comparison is `0` at `lineI`: `e₀` is the first basis vector, so the
+flipped ray is exactly `-e₂`. -/
+theorem planeRayCoeff_lineI : planeRayFlipCoeff lineI splitPlane lineI_le = 0 := by
+  have hgen : (⟨lineI.gen, lineI.gen_mem_of_le splitPlane lineI_le⟩ : ↥splitPlane.plane)
+      = splitPlane.basis 0 :=
+    Subtype.ext (by rw [← ConicalPlane.dir, splitPlane_dir]; rfl)
+  have h0 : planeRayCoeffA lineI splitPlane lineI_le = 1 := by
+    rw [planeRayCoeffA, hgen, splitPlane.basis.repr_self]
+    simp
+  have h1 : planeRayCoeffB lineI splitPlane lineI_le = 0 := by
+    rw [planeRayCoeffB, hgen, splitPlane.basis.repr_self]
+    simp
+  rw [planeRayFlipCoeff, h0, h1]
+  norm_num
+
+/-- **Clause 2 closed at the denial**: at `lineI`, where `splitPlane` is coherent, the flipped
+orientation is not — one fibre cannot present both orientations of a plane. -/
+theorem flip_not_coherent_at_lineI : ¬ splitPlane.flip.IsPositiveAt lineI lineI_le :=
+  ConicalMember.not_isPositiveAt_flip lineI splitPlane lineI_le isPositiveAt_lineI
+
 /-- **Clause 2 at the carrier**: at the fibre whose sheet is the negative one — where the flipped
 orientation is the coherent one — the carrier is the *antipodal* ray of `r_J`, not the ray. It is
 therefore not the carrier of `C_{J,+}`, and the two orientations are not identified here. -/

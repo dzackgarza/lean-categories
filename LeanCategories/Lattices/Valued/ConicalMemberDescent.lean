@@ -724,6 +724,139 @@ theorem ConicalMember.carrier_plane_flip_ne_posRay (hBsym : BQ.IsSymm) (F : Coni
     rw [add_smul, one_smul, htr, add_neg_cancel]
   exact wedgeTwo_dir_ne_zero G ((smul_eq_zero.1 h1).resolve_left (by linarith [ht]))
 
+/-! ## The ray map under the flip: where the sign of the orientation lives -/
+
+omit [Module.Finite ℚ V] in
+/-- The first coordinate of the line's generator in the plane's positive basis. -/
+noncomputable def planeRayCoeffA (F : ConicalLine BQ Q) (G : ConicalPlane BQ)
+    (h : F.line ≤ G.plane) : ℚ :=
+  G.basis.repr ⟨F.gen, F.gen_mem_of_le G h⟩ 0
+
+omit [Module.Finite ℚ V] in
+/-- The second coordinate of the line's generator in the plane's positive basis. -/
+noncomputable def planeRayCoeffB (F : ConicalLine BQ Q) (G : ConicalPlane BQ)
+    (h : F.line ≤ G.plane) : ℚ :=
+  G.basis.repr ⟨F.gen, F.gen_mem_of_le G h⟩ 1
+
+omit [Module.Finite ℚ V] in
+/-- **The coefficient of the line in the flipped ray**: `(a b)⁻¹` when the generator has both
+coordinates nonzero in the positive basis, and `0` when one of them vanishes — in that case the
+flipped ray is exactly the negative of the ray and no correction along the line is needed. -/
+noncomputable def planeRayFlipCoeff (F : ConicalLine BQ Q) (G : ConicalPlane BQ)
+    (h : F.line ≤ G.plane) : ℚ :=
+  if planeRayCoeffA F G h = 0 then 0
+  else if planeRayCoeffB F G h = 0 then 0
+  else (planeRayCoeffA F G h * planeRayCoeffB F G h)⁻¹
+
+omit [Module.Finite ℚ V] in
+/-- **The positive ray of the flipped plane at a line is the negative of the ray, moved along the
+line**: `F.planeRay G.flip h = -(F.planeRay G h) + c • F.gen` with `c` the coefficient above. The
+correction along `F.gen` is not dropped: `rayOf` normalizes the representative to be orthogonal to
+the line's generator, and undoing the flip moves it by a multiple of the generator exactly when the
+generator has a component along both basis vectors. This is where the sign of the orientation
+lives — it is the sign of the ray map, not an equality of oriented sets. -/
+theorem ConicalLine.planeRay_flip (F : ConicalLine BQ Q) (G : ConicalPlane BQ)
+    (h : F.line ≤ G.plane) :
+    F.planeRay G.flip h = -(F.planeRay G h) + planeRayFlipCoeff F G h • F.gen := by
+  classical
+  have hgen : F.gen ∈ G.plane := F.gen_mem_of_le G h
+  have hgen' : F.gen ∈ G.flip.plane := F.gen_mem_of_le G.flip h
+  have hflip0 : G.flip.basis.repr ⟨F.gen, hgen'⟩ 0 = planeRayCoeffB F G h := by
+    change (G.basis.reindex (Equiv.swap (0 : Fin 2) 1)).repr ⟨F.gen, hgen'⟩ 0 = _
+    rw [Module.Basis.repr_reindex_apply]
+    simp [planeRayCoeffB, Equiv.symm_swap, Equiv.swap_apply_left]
+  have hflip1 : G.flip.basis.repr ⟨F.gen, hgen'⟩ 1 = planeRayCoeffA F G h := by
+    change (G.basis.reindex (Equiv.swap (0 : Fin 2) 1)).repr ⟨F.gen, hgen'⟩ 1 = _
+    rw [Module.Basis.repr_reindex_apply]
+    simp [planeRayCoeffA, Equiv.symm_swap, Equiv.swap_apply_right]
+  by_cases hA : planeRayCoeffA F G h = 0
+  · have hb0 : planeRayCoeffB F G h ≠ 0 := by
+      intro hb
+      have hrepr := G.repr_eq ⟨F.gen, hgen⟩
+      rw [show G.basis.repr ⟨F.gen, hgen⟩ 0 = planeRayCoeffA F G h from rfl,
+        show G.basis.repr ⟨F.gen, hgen⟩ 1 = planeRayCoeffB F G h from rfl, hA, hb] at hrepr
+      exact F.gen_ne (by simpa using hrepr)
+    have hcoe : planeRayFlipCoeff F G h = 0 := by
+      simp only [planeRayFlipCoeff, hA, ite_true]
+    rw [hcoe, zero_smul, add_zero, ConicalLine.planeRay,
+      ConicalPlane.rayOf_eq_smul_dir G hgen F.gen_ne hA]
+    have hray' : F.planeRay G.flip h = (planeRayCoeffB F G h)⁻¹ • G.flip.dirAlt :=
+      ConicalPlane.rayOf_eq_smul_dirAlt G.flip hgen' F.gen_ne (by rw [hflip0]; exact hb0)
+    rw [hray', ConicalPlane.flip_dirAlt]
+    simp [ConicalPlane.dir, planeRayCoeffB]
+  · by_cases hB : planeRayCoeffB F G h = 0
+    · have hcoe : planeRayFlipCoeff F G h = 0 := by
+        simp only [planeRayFlipCoeff, hA, hB, ite_false, ite_true]
+      rw [hcoe, zero_smul, add_zero, ConicalLine.planeRay,
+        ConicalPlane.rayOf_eq_smul_dirAlt G hgen F.gen_ne hA]
+      have hray' : F.planeRay G.flip h = -((planeRayCoeffA F G h)⁻¹) • G.flip.dir :=
+        ConicalPlane.rayOf_eq_smul_dir G.flip hgen' F.gen_ne (by rw [hflip0, hB])
+      rw [hray', ConicalPlane.flip_dir]
+      simp [ConicalPlane.dirAlt, planeRayCoeffA]
+    · have hcoe : planeRayFlipCoeff F G h
+          = (planeRayCoeffA F G h * planeRayCoeffB F G h)⁻¹ := by
+        simp only [planeRayFlipCoeff, hA, hB, ite_false]
+      rw [hcoe, ConicalLine.planeRay,
+        ConicalPlane.rayOf_eq_smul_dirAlt G hgen F.gen_ne hA]
+      have hray' : F.planeRay G.flip h = (planeRayCoeffB F G h)⁻¹ • G.flip.dirAlt :=
+        ConicalPlane.rayOf_eq_smul_dirAlt G.flip hgen' F.gen_ne (by rw [hflip0]; exact hB)
+      rw [hray', ConicalPlane.flip_dirAlt]
+      have hgen_eq : F.gen = planeRayCoeffA F G h • G.dir
+          + planeRayCoeffB F G h • G.dirAlt := by
+        have hrepr := G.repr_eq ⟨F.gen, hgen⟩
+        rw [show G.basis.repr ⟨F.gen, hgen⟩ 0 = planeRayCoeffA F G h from rfl,
+          show G.basis.repr ⟨F.gen, hgen⟩ 1 = planeRayCoeffB F G h from rfl,
+          ConicalPlane.dir, ConicalPlane.dirAlt] at hrepr
+        exact hrepr
+      have hmain : -((planeRayCoeffA F G h)⁻¹ • G.dirAlt)
+            + (planeRayCoeffA F G h * planeRayCoeffB F G h)⁻¹ • F.gen
+          = (planeRayCoeffB F G h)⁻¹ • G.dir := by
+        rw [hgen_eq, smul_add, smul_smul, smul_smul]
+        have h1 : (planeRayCoeffA F G h * planeRayCoeffB F G h)⁻¹ * planeRayCoeffA F G h
+            = (planeRayCoeffB F G h)⁻¹ := by field_simp
+        have h2 : (planeRayCoeffA F G h * planeRayCoeffB F G h)⁻¹ * planeRayCoeffB F G h
+            = (planeRayCoeffA F G h)⁻¹ := by field_simp
+        rw [h1, h2]
+        abel
+      exact hmain.symm
+
+omit [Module.Finite ℚ V] in
+/-- **The fibre scan of the flipped ray is the negative of the scan**: the correction along the line
+disappears, because the scan subtracts the partner component and the line's generator pairs to `1`
+with the partner. -/
+theorem ConicalLine.planeRay_flip_scan (F : ConicalLine BQ Q) (G : ConicalPlane BQ)
+    (h : F.line ≤ G.plane) :
+    F.planeRay G.flip h - BQ (F.planeRay G.flip h) F.partner • F.gen
+      = -(F.planeRay G h - BQ (F.planeRay G h) F.partner • F.gen) := by
+  have hpair : BQ (F.planeRay G.flip h) F.partner
+      = -BQ (F.planeRay G h) F.partner + planeRayFlipCoeff F G h := by
+    rw [ConicalLine.planeRay_flip F G h]
+    simp only [map_add, map_neg, map_smul, LinearMap.add_apply, LinearMap.neg_apply,
+      LinearMap.smul_apply, smul_eq_mul, F.pairing, mul_one]
+  rw [hpair, ConicalLine.planeRay_flip F G h]
+  module
+
+omit [Module.Finite ℚ V] in
+/-- **A fibre cannot present both orientations of a plane coherently**: the coherence of `G` is a
+strict positivity of the pairing of the ray's class with the sheet, and by
+`ConicalLine.planeRay_flip_scan` the flipped presentation pairs with the *negated* class. The denial
+is `¬ IsPositiveAt`, derived from the comparison in one step rather than by unfolding the
+definition further. -/
+theorem ConicalMember.not_isPositiveAt_flip (F : ConicalLine BQ Q) (G : ConicalPlane BQ)
+    (h : F.line ≤ G.plane) (hcoh : G.IsPositiveAt F h) :
+    ¬ G.flip.IsPositiveAt F h := by
+  have hscan := ConicalLine.planeRay_flip_scan F G h
+  simp only [ConicalPlane.IsPositiveAt] at hcoh ⊢
+  have hneg : (associated Q)
+      (rationalPoint (F.planeRay G.flip h - BQ (F.planeRay G.flip h) F.partner • F.gen))
+        (realifyMap F.space F.sheet)
+      = -(associated Q)
+        (rationalPoint (F.planeRay G h - BQ (F.planeRay G h) F.partner • F.gen))
+        (realifyMap F.space F.sheet) := by
+    rw [hscan, map_neg, map_neg, LinearMap.neg_apply]
+  rw [hneg]
+  linarith
+
 omit [Module.Finite ℚ V] in
 /-- **The wedge with a generator kills the line**: two vectors that differ by an element of
 `span{a}` are carried to the same element of `⋀²V(ℝ)` by `c ↦ a ∧ c`. This is why a member's carrier
