@@ -232,6 +232,40 @@ theorem IsAdmissibleDecomposition.eq_of_isLeastMemPoint {BQ : LinearMap.BilinFor
     (hy : IsRelintPoint σ y) (hleast : IsLeastMemPoint (locus F) y σ') : σ' = σ :=
   IsLocallyRationalDecomposition.eq_of_isLeastMemPoint (C := F.cone) (D.condition_i F) hσ hy hleast
 
+/-! ## Rational cones are closed
+
+The pairwise-incidence axiom is not the only thing a locally rational decomposition inherits from
+its members' being *rational* cones: a rational cone is finitely generated
+(`IsRationalCone` is `∃ s : Finset V, σ = PointedCone.hull ℝ (rationalPoint '' s)`), and a
+finitely generated cone is closed. The repository's support-space lemmas carry closedness as the
+hypothesis `hclosed : ∀ τ ∈ S, IsClosed τ` (`LocallyRationalDecomposition.lean:4873` and four
+further places); this section removes that hypothesis.
+
+The route is the file's own duality port rather than a compactness argument. A finitely generated
+cone equals its algebraic bipolar (`Submodule.FG.cone_dual_dual_flip_id`,
+`LeanCategories/ForMathlib/PointedConeFiniteDuality.lean:75`, ported from TauCeti/Mei), and a dual
+cone with respect to a continuous perfect pairing is closed (`PointedCone.isClosed_dual`). The
+compactness route — the cone hull of `{c : ι → ℝ≥0 | ∑ c = 1} × [0,1]` — does *not* work as stated:
+the cone hull of a compact convex set need not be closed (a disc tangent to the origin has the open
+half-plane plus the origin as its cone hull), and what saves the finitely generated case is precisely
+Minkowski–Weyl, which is what the bipolarity encodes. -/
+
+omit [Module.Finite ℚ V] in
+/-- **A rational cone is closed.** This is the closedness the support-space comparison consumes
+(`LocallyRationalDecomposition.lean:4873, 4929, 5029, 5059, 5084` carry it as a hypothesis):
+finite generation gives the bipolarity `σ = (σ^∘)^∘`, and a dual cone for a continuous perfect
+pairing is closed. -/
+theorem IsRationalCone.isClosed {σ : PointedCone ℝ (realified V)} (hσ : IsRationalCone σ) :
+    IsClosed (σ : Set (realified V)) := by
+  obtain ⟨s, hs⟩ := hσ
+  have hFG : Submodule.FG σ := by
+    rw [hs]
+    exact Submodule.fg_span (s.finite_toSet.image _)
+  rw [← hFG.cone_dual_dual_flip_id (K := ℝ) (V := realified V)]
+  exact PointedCone.isClosed_dual
+    (p := (LinearMap.id : Module.Dual ℝ (realified V) →ₗ[ℝ] Module.Dual ℝ (realified V)))
+    (fun x => by simpa using IsModuleTopology.continuous_of_linearMap x)
+
 /-! ## The subordinate refinement of the support index (Lemma-Definition 4.5, p. 19)
 
 `Semifan.sigmaSupportSpace_le_of_refines` compares the support space of one member `σ` relative to
