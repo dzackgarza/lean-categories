@@ -55,7 +55,8 @@ The second half of the file supplies `thm:discriminant-transport-functor`: the t
 integral lattice objects (`orbitLattice`) with form and projectivity transported from `L`, the
 ambient isometries act between them (`orbitTransportIso`) and the action is functorial
 (`orbitTransportEquiv_comp`). The three-factor factorization of the completed loop through those
-maps is not proved here; the section header records exactly what it still needs.
+maps is proved: `loopDefectEquiv_eq_orbitLoopComposite` is `thm:schreier-discriminant-image` item
+3's identity `loopDefectEquiv D t ht s p = orbitLoopComposite D t ht s p`.
 -/
 
 @[expose] public section
@@ -1055,19 +1056,25 @@ forcing `isDefEq` checks between `(orbitLattice g).obj.valueDual` and `L.obj.val
 are the bridge to that reading: both sides of both statements are written with `⇑`/`.toLinearMap`,
 never with a bare coercion, and both are `@[simp]`, each alone under `maxHeartbeats 1000000`.
 
-The identity `loopDefectEquiv D t ht s p = orbitLoopComposite D t ht s p` is still not proved. The
-remaining step is the value-dual composite at a carrier element: `funext y`, then `simp only` with
-`LinearMap.comp_apply`, the two bridge rules above, `orbitLoopValueCarrier`,
-`LinearEquiv.trans_apply` and the two `latticeIsoLinearEquiv` rules. It does not close, because the
-goal's redex is the coerced form — it displays as
+The identity `loopDefectEquiv D t ht s p = orbitLoopComposite D t ht s p` is
+`loopDefectEquiv_eq_orbitLoopComposite`, and its class-level form is
+`orbitLoopComposite_mk_carrier`. Two things were needed, and neither is a change of statement.
 
-`↑(discriminantValueDualEquiv (orbitLatticeIso …)).symm (…) y`,
+First, a goal that carries `orbitLoopComposite` is not rewritten through it: `rw [orbitLoopComposite,
+LinearEquiv.trans_apply, LinearEquiv.trans_apply]` matches the outer `LinearEquiv.trans`, which pins
+the intermediate carriers `(orbitLattice …).obj.defect` against each other, and that `isDefEq` — it
+is the semilinear `LinearEquiv.trans_apply`, with its `σ` ring homs and `RingHomInvPair` /
+`RingHomCompTriple` arguments, that is being searched, not the mathematics — runs out of heartbeats
+at 200000, at 1000000 and at 4000000. The proof therefore records the three factors as `let`s, takes
+the definitional identity `orbitLoopComposite = (A.trans B).trans C` once, and reads the two `trans`
+steps as `rfl`, which is what they are for linear equivalences; the rest is the three `_mk` lemmas
+and the carrier identity, applied at explicit instances rather than searched for.
 
-whose head is the *function* coercion of `(dve e).symm`, while both `@[simp]` rules have the head
-`⇑(… : _ →ₗ[R] _)`, the function coercion of the *LinearMap* `(dve e).symm.toLinearMap`. The two
-heads are `rfl`-equal but not syntactically identical, so the simp discrimination tree does not fire
-and the goal is left unchanged. `mk` plays no part in this step: the statement is at
-`L.obj.carrier`, and the failure is purely the coercion head. -/
+Second, the statement is written with `.toLinearMap` on the right and never with `↑` of an
+equivalence, so the coercion head that motivated the two bridge lemmas above does not occur in it.
+The one coercion left, in the last `rfl` of the identity, is between `W y` and `↑W y` for
+`W = orbitLoopValueCarrier …`; it closes by `rfl` because the function coercion of a `LinearEquiv`
+is its `.toLinearMap` by definition. -/
 
 
 omit [IsDomain R] in
@@ -1138,5 +1145,119 @@ omit [IsDomain R] in
   simp only [LinearMap.comp_apply, LinearEquiv.coe_toLinearMap,
     discriminantValueDualEquiv_symm_apply_comp]
 
+/-! ## The loop's action on discriminant classes
+
+`orbitLoopComposite_mk_carrier` records what the three-factor composite of
+`thm:schreier-discriminant-image` item 3 does to a class, through the carrier composite of the
+section above; `loopDefectEquiv_eq_orbitLoopComposite` is the identity itself.
+
+## Search record (LC-09)
+
+`scripts/formalization_corpus.py batch` at the manifest head `9fdc1827`, under
+`quotient value dual composite action Submodule.Quotient.mk`, `Schreier loop discriminant action
+three factor transport`, `LinearMap.comp_apply LinearEquiv.trans_apply coercion toLinearMap`,
+`dualMap quotient mk defect discriminant carrier equiv`, `discriminantValueDualEquiv`,
+`LinearEquiv.dualMap`, `Submodule.Quotient.equiv` and `contragredient dual value dual complement`.
+No source has either statement. The hits are Mathlib's `LinearEquiv.dualMap`,
+`Submodule.Quotient.equiv` and `LinearEquiv.trans_apply` — the generic pieces this file already
+composes — and TauCeti's discriminant transport, whose statement is the set-level image rather
+than the class-level identity. Both declarations below are glue among the existing owners
+`discriminantCarrierEquiv`, `orbitAlphaTo`, `orbitAlphaTrans` and `orbitLoopValueCarrier`. -/
+
+set_option maxHeartbeats 8000000 in
+-- The `let`s record the three factors once, so that the `calc` below compares them by name; the
+-- price is that every later application re-checks `(orbitLattice …).obj.defect` against the same
+-- carrier written from the other side, and that check is what the raised limit buys: at 200000,
+-- at 1000000 and at 4000000 the `isDefEq` of the second `calc` step and the `synthesize pending
+-- MVars` of the last rewrite run out, and neither is the mathematics. The statement does not
+-- mention `loopDefectEquiv`, so raising the limit here changes no claim.
+/-- **The three-factor composite acts on a class through the carrier composite.** The value of
+`orbitLoopComposite D t ht s p` at the class of `f` is the class of `f` composed with
+`orbitLoopValueCarrier D t ht s p`, and the statement is written with `.toLinearMap`, so it is a
+rule for a goal written the same way. The three `_mk` lemmas are applied at explicit instances
+rather than searched for: `orbitAlphaTrans_mk`'s implicit `g` is a `let`-bound factor here, and
+matching it against `(t p).1` is what the semilinear `LinearEquiv.trans_apply` cannot afford. -/
+theorem orbitLoopComposite_mk_carrier (D : AmbientResidueData R L)
+    (t : D.ResiduePoint → ↥D.G) (ht : ∀ q, t q • D.baseResidue = q)
+    (s : ↥D.G) (p : D.ResiduePoint) (f : L.obj.valueDual) :
+    orbitLoopComposite D t ht s p (Submodule.Quotient.mk f) =
+      Submodule.Quotient.mk (f.comp (orbitLoopValueCarrier D t ht s p).toLinearMap) := by
+  let A : L.obj.defect ≃ₗ[R] (orbitLattice (t p).1).obj.defect :=
+    orbitAlphaTo (L := L) (t p).1
+  let B : (orbitLattice (t p).1).obj.defect ≃ₗ[R]
+      (orbitLattice (t (s • p)).1).obj.defect :=
+    orbitAlphaTrans (L := L) s.1 (t p).1 (t (s • p)).1
+      (D.translate_smul_eq t ht s p).symm
+  let C : (orbitLattice (t (s • p)).1).obj.defect ≃ₗ[R] L.obj.defect :=
+    (orbitAlphaTo (L := L) (t (s • p)).1).symm
+  have h1 : A (Submodule.Quotient.mk f) =
+      Submodule.Quotient.mk (f.comp (orbitCarrierEquiv (t p).1).symm.toLinearMap) :=
+    orbitAlphaTo_mk (t p).1 f
+  have h2 : B (Submodule.Quotient.mk (f.comp (orbitCarrierEquiv (t p).1).symm.toLinearMap)) =
+      Submodule.Quotient.mk ((f.comp (orbitCarrierEquiv (t p).1).symm.toLinearMap).comp
+        (orbitTransportEquiv s.1 (t p).1 (t (s • p)).1
+          (D.translate_smul_eq t ht s p).symm).symm.toLinearMap) :=
+    orbitAlphaTrans_mk s.1 (t p).1 (t (s • p)).1
+      (D.translate_smul_eq t ht s p).symm _
+  have h3 : C (Submodule.Quotient.mk ((f.comp (orbitCarrierEquiv (t p).1).symm.toLinearMap).comp
+        (orbitTransportEquiv s.1 (t p).1 (t (s • p)).1
+          (D.translate_smul_eq t ht s p).symm).symm.toLinearMap)) =
+      Submodule.Quotient.mk (((f.comp (orbitCarrierEquiv (t p).1).symm.toLinearMap).comp
+          (orbitTransportEquiv s.1 (t p).1 (t (s • p)).1
+            (D.translate_smul_eq t ht s p).symm).symm.toLinearMap).comp
+        (orbitCarrierEquiv (t (s • p)).1).toLinearMap) :=
+    orbitAlphaTo_symm_mk (t (s • p)).1 _
+  have hcomp : ((f.comp (orbitCarrierEquiv (t p).1).symm.toLinearMap).comp
+        (orbitTransportEquiv s.1 (t p).1 (t (s • p)).1
+          (D.translate_smul_eq t ht s p).symm).symm.toLinearMap).comp
+        (orbitCarrierEquiv (t (s • p)).1).toLinearMap =
+      f.comp (orbitLoopValueCarrier D t ht s p).toLinearMap := by
+    rw [LinearMap.comp_assoc, LinearMap.comp_assoc]
+    ext y
+    simp only [LinearMap.comp_apply, orbitLoopValueCarrier, LinearEquiv.trans_apply,
+      LinearEquiv.coe_toLinearMap]
+  have hABC : orbitLoopComposite D t ht s p = (A.trans B).trans C := rfl
+  rw [hABC]
+  calc ((A.trans B).trans C) (Submodule.Quotient.mk f)
+      = C ((A.trans B) (Submodule.Quotient.mk f)) := rfl
+    _ = C (B (A (Submodule.Quotient.mk f))) := rfl
+    _ = C (B (Submodule.Quotient.mk
+          (f.comp (orbitCarrierEquiv (t p).1).symm.toLinearMap))) := by
+          rw [h1]; rfl
+    _ = C (Submodule.Quotient.mk ((f.comp (orbitCarrierEquiv (t p).1).symm.toLinearMap).comp
+          (orbitTransportEquiv s.1 (t p).1 (t (s • p)).1
+            (D.translate_smul_eq t ht s p).symm).symm.toLinearMap)) := by
+          rw [h2]; rfl
+    _ = Submodule.Quotient.mk (((f.comp (orbitCarrierEquiv (t p).1).symm.toLinearMap).comp
+          (orbitTransportEquiv s.1 (t p).1 (t (s • p)).1
+            (D.translate_smul_eq t ht s p).symm).symm.toLinearMap).comp
+          (orbitCarrierEquiv (t (s • p)).1).toLinearMap) := by
+          rw [h3]
+    _ = Submodule.Quotient.mk (f.comp (orbitLoopValueCarrier D t ht s p).toLinearMap) := by
+          rw [hcomp]
+
+/-- **The loop's discriminant action is the three-factor composite**: the identity
+`loopDefectEquiv D t ht s p = orbitLoopComposite D t ht s p` of
+`thm:schreier-discriminant-image` item 3.
+
+On a class `Submodule.Quotient.mk f` both sides are `mk` of a value-dual element
+(`loopDefectEquiv_mk` and `orbitLoopComposite_mk_carrier`), and those elements agree by
+`orbitLoopValueCarrier_eq_residueStabilizer_symm`, which identifies the carrier composite with the
+inverse of the loop's own carrier action on `L`. No `mk` is cancelled and no class is lifted: the
+comparison is made at `L.obj.carrier`, where the two sides are `f (W y)` and `f (↑W y)` for
+`W = orbitLoopValueCarrier D t ht s p`. -/
+theorem loopDefectEquiv_eq_orbitLoopComposite (D : AmbientResidueData R L)
+    (t : D.ResiduePoint → ↥D.G) (ht : ∀ q, t q • D.baseResidue = q)
+    (s : ↥D.G) (p : D.ResiduePoint) :
+    loopDefectEquiv D t ht s p = orbitLoopComposite D t ht s p := by
+  refine LinearEquiv.ext fun x => ?_
+  induction x using Submodule.Quotient.induction_on with
+  | _ f =>
+    rw [loopDefectEquiv_mk, orbitLoopComposite_mk_carrier D t ht s p f]
+    congr 1
+    ext y
+    rw [actOnValueDual_apply, LinearMap.comp_apply,
+      ← orbitLoopValueCarrier_eq_residueStabilizer_symm D t ht s p]
+    rfl
 
 end LeanCategories.Lattices.Valued
