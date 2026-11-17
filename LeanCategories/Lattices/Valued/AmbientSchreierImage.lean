@@ -1051,11 +1051,23 @@ forcing `isDefEq` checks between `(orbitLattice g).obj.valueDual` and `L.obj.val
   action, from `schreierLoop_symm_apply`,
 * `loopDefectEquiv_mk`: the action of `loopDefectEquiv` on a class.
 
-The identity `loopDefectEquiv D t ht s p = orbitLoopComposite D t ht s p` is still not proved: the
-remaining step is `orbitLoopComposite_mk_carrier`, whose statement — the three-factor composite read
-at `mk f` for a fixed `f : L.obj.valueDual` — is cheap, but whose proof (rewriting the three
-`orbitAlpha` `_mk` lemmas and then identifying the resulting value-dual composite with
-`f.comp orbitLoopValueCarrier.toLinearMap`) still exhausts the heartbeat budget in `whnf`. -/
+`discriminantValueDualEquiv_apply_toLinearMap` and `discriminantValueDualEquiv_symm_toLinearMap`
+are the bridge to that reading: both sides of both statements are written with `⇑`/`.toLinearMap`,
+never with a bare coercion, and both are `@[simp]`, each alone under `maxHeartbeats 1000000`.
+
+The identity `loopDefectEquiv D t ht s p = orbitLoopComposite D t ht s p` is still not proved. The
+remaining step is the value-dual composite at a carrier element: `funext y`, then `simp only` with
+`LinearMap.comp_apply`, the two bridge rules above, `orbitLoopValueCarrier`,
+`LinearEquiv.trans_apply` and the two `latticeIsoLinearEquiv` rules. It does not close, because the
+goal's redex is the coerced form — it displays as
+
+`↑(discriminantValueDualEquiv (orbitLatticeIso …)).symm (…) y`,
+
+whose head is the *function* coercion of `(dve e).symm`, while both `@[simp]` rules have the head
+`⇑(… : _ →ₗ[R] _)`, the function coercion of the *LinearMap* `(dve e).symm.toLinearMap`. The two
+heads are `rfl`-equal but not syntactically identical, so the simp discrimination tree does not fire
+and the goal is left unchanged. `mk` plays no part in this step: the statement is at
+`L.obj.carrier`, and the failure is purely the coercion head. -/
 
 
 omit [IsDomain R] in
@@ -1104,5 +1116,27 @@ theorem loopDefectEquiv_mk (D : AmbientResidueData R L)
       Submodule.Quotient.mk
         (OrthogonalGroup.actOnValueDual (loopOrthogonal D t ht s p) f) := by
   rw [loopDefectEquiv, OrthogonalGroup.actOnDefect_mk]
+
+set_option maxHeartbeats 1000000 in
+omit [IsDomain R] in
+/-- The discriminant transport on value duals, stated with `⇑` on the left and `.toLinearMap` on the
+right, so that it is a simp rule for goals written without a coercion. This is the one statement of
+the group that needs a raised heartbeat limit. -/
+@[simp] theorem discriminantValueDualEquiv_apply_toLinearMap (e : L ≅ M)
+    (f : L.obj.valueDual) :
+    ⇑((discriminantValueDualEquiv e) : L.obj.valueDual →ₗ[R] M.obj.valueDual) f =
+      f.comp (latticeIsoLinearEquiv e).symm.toLinearMap := rfl
+
+set_option maxHeartbeats 1000000 in
+omit [IsDomain R] in
+/-- The inverse discriminant transport, with `⇑` on the left and `.toLinearMap` on the right. -/
+@[simp] theorem discriminantValueDualEquiv_symm_toLinearMap (e : L ≅ M)
+    (f : M.obj.valueDual) :
+    ⇑((discriminantValueDualEquiv e).symm : M.obj.valueDual →ₗ[R] L.obj.valueDual) f =
+      f.comp (latticeIsoLinearEquiv e).toLinearMap := by
+  refine LinearMap.ext fun x => ?_
+  simp only [LinearMap.comp_apply, LinearEquiv.coe_toLinearMap,
+    discriminantValueDualEquiv_symm_apply_comp]
+
 
 end LeanCategories.Lattices.Valued
