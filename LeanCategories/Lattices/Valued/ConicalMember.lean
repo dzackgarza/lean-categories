@@ -418,4 +418,118 @@ end ConicalMember
 
 end Member
 
+/-! ## Example 6.2 at the member level, and the isotropic centres -/
+
+section Example62Member
+
+variable {BQ : LinearMap.BilinForm ℚ V} {Q : QuadraticForm ℝ (realified V)}
+
+/-- **Example 6.2, p. 29, the plane member**: for the facial (Baily–Borel) decomposition the
+support space of the half line `C_{J,+}` of a `ℚ`-isotropic plane is `J^⊥`, written as the common
+kernel of the two forms of a spanning pair of `J` (`Semifan.vSigmaPlane_eq_ker_inf_ker`). The
+source's "the support spaces are `{0}` and the orthogonal complements of the nontrivial
+`ℚ`-isotropic subspaces". -/
+theorem ConicalMember.vSigma_plane_facial (hBQ : ∀ u w : V,
+    (associated Q) (rationalPoint u) (rationalPoint w) = (BQ u w : ℝ))
+    (hBsym : BQ.IsSymm) (F : ConicalLine BQ Q) (G : ConicalPlane BQ)
+    (h : F.line ≤ G.plane)
+    (hpos : ∀ F : ConicalLine BQ Q, sigPos (fibreForm Q F.space) = 1)
+    (hnd : ∀ F : ConicalLine BQ Q, (fibreForm Q F.space).Nondegenerate) :
+    (ConicalMember.plane F G h).vSigma hBsym (fun F => facialDecomposition F.closure) =
+      LinearMap.ker ((associated Q) (rationalPoint F.gen)) ⊓
+        LinearMap.ker ((associated Q) (rationalPoint G.ray)) :=
+  vSigmaPlane_eq_ker_inf_ker hBQ hBsym F G h (hpos F) (hnd F)
+
+omit [Module.Finite ℚ V] in
+/-- **Example 6.2, p. 29, the isotropic centre of a fibre's own cone**: `I(C_I) = I`. The support
+space is `I^⊥` (`ConicalLine.vSigma_cone_eq_ker`), and the line of the fibre lies in it and in its
+orthogonal complement because its generator is isotropic. This is the `dim I(σ) = 1` case of the
+source, where `X(σ)` is an algebraic torus; the inclusion is stated, the dimension count `dim = 1`
+is the source's and is not needed for it. -/
+theorem ConicalMember.lineSpan_le_isotropicCenter_cone (hBQ : ∀ u w : V,
+    (associated Q) (rationalPoint u) (rationalPoint w) = (BQ u w : ℝ))
+    (hBsym : BQ.IsSymm) (F : ConicalLine BQ Q)
+    (locus : ∀ F : ConicalLine BQ Q, Set (PointedCone ℝ (realified ↥F.space))) :
+    lineSpan F ≤ (ConicalMember.fibre F F.cone).isotropicCenter hBsym locus := by
+  have hv : (ConicalMember.fibre F F.cone).vSigma hBsym locus
+      = LeanCategories.Lattices.Valued.vSigma F F.cone := rfl
+  rw [ConicalMember.isotropicCenter, hv, ConicalLine.vSigma_cone_eq_ker hBQ hBsym F,
+    LeanCategories.Lattices.Valued.isotropicCenter]
+  refine le_inf (lineSpan_le_ker_gen hBQ F) ?_
+  refine Submodule.span_le.2 ?_
+  intro x hx
+  rw [Set.mem_singleton_iff] at hx
+  subst hx
+  refine LinearMap.BilinForm.mem_orthogonal_iff.2 ?_
+  intro y hy
+  rw [associated_comm Q y (rationalPoint F.gen)]
+  exact hy
+
+/-- **Example 6.2, p. 29, the isotropic centre of a plane's half line**: `J ⊆ I(C_{J,+})`. The
+support space is `J^⊥`, and the plane is totally isotropic, so it lies in `J^⊥` and pairs to zero
+with everything in it. This is the `dim I(σ) = 2` case of the source, where `X(σ)` is a bundle of
+abelian varieties over a modular curve; the reverse inclusion would need the bound `dim ≤ 2` on
+real isotropic subspaces (Looijenga §1, p. 11) and the description of `V_σ` for an arbitrary
+admissible `Σ`, neither of which is used here. -/
+theorem ConicalMember.realify_plane_le_isotropicCenter_facial (hBQ : ∀ u w : V,
+    (associated Q) (rationalPoint u) (rationalPoint w) = (BQ u w : ℝ))
+    (hBsym : BQ.IsSymm) (F : ConicalLine BQ Q) (G : ConicalPlane BQ)
+    (h : F.line ≤ G.plane)
+    (hpos : ∀ F : ConicalLine BQ Q, sigPos (fibreForm Q F.space) = 1)
+    (hnd : ∀ F : ConicalLine BQ Q, (fibreForm Q F.space).Nondegenerate) :
+    realify G.plane ≤
+      (ConicalMember.plane F G h).isotropicCenter hBsym
+        (fun F => facialDecomposition F.closure) := by
+  have hv := ConicalMember.vSigma_plane_facial hBQ hBsym F G h hpos hnd
+  rw [ConicalMember.isotropicCenter, hv, LeanCategories.Lattices.Valued.isotropicCenter]
+  set Kg := LinearMap.ker ((associated Q) (rationalPoint F.gen)) with hKg
+  set Kr := LinearMap.ker ((associated Q) (rationalPoint G.ray)) with hKr
+  have hiso : BQ G.ray F.gen = 0 :=
+    G.isotropic G.ray G.ray_mem F.gen (F.gen_mem_plane G h)
+  have hgen : ((associated Q) (rationalPoint F.gen)) (rationalPoint G.ray) = 0 := by
+    rw [hBQ, hBsym.eq, hiso]; norm_num
+  have hraygen : ((associated Q) (rationalPoint G.ray)) (rationalPoint F.gen) = 0 := by
+    rw [hBQ, hiso]; norm_num
+  have hgengen : ((associated Q) (rationalPoint F.gen)) (rationalPoint F.gen) = 0 := by
+    rw [hBQ, F.gen_iso]; norm_num
+  have hrayray : ((associated Q) (rationalPoint G.ray)) (rationalPoint G.ray) = 0 := by
+    rw [hBQ, ConicalPlane.ray_iso G]; norm_num
+  have hspan : realify G.plane =
+      Submodule.span ℝ ({rationalPoint F.gen, rationalPoint G.ray} : Set (realified V)) := by
+    rw [← span_gen_ray_eq_plane F G h]
+    exact realified_span_pair
+  have h1 : realify G.plane ≤ Kg := by
+    rw [hKg, hspan]
+    refine (Submodule.span_le.2 ?_)
+    rintro x (rfl | hx)
+    · exact hgengen
+    · rw [Set.mem_singleton_iff] at hx
+      subst hx
+      exact hgen
+  have h2 : realify G.plane ≤ Kr := by
+    rw [hKr, hspan]
+    refine (Submodule.span_le.2 ?_)
+    rintro x (rfl | hx)
+    · exact hraygen
+    · rw [Set.mem_singleton_iff] at hx
+      subst hx
+      exact hrayray
+  have h3 : realify G.plane ≤ LinearMap.BilinForm.orthogonal (associated Q) (Kg ⊓ Kr) := by
+    rw [hspan]
+    refine Submodule.span_le.2 ?_
+    rintro x (rfl | hx)
+    · refine LinearMap.BilinForm.mem_orthogonal_iff.2 ?_
+      intro y hy
+      rw [associated_comm Q y (rationalPoint F.gen)]
+      exact hy.1
+    · rw [Set.mem_singleton_iff] at hx
+      subst hx
+      refine LinearMap.BilinForm.mem_orthogonal_iff.2 ?_
+      intro y hy
+      rw [associated_comm Q y (rationalPoint G.ray)]
+      exact hy.2
+  exact le_inf (le_inf h1 h2) h3
+
+end Example62Member
+
 end LeanCategories.Lattices.Valued
