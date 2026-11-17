@@ -1656,6 +1656,61 @@ theorem fibreTrace_map_fibreInducedEquiv (hBsym : BQ.IsSymm) (F : ConicalLine BQ
       simpa [fibreTrace, LinearMap.mem_ker] using hgoal
     · simp
 
+/-- **(HT′) — the group-theoretic form of the one open hypothesis of the fibre count.**
+
+For one ambient orbit representative `Hⱼ = ker (ψ j)` and the fibre of `I`, the walls `g Hⱼ` that
+contain `I` should contribute a *single* `Stab_Γ(I)`-orbit of traces at `I`. Quantified over pairs:
+any two isometries of `Γ` carrying `I` into `Hⱼ` — equivalently, whose walls `g Hⱼ` contain `I` —
+differ by an element `h ∈ Γ` that preserves the line `I`, its generator up to a nonzero rational
+scalar, and the form, and that carries one wall to the other.
+
+This is the hypothesis the transfer consumes, and it is neither of the two statements it is easily
+confused with. It is **stronger** than point transitivity of `Γ` on primitive isotropic lines (which
+is `CuspWorkedInstance.exists_isometry_apply_eq` for `U ⊕ U`): that says all fibres are equivalent,
+and says nothing about the hyperplanes through one of them. It is **strictly weaker** than
+`distinctTraces ψ F ⊆ orbitFamilyTraces BQ F gen`: it mentions no lattice, no basis of the reduced
+lattice, no primitive generator and no count, and an orbit of it may be infinite. What it buys is
+finiteness of the number of orbits — one per ambient orbit representative — and that is all the
+transfer needs, because the fibre count `cutsFinitelyOnTraces_orbitFamily` turns one orbit family
+into the duplicate-insensitive cutter count. -/
+def StabilizerTransitiveOnWallsThroughLine {ι : Type*} (BQ : LinearMap.BilinForm ℚ V)
+    (ψ : ι → V →ₗ[ℚ] ℚ) (Γ : Set (V ≃ₗ[ℚ] V)) (F : ConicalLine BQ Q) (j : ι) : Prop :=
+  ∀ g₁ ∈ Γ, ∀ g₂ ∈ Γ,
+    F.line ≤ LinearMap.ker ((ψ j).comp (g₁ : V →ₗ[ℚ] V)) →
+    F.line ≤ LinearMap.ker ((ψ j).comp (g₂ : V →ₗ[ℚ] V)) →
+    ∃ (h : V ≃ₗ[ℚ] V) (c : ℚ), h ∈ Γ ∧ c ≠ 0 ∧ h F.gen = c • F.gen ∧
+      (∀ x y : V, BQ (h x) (h y) = BQ x y) ∧
+      Submodule.map (h : V →ₗ[ℚ] V) (LinearMap.ker ((ψ j).comp (g₁ : V →ₗ[ℚ] V))) =
+        LinearMap.ker ((ψ j).comp (g₂ : V →ₗ[ℚ] V))
+
+/-- **The gap, in the form the transfer's conclusion has**: the traces at `I` of the walls of `ℋ`
+containing `I` are a finite union of orbits of hyperplanes of `I^⊥/I` under the induced action
+`fibreInducedEquiv` of `Stab_Γ(I)`. The orbits may be infinite — this is not a finiteness statement
+about `distinctTraces`, which is false — and the group `ΓI` is tied to `Γ` and to the line `I` by
+its very statement. -/
+def TraceOrbitCover (hBsym : BQ.IsSymm) {ι : Type*} (ψ : ι → V →ₗ[ℚ] ℚ)
+    (Γ : Set (V ≃ₗ[ℚ] V)) (F : ConicalLine BQ Q) : Prop :=
+  ∃ (H₀ : Finset (Submodule ℚ ↥F.space)) (ΓI : Set (↥F.space ≃ₗ[ℚ] ↥F.space)),
+    (∀ e ∈ ΓI, ∃ (h : V ≃ₗ[ℚ] V) (c : ℚ) (hgen : h F.gen = c • F.gen) (hc : c ≠ 0)
+      (hgiso : ∀ x y : V, BQ (h x) (h y) = BQ x y),
+      h ∈ Γ ∧ e = fibreInducedEquiv hBsym F h c hgen hc hgiso) ∧
+    (∀ T ∈ distinctTraces ψ F, ∃ T₀ ∈ H₀, ∃ e ∈ ΓI, T = T₀.map e.toLinearMap)
+
+/-- **The transfer's first half, from the gap**: if the traces are a finite union of
+`Stab_Γ(I)`-orbits of hyperplanes of the carrier, then they are an orbit family of a finite set of
+hyperplanes — which is the shape `orbitFamilyTraces` and every `hcut` consumer read. The remaining
+step from an orbit family of *hyperplanes* to `orbitFamilyTraces BQ F gen` is the primitive
+generator `gen` and its property, which the arithmetic callers already take. -/
+theorem exists_orbitFamily_of_traceOrbitCover (hBsym : BQ.IsSymm) {ι : Type*}
+    {ψ : ι → V →ₗ[ℚ] ℚ} {Γ : Set (V ≃ₗ[ℚ] V)} {F : ConicalLine BQ Q}
+    (hcov : TraceOrbitCover hBsym ψ Γ F) :
+    ∃ (H₀ : Finset (Submodule ℚ ↥F.space)) (ΓI : Set (↥F.space ≃ₗ[ℚ] ↥F.space)),
+      distinctTraces ψ F ⊆ orbitFamily H₀ ΓI := by
+  obtain ⟨H₀, ΓI, -, hmem⟩ := hcov
+  refine ⟨H₀, ΓI, fun T hT => ?_⟩
+  obtain ⟨T₀, hT₀, e, he, hTe⟩ := hmem T hT
+  exact mem_orbitFamily.2 ⟨T₀, hT₀, e, he, hTe⟩
+
 end InducedAction
 
 section BasisFreeCaller
