@@ -3596,16 +3596,26 @@ downstream assertions, computational observations, or downstream diagnostics.
   * `compareFunctor (Rc) := Action.mapFunctor (coreInclusion Rc) :
     Action (Core (FiniteProjectiveLatticeCat Rc Rc)) BC2 ⥤ BC2Action Rc Rc`, with
     `compareFunctor_faithful` and `compareFunctor_full`.
-- **What the shape turned out to be, against the expectation in the filing:** the comparison is *not*
-  merely a functor and *not* non-full. It is a **full embedding** — an equivalence onto its essential
-  image — because `Core` of a full subcategory sits fully faithfully inside `Core` of the ambient
-  category. The obstruction to an equivalence of categories is therefore on *objects*, not on
-  morphisms, and it is proved: `compareFunctor_not_essSurjective` exhibits `bc2ActionInfinite` (the
-  trivial `C₂`-action on the zero form over `ℕ →₀ ℤ`) outside the essential image, using
-  `not_moduleFinite_finsupp` (a finite spanning set of a free module has a finite union of supports)
-  and `moduleFinite_of_iso` (finiteness transfers along an isomorphism of lattices). This is also the
-  proof that the non-core model is *not* equivalent to `BC2Action`: its morphisms are not invertible,
-  and the functor that does exist needs `W = Rc` (built into the target's type) and finiteness.
+- **What the shape turned out to be, against the expectation in the filing:** there are two composites,
+  and neither is an equivalence.
+  (i) *Into `BC2Action`* (`compareFunctor`, the core inclusion into the big core then `mapFunctor`) is
+  a **full embedding** — an equivalence onto its essential image — because `Core` of a full subcategory
+  sits fully faithfully inside `Core` of the ambient category. Its obstruction is on *objects*:
+  `compareFunctor_not_essSurjective` exhibits `bc2ActionInfinite` (the trivial `C₂`-action on the zero
+  form over `ℕ →₀ ℤ`) outside the essential image, using `not_moduleFinite_finsupp` (a finite spanning
+  set of a free module has a finite union of supports) and `moduleFinite_of_iso` (finiteness transfers
+  along an isomorphism of lattices).
+  (ii) *Into `EquivariantLatticeCat`* (`forgetCoreFunctor = mapFunctor (Core.inclusion _)`) is the
+  functor that carries the core-valued finite action to the `EquivariantLatticeCat` object it
+  coincides with; it is faithful and, as expected in the filing, **not full**:
+  `forgetCoreFunctor_not_full`, with the explicit witness `nonInvertibleActionHom` — the coordinate
+  inclusion `⟨e₀⟩ ↪ ℤ²` between the two trivial `C₂`-actions, on objects that are in the image
+  (`trivCoreAction`), whose underlying map is not surjective (`coordEmbedding_not_surjective`), while
+  every morphism in the image of `forgetCoreFunctor` has an invertible underlying map because every
+  morphism of `Action (Core _) _` is an isomorphism of the core.
+  Together: the non-core model is *not* equivalent to `BC2Action` nor to the core-valued finite model
+  — it is strictly bigger on morphisms, while agreeing on objects. Both hypotheses are carried, not
+  specialized: `W = Rc` is in both functors' types, and finiteness is the source's object property.
 - **Coverage:** Mathlib searched at the pinned revision for `Action.mapFunctor`, `Action.res`,
   `Action.forget`, `Action.Hom`, `Action.instCategory`, `Functor.mapEnd`, `Functor.Full`,
   `Functor.Faithful`, `Functor.preimage`, `ObjectProperty.isoMk`, `ObjectProperty.ι`,

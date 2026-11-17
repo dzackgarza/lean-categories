@@ -114,8 +114,9 @@ an involution.
   `Submodule.disjoint_def`. The commutation of the arrow category is `Arrow.isoMk`. Mathlib has no
   component-extraction lemma for a `Comma`-isomorphism (no `Comma.isIso_left`) and no thinness
   statement for `Under` over a groupoid, which is why `ForMathlib/CosliceGroupoid.lean` supplies the
-  latter. For §5: `Functor.mapEnd`, `Functor.Full`/`Faithful`/`preimage`, `Action.res`,
-  `Action.functorCategoryEquivalence` (no `Action.mapFunctor`), `ObjectProperty.isoMk`/`ι`,
+  latter. For §5 and §6: `Functor.mapEnd`, `Functor.Full`/`Faithful`/`preimage`, `Action.res`,
+  `Action.functorCategoryEquivalence` (no `Action.mapFunctor`), `ObjectProperty.isoMk`/`ι`/
+  `isIso_hom_iff`/`homMk`, `Core.inclusion`, `Iso.isIso_hom`, `IsIso.out`, `MonoidHom.comp_apply`,
   `Module.Finite.equiv`, `Finsupp.mem_supported`/`supported`, `Set.Finite.biUnion`/`bddAbove`.
   TauCeti, through the formalization corpus (`TauCetiProject__TauCeti`): `involutive endomorphism
   automorphism`, `End.of asHom`, `Action core self-involution`, `IsIso.of_mul_self_eq_one` — no
@@ -790,11 +791,10 @@ status.
 * Their composite `compareFunctor` is therefore **full and faithful** — an equivalence onto its
   essential image — and *not* an equivalence of categories: its essential image is the actions on
   finitely generated lattices, while `BC2Action ℤ ℤ` contains the trivial action on the zero form of
-  countably infinite rank (`compareFunctor_not_essSurjective`). What shows that the comparison is
-  not an equivalence is therefore essential surjectivity, not fullness: the morphism half of the
-  comparison is an equivalence of groupoids, and the hypothesis that cannot be dropped is finiteness
-  (with `W = R`, which is where the value module enters: the target `BC2Action Rc Rc` has `W = Rc`
-  built into its type).
+  countably infinite rank (`compareFunctor_not_essSurjective`). So for *this* functor the deficiency
+  is essential surjectivity, not fullness. The other composite, into `EquivariantLatticeCat`, is
+  faithful and **not full** (§6, `forgetCoreFunctor_not_full`); that is the functor whose failure of
+  fullness shows the non-core model is not an equivalent category.
 -/
 
 section CompareFunctor
@@ -911,5 +911,136 @@ theorem compareFunctor_not_essSurjective :
   exact bc2ActionInfinite_not_finite (moduleFinite_of_iso e.hom.hom.iso (h := hfin))
 
 end InfiniteWitness
+
+
+/-! ## 6. The comparison into `EquivariantLatticeCat`: faithful, and not full
+
+`compareFunctor` (§5) carries the core-valued finite model into `BC2Action`; its deficiency is on
+objects. The composite in the other direction, `Action.mapFunctor (Core.inclusion _)`, carries the
+core-valued action into the `EquivariantLatticeCat` object it coincides with (§4, on objects), and
+its deficiency is on *morphisms*:
+
+* every morphism in `Action (Core C) G` is an isomorphism of `C`, so every morphism in the image of
+  `forgetCoreFunctor` has an invertible underlying lattice map; the functor is also faithful
+  (`forgetCoreFunctor_faithful`), so its image on homs is injective;
+* `EquivariantLatticeCat Rc BC2 = Action (FiniteProjectiveLatticeCat Rc Rc) BC2` has morphisms whose
+  underlying map is not an isomorphism. `nonInvertibleActionHom` is one: the coordinate inclusion
+  `⟨e₀⟩ ↪ ℤ²` between the two trivial `C₂`-actions, on objects that *are* in the image
+  (`trivCoreAction`), whose underlying map misses the second coordinate
+  (`coordEmbedding_not_surjective`). It therefore has no preimage, and
+  `forgetCoreFunctor_not_full : ¬ (forgetCoreFunctor ℤ).Full`.
+
+That is the theorem the issue asks for: the failure of fullness is exactly what separates the
+non-core model from the core-valued one, so `EquivariantLatticeCat` is not equivalent to `BC2Action`
+nor to the core-valued finite model — it is strictly bigger on morphisms, while agreeing on objects
+(§4). Both
+hypotheses are carried: the value module is `Rc` in both functors' types (`BC2Action Rc Rc`,
+`EquivariantLatticeCat Rc BC2`), and finiteness is the *source's* object property
+(`FiniteProjectiveLatticeCat Rc Rc`), not something specialized away — the infinite case is
+`BC2Action`'s, where `compareFunctor` lives and where `compareFunctor_not_essSurjective` applies.
+-/
+
+section ForgetCore
+
+variable (Rc : Type) [CommRing Rc]
+
+/-- The core-valued trivial `C₂`-action on a finite lattice. -/
+def trivCoreAction (L : FiniteProjectiveLatticeCat Rc Rc) :
+    Action (Core (FiniteProjectiveLatticeCat Rc Rc)) BC2 where
+  V := ⟨L⟩
+  ρ := 1
+
+/-- **The comparison into `EquivariantLatticeCat`**: forget the core. -/
+def forgetCoreFunctor :
+    Action (Core (FiniteProjectiveLatticeCat Rc Rc)) BC2 ⥤ EquivariantLatticeCat Rc BC2 :=
+  Action.mapFunctor (Core.inclusion (FiniteProjectiveLatticeCat Rc Rc))
+
+theorem forgetCoreFunctor_faithful : (forgetCoreFunctor Rc).Faithful :=
+  Action.mapFunctor_faithful _
+
+@[simp]
+theorem forgetCoreFunctor_obj_V
+    (X : Action (Core (FiniteProjectiveLatticeCat Rc Rc)) BC2) :
+    ((forgetCoreFunctor Rc).obj X).V = X.V.of := rfl
+
+/-- The trivial action stays trivial after forgetting the core. -/
+theorem forgetCoreFunctor_triv_rho (L : FiniteProjectiveLatticeCat Rc Rc) (g : BC2) :
+    ((forgetCoreFunctor Rc).obj (trivCoreAction Rc L)).ρ g = 1 := by
+  change (MonoidHom.comp (Functor.mapEnd _ (Core.inclusion _)) (1 : BC2 →* End _)) g = 1
+  rw [MonoidHom.comp_apply]
+  simp
+
+end ForgetCore
+
+section ForgetCoreNotFull
+
+/-- The rank-one standard lattice as a finite projective lattice. -/
+def rankOneFinite : FiniteProjectiveLatticeCat ℤ ℤ :=
+  ⟨rankOneLattice 1, by change Module.Finite ℤ (Fin 1 → ℤ); infer_instance⟩
+
+/-- The standard rank-two lattice as a finite projective lattice. -/
+def standardTwoFinite : FiniteProjectiveLatticeCat ℤ ℤ :=
+  ⟨standardTwoLattice, by change Module.Finite ℤ (Fin 2 → ℤ); infer_instance⟩
+
+/-- The coordinate inclusion `⟨e₀⟩ ↪ ℤ²` as a morphism of finite projective lattices. -/
+def coordEmbeddingFinite : rankOneFinite ⟶ standardTwoFinite :=
+  ObjectProperty.homMk (ObjectProperty.homMk coordEmbedding)
+
+/-- **A morphism of `C₂`-actions whose underlying lattice map is not invertible**, between two
+objects in the image of `forgetCoreFunctor`: the coordinate inclusion between the two trivial
+actions. -/
+noncomputable def nonInvertibleActionHom :
+    (forgetCoreFunctor ℤ).obj (trivCoreAction ℤ rankOneFinite) ⟶
+      (forgetCoreFunctor ℤ).obj (trivCoreAction ℤ standardTwoFinite) where
+  hom := coordEmbeddingFinite
+  comm := by
+    intro g
+    rw [forgetCoreFunctor_triv_rho, forgetCoreFunctor_triv_rho]
+    change (1 : End _).asHom ≫ coordEmbeddingFinite = coordEmbeddingFinite ≫ (1 : End _).asHom
+    rw [End.one_asHom, End.one_asHom, Category.id_comp, Category.comp_id]
+
+/-- An isomorphism of formed modules has a surjective underlying map. -/
+theorem coordEmbedding_surjective (h : IsIso coordEmbedding) :
+    Function.Surjective (BilinModuleCat.underlyingMap coordEmbedding) := by
+  obtain ⟨g, -, hg⟩ := @IsIso.out _ _ _ _ coordEmbedding h
+  intro y
+  exact ⟨BilinModuleCat.underlyingMap g y, by
+    have h' := congrArg (fun k => BilinModuleCat.underlyingMap k y) hg
+    simpa using h'⟩
+
+/-- The coordinate inclusion is not surjective: its second coordinate is always zero. -/
+theorem coordEmbedding_not_surjective :
+    ¬ Function.Surjective (BilinModuleCat.underlyingMap coordEmbedding) := by
+  intro hsurj
+  obtain ⟨x, hx⟩ := hsurj (Pi.single (1 : Fin 2) (1 : ℤ))
+  have hx1 : (BilinModuleCat.underlyingMap coordEmbedding) x (1 : Fin 2) = 1 := by
+    have h' := congrFun hx (1 : Fin 2)
+    simpa using h'
+  have hzero : (BilinModuleCat.underlyingMap coordEmbedding) x (1 : Fin 2) = 0 := by
+    change (if (1 : Fin 2) = 0 then (show Fin 1 → ℤ from x) 0 else 0) = 0
+    simp
+  rw [hzero] at hx1
+  norm_num at hx1
+
+theorem coordEmbeddingFinite_not_isIso : ¬ IsIso coordEmbeddingFinite := by
+  intro h
+  have h1 : IsIso coordEmbeddingFinite.hom := (ObjectProperty.isIso_hom_iff _).mpr h
+  have h2 : IsIso (coordEmbeddingFinite.hom.hom) := (ObjectProperty.isIso_hom_iff _).mpr h1
+  exact coordEmbedding_not_surjective (coordEmbedding_surjective h2)
+
+/-- **The comparison into `EquivariantLatticeCat` is not full.** A preimage of
+`nonInvertibleActionHom` would have an invertible underlying lattice map — every morphism of
+`Action (Core _) _` is an isomorphism of the core — while `nonInvertibleActionHom`'s underlying map
+is the coordinate inclusion, which is not surjective. -/
+theorem forgetCoreFunctor_not_full : ¬ (forgetCoreFunctor ℤ).Full := by
+  intro h
+  obtain ⟨φ, hφ⟩ := h.map_surjective nonInvertibleActionHom
+  have hiso : IsIso nonInvertibleActionHom.hom := by
+    rw [← hφ]
+    change IsIso ((Core.inclusion (FiniteProjectiveLatticeCat ℤ ℤ)).map φ.hom)
+    exact Iso.isIso_hom φ.hom.iso
+  exact coordEmbeddingFinite_not_isIso hiso
+
+end ForgetCoreNotFull
 
 end LeanCategories.Lattices.Valued
