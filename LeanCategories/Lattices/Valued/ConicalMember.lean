@@ -5,6 +5,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import LeanCategories.Lattices.Valued.Semifan
+public import Mathlib.LinearAlgebra.ExteriorPower.Basic
 
 /-!
 # Members of the conical locus, their support spaces and their isotropic centres
@@ -222,7 +223,7 @@ theorem lineSpan_le_ker_gen (hBQ : ∀ u w : V,
   intro x hx
   rw [Set.mem_singleton_iff] at hx
   subst hx
-  show ((associated Q) (rationalPoint F.gen)) (rationalPoint F.gen) = 0
+  change ((associated Q) (rationalPoint F.gen)) (rationalPoint F.gen) = 0
   rw [hBQ, F.gen_iso]
   norm_num
 
@@ -239,7 +240,7 @@ theorem realify_le_ker_gen (hBQ : ∀ u w : V,
       LinearMap.ker ((associated Q) (rationalPoint F.gen)) := by
     refine Submodule.span_le.2 ?_
     rintro _ ⟨v, hv, rfl⟩
-    show ((associated Q) (rationalPoint F.gen)) (rationalPoint v) = 0
+    change ((associated Q) (rationalPoint F.gen)) (rationalPoint v) = 0
     rw [hBQ, ((mem_planeComplement_iff BQ).1 hv).1]
     norm_num
   exact hsub hx
@@ -531,5 +532,141 @@ theorem ConicalMember.realify_plane_le_isotropicCenter_facial (hBQ : ∀ u w : V
   exact le_inf (le_inf h1 h2) h3
 
 end Example62Member
+
+/-! ## Definition 2.1: the conical locus inside `⋀²V(ℝ)`
+
+The conical locus is a subset of `so(φ)(ℝ) ≅ ⋀²V(ℝ)` (Definition 2.1, p. 10): the cone `C_I` of a
+`ℚ`-isotropic line sits in `(I ⊗ I^⊥/I)(ℝ) ⊂ ⋀²V(ℝ)` through `e ⊗ c ↦ e ∧ c`, and the half line
+`C_{J,+}` of a `ℚ`-isotropic plane sits in `⋀²J(ℝ) ⊂ ⋀²V(ℝ)` (§1B, p. 11, text line 267: "`Λ²J` can
+be regarded as a line in `I ⊗ I^⊥/I`, and via this inclusion, `C_J` is contained in the boundary of
+`C_I`"). `ConicalMember.carrier` is the image of each member there, and
+`ConicalMember.carrier_plane_le_fibre_closure` is that sentence. -/
+
+section Wedge
+
+/-- The exterior product `a ∧ b` in `⋀²` of the real form of `V`. -/
+noncomputable def wedgeTwo (a b : realified V) : ⋀[ℝ]^2 (realified V) :=
+  exteriorPower.ιMulti ℝ 2 ![a, b]
+
+/-- **`a ∧ ·` as a linear map** `⋀²V(ℝ)`: the map through which the fibre `I^⊥/I` of a
+`ℚ`-isotropic line `I = ℚ a` sits in `⋀²V(ℝ)` (Looijenga §1B, p. 11). -/
+noncomputable def wedgeLeft (a : realified V) : realified V →ₗ[ℝ] ⋀[ℝ]^2 (realified V) where
+  toFun b := wedgeTwo a b
+  map_add' b b' := by
+    have h1 : (![a, b + b'] : Fin 2 → realified V) =
+        Function.update ![a, b] 1 (b + b') := by
+      funext i; fin_cases i <;> simp
+    have h2 : Function.update (![a, b] : Fin 2 → realified V) 1 b = ![a, b] := by
+      funext i; fin_cases i <;> simp
+    have h3 : Function.update (![a, b] : Fin 2 → realified V) 1 b' = ![a, b'] := by
+      funext i; fin_cases i <;> simp
+    rw [wedgeTwo, h1, AlternatingMap.map_update_add, h2, h3]
+    rfl
+  map_smul' c b := by
+    have h1 : (![a, c • b] : Fin 2 → realified V) = Function.update ![a, b] 1 (c • b) := by
+      funext i; fin_cases i <;> simp
+    have h2 : Function.update (![a, b] : Fin 2 → realified V) 1 b = ![a, b] := by
+      funext i; fin_cases i <;> simp
+    rw [wedgeTwo, h1, AlternatingMap.map_update_smul, h2]
+    rfl
+
+omit [Module.Finite ℚ V] in
+@[simp] theorem wedgeLeft_apply (a b : realified V) : wedgeLeft a b = wedgeTwo a b := rfl
+
+section Carrier
+
+variable {BQ : LinearMap.BilinForm ℚ V} {Q : QuadraticForm ℝ (realified V)}
+
+/-- **The image of a member in `⋀²V(ℝ)`**, Definition 2.1, p. 10. The apex is `{0}`; a cone in the
+fibre of a `ℚ`-isotropic line `ℚ e` is carried by `c ↦ e ∧ c` (the inclusion
+`(I ⊗ I^⊥/I)(ℝ) ⊂ ⋀²V(ℝ)` of §1B); the half line `C_{J,+}` of a plane at a witnessing line `I` is
+carried the same way, through the class of `J` in the fibre of `I` (`Λ²J ⊂ I ⊗ I^⊥/I`), so that the
+two presentations of the same half line give the same subset of `⋀²V(ℝ)`
+(`ConicalMember.carrier_plane_eq_fibre`). -/
+noncomputable def ConicalMember.carrier (hBsym : BQ.IsSymm) :
+    ConicalMember BQ Q → Set (⋀[ℝ]^2 (realified V))
+  | zero => {0}
+  | fibre F σ => wedgeLeft (rationalPoint F.gen) ''
+      ((fun c : realified ↥F.space => realifyMap F.space c) '' (σ : Set (realified ↥F.space)))
+  | plane F G _ => wedgeLeft (rationalPoint F.gen) ''
+      ((fun c : realified ↥F.space => realifyMap F.space c) ''
+        (PointedCone.hull ℝ ({rationalPoint (fibreRay hBsym F G)} :
+          Set (realified ↥F.space)) : Set (realified ↥F.space)))
+
+omit [Module.Finite ℚ V] in
+/-- **The two presentations of a plane's half line give the same subset of `⋀²V(ℝ)`**: the plane
+member and the fibre member whose cone is the class of the plane's ray are carried to the same
+set — §1B, p. 11, "`Λ²J` can be regarded as a line in `I ⊗ I^⊥/I`". -/
+theorem ConicalMember.carrier_plane_eq_fibre (hBsym : BQ.IsSymm)
+    (F : ConicalLine BQ Q) (G : ConicalPlane BQ) (_h : F.line ≤ G.plane) :
+    (ConicalMember.plane F G _h : ConicalMember BQ Q).carrier hBsym =
+      (ConicalMember.fibre F (PointedCone.hull ℝ
+        ({rationalPoint (fibreRay hBsym F G)} : Set (realified ↥F.space))) :
+        ConicalMember BQ Q).carrier hBsym := rfl
+
+omit [Module.Finite ℚ V] in
+/-- A member of a fibre is carried into the carrier of a larger member of the same fibre. -/
+theorem ConicalMember.carrier_fibre_mono (hBsym : BQ.IsSymm) (F : ConicalLine BQ Q)
+    {σ σ' : PointedCone ℝ (realified ↥F.space)} (h : σ ≤ σ') :
+    (ConicalMember.fibre F σ : ConicalMember BQ Q).carrier hBsym ⊆
+      (ConicalMember.fibre F σ' : ConicalMember BQ Q).carrier hBsym := by
+  rintro y ⟨z, hz, rfl⟩
+  obtain ⟨c, hc, rfl⟩ := hz
+  exact ⟨_, ⟨c, h hc, rfl⟩, rfl⟩
+
+/-- **`C_J` lies in the boundary of `C_I`** (Looijenga §1B, p. 11, text line 267), in `⋀²V(ℝ)`:
+the half line of a `ℚ`-isotropic plane is inside the carrier of the closure `C_{I,+}` of the fibre
+of any of its lines. The class of the plane's ray is a point of `C_{I,+}`
+(`fibreRay_mem_closure`), so the cone it generates is a subcone of the closure. -/
+theorem ConicalMember.carrier_plane_le_fibre_closure (hBQ : ∀ u w : V,
+    (associated Q) (rationalPoint u) (rationalPoint w) = (BQ u w : ℝ))
+    (hBsym : BQ.IsSymm) (F : ConicalLine BQ Q) (G : ConicalPlane BQ) (h : F.line ≤ G.plane)
+    (hpos : sigPos (fibreForm Q F.space) = 1) :
+    (ConicalMember.plane F G h : ConicalMember BQ Q).carrier hBsym ⊆
+      (ConicalMember.fibre F F.closure : ConicalMember BQ Q).carrier hBsym := by
+  rw [ConicalMember.carrier_plane_eq_fibre]
+  refine ConicalMember.carrier_fibre_mono hBsym F ?_
+  rw [PointedCone.hull]
+  refine Submodule.span_le.2 ?_
+  intro x hx
+  rw [Set.mem_singleton_iff] at hx
+  subst hx
+  exact fibreRay_mem_closure hBQ hBsym F G h hpos
+
+/-- **The conical locus of Definition 2.1, p. 10, inside `⋀²V(ℝ)`**: the union of the apex, the open
+cones `C_I` of the `ℚ`-isotropic lines and the half lines `C_{J,+}` of the `ℚ`-isotropic planes. -/
+noncomputable def conicalLocusSet (hBsym : BQ.IsSymm) : Set (⋀[ℝ]^2 (realified V)) :=
+  ({0} : Set (⋀[ℝ]^2 (realified V))) ∪
+    (⋃ (F : ConicalLine BQ Q),
+      (ConicalMember.fibre F F.cone : ConicalMember BQ Q).carrier hBsym) ∪
+    (⋃ (F : ConicalLine BQ Q) (G : ConicalPlane BQ) (h : F.line ≤ G.plane),
+      (ConicalMember.plane F G h : ConicalMember BQ Q).carrier hBsym)
+
+omit [Module.Finite ℚ V] in
+/-- The apex is a point of the conical locus. -/
+theorem zero_mem_conicalLocusSet (hBsym : BQ.IsSymm) :
+    (0 : ⋀[ℝ]^2 (realified V)) ∈ conicalLocusSet (Q := Q) hBsym := by
+  simp [conicalLocusSet]
+
+omit [Module.Finite ℚ V] in
+/-- The open cone of every `ℚ`-isotropic line is part of the conical locus. -/
+theorem carrier_cone_subset_conicalLocusSet (hBsym : BQ.IsSymm) (F : ConicalLine BQ Q) :
+    (ConicalMember.fibre F F.cone : ConicalMember BQ Q).carrier hBsym ⊆
+      conicalLocusSet (Q := Q) hBsym := by
+  intro x hx
+  exact Or.inl (Or.inr (Set.mem_iUnion.2 ⟨F, hx⟩))
+
+omit [Module.Finite ℚ V] in
+/-- The half line of every `ℚ`-isotropic plane is part of the conical locus. -/
+theorem carrier_plane_subset_conicalLocusSet (hBsym : BQ.IsSymm)
+    (F : ConicalLine BQ Q) (G : ConicalPlane BQ) (h : F.line ≤ G.plane) :
+    (ConicalMember.plane F G h : ConicalMember BQ Q).carrier hBsym ⊆
+      conicalLocusSet (Q := Q) hBsym := by
+  intro x hx
+  exact Or.inr (Set.mem_iUnion.2 ⟨F, Set.mem_iUnion.2 ⟨G, Set.mem_iUnion.2 ⟨h, hx⟩⟩⟩)
+
+end Carrier
+
+end Wedge
 
 end LeanCategories.Lattices.Valued
