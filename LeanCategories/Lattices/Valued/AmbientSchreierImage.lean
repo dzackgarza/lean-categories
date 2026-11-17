@@ -5,6 +5,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import LeanCategories.Lattices.Valued.CuspSchreierImage
+public import LeanCategories.Lattices.Valued.DiscriminantFunctor
 public import LeanCategories.ForMathlib.SchreierStabilizer
 
 /-!
@@ -47,12 +48,22 @@ class of `L`, hence restricts to an integral self-isometry of `L` (`residueStabi
 where `lem:congruence-stabilizer-preimage` is used: the stabilizer of the residue class is proved to
 be the stabilizer of `L`, not assumed. The loop family is the source's letter-by-orbit family
 `|S| · |Σ_m|`, and the generated subgroup is not assumed to be the stabilizer's image.
+
+## The orbit lattices
+
+The second half of the file supplies `thm:discriminant-transport-functor`: the translates `gL` are
+integral lattice objects (`orbitLattice`) with form and projectivity transported from `L`, the
+ambient isometries act between them (`orbitTransportIso`) and the action is functorial
+(`orbitTransportEquiv_comp`). The three-factor factorization of the completed loop through those
+maps is not proved here; the section header records exactly what it still needs.
 -/
 
 @[expose] public section
 
+open CategoryTheory
 open MulAction
 open scoped Pointwise
+open LeanCategories.Modules.Bilinear.Valued
 
 namespace LeanCategories.Lattices.Valued
 
@@ -418,8 +429,11 @@ set_option maxHeartbeats 1000000 in
 -- The monoid laws of `residueStabilizerHom` compare three nested subtype coercions
 -- (`↥(Stab…) → ↥D.G → AmbientOrthogonalGroup L`), and the default 200000 heartbeats run out in the
 -- `whnf` of that statement, not in the mathematics.
-/-- **`ρ_L` of the residue stabilizer**: the discriminant images of the integral self-isometries of
-`L` that fix its residue class, as elements of the existing `O(A_L)`. -/
+/-- **The residue stabilizer as integral self-isometries of `L`**: a completing loop fixes the
+residue class of `L`, hence (by `lem:congruence-stabilizer-preimage`) stabilizes `L`, and its
+restriction is an element of the existing `O(L)`. The discriminant representation `ρ_L` is applied
+to this homomorphism,
+not to the ambient group, because `ρ_L` is defined on `O(L)` alone. -/
 noncomputable def residueStabilizerHom (D : AmbientResidueData R L) :
     ↥(D.residueStabilizer) →* OrthogonalGroup L where
   toFun k := stabilizerOrthogonal (k.1).1 (translate_eq_of_mem_stabilizer D k)
@@ -465,5 +479,388 @@ noncomputable def schreierLoop (D : AmbientResidueData R L)
     exact h
 
 /-! ## The exact discriminant image of the ambient stabilizer -/
+
+namespace AmbientResidueData
+
+/-- **The stabilizer of the lattice, inside `G`**, as the stabilizer of the integral image for the
+action of `↥D.G` on the submodules of the rational span. `lem:congruence-stabilizer-preimage` is
+the statement that this subgroup is also the stabilizer of the residue class. -/
+noncomputable abbrev latticeStabilizer (D : AmbientResidueData R L) : Subgroup ↥D.G :=
+  MulAction.stabilizer ↥D.G (integralImage R L)
+
+/-- The ambient action on submodules is the translate. -/
+theorem smul_integralImage (D : AmbientResidueData R L) (g : ↥D.G) :
+    g • integralImage R L = ambientTranslate L g.1 := rfl
+
+/-- **`lem:congruence-stabilizer-preimage` as an equality of subgroups**: the stabilizer of the
+lattice `L` and the stabilizer of its residue class modulo `mM` agree inside `G`. -/
+theorem residueStabilizer_eq_latticeStabilizer (D : AmbientResidueData R L) :
+    D.residueStabilizer = D.latticeStabilizer := by
+  refine Subgroup.ext fun g => ?_
+  rw [MulAction.mem_stabilizer_iff, MulAction.mem_stabilizer_iff, D.smul_integralImage]
+  exact D.mem_residueStabilizer_iff g
+
+variable (D : AmbientResidueData R L)
+
+/-- The loop family of the Schreier theorem, as a set of elements of the residue stabilizer. -/
+noncomputable def schreierLoopSet (t : D.ResiduePoint → ↥D.G)
+    (ht : ∀ q, t q • D.baseResidue = q) (S : Set ↥D.G) : Set ↥(D.residueStabilizer) :=
+  (fun x : ↥D.G × D.ResiduePoint => schreierLoop D t ht x.1 x.2) ''
+    (S ×ˢ MulAction.orbit ↥D.G D.baseResidue)
+
+/-- The loop family, read in `G`. -/
+theorem subtype_image_schreierLoopSet (t : D.ResiduePoint → ↥D.G)
+    (ht : ∀ q, t q • D.baseResidue = q) (S : Set ↥D.G) :
+    (Subgroup.subtype D.residueStabilizer) '' D.schreierLoopSet t ht S =
+      ((fun x : ↥D.G × D.ResiduePoint => (t (x.1 • x.2))⁻¹ * x.1 * t x.2) ''
+        (S ×ˢ MulAction.orbit ↥D.G D.baseResidue)) := by
+  rw [schreierLoopSet, Set.image_image]
+  rfl
+
+/-- **`lem:schreier-stabilizer` at the residue orbit, in the stabilizer subtype.** The completed
+loops
+`k_{s,p}` generate the stabilizer of the residue class of `L` in `G`; by
+`lem:congruence-stabilizer-preimage` that stabilizer is the stabilizer of `L` itself, so the loops
+generate the stabilizer of the lattice.
+
+This is the transfer of the general Schreier theorem `Subgroup.closure_schreierLoops_eq_stabilizer`
+to the stabilizer subtype: reading the loops back in `G` gives exactly the loop family of that
+theorem, and the subtype hom is injective. -/
+theorem closure_schreierLoopSet_eq_top (S : Set ↥D.G) (hS : Subgroup.closure S = ⊤)
+    (t : D.ResiduePoint → ↥D.G) (ht : ∀ q, t q • D.baseResidue = q)
+    (hbase : t D.baseResidue = 1) :
+    Subgroup.closure (D.schreierLoopSet t ht S) = ⊤ := by
+  have key := Subgroup.closure_schreierLoops_eq_stabilizer (G := ↥D.G) (α := D.ResiduePoint)
+    S hS D.baseResidue t ht hbase
+  refine eq_top_iff.mpr fun x _ => ?_
+  have hx : (x.1 : ↥D.G) ∈ (Subgroup.closure (D.schreierLoopSet t ht S)).map
+      (Subgroup.subtype D.residueStabilizer) := by
+    rw [MonoidHom.map_closure, D.subtype_image_schreierLoopSet t ht S, key]
+    exact x.2
+  obtain ⟨y, hy, hyx⟩ := Subgroup.mem_map.mp hx
+  have hxy : x = y := Subtype.ext hyx.symm
+  rw [hxy]
+  exact hy
+
+set_option maxHeartbeats 2000000 in
+-- The two rewrites below are under the opaque `discriminantRangeImage`, whose body carries the
+-- `letI : Normal` instance for the stable orthogonal group; the default 200000 heartbeats run out
+-- in
+-- the `isDefEq` of that body, not in the mathematics.
+/-- **The exact image of the integral stabilizer.** With `S` generating `G` and `t` a transversal of
+the residue orbit, the discriminant image of the integral stabilizer is generated by the
+discriminant images of the completed loops: this is `thm:schreier-discriminant-image` item 3.
+
+The ambient stabilizer is reached through `residueStabilizerHom`, which restricts a completed loop
+to an integral self-isometry of `L`; `ρ_L` is the existing discriminant representation of `O(L)`
+(`DiscriminantAction.discriminantRepresentation`), and `discriminantRangeImage` is its image inside
+the range of `ρ_L`. The equality is obtained from the subgroup identity
+`closure_schreierLoopSet_eq_top` and `MonoidHom.map_closure`; it is not assumed. -/
+theorem discriminantRangeImage_eq_closure_residueSchreier
+    (hL : IsFractionFieldPerfect R L) (S : Set ↥D.G)
+    (hS : Subgroup.closure S = ⊤) (t : D.ResiduePoint → ↥D.G)
+    (ht : ∀ q, t q • D.baseResidue = q) (hbase : t D.baseResidue = 1) :
+    discriminantRangeImage hL
+        (Subgroup.map (residueStabilizerHom D) ⊤) =
+      Subgroup.closure ((fun x : ↥D.G × D.ResiduePoint =>
+        ⟨(OrthogonalGroup.discriminantRepresentation hL)
+            (residueStabilizerHom D (schreierLoop D t ht x.1 x.2)), ⟨_, rfl⟩⟩) ''
+        (S ×ˢ MulAction.orbit ↥D.G D.baseResidue)) := by
+  have harg : Subgroup.map (residueStabilizerHom D) ⊤ =
+      Subgroup.closure ((residueStabilizerHom D) '' D.schreierLoopSet t ht S) := by
+    rw [← D.closure_schreierLoopSet_eq_top S hS t ht hbase, MonoidHom.map_closure]
+  rw [harg, discriminantRangeImage_eq_map_rangeRestrict, MonoidHom.map_closure]
+  have hseteq : ((⇑(OrthogonalGroup.discriminantRepresentation hL).rangeRestrict ''
+        ⇑(residueStabilizerHom D) '' D.schreierLoopSet t ht S) :
+          Set (OrthogonalGroup.discriminantRepresentation hL).range) =
+      ((fun x : ↥D.G × D.ResiduePoint =>
+        (⟨(OrthogonalGroup.discriminantRepresentation hL)
+            (residueStabilizerHom D (schreierLoop D t ht x.1 x.2)), ⟨_, rfl⟩⟩ :
+          (OrthogonalGroup.discriminantRepresentation hL).range)) ''
+        (S ×ˢ MulAction.orbit ↥D.G D.baseResidue)) := by
+    ext y
+    constructor
+    · rintro ⟨x, ⟨w, hw, rfl⟩, rfl⟩
+      rw [schreierLoopSet] at hw
+      obtain ⟨a, ha, rfl⟩ := hw
+      exact ⟨a, ha, Subtype.ext rfl⟩
+    · rintro ⟨a, ha, rfl⟩
+      exact ⟨residueStabilizerHom D (schreierLoop D t ht a.1 a.2),
+        ⟨schreierLoop D t ht a.1 a.2, ⟨a, ha, rfl⟩, rfl⟩, Subtype.ext rfl⟩
+  rw [hseteq]
+
+end AmbientResidueData
+
+/-! ## The orbit lattices and the ambient transport
+
+`thm:discriminant-transport-functor` transports the discriminant form along an ambient isometry that
+does not preserve `L`: the translates `gL = ambientTranslate L g` are integral lattices in their own
+right, and the isometries between them are indexed by the pairs `(L₀, g)` rather than by self-maps.
+
+`orbitLattice g` is the translate `gL` as an object of `IntegralLatticeCat R`, with its pairing and
+its projectivity *transported from `L`* along `orbitCarrierEquiv g`: nothing is assumed of the
+invariant module `M` (which need not be integral and need not lie in `L^♯`). `orbitLatticeIso g` is
+`α_g(L) : L ≅ gL`, and `orbitTransportIso a g k h` is the isometry `gL ≅ kL` induced by an ambient
+`a` with `kL = a·(gL)`; `orbitTransport_form` proves it is an isometry of the translated forms, and
+`orbitTransportEquiv_comp` is the functoriality of `thm:discriminant-transport-functor` item 2 at
+the carrier level.
+
+The three-factor factorization of `thm:schreier-discriminant-image` item 3 through these maps is
+**not** proved here: what remains is the pointwise computation identifying the composite
+`α_{t_sp⁻¹}(L_sp) ∘ α_s(L_p) ∘ α_{t_p}(L)` with `ρ_L(k_{s,p})`, for which both sides must be
+compared on `Submodule.Quotient.mk` values through `discriminantValueDualEquiv` and `actOnValueDual`
+of
+`stabilizerOrthogonal`. The maps the formula is indexed by, and their functoriality, are what this
+section supplies. -/
+
+omit [IsDomain R] in
+/-- The linear map `L → gL` given by an ambient isometry `g`. -/
+noncomputable def orbitCarrierMap (g : AmbientOrthogonalGroup L) :
+    L.obj.carrier →ₗ[R] ↥(ambientTranslate L g) where
+  toFun x :=
+    ⟨g.1 (toRationalSpan R L x),
+      Submodule.mem_map_of_mem (p := integralImage R L) (f := (g.1).toLinearMap)
+        (show toRationalSpan R L x ∈ integralImage R L from ⟨x, rfl⟩)⟩
+  map_add' x y := by apply Subtype.ext; simp
+  map_smul' r x := by apply Subtype.ext; simp
+
+omit [IsDomain R] in
+@[simp]
+theorem orbitCarrierMap_apply_coe (g : AmbientOrthogonalGroup L) (x : L.obj.carrier) :
+    ((orbitCarrierMap g x : ↥(ambientTranslate L g)) : RationalSpan R L) =
+      g.1 (toRationalSpan R L x) := rfl
+
+/-- **The carrier equivalence `L ≃ gL`** given by an ambient isometry `g`. -/
+noncomputable def orbitCarrierEquiv (g : AmbientOrthogonalGroup L) :
+    L.obj.carrier ≃ₗ[R] ↥(ambientTranslate L g) :=
+  LinearEquiv.ofBijective (orbitCarrierMap g)
+    ⟨fun x y h => by
+      have h' := congrArg Subtype.val h
+      rw [orbitCarrierMap_apply_coe, orbitCarrierMap_apply_coe] at h'
+      exact toRationalSpan_injective R L (g.1.injective h'),
+     fun z => by
+      obtain ⟨u, hu, hgu⟩ := Submodule.mem_map.mp z.2
+      refine ⟨(integralImageEquiv L).symm ⟨g.1.symm z.1, ?_⟩, ?_⟩
+      · rw [show g.1.symm z.1 = u from by rw [← hgu]; exact g.1.symm_apply_apply u]
+        exact hu
+      · apply Subtype.ext
+        change g.1 (toRationalSpan R L ((integralImageEquiv L).symm ⟨g.1.symm z.1, _⟩)) = z.1
+        rw [integralImageEquiv_symm_coe]
+        exact g.1.apply_symm_apply z.1⟩
+
+@[simp]
+theorem orbitCarrierEquiv_apply_coe (g : AmbientOrthogonalGroup L) (x : L.obj.carrier) :
+    ((orbitCarrierEquiv g x : ↥(ambientTranslate L g)) : RationalSpan R L) =
+      g.1 (toRationalSpan R L x) := rfl
+
+theorem orbitCarrierEquiv_symm_apply (g : AmbientOrthogonalGroup L)
+    (z : ↥(ambientTranslate L g)) :
+    toRationalSpan R L ((orbitCarrierEquiv g).symm z) = g.1.symm z.1 := by
+  apply g.1.injective
+  rw [← orbitCarrierEquiv_apply_coe, LinearEquiv.apply_symm_apply,
+    LinearEquiv.apply_symm_apply]
+
+/-- The form on the translate `gL`, transported from `L` along the carrier equivalence. -/
+noncomputable def orbitPairing (g : AmbientOrthogonalGroup L) :
+    LinearMap.BilinMap R ↥(ambientTranslate L g) R :=
+  LinearMap.mk₂ R
+    (fun x y => L.obj.pairing ((orbitCarrierEquiv g).symm x) ((orbitCarrierEquiv g).symm y))
+    (fun x y z => by simp)
+    (fun a x y => by simp)
+    (fun x y z => by simp)
+    (fun a x y => by simp)
+
+@[simp]
+theorem orbitPairing_apply (g : AmbientOrthogonalGroup L)
+    (x y : ↥(ambientTranslate L g)) :
+    orbitPairing g x y =
+      L.obj.pairing ((orbitCarrierEquiv g).symm x) ((orbitCarrierEquiv g).symm y) :=
+  rfl
+
+/-- The formed module of the translate `gL`, written with its carrier as a `ModuleCat` so that the
+carrier reduces definitionally to `↥(ambientTranslate L g)`. -/
+noncomputable abbrev orbitBilinModule (g : AmbientOrthogonalGroup L) : BilinModuleCat R R :=
+  Opposite.op (Functor.elementsMk (bilinearForms R R)
+    (Opposite.op (ModuleCat.of R ↥(ambientTranslate L g)))
+    ((TensorProduct.lift.equiv (.id R) ↥(ambientTranslate L g) ↥(ambientTranslate L g) R)
+      (orbitPairing g)))
+
+@[simp]
+theorem orbitBilinModule_pairing (g : AmbientOrthogonalGroup L)
+    (x y : ↥(ambientTranslate L g)) :
+    (orbitBilinModule g).pairing x y =
+      L.obj.pairing ((orbitCarrierEquiv g).symm x) ((orbitCarrierEquiv g).symm y) :=
+  orbitPairing_apply g x y
+
+/-- **The translate `gL` as an integral lattice object**, with its form and its projectivity
+transported from `L`; nothing is assumed of the invariant module `M`. -/
+noncomputable abbrev orbitLattice (g : AmbientOrthogonalGroup L) : IntegralLatticeCat R :=
+  haveI : Module.Projective R L.obj.carrier := L.property.1
+  ⟨orbitBilinModule g,
+    ⟨Module.Projective.of_equiv' (P := ↥(ambientTranslate L g)) (orbitCarrierEquiv g),
+      fun _ _ => L.property.2 _ _⟩⟩
+
+/-- **`α_g(L)`: the isomorphism `L ≅ gL`** of integral lattices given by an ambient isometry. -/
+noncomputable abbrev orbitLatticeIso (g : AmbientOrthogonalGroup L) :
+    L ≅ orbitLattice g :=
+  ObjectProperty.isoMk (isLattice R R)
+    (BilinModuleCat.isoMk (orbitCarrierEquiv g) (fun x y => by
+      change (orbitBilinModule g).pairing ((orbitCarrierEquiv g) x) ((orbitCarrierEquiv g) y)
+        = L.obj.pairing x y
+      rw [orbitBilinModule_pairing, LinearEquiv.symm_apply_apply,
+        LinearEquiv.symm_apply_apply]))
+
+@[simp]
+theorem latticeIsoLinearEquiv_orbitLatticeIso (g : AmbientOrthogonalGroup L)
+    (x : L.obj.carrier) :
+    latticeIsoLinearEquiv (orbitLatticeIso g) x = orbitCarrierEquiv g x := rfl
+
+
+/-! ## The ambient transport of a translate -/
+
+omit [IsDomain R] in
+/-- Move an isometry across the rationalized form, on the inverse side. -/
+theorem rationalizedForm_symm (g : AmbientOrthogonalGroup L)
+    (x y : RationalSpan R L) :
+    rationalizedForm R L (g.1.symm x) (g.1.symm y) = rationalizedForm R L x y := by
+  have h := g.2 (g.1.symm x) (g.1.symm y)
+  simpa using h.symm
+
+omit [IsDomain R] in
+/-- The inverse translate relation. -/
+theorem ambientTranslate_symm (a g k : AmbientOrthogonalGroup L)
+    (h : ambientTranslate L k = (ambientTranslate L g).map (a.1).toLinearMap) :
+    ambientTranslate L g = (ambientTranslate L k).map (a.1.symm).toLinearMap := by
+  rw [h, ← Submodule.map_comp]
+  have hcomp : (a.1.symm).toLinearMap ∘ₗ (a.1).toLinearMap = LinearMap.id := by
+    ext x
+    simp
+  rw [hcomp, Submodule.map_id]
+
+/-- The ambient isometry `a` as a linear map between the translates `gL` and `kL`. -/
+noncomputable def orbitTransportMap (a g k : AmbientOrthogonalGroup L)
+    (h : ambientTranslate L k = (ambientTranslate L g).map (a.1).toLinearMap) :
+    ↥(ambientTranslate L g) →ₗ[R] ↥(ambientTranslate L k) where
+  toFun x := ⟨a.1 x.1, by rw [h]; exact Submodule.mem_map_of_mem x.2⟩
+  map_add' x y := by apply Subtype.ext; simp
+  map_smul' r x := by apply Subtype.ext; simp
+
+omit [IsDomain R] in
+@[simp]
+theorem orbitTransportMap_apply_coe (a g k : AmbientOrthogonalGroup L)
+    (h : ambientTranslate L k = (ambientTranslate L g).map (a.1).toLinearMap)
+    (x : ↥(ambientTranslate L g)) :
+    ((orbitTransportMap a g k h x : ↥(ambientTranslate L k)) : RationalSpan R L) = a.1 x.1 :=
+  rfl
+
+/-- The `L`-level endomorphism underlying the ambient transport. -/
+noncomputable def orbitCoordEnd (a g k : AmbientOrthogonalGroup L)
+    (h : ambientTranslate L k = (ambientTranslate L g).map (a.1).toLinearMap) :
+    L.obj.carrier →ₗ[R] L.obj.carrier :=
+  (orbitCarrierEquiv k).symm.toLinearMap.comp
+    ((orbitTransportMap a g k h).comp (orbitCarrierEquiv g).toLinearMap)
+
+theorem orbitCoordEnd_toRationalSpan (a g k : AmbientOrthogonalGroup L)
+    (h : ambientTranslate L k = (ambientTranslate L g).map (a.1).toLinearMap)
+    (u : L.obj.carrier) :
+    toRationalSpan R L (orbitCoordEnd a g k h u) =
+      k.1.symm (a.1 (g.1 (toRationalSpan R L u))) := by
+  simp only [orbitCoordEnd, LinearMap.comp_apply, LinearEquiv.coe_coe]
+  rw [orbitCarrierEquiv_symm_apply, orbitTransportMap_apply_coe, orbitCarrierEquiv_apply_coe]
+
+/-- The underlying `L`-endomorphism of an ambient transport is an isometry of the integral form. -/
+theorem orbitCoordEnd_pairing (a g k : AmbientOrthogonalGroup L)
+    (h : ambientTranslate L k = (ambientTranslate L g).map (a.1).toLinearMap)
+    (u v : L.obj.carrier) :
+    L.obj.pairing (orbitCoordEnd a g k h u) (orbitCoordEnd a g k h v) =
+      L.obj.pairing u v := by
+  apply IsFractionRing.injective R (FractionRing R)
+  rw [← rationalizedForm_toRationalSpan, ← rationalizedForm_toRationalSpan,
+    orbitCoordEnd_toRationalSpan, orbitCoordEnd_toRationalSpan,
+    rationalizedForm_symm k, a.2, g.2]
+
+/-- **The ambient transport is an isometry of the translated forms.** -/
+theorem orbitTransport_form (a g k : AmbientOrthogonalGroup L)
+    (h : ambientTranslate L k = (ambientTranslate L g).map (a.1).toLinearMap)
+    (x y : ↥(ambientTranslate L g)) :
+    orbitPairing k (orbitTransportMap a g k h x) (orbitTransportMap a g k h y) =
+      orbitPairing g x y := by
+  have hx : orbitCoordEnd a g k h ((orbitCarrierEquiv g).symm x) =
+      (orbitCarrierEquiv k).symm (orbitTransportMap a g k h x) := by
+    simp only [orbitCoordEnd, LinearMap.comp_apply, LinearEquiv.coe_coe]
+    rw [LinearEquiv.apply_symm_apply]
+  have hy : orbitCoordEnd a g k h ((orbitCarrierEquiv g).symm y) =
+      (orbitCarrierEquiv k).symm (orbitTransportMap a g k h y) := by
+    simp only [orbitCoordEnd, LinearMap.comp_apply, LinearEquiv.coe_coe]
+    rw [LinearEquiv.apply_symm_apply]
+  rw [orbitPairing_apply, orbitPairing_apply, ← hx, ← hy]
+  exact orbitCoordEnd_pairing a g k h _ _
+
+/-- **The carrier equivalence of an ambient transport.** -/
+noncomputable def orbitTransportEquiv (a g k : AmbientOrthogonalGroup L)
+    (h : ambientTranslate L k = (ambientTranslate L g).map (a.1).toLinearMap) :
+    ↥(ambientTranslate L g) ≃ₗ[R] ↥(ambientTranslate L k) :=
+  LinearEquiv.ofBijective (orbitTransportMap a g k h)
+    ⟨fun x y hxy => by
+      have h' := congrArg Subtype.val hxy
+      rw [orbitTransportMap_apply_coe, orbitTransportMap_apply_coe] at h'
+      apply Subtype.ext
+      exact a.1.injective h',
+     fun y => by
+      refine ⟨orbitTransportMap (a := a⁻¹) (g := k) (k := g)
+        (ambientTranslate_symm a g k h) y, ?_⟩
+      apply Subtype.ext
+      simp only [orbitTransportMap_apply_coe]
+      exact a.1.apply_symm_apply y.1⟩
+
+omit [IsDomain R] in
+@[simp]
+theorem orbitTransportEquiv_apply_coe (a g k : AmbientOrthogonalGroup L)
+    (h : ambientTranslate L k = (ambientTranslate L g).map (a.1).toLinearMap)
+    (x : ↥(ambientTranslate L g)) :
+    ((orbitTransportEquiv a g k h x : ↥(ambientTranslate L k)) : RationalSpan R L) = a.1 x.1 :=
+  rfl
+
+/-- **`α_a(L₀)`: the ambient transport of the discriminant isometries of the orbit lattices.** For
+`thm:discriminant-transport-functor`, this is the isometry of integral lattices `gL ≅ kL` induced by
+the ambient isometry `a` with `kL = a·(gL)`. -/
+noncomputable abbrev orbitTransportIso (a g k : AmbientOrthogonalGroup L)
+    (h : ambientTranslate L k = (ambientTranslate L g).map (a.1).toLinearMap) :
+    orbitLattice g ≅ orbitLattice k :=
+  ObjectProperty.isoMk (isLattice R R)
+    (BilinModuleCat.isoMk (orbitTransportEquiv a g k h)
+      (fun x y => orbitTransport_form a g k h x y))
+
+
+@[simp]
+theorem latticeIsoLinearEquiv_orbitTransportIso (a g k : AmbientOrthogonalGroup L)
+    (h : ambientTranslate L k = (ambientTranslate L g).map (a.1).toLinearMap)
+    (x : ↥(ambientTranslate L g)) :
+    latticeIsoLinearEquiv (orbitTransportIso a g k h) x = orbitTransportEquiv a g k h x := rfl
+
+omit [IsDomain R] in
+/-- The transport of the identity ambient element is the identity carrier equivalence. -/
+theorem orbitTransportEquiv_one (g : AmbientOrthogonalGroup L)
+    (h : ambientTranslate L g =
+      (ambientTranslate L g).map ((1 : AmbientOrthogonalGroup L).1).toLinearMap)
+    (x : ↥(ambientTranslate L g)) :
+    orbitTransportEquiv (1 : AmbientOrthogonalGroup L) g g h x = x := by
+  apply Subtype.ext
+  rfl
+
+omit [IsDomain R] in
+/-- **Composition of ambient transports**: the transport by `b * a` is the composite of the
+transports by `a` and by `b`. This is `thm:discriminant-transport-functor` item 2 at the carrier
+level. -/
+theorem orbitTransportEquiv_comp (b a : AmbientOrthogonalGroup L)
+    (g g' k : AmbientOrthogonalGroup L)
+    (h₁ : ambientTranslate L g' = (ambientTranslate L g).map (a.1).toLinearMap)
+    (h₂ : ambientTranslate L k = (ambientTranslate L g').map (b.1).toLinearMap)
+    (h₃ : ambientTranslate L k = (ambientTranslate L g).map (b * a).1.toLinearMap)
+    (x : ↥(ambientTranslate L g)) :
+    orbitTransportEquiv (b * a) g k h₃ x =
+      orbitTransportEquiv b g' k h₂ (orbitTransportEquiv a g g' h₁ x) := by
+  apply Subtype.ext
+  exact rfl
 
 end LeanCategories.Lattices.Valued

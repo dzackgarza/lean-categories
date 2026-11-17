@@ -430,12 +430,12 @@ theorem vSigma_plane_mono_of_refines (hBsym : BQ.IsSymm) (F : ConicalLine BQ Q)
     (G : ConicalPlane BQ) (h : F.line ≤ G.plane)
     {locus locus' : ∀ F : ConicalLine BQ Q, Set (PointedCone ℝ (realified ↥F.space))}
     (hidx : supportIndex (positiveCone.upper (fibreForm Q F.space) F.sheet) (locus F)
-      (PointedCone.hull ℝ ({rationalPoint (fibreRay hBsym F G)} :
+      (PointedCone.hull ℝ ({rationalPoint (fibreRay hBsym F G h)} :
         Set (realified ↥F.space))))
     (hrefines : ∀ τ' : supportIndex (positiveCone.upper (fibreForm Q F.space) F.sheet)
-      (locus' F) (PointedCone.hull ℝ ({rationalPoint (fibreRay hBsym F G)} :
+      (locus' F) (PointedCone.hull ℝ ({rationalPoint (fibreRay hBsym F G h)} :
         Set (realified ↥F.space))),
-      ∃ τ ∈ locus F, PointedCone.hull ℝ ({rationalPoint (fibreRay hBsym F G)} :
+      ∃ τ ∈ locus F, PointedCone.hull ℝ ({rationalPoint (fibreRay hBsym F G h)} :
         Set (realified ↥F.space)) ≤ τ ∧ τ ≤ τ'.1 ∧
         ((τ : Set (realified ↥F.space)) ∩
           (positiveCone.upper (fibreForm Q F.space) F.sheet : Set (realified ↥F.space))).Nonempty) :
@@ -466,7 +466,7 @@ theorem ConicalMember.vSigma_plane_facial (hBQ : ∀ u w : V,
     (hnd : ∀ F : ConicalLine BQ Q, (fibreForm Q F.space).Nondegenerate) :
     (ConicalMember.plane F G h).vSigma hBsym (fun F => facialDecomposition F.closure) =
       LinearMap.ker ((associated Q) (rationalPoint F.gen)) ⊓
-        LinearMap.ker ((associated Q) (rationalPoint G.ray)) :=
+        LinearMap.ker ((associated Q) (rationalPoint (F.planeRay G h))) :=
   vSigmaPlane_eq_ker_inf_ker hBQ hBsym F G h (hpos F) (hnd F)
 
 omit [Module.Finite ℚ V] in
@@ -512,19 +512,21 @@ theorem ConicalMember.realify_plane_le_isotropicCenter_facial (hBQ : ∀ u w : V
   have hv := ConicalMember.vSigma_plane_facial hBQ hBsym F G h hpos hnd
   rw [ConicalMember.isotropicCenter, hv, LeanCategories.Lattices.Valued.isotropicCenter]
   set Kg := LinearMap.ker ((associated Q) (rationalPoint F.gen)) with hKg
-  set Kr := LinearMap.ker ((associated Q) (rationalPoint G.ray)) with hKr
-  have hiso : BQ G.ray F.gen = 0 :=
-    G.isotropic G.ray G.ray_mem F.gen (F.gen_mem_plane G h)
-  have hgen : ((associated Q) (rationalPoint F.gen)) (rationalPoint G.ray) = 0 := by
+  set Kr := LinearMap.ker ((associated Q) (rationalPoint (F.planeRay G h))) with hKr
+  have hiso : BQ (F.planeRay G h) F.gen = 0 :=
+    G.isotropic (F.planeRay G h) (F.planeRay_mem G h) F.gen (F.gen_mem_plane G h)
+  have hgen : ((associated Q) (rationalPoint F.gen)) (rationalPoint (F.planeRay G h)) = 0 := by
     rw [hBQ, hBsym.eq, hiso]; norm_num
-  have hraygen : ((associated Q) (rationalPoint G.ray)) (rationalPoint F.gen) = 0 := by
+  have hraygen : ((associated Q) (rationalPoint (F.planeRay G h))) (rationalPoint F.gen) = 0 := by
     rw [hBQ, hiso]; norm_num
   have hgengen : ((associated Q) (rationalPoint F.gen)) (rationalPoint F.gen) = 0 := by
     rw [hBQ, F.gen_iso]; norm_num
-  have hrayray : ((associated Q) (rationalPoint G.ray)) (rationalPoint G.ray) = 0 := by
-    rw [hBQ, ConicalPlane.ray_iso G]; norm_num
+  have hrayray : ((associated Q) (rationalPoint (F.planeRay G h)))
+      (rationalPoint (F.planeRay G h)) = 0 := by
+    rw [hBQ, F.planeRay_self G h]; norm_num
   have hspan : realify G.plane =
-      Submodule.span ℝ ({rationalPoint F.gen, rationalPoint G.ray} : Set (realified V)) := by
+      Submodule.span ℝ ({rationalPoint F.gen, rationalPoint (F.planeRay G h)} :
+        Set (realified V)) := by
     rw [← span_gen_ray_eq_plane F G h]
     exact realified_span_pair
   have h1 : realify G.plane ≤ Kg := by
@@ -555,7 +557,7 @@ theorem ConicalMember.realify_plane_le_isotropicCenter_facial (hBQ : ∀ u w : V
       subst hx
       refine LinearMap.BilinForm.mem_orthogonal_iff.2 ?_
       intro y hy
-      rw [associated_comm Q y (rationalPoint G.ray)]
+      rw [associated_comm Q y (rationalPoint (F.planeRay G h))]
       exact hy.2
   exact le_inf (le_inf h1 h2) h3
 
@@ -601,6 +603,107 @@ noncomputable def wedgeLeft (a : realified V) : realified V →ₗ[ℝ] ⋀[ℝ]
 omit [Module.Finite ℚ V] in
 @[simp] theorem wedgeLeft_apply (a b : realified V) : wedgeLeft a b = wedgeTwo a b := rfl
 
+omit [Module.Finite ℚ V] in
+omit [Module.Finite ℚ V] in
+theorem wedgeTwo_self (a : realified V) : wedgeTwo a a = 0 := by
+  rw [wedgeTwo]
+  exact AlternatingMap.map_eq_zero_of_eq (f := exteriorPower.ιMulti ℝ 2) (v := ![a, a])
+    (i := (0 : Fin 2)) (j := 1) (by rfl) (by decide)
+
+omit [Module.Finite ℚ V] in
+theorem wedgeTwo_add_left (x y b : realified V) :
+    wedgeTwo (x + y) b = wedgeTwo x b + wedgeTwo y b := by
+  have h1 : (![x + y, b] : Fin 2 → realified V) = Function.update ![x, b] 0 (x + y) := by
+    funext i; fin_cases i <;> simp
+  have h2 : Function.update (![x, b] : Fin 2 → realified V) 0 x = ![x, b] := by
+    funext i; fin_cases i <;> simp
+  have h3 : Function.update (![x, b] : Fin 2 → realified V) 0 y = ![y, b] := by
+    funext i; fin_cases i <;> simp
+  rw [wedgeTwo, h1, AlternatingMap.map_update_add, h2, h3]
+  rfl
+
+omit [Module.Finite ℚ V] in
+theorem wedgeTwo_smul_left (c : ℝ) (x b : realified V) :
+    wedgeTwo (c • x) b = c • wedgeTwo x b := by
+  have h1 : (![c • x, b] : Fin 2 → realified V) = Function.update ![x, b] 0 (c • x) := by
+    funext i; fin_cases i <;> simp
+  have h2 : Function.update (![x, b] : Fin 2 → realified V) 0 x = ![x, b] := by
+    funext i; fin_cases i <;> simp
+  rw [wedgeTwo, h1, AlternatingMap.map_update_smul, h2]
+  rfl
+
+omit [Module.Finite ℚ V] in
+theorem wedgeTwo_swap (x y : realified V) : wedgeTwo y x = -wedgeTwo x y := by
+  have h := AlternatingMap.map_swap_add (f := exteriorPower.ιMulti ℝ 2)
+    (v := ![x, y]) (i := (0 : Fin 2)) (j := 1) (by decide)
+  have h2 : (![x, y] : Fin 2 → realified V) ∘ Equiv.swap (0 : Fin 2) 1 = ![y, x] := by
+    funext i; fin_cases i <;> rfl
+  rw [h2] at h
+  exact eq_neg_of_add_eq_zero_left (by simpa [wedgeTwo] using h)
+
+omit [Module.Finite ℚ V] in
+theorem wedgeTwo_linear_comb (a b c d : ℝ) (x y : realified V) :
+    wedgeTwo (a • x + b • y) (c • x + d • y) = (a * d - b * c) • wedgeTwo x y := by
+  have h1 : wedgeTwo (a • x + b • y) x = -(b • wedgeTwo x y) := by
+    rw [wedgeTwo_add_left, wedgeTwo_smul_left, wedgeTwo_smul_left, wedgeTwo_self, wedgeTwo_swap]
+    module
+  have h2 : wedgeTwo (a • x + b • y) y = a • wedgeTwo x y := by
+    rw [wedgeTwo_add_left, wedgeTwo_smul_left, wedgeTwo_smul_left, wedgeTwo_self, wedgeTwo_swap]
+    module
+  have hlin : wedgeTwo (a • x + b • y) (c • x + d • y)
+      = wedgeLeft (a • x + b • y) (c • x + d • y) := rfl
+  rw [hlin, map_add, map_smul, map_smul, wedgeLeft_apply, wedgeLeft_apply, h1, h2]
+  module
+
+section RayOf
+
+variable {BQ : LinearMap.BilinForm ℚ V}
+
+omit [Module.Finite ℚ V] in
+/-- **`g ∧ ρ = r_J`**: the ray of the oriented plane in the fibre of a witnessing line `I = ℚ g` is
+the vector whose exterior product with `g` is the positive generator `r_J = dir ∧ dirAlt` of
+`⋀²J(ℚ)` — §1B, p. 11, "`Λ²J` can be regarded as a line in `I ⊗ I^⊥/I`". So the class of the ray
+in `I^⊥/I` is the image of `r_J` and not of `-r_J`. -/
+theorem wedgeTwo_rayOf (G : ConicalPlane BQ) {g : V} (hg : g ∈ G.plane) (hg0 : g ≠ 0) :
+    wedgeTwo (rationalPoint g) (rationalPoint (G.rayOf g hg hg0)) =
+      wedgeTwo (rationalPoint G.dir) (rationalPoint G.dirAlt) := by
+  set a : ℚ := G.basis.repr ⟨g, hg⟩ 0 with ha
+  set b : ℚ := G.basis.repr ⟨g, hg⟩ 1 with hb
+  have hrp : rationalPoint g =
+      (a : ℝ) • rationalPoint G.dir + (b : ℝ) • rationalPoint G.dirAlt := by
+    rw [show g = a • G.dir + b • G.dirAlt from G.repr_eq ⟨g, hg⟩, map_add,
+      rationalPoint_rat_smul, rationalPoint_rat_smul]
+  by_cases h : a = 0
+  · have hb0 : b ≠ 0 := G.repr_one_ne_zero_of_repr_zero_eq_zero hg hg0 h
+    have hρ : rationalPoint (G.rayOf g hg hg0) = (-(b : ℝ)⁻¹) • rationalPoint G.dir := by
+      rw [G.rayOf_eq_smul_dir hg hg0 h, rationalPoint_rat_smul]
+      norm_cast
+    have hpad : (-(b : ℝ)⁻¹) • rationalPoint G.dir
+        = (-(b : ℝ)⁻¹) • rationalPoint G.dir + (0 : ℝ) • rationalPoint G.dirAlt := by
+      rw [zero_smul, add_zero]
+    rw [hrp, hρ, hpad, wedgeTwo_linear_comb]
+    have hcoef : ((a : ℚ) : ℝ) * 0 - (b : ℝ) * (-(b : ℝ)⁻¹) = 1 := by
+      rw [show ((a : ℚ) : ℝ) = 0 by rw [h]; norm_num]
+      have hbR : (b : ℝ) ≠ 0 := by exact_mod_cast hb0
+      field_simp
+      norm_num
+    rw [hcoef, one_smul]
+  · have hρ : rationalPoint (G.rayOf g hg hg0) = ((a : ℚ) : ℝ)⁻¹ • rationalPoint G.dirAlt := by
+      rw [G.rayOf_eq_smul_dirAlt hg hg0 h, rationalPoint_rat_smul]
+      norm_cast
+    have hpad : ((a : ℚ) : ℝ)⁻¹ • rationalPoint G.dirAlt
+        = (0 : ℝ) • rationalPoint G.dir + ((a : ℚ) : ℝ)⁻¹ • rationalPoint G.dirAlt := by
+      rw [zero_smul, zero_add]
+    rw [hrp, hρ, hpad, wedgeTwo_linear_comb]
+    have hcoef : ((a : ℚ) : ℝ) * ((a : ℚ) : ℝ)⁻¹ - (b : ℝ) * 0 = 1 := by
+      have haR : ((a : ℚ) : ℝ) ≠ 0 := by exact_mod_cast h
+      field_simp
+      norm_num
+    rw [hcoef, one_smul]
+
+end RayOf
+
+
 section Carrier
 
 variable {BQ : LinearMap.BilinForm ℚ V} {Q : QuadraticForm ℝ (realified V)}
@@ -616,9 +719,9 @@ noncomputable def ConicalMember.carrier (hBsym : BQ.IsSymm) :
   | zero => {0}
   | fibre F σ => wedgeLeft (rationalPoint F.gen) ''
       ((fun c : realified ↥F.space => realifyMap F.space c) '' (σ : Set (realified ↥F.space)))
-  | plane F G _ => wedgeLeft (rationalPoint F.gen) ''
+  | plane F G hw => wedgeLeft (rationalPoint F.gen) ''
       ((fun c : realified ↥F.space => realifyMap F.space c) ''
-        (PointedCone.hull ℝ ({rationalPoint (fibreRay hBsym F G)} :
+        (PointedCone.hull ℝ ({rationalPoint (fibreRay hBsym F G hw)} :
           Set (realified ↥F.space)) : Set (realified ↥F.space)))
 
 omit [Module.Finite ℚ V] in
@@ -629,7 +732,7 @@ theorem ConicalMember.carrier_plane_eq_fibre (hBsym : BQ.IsSymm)
     (F : ConicalLine BQ Q) (G : ConicalPlane BQ) (_h : F.line ≤ G.plane) :
     (ConicalMember.plane F G _h : ConicalMember BQ Q).carrier hBsym =
       (ConicalMember.fibre F (PointedCone.hull ℝ
-        ({rationalPoint (fibreRay hBsym F G)} : Set (realified ↥F.space))) :
+        ({rationalPoint (fibreRay hBsym F G _h)} : Set (realified ↥F.space))) :
         ConicalMember BQ Q).carrier hBsym := rfl
 
 omit [Module.Finite ℚ V] in

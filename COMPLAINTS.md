@@ -920,6 +920,31 @@ not a decidable quotient equality or a new mathematical comparison.
 
 ## Workflow papercuts
 
+### `Topology/BarySubdiv` does not elaborate at Mathlib master: `FreeAbelianGroup` renamed
+
+- **Need:** the gate `just test` must build the `LeanCategories.lean` closure against the Mathlib
+  head the worktree resolves. `LeanCategories/Topology/BarySubdiv.lean` (the #141 certificate port
+  `0977bedd`, imported at `LeanCategories/All.lean:48`) must still elaborate there.
+- **Evidence:** on 2026-11-17, worktree `.scratch/wt167` at `380b8da6`, `MATHLIB_NO_CACHE_ON_UPDATE=1
+  lake update` moved the pin from `6d97e8ad9c32` (`lake-manifest.json` at main `55966097`) to Mathlib
+  master `d9a73ae1ea9a`. `just test` then built 11759 of 11778 jobs and failed in that module:
+  `:191` `failed to synthesize instance AddCommMonoid (FreeAbelianGroup (List (Finset (Fin N))))`,
+  with follow-on errors at `:202` (`Not a definitional equality` of the `subdivAux` equation), `:207`,
+  `:226`, `:238`, `:254`, `:1107`, `:1409`, `:1488`, `:1618`, `:1723`. The accompanying deprecation
+  notes name the replacement: `FreeAbelianGroup` → `FreeAddCommGroup` (`of`, `map`, and the additive
+  instance path). The vacuity audit never ran: the recipe was terminated after the build step.
+- **Gap and impact:** the gate is red at the master pin for a reason independent of the module under
+  work, so no worker can certify a *full* gate at that head until the file is ported. Nothing else in
+  the closure fails; `LeanCategories/Lattices/Valued/FibreArithmetic.lean` (#167) builds and
+  elaborates with `-DrelaxedAutoImplicit=false -Dweak.linter.mathlibStandardSet=true` at the same pin.
+  The old pin's gate state was not re-run here, so whether main is green at `6d97e8ad9c32` is not
+  claimed.
+- **Coverage:** the build log (`just-test-20261117T044955.log`) and the error text were inspected;
+  the module's sources were not read. Confidence: the errors are local to the file's use of the
+  renamed constant; the follow-on errors are not individually diagnosed.
+- **Repair link:** the Mathlib pin move (manifest `6d97e8ad9c32 → d9a73ae1ea9a`) owns this; the
+  repair is to port `BarySubdiv` to `FreeAddCommGroup`, then re-run `just test`.
+
 ### The corpus output check does not classify explicit catalogue-interface work
 
 - **Need:** an explicit request to expose already formalized mathematics through the typed
@@ -3291,3 +3316,23 @@ downstream assertions, computational observations, or downstream diagnostics.
   and the fibre's own hyperplane family is the index there.
 - **Repair link:** (a) then unblocks the unconditional Example 6.4; (b) is the remaining choice step of
   Lemma 6.6; (c) is a separate bound on isotropic subspaces.
+
+### `toLine_toSubmodule` at `cobleLine` does not synthesize `cobleLatticeCarrierTorsionFree` (#88)
+
+- **Need:** the span of the Coble line as a submodule, `cobleLine.toSubmodule = span ℤ {coblePlaneV}`,
+  which the flag-incidence specialization `cobleLine_le_coblePlane` needs in order to prove
+  `cobleLine ≤ coblePlane` from the two displayed spans.
+- **Evidence:** `PrimitiveIsotropicVector.toLine_toSubmodule` (`CuspVector.lean:117`) applied to
+  `cobleVector` fails with `synthInstanceFailed: NoZeroSMulDivisors ℤ ↑cobleLattice.obj.carrier`,
+  while `#synth NoZeroSMulDivisors ℤ ↑cobleLattice.obj.carrier` in the same file returns
+  `cobleLatticeCarrierTorsionFree` (`CobleLattice.lean:343`). Reproduced in a three-line probe
+  importing only `LeanCategories.Lattices.Valued.CobleCusps`. Passing the instance explicitly
+  (`@PrimitiveIsotropicVector.toLine_toSubmodule ℤ _ _ cobleLattice cobleLatticeCarrierTorsionFree
+  cobleVector`) elaborates.
+- **Gap and impact:** papercut, not a missing instance: the instance is found by `#synth`, so the
+  failure is in elaborating the lemma's implicit instance argument at this carrier, and every consumer
+  of `cobleLine`'s span has to name the instance itself. Nothing mathematical is lost.
+- **Coverage:** `CuspPlaneIncidence.cobleLine_le_coblePlane` names the instance; the same shape did not
+  appear at `PrimitiveIsotropic.act`, whose `R` stays a variable.
+- **Repair link:** a restatement of `toLine_toSubmodule` at `cobleLine` in `CobleCusps` (or naming the
+  instance in that file's own `cobleLine`-level span lemma) would remove the papercut for later users.

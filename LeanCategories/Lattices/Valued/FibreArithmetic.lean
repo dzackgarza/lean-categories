@@ -58,11 +58,15 @@ than assuming it.
 * `semifanArrangementTraces` and `semifanArrangementTraces_eq`: `Σ(ℋ)` of Example 6.4 indexed by
   the fibre's own traces, equal to the ambient-indexed `semifanArrangement` of `SemifanArrangement`.
 * `CutsFinitelyOnTraces`: the duplicate-insensitive counting interface;
-  `cutsFinitelyOnRational_traceForm_iff` reads it as `CutsFinitelyOnRational` of the trace-indexed
-  family, so every consumer of the latter applies to it;
+  `cutsFinitelyOnRational_iff_cutsFinitelyOnTraces` reads it as `CutsFinitelyOnRational` of any
+  trace-indexed family, so every consumer of the latter applies to it;
   `cutsFinitelyOnTraces_orbitFamily` derives it from the reduced lattice and the orbit family of
-  §1B — no local-finiteness or counting certificate is assumed.
-* `semifanArrangementTraces_isLocallyRational_of_arithmetic`: condition (i) of Definition 6.1 for
+  §1B — no local-finiteness or counting certificate is assumed — and
+  `cutsFinitelyOnRational_of_cutsFinitelyOnTraces` (with `_of_finite`) states exactly when the trace
+  count implies the *ambient-indexed* count the existing consumers take: when no trace is repeated
+  infinitely often. For an infinite `ℋ` that is what fails, and it is why the ambient count is not
+  the source's hypothesis.
+* `semifanArrangementTraces_isLocallyRational_of_orbitFamily`: condition (i) of Definition 6.1 for
   `Σ(ℋ)` at a fibre, from that arithmetic input alone.
 * the half-line chain at an **actual isotropic ray** of the Lorentzian fibre
   (`semifanArrangement_ray_meets`, `sigmaSupportSpace_ray_le_ker`, `traceKernel_le_span_of_member`):
@@ -668,6 +672,47 @@ theorem CutsFinitelyOnTraces.mono {S S' : Set (Submodule ℚ ↥F.space)}
   · intro a _ b _ hab
     exact Subtype.ext (congrArg (fun T : S' => (T.1 : Submodule ℚ ↥F.space)) hab)
 
+omit [Module.Finite ℚ V] in
+/-- A finite ambient family has finitely many distinct traces. -/
+theorem finite_distinctTraces {ι : Type*} [Finite ι] (ψ : ι → V →ₗ[ℚ] ℚ)
+    (F : ConicalLine BQ Q) : (distinctTraces ψ F).Finite :=
+  Set.finite_range _
+
+omit [Module.Finite ℚ V] in
+/-- **The trace count gives the ambient-indexed count when no trace is repeated infinitely often.**
+This is the exact sense in which the duplicate-insensitive count *applies to the existing
+`CutsFinitelyOnRational F.closure (fun i : fibreWalls ψ F => fibreFormC F (ψ ↑i))` consumers*: they
+hold as soon as each trace has finitely many ambient walls over it. For an infinite `ℋ` that
+condition is what fails, and with it the index count — not the source's statement, which counts
+traces. -/
+theorem cutsFinitelyOnRational_of_cutsFinitelyOnTraces {ι : Type*}
+    (ψ : ι → V →ₗ[ℚ] ℚ) (F : ConicalLine BQ Q)
+    (hcut : CutsFinitelyOnTraces F (distinctTraces ψ F))
+    (hfib : ∀ T : distinctTraces ψ F,
+      {i : fibreWalls ψ F | fibreTrace (ψ ↑i) F = T.1}.Finite) :
+    CutsFinitelyOnRational F.closure (fun i : fibreWalls ψ F => fibreFormC F (ψ ↑i)) := by
+  intro P hP hPle
+  have hfinT : {T : distinctTraces ψ F | TraceCutsOn F T.1 P}.Finite := hcut P hP hPle
+  have hcover : {i : fibreWalls ψ F | CutsOn (fibreFormC F (ψ ↑i)).toLinearMap P} ⊆
+      ⋃ T ∈ {T : distinctTraces ψ F | TraceCutsOn F T.1 P},
+        {i : fibreWalls ψ F | fibreTrace (ψ ↑i) F = T.1} := by
+    intro i hi
+    have hi' : CutsOn (fibreFormC F (ψ ↑i)).toLinearMap P := hi
+    refine Set.mem_iUnion₂.2 ⟨traceProj ψ F i, ⟨(ψ ↑i).comp F.space.subtype, rfl, ?_⟩, rfl⟩
+    rw [fibreFormC_eq_fibreTraceCLM] at hi'
+    exact hi'
+  exact Set.Finite.subset (hfinT.biUnion fun T _ => hfib T) hcover
+
+omit [Module.Finite ℚ V] in
+/-- **The trace count gives the ambient-indexed count for a finite ambient family**, where every
+trace is repeated only finitely often. -/
+theorem cutsFinitelyOnRational_of_cutsFinitelyOnTraces_of_finite {ι : Type*} [Finite ι]
+    (ψ : ι → V →ₗ[ℚ] ℚ) (F : ConicalLine BQ Q)
+    (hcut : CutsFinitelyOnTraces F (distinctTraces ψ F)) :
+    CutsFinitelyOnRational F.closure (fun i : fibreWalls ψ F => fibreFormC F (ψ ↑i)) :=
+  cutsFinitelyOnRational_of_cutsFinitelyOnTraces ψ F hcut
+    fun _ => Set.Finite.subset (Set.toFinite _) (Set.subset_univ _)
+
 end TraceCounting
 
 
@@ -1133,5 +1178,68 @@ theorem semifanArrangement_arithmetic_fibre
     fun τ => iInf_traceKernel_le_span_of_member (ψ := ψ) hpos hcut τ⟩
 
 end ArithmeticCaller
+
+
+section BasisFreeCaller
+
+variable {BQ : LinearMap.BilinForm ℚ V} {Q : QuadraticForm ℝ (realified V)}
+variable {ι : Type*}
+
+/-- **The fibre-level caller with the reduced lattice's basis supplied by the library.** Same as
+`semifanArrangement_arithmetic_fibre`, without the fibre basis `bs` and its identification `hbs` as
+inputs: `exists_basis_reducedLattice` produces them from the ambient lattice
+`Λ = span ℤ (range bs₀)` and the reduced lattice `(Λ ⊓ I^⊥)/(Λ ⊓ I)` of Looijenga §1B, p. 11. -/
+theorem semifanArrangement_arithmetic_fibre_of_basis
+    (hBQsym : BQ.IsSymm)
+    (hBQ : ∀ u w : V, (associated Q) (rationalPoint u) (rationalPoint w) = (BQ u w : ℝ))
+    (hsig : sigPos Q = 2) (hnd : Q.Nondegenerate) (F : ConicalLine BQ Q)
+    {κ₀ : Type} [Finite κ₀] (bs₀ : Module.Basis κ₀ ℚ V)
+    (hint₀ : ∀ x ∈ Submodule.span ℤ (Set.range bs₀), ∀ y ∈ Submodule.span ℤ (Set.range bs₀),
+      ∃ n : ℤ, BQ x y = (n : ℚ))
+    (ΓI : Set (↥F.space ≃ₗ[ℚ] ↥F.space))
+    (hone : (1 : ↥F.space ≃ₗ[ℚ] ↥F.space) ∈ ΓI)
+    (H₀ : Finset (Submodule ℚ ↥F.space))
+    (hΓΛ : ∀ e ∈ ΓI, Submodule.map ((e : ↥F.space →ₗ[ℚ] ↥F.space).restrictScalars ℤ)
+      (reducedLattice hBQsym F (Submodule.span ℤ (Set.range bs₀))) =
+        reducedLattice hBQsym F (Submodule.span ℤ (Set.range bs₀)))
+    (hΓiso : ∀ e ∈ ΓI, ∀ x y : ↥F.space,
+      restrictBilinForm BQ F.space (e x) (e y) = restrictBilinForm BQ F.space x y)
+    (gen : ↥(orbitFamily H₀ ΓI) → ↥F.space)
+    (hgen : ∀ ℓ : ↥(orbitFamily H₀ ΓI), gen ℓ ≠ 0 ∧
+      reducedLattice hBQsym F (Submodule.span ℤ (Set.range bs₀)) ⊓ ℓ.1.restrictScalars ℤ =
+        Submodule.span ℤ ({gen ℓ} : Set ↥F.space))
+    (ψ : ι → V →ₗ[ℚ] ℚ)
+    (hsub : distinctTraces ψ F ⊆ orbitFamilyTraces BQ F gen)
+    {ρ : ↥F.space} (hρ : fibreForm Q F.space (rationalPoint ρ) = 0) (hρ0 : ρ ≠ 0)
+    (hρsheet : 0 ≤ (associated (fibreForm Q F.space)) (rationalPoint ρ) F.sheet) :
+    IsLocallyRationalDecomposition F.closure (semifanArrangement ψ F) ∧
+      sigmaSupportSpace (positiveCone.upper (fibreForm Q F.space) F.sheet)
+          (semifanArrangementTraces ψ F)
+          (PointedCone.hull ℝ ({rationalPoint ρ} : Set (realified ↥F.space))) ≤
+        LinearMap.ker ((associated (fibreForm Q F.space)) (rationalPoint ρ)) ∧
+      (∀ τ : supportIndex (positiveCone.upper (fibreForm Q F.space) F.sheet)
+          (semifanArrangementTraces ψ F)
+          (PointedCone.hull ℝ ({rationalPoint ρ} : Set (realified ↥F.space))),
+        (⨅ T : {T : distinctTraces ψ F // traceForm ψ F T (rationalPoint ρ) = 0},
+            LinearMap.ker (traceForm ψ F T.1).toLinearMap) ≤
+          Submodule.span ℝ (τ.1 : Set (realified ↥F.space))) := by
+  classical
+  obtain ⟨κ, hκ, bs, hbs⟩ := exists_basis_reducedLattice hBQsym F bs₀
+  haveI : Fintype κ := hκ
+  have hΓΛ' : ∀ e ∈ ΓI, Submodule.map ((e : ↥F.space →ₗ[ℚ] ↥F.space).restrictScalars ℤ)
+      (Submodule.span ℤ (Set.range bs)) = Submodule.span ℤ (Set.range bs) := by
+    intro e he
+    rw [hbs]
+    exact hΓΛ e he
+  have hgen' : ∀ ℓ : ↥(orbitFamily H₀ ΓI), gen ℓ ≠ 0 ∧
+      Submodule.span ℤ (Set.range bs) ⊓ ℓ.1.restrictScalars ℤ =
+        Submodule.span ℤ ({gen ℓ} : Set ↥F.space) := by
+    intro ℓ
+    obtain ⟨h1, h2⟩ := hgen ℓ
+    exact ⟨h1, by rw [hbs]; exact h2⟩
+  exact semifanArrangement_arithmetic_fibre hBQsym hBQ hsig hnd F bs₀ hint₀ bs hbs ΓI hone H₀
+    hΓΛ' hΓiso gen hgen' ψ hsub hρ hρ0 hρsheet
+
+end BasisFreeCaller
 
 end LeanCategories.Lattices.Valued

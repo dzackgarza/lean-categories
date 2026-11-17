@@ -369,9 +369,11 @@ line 265), "`Λ²J` can be regarded as a line in `I ⊗ I^⊥/I`". The represent
 partner `f` only, because `ray · e = 0` (both lie in the totally isotropic plane). -/
 theorem fibreRayProj_val (hBsym : BQ.IsSymm) (F : ConicalLine BQ Q) (G : ConicalPlane BQ)
     (h : F.line ≤ G.plane) :
-    ((fibreRayProj hBsym F G : ↥F.space) : V) = G.ray - BQ G.ray F.partner • F.gen := by
-  have hge : BQ G.ray F.gen = 0 := G.isotropic G.ray G.ray_mem F.gen (F.gen_mem_plane G h)
-  simp [fibreRayProj, fibreProj, hge]
+    ((fibreRayProj hBsym F G h : ↥F.space) : V) = F.planeRay G h - BQ (F.planeRay G h) F.partner • F.gen := by
+  have hge : BQ (G.rayOf F.gen (F.gen_mem_of_le G h) F.gen_ne) F.gen = 0 := by
+    rw [hBsym.eq]
+    exact G.rayOf_pairing (F.gen_mem_of_le G h) F.gen_ne
+  simp only [fibreRayProj, fibreProj, ConicalLine.planeRay, hge, zero_smul, sub_zero]
 
 omit [Module.Finite ℚ V] in
 /-- **The half line of a plane is a nonzero isotropic ray of the fibre**, from its class: the fibre
@@ -379,47 +381,47 @@ form is even (`fibreForm_fibreRay_eq`), so the half line inherits both propertie
 theorem fibreRay_isotropic (hBQ : ∀ u w : V,
     (associated Q) (rationalPoint u) (rationalPoint w) = (BQ u w : ℝ))
     (hBsym : BQ.IsSymm) (F : ConicalLine BQ Q) (G : ConicalPlane BQ) (h : F.line ≤ G.plane) :
-    (fibreForm Q F.space) (rationalPoint (fibreRay hBsym F G)) = 0 := by
+    (fibreForm Q F.space) (rationalPoint (fibreRay hBsym F G h)) = 0 := by
   rw [fibreForm_fibreRay_eq, fibreForm_rationalPoint hBQ]
-  have hge : BQ G.ray F.gen = 0 := G.isotropic G.ray G.ray_mem F.gen (F.gen_mem_plane G h)
-  have hsym : BQ F.gen G.ray = 0 := by rw [hBsym.eq]; exact hge
-  have hb : BQ ((fibreRayProj hBsym F G : ↥F.space) : V)
-      ((fibreRayProj hBsym F G : ↥F.space) : V) = 0 := by
+  have hge : BQ (F.planeRay G h) F.gen = 0 := G.isotropic (F.planeRay G h) (F.planeRay_mem G h) F.gen (F.gen_mem_plane G h)
+  have hsym : BQ F.gen (F.planeRay G h) = 0 := by rw [hBsym.eq]; exact hge
+  have hb : BQ ((fibreRayProj hBsym F G h : ↥F.space) : V)
+      ((fibreRayProj hBsym F G h : ↥F.space) : V) = 0 := by
     rw [fibreRayProj_val hBsym F G h]
-    set a : ℚ := BQ G.ray F.partner with ha
-    have step1 : BQ (G.ray - a • F.gen) (G.ray - a • F.gen)
-        = BQ G.ray (G.ray - a • F.gen) - a * BQ F.gen (G.ray - a • F.gen) := by
+    set a : ℚ := BQ (F.planeRay G h) F.partner with ha
+    have step1 : BQ (F.planeRay G h - a • F.gen) (F.planeRay G h - a • F.gen)
+        = BQ (F.planeRay G h) (F.planeRay G h - a • F.gen) - a * BQ F.gen (F.planeRay G h - a • F.gen) := by
       rw [LinearMap.BilinForm.sub_left, LinearMap.BilinForm.smul_left]
-    have step2 : BQ G.ray (G.ray - a • F.gen) = BQ G.ray G.ray - a * BQ G.ray F.gen := by
+    have step2 : BQ (F.planeRay G h) (F.planeRay G h - a • F.gen) = BQ (F.planeRay G h) (F.planeRay G h) - a * BQ (F.planeRay G h) F.gen := by
       rw [map_sub, map_smul, smul_eq_mul]
-    have step3 : BQ F.gen (G.ray - a • F.gen) = BQ F.gen G.ray - a * BQ F.gen F.gen := by
+    have step3 : BQ F.gen (F.planeRay G h - a • F.gen) = BQ F.gen (F.planeRay G h) - a * BQ F.gen F.gen := by
       rw [map_sub, map_smul, smul_eq_mul]
-    rw [step1, step2, step3, G.ray_iso, hge, hsym, F.gen_iso]
+    rw [step1, step2, step3, F.planeRay_self G h, hge, hsym, F.gen_iso]
     ring
   rw [hb]
   norm_num
 
 omit [Module.Finite ℚ V] in
-/-- The class of a plane's ray is not zero in the fibre: `ray ∉ I` (the plane's ray is not a
-multiple of the line's generator, `ConicalPlane.ray_not_mem_of_line`), and the representative
-differs from `ray` by a multiple of `e`. -/
+/-- The class of a plane's ray is not zero in the fibre: the ray of the plane in the fibre of `I` is
+not a multiple of the line's generator (`ConicalLine.planeRay_not_mem_line`), and the
+representative differs from it by a multiple of `e`. -/
 theorem fibreRayProj_ne_zero (hBsym : BQ.IsSymm) (F : ConicalLine BQ Q) (G : ConicalPlane BQ)
-    (h : F.line ≤ G.plane) : fibreRayProj hBsym F G ≠ 0 := by
+    (h : F.line ≤ G.plane) : fibreRayProj hBsym F G h ≠ 0 := by
   intro h0
   have hval := fibreRayProj_val hBsym F G h
   rw [h0] at hval
   simp only [ZeroMemClass.coe_zero] at hval
-  have hray : G.ray = BQ G.ray F.partner • F.gen := sub_eq_zero.1 hval.symm
-  have hmem : G.ray ∈ F.line := by
+  have hray : F.planeRay G h = BQ (F.planeRay G h) F.partner • F.gen := sub_eq_zero.1 hval.symm
+  have hmem : F.planeRay G h ∈ F.line := by
     rw [F.line_eq, hray]
     exact Submodule.smul_mem _ _ (Submodule.subset_span (Set.mem_singleton F.gen))
-  exact G.ray_not_mem_of_line F.line h F.one_dim hmem
+  exact F.planeRay_not_mem_line G h hmem
 
 omit [Module.Finite ℚ V] in
 /-- **The half line of a plane is a nonzero ray of the fibre.** -/
 theorem fibreRay_ne_zero (hBsym : BQ.IsSymm) (F : ConicalLine BQ Q) (G : ConicalPlane BQ)
-    (h : F.line ≤ G.plane) : fibreRay hBsym F G ≠ 0 :=
-  fibreRay_ne_zero_of hBsym F G (fibreRayProj_ne_zero hBsym F G h)
+    (h : F.line ≤ G.plane) : fibreRay hBsym F G h ≠ 0 :=
+  fibreRay_ne_zero_of hBsym F G h (fibreRayProj_ne_zero hBsym F G h)
 
 omit [Module.Finite ℚ V] in
 /-- **The half line of a plane as a vector of `V`**: the class of the plane's ray, up to sign. A
@@ -427,20 +429,20 @@ vector is killed by the half line exactly when it is killed by `ray` and by the 
 generator. -/
 theorem rationalPoint_fibreRay_val (hBsym : BQ.IsSymm) (F : ConicalLine BQ Q)
     (G : ConicalPlane BQ) (h : F.line ≤ G.plane) (x : realified V) :
-    (associated Q) (rationalPoint ((fibreRay hBsym F G : ↥F.space) : V)) x = 0 ↔
-      (associated Q) (rationalPoint G.ray) x -
-        (BQ G.ray F.partner : ℝ) * ((associated Q) (rationalPoint F.gen) x) = 0 := by
-  have hproj : rationalPoint ((fibreRayProj hBsym F G : ↥F.space) : V) =
-      rationalPoint G.ray - (BQ G.ray F.partner : ℝ) • rationalPoint F.gen := by
+    (associated Q) (rationalPoint ((fibreRay hBsym F G h : ↥F.space) : V)) x = 0 ↔
+      (associated Q) (rationalPoint (F.planeRay G h)) x -
+        (BQ (F.planeRay G h) F.partner : ℝ) * ((associated Q) (rationalPoint F.gen) x) = 0 := by
+  have hproj : rationalPoint ((fibreRayProj hBsym F G h : ↥F.space) : V) =
+      rationalPoint (F.planeRay G h) - (BQ (F.planeRay G h) F.partner : ℝ) • rationalPoint F.gen := by
     rw [fibreRayProj_val hBsym F G h, map_sub]
     congr 1
-    exact rationalPoint_rat_smul (BQ G.ray F.partner) F.gen
-  rcases fibreRay_eq_or_neg hBsym F G with h' | h'
-  · have hcoe : ((fibreRay hBsym F G : ↥F.space) : V) =
-        ((fibreRayProj hBsym F G : ↥F.space) : V) := by rw [h']
+    exact rationalPoint_rat_smul (BQ (F.planeRay G h) F.partner) F.gen
+  rcases fibreRay_eq_or_neg hBsym F G h with h' | h'
+  · have hcoe : ((fibreRay hBsym F G h : ↥F.space) : V) =
+        ((fibreRayProj hBsym F G h : ↥F.space) : V) := by rw [h']
     rw [hcoe, hproj, LinearMap.BilinForm.sub_left, LinearMap.BilinForm.smul_left]
-  · have hcoe : ((fibreRay hBsym F G : ↥F.space) : V) =
-        -((fibreRayProj hBsym F G : ↥F.space) : V) := by rw [h']; rfl
+  · have hcoe : ((fibreRay hBsym F G h : ↥F.space) : V) =
+        -((fibreRayProj hBsym F G h : ↥F.space) : V) := by rw [h']; rfl
     rw [hcoe, map_neg, LinearMap.BilinForm.neg_left, hproj,
       LinearMap.BilinForm.sub_left, LinearMap.BilinForm.smul_left, neg_eq_zero]
 
@@ -493,10 +495,10 @@ theorem fibreRay_mem_closure (hBQ : ∀ u w : V,
     (associated Q) (rationalPoint u) (rationalPoint w) = (BQ u w : ℝ))
     (hBsym : BQ.IsSymm) (F : ConicalLine BQ Q) (G : ConicalPlane BQ) (h : F.line ≤ G.plane)
     (hpos : sigPos (fibreForm Q F.space) = 1) :
-    rationalPoint (fibreRay hBsym F G) ∈ F.closure := by
-  have hQr : (fibreForm Q F.space) (rationalPoint (fibreRay hBsym F G)) = 0 :=
+    rationalPoint (fibreRay hBsym F G h) ∈ F.closure := by
+  have hQr : (fibreForm Q F.space) (rationalPoint (fibreRay hBsym F G h)) = 0 :=
     fibreRay_isotropic hBQ hBsym F G h
-  have hsheet := fibreRay_sheet_nonneg hBsym F G
+  have hsheet := fibreRay_sheet_nonneg hBsym F G h
   rw [ConicalLine.closure_eq_closedSheet F hpos]
   exact mem_rationalClosure.2 (subset_convexHull ℝ _ ⟨⟨_, Set.mem_univ _, rfl⟩,
     subset_closure ((mem_closedSheet hpos F.sheet_pos).2 ⟨le_of_eq hQr.symm, hsheet⟩)⟩)
@@ -549,26 +551,26 @@ theorem vSigmaPlane_eq_ker_inf_ker (hBQ : ∀ u w : V,
     (hnd : (fibreForm Q F.space).Nondegenerate) :
     vSigmaPlane hBsym F (facialDecomposition F.closure) G h =
       LinearMap.ker (associated Q (rationalPoint F.gen)) ⊓
-        LinearMap.ker (associated Q (rationalPoint G.ray)) := by
-  have hsheet := fibreRay_sheet_nonneg hBsym F G
-  have hQr : (fibreForm Q F.space) (rationalPoint (fibreRay hBsym F G)) = 0 :=
+        LinearMap.ker (associated Q (rationalPoint (F.planeRay G h))) := by
+  have hsheet := fibreRay_sheet_nonneg hBsym F G h
+  have hQr : (fibreForm Q F.space) (rationalPoint (fibreRay hBsym F G h)) = 0 :=
     fibreRay_isotropic hBQ hBsym F G h
-  have hrne : rationalPoint (fibreRay hBsym F G) ≠ 0 :=
+  have hrne : rationalPoint (fibreRay hBsym F G h) ≠ 0 :=
     rationalPoint_ne_zero (fibreRay_ne_zero hBsym F G h)
-  have hsheetC : rationalPoint (fibreRay hBsym F G) ∈
+  have hsheetC : rationalPoint (fibreRay hBsym F G h) ∈
       rationalClosure (closedSheet (fibreForm Q F.space) hpos F.sheet_pos) :=
     mem_rationalClosure.2 (subset_convexHull ℝ _ ⟨⟨_, Set.mem_univ _, rfl⟩,
       subset_closure ((mem_closedSheet hpos F.sheet_pos).2
         ⟨le_of_eq hQr.symm, hsheet⟩)⟩)
   have hsig : sigmaSupportSpace (positiveCone.upper (fibreForm Q F.space) F.sheet)
-      (facialDecomposition F.closure) (PointedCone.hull ℝ {rationalPoint (fibreRay hBsym F G)})
-      = LinearMap.ker (associated (fibreForm Q F.space) (rationalPoint (fibreRay hBsym F G))) := by
+      (facialDecomposition F.closure) (PointedCone.hull ℝ {rationalPoint (fibreRay hBsym F G h)})
+      = LinearMap.ker (associated (fibreForm Q F.space) (rationalPoint (fibreRay hBsym F G h))) := by
     rw [ConicalLine.closure_eq_closedSheet F hpos]
     exact sigmaSupportSpace_facialDecomposition_hull_eq_ker (t := F.sheet) hpos hnd hQr hrne
       hsheetC hsheet
   rw [vSigmaPlane, hsig]
-  have hge : BQ G.ray F.gen = 0 := G.isotropic G.ray G.ray_mem F.gen (F.gen_mem_plane G h)
-  have hgene : (associated Q) (rationalPoint G.ray) (rationalPoint F.gen) = 0 := by
+  have hge : BQ (F.planeRay G h) F.gen = 0 := G.isotropic (F.planeRay G h) (F.planeRay_mem G h) F.gen (F.gen_mem_plane G h)
+  have hgene : (associated Q) (rationalPoint (F.planeRay G h)) (rationalPoint F.gen) = 0 := by
     rw [hBQ, hge]
     norm_num
   have hgen : (associated Q) (rationalPoint F.gen) (rationalPoint F.gen) = 0 := by
@@ -592,11 +594,11 @@ theorem vSigmaPlane_eq_ker_inf_ker (hBQ : ∀ u w : V,
       rw [LinearMap.mem_ker] at hy
       have hAM : (associated Q) (rationalPoint F.gen) (realifyMap F.space y) = 0 :=
         (mem_planePerp_iff.1 (realify_planeComplement_le_planePerp hBQ ⟨y, rfl⟩)).1
-      have h1 : (associated Q) (rationalPoint ((fibreRay hBsym F G : ↥F.space) : V))
+      have h1 : (associated Q) (rationalPoint ((fibreRay hBsym F G h : ↥F.space) : V))
           (realifyMap F.space y) = 0 := by
         rw [← realifyMap_rationalPoint, ← associated_fibreForm]
         exact hy
-      have hray0 : (associated Q) (rationalPoint G.ray) (realifyMap F.space y) = 0 := by
+      have hray0 : (associated Q) (rationalPoint (F.planeRay G h)) (realifyMap F.space y) = 0 := by
         have hiff := rationalPoint_fibreRay_val hBsym F G h (realifyMap F.space y)
         rw [h1, hAM, mul_zero, sub_zero] at hiff
         exact hiff.1 rfl
@@ -629,10 +631,10 @@ theorem vSigmaPlane_eq_ker_inf_ker (hBQ : ∀ u w : V,
     have hgeny : (associated Q) (rationalPoint F.gen) (realifyMap F.space y) = 0 := by
       have hconf : realifyMap F.space y = z - lam • rationalPoint F.gen := hy
       rw [hconf, map_sub, map_smul, smul_eq_mul, hz1, hgen, mul_zero, sub_zero]
-    have hrayy : (associated Q) (rationalPoint G.ray) (realifyMap F.space y) = 0 := by
+    have hrayy : (associated Q) (rationalPoint (F.planeRay G h)) (realifyMap F.space y) = 0 := by
       have hconf : realifyMap F.space y = z - lam • rationalPoint F.gen := hy
       rw [hconf, map_sub, map_smul, smul_eq_mul, hz2, hgene, mul_zero, sub_zero]
-    have hyker : (associated (fibreForm Q F.space)) (rationalPoint (fibreRay hBsym F G)) y = 0 := by
+    have hyker : (associated (fibreForm Q F.space)) (rationalPoint (fibreRay hBsym F G h)) y = 0 := by
       rw [associated_fibreForm, realifyMap_rationalPoint]
       exact (rationalPoint_fibreRay_val hBsym F G h (realifyMap F.space y)).2
         (by rw [hrayy, hgeny, mul_zero, sub_zero])
@@ -654,35 +656,35 @@ section PlaneSpan
 
 variable {Q : QuadraticForm ℝ (realified V)} {BQ : LinearMap.BilinForm ℚ V}
 
-/-- **A `ℚ`-isotropic plane is spanned by one of its isotropic lines and its ray.** Both lie in the
-two-dimensional plane, and the ray is not on any isotropic line of the plane
-(`ConicalPlane.ray_not_mem_of_line`), so they are independent. -/
+/-- **A `ℚ`-isotropic plane is spanned by one of its isotropic lines and the ray of the plane in
+that line's fibre.** Both lie in the two-dimensional plane, and the ray is not on the line it is
+taken relative to (`ConicalLine.planeRay_not_mem_line`), so they are independent. -/
 theorem span_gen_ray_eq_plane (F : ConicalLine BQ Q) (G : ConicalPlane BQ)
     (h : F.line ≤ G.plane) :
-    Submodule.span ℚ ({F.gen, G.ray} : Set V) = G.plane := by
-  have hle : Submodule.span ℚ ({F.gen, G.ray} : Set V) ≤ G.plane := by
+    Submodule.span ℚ ({F.gen, F.planeRay G h} : Set V) = G.plane := by
+  have hle : Submodule.span ℚ ({F.gen, F.planeRay G h} : Set V) ≤ G.plane := by
     refine Submodule.span_le.2 ?_
     intro x hx
     rcases Set.mem_insert_iff.1 hx with rfl | hx
     · exact F.gen_mem_plane G h
     · rw [Set.mem_singleton_iff] at hx
       subst hx
-      exact G.ray_mem
-  have hray : G.ray ∉ Submodule.span ℚ ({F.gen} : Set V) := by
+      exact F.planeRay_mem G h
+  have hray : F.planeRay G h ∉ Submodule.span ℚ ({F.gen} : Set V) := by
     rw [show Submodule.span ℚ ({F.gen} : Set V) = F.line from F.line_eq.symm]
-    exact G.ray_not_mem_of_line F.line h F.one_dim
-  have hunion : Submodule.span ℚ ({F.gen, G.ray} : Set V)
-      = Submodule.span ℚ ({F.gen} : Set V) ⊔ Submodule.span ℚ ({G.ray} : Set V) := by
+    exact F.planeRay_not_mem_line G h
+  have hunion : Submodule.span ℚ ({F.gen, F.planeRay G h} : Set V)
+      = Submodule.span ℚ ({F.gen} : Set V) ⊔ Submodule.span ℚ ({F.planeRay G h} : Set V) := by
     rw [← Submodule.span_union]
     rfl
-  have hfin : Module.finrank ℚ ↥(Submodule.span ℚ ({F.gen, G.ray} : Set V)) = 2 := by
+  have hfin : Module.finrank ℚ ↥(Submodule.span ℚ ({F.gen, F.planeRay G h} : Set V)) = 2 := by
     have hgen1 : Module.finrank ℚ ↥(Submodule.span ℚ ({F.gen} : Set V)) = 1 :=
       finrank_span_singleton F.gen_ne
-    have hray1 : Module.finrank ℚ ↥(Submodule.span ℚ ({G.ray} : Set V)) = 1 :=
-      finrank_span_singleton G.ray_ne
+    have hray1 : Module.finrank ℚ ↥(Submodule.span ℚ ({F.planeRay G h} : Set V)) = 1 :=
+      finrank_span_singleton (F.planeRay_ne G h)
     have hinf : Module.finrank ℚ ↥(Submodule.span ℚ ({F.gen} : Set V) ⊓
-        Submodule.span ℚ ({G.ray} : Set V)) = 0 := by
-      have hbot : Submodule.span ℚ ({F.gen} : Set V) ⊓ Submodule.span ℚ ({G.ray} : Set V)
+        Submodule.span ℚ ({F.planeRay G h} : Set V)) = 0 := by
+      have hbot : Submodule.span ℚ ({F.gen} : Set V) ⊓ Submodule.span ℚ ({F.planeRay G h} : Set V)
           = ⊥ := by
         refine (Submodule.eq_bot_iff _).2 ?_
         rintro x hx
@@ -701,23 +703,23 @@ theorem span_gen_ray_eq_plane (F : ConicalLine BQ Q) (G : ConicalPlane BQ)
           apply hc0
           have hzero : c • F.gen = 0 := by
             calc c • F.gen = x := hc
-              _ = d • G.ray := hd.symm
-              _ = (0 : ℚ) • G.ray := by rw [h0]
-              _ = 0 := zero_smul ℚ G.ray
+              _ = d • F.planeRay G h := hd.symm
+              _ = (0 : ℚ) • F.planeRay G h := by rw [h0]
+              _ = 0 := zero_smul ℚ (F.planeRay G h)
           rcases smul_eq_zero.1 hzero with h' | h'
           · exact h'
           · exact absurd h' F.gen_ne
         refine hray ?_
         rw [Submodule.mem_span_singleton]
         refine ⟨d⁻¹ * c, ?_⟩
-        have hkey : c • F.gen = d • G.ray := hc.trans hd.symm
+        have hkey : c • F.gen = d • F.planeRay G h := hc.trans hd.symm
         calc (d⁻¹ * c) • F.gen = d⁻¹ • (c • F.gen) := mul_smul d⁻¹ c F.gen
-          _ = d⁻¹ • (d • G.ray) := congrArg (fun t => d⁻¹ • t) hkey
-          _ = G.ray := inv_smul_smul₀ hd0 G.ray
+          _ = d⁻¹ • (d • F.planeRay G h) := congrArg (fun t => d⁻¹ • t) hkey
+          _ = F.planeRay G h := inv_smul_smul₀ hd0 (F.planeRay G h)
       rw [hbot]
       simp
     have hsup := Submodule.finrank_sup_add_finrank_inf_eq
-      (Submodule.span ℚ ({F.gen} : Set V)) (Submodule.span ℚ ({G.ray} : Set V))
+      (Submodule.span ℚ ({F.gen} : Set V)) (Submodule.span ℚ ({F.planeRay G h} : Set V))
     rw [hgen1, hray1, hinf] at hsup
     rw [hunion]
     omega
@@ -728,7 +730,7 @@ with `span_gen_ray_eq_plane`, the intersection of the two kernels is the interse
 plane, so it does not depend on which isotropic line of the plane it is computed from. -/
 theorem ker_inf_ker_eq (F : ConicalLine BQ Q) (G : ConicalPlane BQ) (h : F.line ≤ G.plane) :
     LinearMap.ker (associated Q (rationalPoint F.gen)) ⊓
-        LinearMap.ker (associated Q (rationalPoint G.ray))
+        LinearMap.ker (associated Q (rationalPoint (F.planeRay G h)))
       = ⨅ (a : ↥G.plane), LinearMap.ker (associated Q (rationalPoint (a : V))) := by
   refine le_antisymm ?_ ?_
   · intro z hz
@@ -737,7 +739,7 @@ theorem ker_inf_ker_eq (F : ConicalLine BQ Q) (G : ConicalPlane BQ) (h : F.line 
     rw [Submodule.mem_iInf]
     intro a
     rw [LinearMap.mem_ker]
-    have ha : (a : V) ∈ Submodule.span ℚ ({F.gen, G.ray} : Set V) := by
+    have ha : (a : V) ∈ Submodule.span ℚ ({F.gen, F.planeRay G h} : Set V) := by
       rw [span_gen_ray_eq_plane F G h]
       exact a.2
     obtain ⟨c, d, hcd⟩ := Submodule.mem_span_pair.1 ha
@@ -749,7 +751,7 @@ theorem ker_inf_ker_eq (F : ConicalLine BQ Q) (G : ConicalPlane BQ) (h : F.line 
     rw [Submodule.mem_iInf] at hz
     exact Submodule.mem_inf.2
       ⟨by rw [LinearMap.mem_ker]; exact hz ⟨F.gen, F.gen_mem_plane G h⟩,
-       by rw [LinearMap.mem_ker]; exact hz ⟨G.ray, G.ray_mem⟩⟩
+       by rw [LinearMap.mem_ker]; exact hz ⟨F.planeRay G h, F.planeRay_mem G h⟩⟩
 
 end PlaneSpan
 
@@ -819,10 +821,10 @@ theorem vSigmaPlane_le_of_refines (hBsym : BQ.IsSymm) (F : ConicalLine BQ Q)
     (G : ConicalPlane BQ) (hFG : F.line ≤ G.plane)
     {S S' : Set (PointedCone ℝ (realified ↥F.space))}
     (hidx : supportIndex (positiveCone.upper (fibreForm Q F.space) F.sheet) S
-      (PointedCone.hull ℝ {rationalPoint (fibreRay hBsym F G)}))
+      (PointedCone.hull ℝ {rationalPoint (fibreRay hBsym F G hFG)}))
     (h : ∀ τ' : supportIndex (positiveCone.upper (fibreForm Q F.space) F.sheet) S'
-      (PointedCone.hull ℝ {rationalPoint (fibreRay hBsym F G)}),
-      ∃ τ ∈ S, PointedCone.hull ℝ {rationalPoint (fibreRay hBsym F G)} ≤ τ ∧ τ ≤ τ'.1 ∧
+      (PointedCone.hull ℝ {rationalPoint (fibreRay hBsym F G hFG)}),
+      ∃ τ ∈ S, PointedCone.hull ℝ {rationalPoint (fibreRay hBsym F G hFG)} ≤ τ ∧ τ ≤ τ'.1 ∧
         ((τ : Set (realified ↥F.space)) ∩
           (positiveCone.upper (fibreForm Q F.space) F.sheet : Set (realified ↥F.space))).Nonempty) :
     vSigmaPlane hBsym F S G hFG ≤ vSigmaPlane hBsym F S' G hFG := by
