@@ -82,6 +82,26 @@ does not justify weakening a dependent theorem or starting unrelated work.
   primitivity, TauCeti's shape in `Overlattice/Graph.lean`
   `isTorsionFree_quotient_range_glueLeft`/`_glueRight` and `mem_glueAlongDiscriminant_left/right_iff`
   for the coordinate intersections); they are not stated yet, so no statement changed.
+- **Update — the `whnf` block was misdiagnosed, and is gone.** On a fresh probe the divergence is
+  not the quotient codomain at all: `glueClassMap : ↥M.dualSubmodule →ₗ (A_L ⧸ Γ)` elaborates in
+  about two seconds. What diverged was the term `map_sub (metricDualToDiscriminant R L) a b` used to
+  *build* a rewrite, i.e. `(map_sub …).trans …` with `a b : ↥(metricDual R L)`: that reports
+  `timeout at 'whnf'` (and `'isDefEq'`) at 1000000 heartbeats. `Gluing.lean:245-252` already
+  subtracts metric-dual classes and compiles, and its form is the fix:
+  `rw [show f (a - b) = f a - f b from map_sub f a b]`. With that one change the kernel and range
+  of the class map are proved (`Overlattice.ker_glueClassMap`, `Overlattice.range_glueClassMap`);
+  a file whose `hdiff` step is a `sorry` compiles in 1.7 s and the same file with the `.trans` form
+  times out three times — a clean bisection on the single term.
+- **Update — what still blocks the single `≃ₗ`.** Not mathematics: `HasQuotient ↥M.dualSubmodule
+  (Submodule R ↥M.dualSubmodule)` has no instance. `Submodule.hasQuotient` is stated at
+  `Ring.toSemiring` and the ambient carries `CommRing.toCommSemiring.toSemiring`, so the instance
+  is an instance-path mismatch of exactly the family `ModuleCat.zsmul_eq_smul`
+  (`Modules/Bilinear/Valued/Fixed.lean`) was written for. `↥M.carrier ⧸ _` fails identically, so it
+  is not specific to the metric dual, and `RationalSpan R L ⧸ _` succeeds, so it is the subtype
+  (rather than the ambient) that loses the instance. Stating `M^∨/M ≅ Γ^⊥/Γ` as one equivalence
+  needs either that instance or a presentation of `M^∨/M` through a quotient whose instance path
+  matches. The isomorphism itself is in the record twice over: `ker_glueClassMap` gives injectivity
+  modulo `M` and `range_glueClassMap` gives the image `Γ^⊥ ⧸ Γ`.
 - **TauCeti:** has no equivalent of the missing object to port — `TauCeti.IntegralLattice V` is a
   submodule of a fixed `ℚ`-vector space with no projectivity field, so an overlattice is a lattice
   there for free. The gap here is the `Module.Projective` field of `LatticeCat`'s object property
