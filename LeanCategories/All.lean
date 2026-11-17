@@ -11,6 +11,7 @@ public import LeanCategories.ForMathlib.CharacteristicTwoArfInvariant
 public import LeanCategories.ForMathlib.CosetTable
 public import LeanCategories.ForMathlib.DoubleCosetOrbit
 public import LeanCategories.ForMathlib.ModularCuspsFiniteIndex
+public import LeanCategories.ForMathlib.ModularCuspsGL2
 public import LeanCategories.ForMathlib.SchreierStabilizer
 public import LeanCategories.AlgebraicGeometry.RelativeProjHypothesis
 public import LeanCategories.AlgebraicGeometry.ValuationCurveData
