@@ -920,6 +920,31 @@ not a decidable quotient equality or a new mathematical comparison.
 
 ## Workflow papercuts
 
+### `Topology/BarySubdiv` does not elaborate at Mathlib master: `FreeAbelianGroup` renamed
+
+- **Need:** the gate `just test` must build the `LeanCategories.lean` closure against the Mathlib
+  head the worktree resolves. `LeanCategories/Topology/BarySubdiv.lean` (the #141 certificate port
+  `0977bedd`, imported at `LeanCategories/All.lean:48`) must still elaborate there.
+- **Evidence:** on 2026-11-17, worktree `.scratch/wt167` at `380b8da6`, `MATHLIB_NO_CACHE_ON_UPDATE=1
+  lake update` moved the pin from `6d97e8ad9c32` (`lake-manifest.json` at main `55966097`) to Mathlib
+  master `d9a73ae1ea9a`. `just test` then built 11759 of 11778 jobs and failed in that module:
+  `:191` `failed to synthesize instance AddCommMonoid (FreeAbelianGroup (List (Finset (Fin N))))`,
+  with follow-on errors at `:202` (`Not a definitional equality` of the `subdivAux` equation), `:207`,
+  `:226`, `:238`, `:254`, `:1107`, `:1409`, `:1488`, `:1618`, `:1723`. The accompanying deprecation
+  notes name the replacement: `FreeAbelianGroup` → `FreeAddCommGroup` (`of`, `map`, and the additive
+  instance path). The vacuity audit never ran: the recipe was terminated after the build step.
+- **Gap and impact:** the gate is red at the master pin for a reason independent of the module under
+  work, so no worker can certify a *full* gate at that head until the file is ported. Nothing else in
+  the closure fails; `LeanCategories/Lattices/Valued/FibreArithmetic.lean` (#167) builds and
+  elaborates with `-DrelaxedAutoImplicit=false -Dweak.linter.mathlibStandardSet=true` at the same pin.
+  The old pin's gate state was not re-run here, so whether main is green at `6d97e8ad9c32` is not
+  claimed.
+- **Coverage:** the build log (`just-test-20261117T044955.log`) and the error text were inspected;
+  the module's sources were not read. Confidence: the errors are local to the file's use of the
+  renamed constant; the follow-on errors are not individually diagnosed.
+- **Repair link:** the Mathlib pin move (manifest `6d97e8ad9c32 → d9a73ae1ea9a`) owns this; the
+  repair is to port `BarySubdiv` to `FreeAddCommGroup`, then re-run `just test`.
+
 ### The corpus output check does not classify explicit catalogue-interface work
 
 - **Need:** an explicit request to expose already formalized mathematics through the typed
@@ -3264,3 +3289,30 @@ downstream assertions, computational observations, or downstream diagnostics.
 - **What this costs, for the record.** The statement that a ℚ-rational subspace of a realified space
   is spanned by its rational points (ingredient (1) above) is not formalized here and is not needed;
   the LC-09 queries listed above remain the search record for the dual route.
+
+### The common member type exists, but the trace correspondence at `Σ(ℋ)` and Lemma 6.6's "smallest containing member" do not (#162)
+
+- **Need:** (a) the correspondence between the hyperplanes of `ℋ` containing the line `I` and the
+  `ℚ`-hyperplanes of the fibre `I^⊥/I`, which `semifanArrangement_isLocallyRational_of_traces`
+  takes as its data (`j`, `c`, `hc`, `hforms`); (b) the choice, for a member `σ` of a refinement `Σ`
+  of `Σ'`, of the *smallest* member `σ'` of `Σ'` containing it, which Lemma 6.6 (p. 30) quantifies
+  over; (c) the reverse inclusion `I(C_{J,+}) ⊆ J` of the isotropic centre.
+- **Evidence:** Example 6.4, p. 29 (`.tmp-sources/looijenga-math0201218v2.md:791`), Lemma 6.6, p. 30
+  (text line 821), and Definition 6.1's `I(σ) = V_σ ∩ V_σ^⊥` (text line 773). The declarations now
+  on main: `ConicalMember` with `vSigma`/`isotropicCenter`, `ConicalMember.vSigma_plane_witness` (the
+  plane case is independent of the witnessing line), and the monotonicity in the member for the apex,
+  the fibre and the plane (`vSigma_zero_le`, `vSigma_fibre_mono`, `vSigma_plane_mono_of_refines`).
+- **Gap and impact:** (a) is not constructed: the map is not injective on the ambient family (every
+  `I ⊕ T ⊕ ℚ(f + k)` over one trace `T`, recorded at `SemifanArrangement`'s "TracesIndex" section), so
+  it has to be built from the reduced-lattice quotient of the normals, and until then
+  `isAdmissibleDecomposition_semifanArrangement_of_signature` keeps condition (i) as the per-fibre
+  counting input `hcut`. (b) is not constructed: the three member cases are proved but nothing selects
+  `σ'` from the refinement, so Lemma 6.6 is not yet one theorem over the member type. (c) needs the
+  bound `dim ≤ 2` on real isotropic subspaces (Looijenga §1, p. 11) and the description of `V_σ` for an
+  arbitrary admissible `Σ`; only `J ⊆ I(σ)` is proved
+  (`ConicalMember.realify_plane_le_isotropicCenter_facial`).
+- **Coverage:** inspected the source passages above and the declarations named; the reduced-lattice
+  counting of #161 is proved at the fibre (`arrangementDecomposition_reducedLattice_isLocallyRational`)
+  and the fibre's own hyperplane family is the index there.
+- **Repair link:** (a) then unblocks the unconditional Example 6.4; (b) is the remaining choice step of
+  Lemma 6.6; (c) is a separate bound on isotropic subspaces.
