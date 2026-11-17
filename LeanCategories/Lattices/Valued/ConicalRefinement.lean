@@ -217,28 +217,37 @@ not support-index domination, and this section names it (`HasSubordinateRefineme
 reflexive, and states the support inclusion at a half line through it
 (`sigmaSupportSpace_le_of_hasSubordinateRefinement`).
 
-**Where the derivation stops, and why it is the insertion lemma's own limit.** The insertion lemma
-(`IsLocallyRationalDecomposition.le_of_isRelintPoint`) compares two members of one family: the
-rational-cone-system axiom it uses — two members meet along a common face — is an axiom *within* a
-decomposition, and there is no counterpart relating a member of one decomposition to a member of
-another. So the insertion lemma can decide, at a coarse member `τ'` and a fine member `τ`, whether
-`τ ≤ τ'` only when one of the two is already a member of the other's family. Producing the witness
-for `HasSubordinateRefinement` therefore takes a further input, and the one the axioms do not supply
-is the covering clause of a decomposition in the source's sense: that a coarse member meeting the
-open cone is covered by the fine members it contains.
+**The status of the hypothesis: it is not implied by Definition 6.1 (i)--(ii).** The family that
+shows this is the one below, in the split model of signature `(2,2)`
+(`tests/regression/ConicalRefinementSplit22.lean`, `tests/regression/ConicalPlaneSplit22.lean`). Let
+`W = ℚ⁴` carry `x₀y₁ + x₁y₀ − x₂y₃ − x₃y₂`, let `I = ⟨e₀⟩` with partner `e₁`, so that the fibre
+`I^⊥/I = ⟨e₂, e₃⟩` carries `−2x₂x₃` of signature `(1,1)` with closed cone `C̄ = ⟨e₂, −e₃⟩`; let
+`τ = ⟨e₂, e₂ − e₃⟩ ⊊ C̄`; take `Σ` to have members `{C̄, τ} ∪ faces(τ) ∪ {−e₃}` at the fibre of `I`
+and the facial decomposition at every other fibre, with `Γ` trivial.
 
-The axioms of Definition 4.2 as formalised (`IsLocallyRationalDecomposition`: union, locally rational
-members, global face-closure, and rational-cone-system restrictions) do not imply that covering
-clause. They admit nested members — the facial decomposition `Σ(bb)` itself has
-`C_{J,+} ⊊ C_{I,+}`, and nestedness is consistent with face-closure and with the intersection axiom,
-since a rational cone system is closed under faces rather than maximal — and they admit collections
-whose relative interiors do not partition the cone (`{C₊, τ}` with `τ ⊊ C₊` a locally rational cone
-satisfies every field). For both, `HasSubordinateRefinement` can fail while every fine member is
-inside a coarse one. The half line `C_{J,+}` is the member at which this bites: it lies in the
-boundary, so it meets no open cone, and its neighbours in a fine decomposition need not reach into a
-given coarse member above it. This is the gap #169 leaves open for the plane case, together with
-Definition 6.1 (ii)'s clause that `C_{J,+}` is itself a member of every admissible decomposition.
--/ 
+* Definition 6.1 (i) **passes**: at the fibre of `I` the members are a locally rational decomposition
+  of `C_{I,+}` (union `C̄`, face-closed, finite restrictions), and at every other fibre it is `Σ(bb)`.
+* Definition 6.1 (ii) **passes**: for the plane `J₁ = ⟨e₀, e₂⟩` the support space of `C_{J₁,+}`
+  relative to the family at `I` is the common zero set of the forms `β x₃` with `β ≤ 0` — namely
+  `⟨e₂⟩` in the fibre, i.e. `J₁` — and `J₁^⊥ = J₁`; for `J₂ = ⟨e₀, e₃⟩` the members above its half
+  line are `C̄` alone, whose support space is `⟨e₃⟩`, i.e. `J₂ = J₂^⊥`. Both equalities are those of
+  `Σ(bb)`'s values at every other line, so the independence holds.
+* `HasSubordinateRefinement` **fails** for this `Σ` against a coarse `Σ'` whose fibre member above the
+  half line is a proper sub-wedge `[0, ε]`: the fine members above the half line are `τ` (wider) and
+  `C̄`, and neither lies in `[0, ε]`.
+
+So the hypothesis is genuinely extra as a hypothesis. What is *not* settled by this family is whether
+Lemma 6.6's plane-case *conclusion* `J_Σ ≤ J_{Σ'}` can also fail: in a `(2,2)` model every half
+line's support space is the plane itself, so both sides agree there. A refutation needs a fibre of
+signature `(1, n−1)` with `n ≥ 3`, where `J^⊥ ⊋ J`, and the value at the fibre where the coarse
+member above the half line contains no fine one. That is the open question, and it is why the plane
+case is not stated in this module.
+
+**Why the insertion lemma cannot supply it either.** The insertion lemma compares two members of one
+family: the rational-cone-system axiom it uses — two members meet along a common face — is an axiom
+*within* a decomposition, and there is no counterpart relating a member of one decomposition to a
+member of another. The only cross-family input is the refinement itself.
+-/
 
 section Subordinate
 
@@ -246,9 +255,17 @@ variable {C : Set (realified V)} {S S' : Set (PointedCone ℝ (realified V))}
 
 /-- **The subordinate refinement of a support index**: every member of the coarse family above `σ`
 that meets the open cone contains a member of the fine family above `σ` that meets it. This is
-verbatim the hypothesis of `Semifan.sigmaSupportSpace_le_of_refines`, named here so that it can be
-derived rather than assumed. It is a statement about *members*; no support space, support index or
-containment of support spaces occurs in it. -/
+verbatim the hypothesis of `Semifan.sigmaSupportSpace_le_of_refines`, named here so that its status
+is explicit. It is a statement about *members*; no support space, support index or containment of
+support spaces occurs in it.
+
+**It is kept as a hypothesis, and it is not derivable from Definition 6.1.** The section docstring
+above gives the family that decides this: on the split model of signature `(2,2)` the members
+`{C̄, τ} ∪ faces` at the fibre of `I = ⟨e₀⟩` pass both conditions of Definition 6.1 (with `Γ`
+trivial) and fail this hypothesis against a coarse family whose member above the half line is a
+proper sub-wedge. The plane case of Lemma 6.6 therefore rests on this hypothesis in the present
+development, and `tests/regression/ConicalRefinementSplit22.lean` exercises the line case that does
+not. -/
 def HasSubordinateRefinement (C : Set (realified V)) (S S' : Set (PointedCone ℝ (realified V)))
     (σ : PointedCone ℝ (realified V)) : Prop :=
   ∀ τ' : supportIndex C S' σ, ∃ τ ∈ S, σ ≤ τ ∧ τ ≤ τ'.1 ∧
