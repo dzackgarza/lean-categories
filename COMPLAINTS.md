@@ -3925,3 +3925,28 @@ downstream assertions, computational observations, or downstream diagnostics.
   finite route enumeration, or move `RouteDiscoveryProbes` out of the built library; then re-run
   `lake exe lean-categories-axiom-audit`. The registry comparison probes the rest of that file
   supplies (`id99.competing`, `:70`–`:98`) are unaffected.
+
+### The sign twist does not transport the orthogonal group definitionally
+
+- **Need:** `O(L) = O(L(-1))` as subgroups of one endomorphism group, so that a statement proved for
+  positive definite lattices transfers to negative definite ones (the second item of `#87`). The two
+  subgroups are subgroups of `L.obj.carrier ≃ₗ[ℤ] L.obj.carrier` and of
+  `(oppositeLattice L.obj).obj.carrier ≃ₗ[ℤ] (oppositeLattice L.obj).obj.carrier`.
+- **Evidence:** `Lattices/Valued/Constructions.lean` builds `scaleLattice` through
+  `BilinModuleCat.ofBilinMap`, and the two carriers are equal only below default transparency.
+  `Subgroup.ext` on the two `BilinModuleCat.orthogonalSubgroup`s leaves a goal whose two sides print
+  identically (`@Eq W (L.obj.pairing (f x) (f y)) (L.obj.pairing x y)` on both sides) and still fail
+  the type check, and `set_option backward.isDefEq.respectTransparency.types false` only moves the
+  failure from the carrier types to the `pairing` instance paths. The repository routes around the
+  same obstruction for `gramMatrix_opposite` (`Constructions.lean`) and `representationSet_opposite`
+  (`RootLattice.lean`) with that option; a subgroup equality has no such route.
+- **Gap and impact:** the sign twist cannot carry a group-theoretic theorem. The negative definite
+  case of `#87` is therefore proved directly in `Mass.lean`
+  (`orthogonalGroup_finite_of_isNegativeDefinite`) from `representationSet_finite_of_isDefinite`
+  rather than by transport, which also makes `Mass.lean` import `RootLattice`.
+- **Coverage:** tried `Subgroup.ext` with and without the transparency option, `show` at the
+  permutation level, and both directions of the forall. Not tried: an explicit `LinearEquiv` between
+  the two carriers — both are the same `W`, so a `LinearEquiv.refl`-level transport may exist.
+- **Repair link:** express `orthogonalSubgroup` of a scaled lattice as the image of the identity
+  linear equivalence, or give `scaleLattice` the same carrier object by construction; then the sign
+  twist replaces the direct proof.
