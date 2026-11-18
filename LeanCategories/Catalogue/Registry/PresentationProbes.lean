@@ -103,4 +103,42 @@ run_meta do
     unless row.construction == ``LeanCategories.Classifier.reindex do
       throwError "reindexing of {row.classifier.raw} names another construction"
 
+/-! ### A 1-cell with a finite-product source -/
+
+/-- The smallest state in which a generating 1-cell has a product source: one structural functor
+row out of `P × Q`, written as the two-argument construct node. -/
+def productSourceSpecimen : SemanticState where
+  functors := #[
+    { id := ⟨"fun.prod"⟩
+      source := .construct ⟨"ctor.prod"⟩
+        #[.category (.atom ⟨"cat.p"⟩), .category (.atom ⟨"cat.q"⟩)]
+      target := .atom ⟨"cat.r"⟩
+      declaration := ``sameEndpoint, realization := ``sameEndpoint
+      expression := .atomic ⟨"fun.prod"⟩, structural := true }]
+
+/-- A generating 1-cell may have a finite-product source: the row is one of the presentation's
+1-cells. -/
+def id99.productSourceIsOneCellCheck : Bool :=
+  (productSourceSpecimen.structuralEdges).size == 1
+
+/-- The search treats the product-source vertex as a vertex: the route out of `P × Q` is found. -/
+def id99.productSourceRouteCheck : Bool :=
+  (productSourceSpecimen.routes
+    (.construct ⟨"ctor.prod"⟩ #[.category (.atom ⟨"cat.p"⟩), .category (.atom ⟨"cat.q"⟩)])
+    (.atom ⟨"cat.r"⟩) 2).any fun route => route.refs.size == 1
+
+open Lean Elab Command in
+run_cmd
+  liftTermElabM do
+    let checks : List (Name × String) :=
+      [(``id99.productSourceIsOneCellCheck,
+        "the product-source row is not a generating 1-cell of the presentation"),
+       (``id99.productSourceRouteCheck,
+        "the search did not find the route out of the product-source vertex")]
+    for (name, message) in checks do
+      let e ← Lean.Elab.Term.elabTerm (← `($(mkIdent name))) (some (mkConst ``Bool))
+      let value ← unsafe Lean.Meta.evalExpr Bool (mkConst ``Bool) e
+      unless value do
+        throwError "issue #99 probe {name}: {message}"
+
 end CasCatalogue.PresentationProbes
