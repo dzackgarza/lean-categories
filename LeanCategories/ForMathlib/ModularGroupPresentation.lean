@@ -1251,9 +1251,15 @@ Farey edge `{±u, ±v}` is fixed by right multiplication by `S` and the Farey tr
 `{±u, ±v, ±(u + v)}` by right multiplication by `R`, so the two orbit types of the tree *are* these
 two sets of lines.
 
+The local structure of the graph is `eq_pm_of_adjacent`: for a Farey basis `(u, v)`, a line adjacent
+to both is one of `±u ± v`, so **the edge `{±u, ±v}` has exactly two triangular sides** and no
+third.
+That lemma is the basis-expansion `w = fdet w v • u - fdet w u • v` (`fdet_repr`), with the two
+coefficients forced to `±1` by the two adjacency conditions.
+
 What is *not* here: acyclicity of the incidence graph, and the bridge from acyclicity to "no
-nonempty reduced word dies". Those are the rest of the tree unit; the column formulas and the two
-line sets are what it reads the vertices with.
+nonempty reduced word dies". Those are the rest of the tree unit; the column formulas, the two line
+sets and the two-sides lemma are what it reads the vertices and edges with.
 -/
 
 /-- The `j`-th column of an `SL(2, ℤ)` matrix, as a pair of integers. -/
@@ -1309,6 +1315,35 @@ lemma triangleLines_mul_R (X : SL(2, ℤ)) :
   have h3 : -(-col X 0) = col X 0 := by abel
   simp only [triangleLines, h0, h1, h2, h3]
   simp only [or_comm, or_left_comm, or_assoc]
+
+/-- The determinant pairing on pairs of integer vectors. -/
+def fdet (u v : ℤ × ℤ) : ℤ := u.1 * v.2 - u.2 * v.1
+
+lemma abs_eq_one_of_abs_eq_one (x : ℤ) (h : |x| = 1) : x = 1 ∨ x = -1 := by
+  have h' : |x| = |(1 : ℤ)| := by rwa [abs_one]
+  exact abs_eq_abs.mp h'
+
+/-- A vector is determined by its pairings with the members of a Farey basis: its coordinates in the
+basis `(u, v)` are `fdet w v` and `-fdet w u`. -/
+lemma fdet_repr (u v w : ℤ × ℤ) (h : fdet u v = 1) :
+    w = (fdet w v * u.1 + (-fdet w u) * v.1, fdet w v * u.2 + (-fdet w u) * v.2) := by
+  have h' : u.1 * v.2 - u.2 * v.1 = 1 := h
+  have h1 : w.1 * (u.1 * v.2 - u.2 * v.1) = w.1 := by rw [h']; ring
+  have h2 : w.2 * (u.1 * v.2 - u.2 * v.1) = w.2 := by rw [h']; ring
+  ext <;> simp only [fdet] <;> nlinarith [h1, h2]
+
+/-- **The two sides of an edge.** If `(u, v)` is a Farey basis, a vector adjacent to both `u`
+and `v` is one of `±u ± v`: there is no third triangle on the edge `{±u, ±v}`, which is the local
+input for "each edge of the tree has exactly two sides". -/
+theorem eq_pm_of_adjacent (u v w : ℤ × ℤ) (h : fdet u v = 1)
+    (hu : |fdet w u| = 1) (hv : |fdet w v| = 1) :
+    ∃ ε₁ ε₂ : ℤ, (ε₁ = 1 ∨ ε₁ = -1) ∧ (ε₂ = 1 ∨ ε₂ = -1) ∧
+      w = (ε₁ * u.1 + ε₂ * v.1, ε₁ * u.2 + ε₂ * v.2) := by
+  refine ⟨fdet w v, -fdet w u, ?_, ?_, ?_⟩
+  · exact abs_eq_one_of_abs_eq_one _ hv
+  · have hu' : |-fdet w u| = 1 := by rwa [abs_neg]
+    exact abs_eq_one_of_abs_eq_one _ hu'
+  · exact fdet_repr u v w h
 
 end ModularGroup
 

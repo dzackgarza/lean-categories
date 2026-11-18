@@ -234,4 +234,14 @@ example : (col (1 : SL(2, ℤ)) 0 + col (1 : SL(2, ℤ)) 1) ∈ triangleLines (1
 example : (col (1 : SL(2, ℤ)) 0) ∈ edgeLines (1 : SL(2, ℤ)) := by
   simp [edgeLines]
 
+example : fdet ((1 : ℤ), 0) ((0 : ℤ), 1) = 1 := by decide
+
+example : ∃ ε₁ ε₂ : ℤ, (ε₁ = 1 ∨ ε₁ = -1) ∧ (ε₂ = 1 ∨ ε₂ = -1) ∧
+    ((1 : ℤ), 1) = (ε₁ * (1 : ℤ) + ε₂ * 0, ε₁ * 0 + ε₂ * 1) :=
+  eq_pm_of_adjacent (1, 0) (0, 1) (1, 1) (by decide) (by decide) (by decide)
+
+example : ∃ ε₁ ε₂ : ℤ, (ε₁ = 1 ∨ ε₁ = -1) ∧ (ε₂ = 1 ∨ ε₂ = -1) ∧
+    ((1 : ℤ), -1) = (ε₁ * (1 : ℤ) + ε₂ * 0, ε₁ * 0 + ε₂ * 1) :=
+  eq_pm_of_adjacent (1, 0) (0, 1) (1, -1) (by decide) (by decide) (by decide)
+
 end LeanCategories.ForMathlib
