@@ -1231,6 +1231,53 @@ theorem colHeight_letters :
       ∧ colHeight ((T * S : SL(2, ℤ)) ^ 5).1 = 1 := by
   refine ⟨?_, ?_, ?_, ?_, ?_, ?_⟩ <;> decide
 
+/-!
+### The column dictionary for the Bass–Serre tree
+
+The tree of `⟨S⟩ *_{⟨S²⟩} ⟨TS⟩` has two kinds of vertex: `⟨S⟩`-cosets and `⟨TS⟩`-cosets. Both are
+read off a matrix's columns, which is what this section starts making explicit:
+
+* right multiplication by `S` sends the columns `(u, v)` to `(v, -u)` (`col_mul_S`), so the
+  `⟨S⟩`-orbit of a matrix is its *unordered pair of columns up to sign* — a Farey edge;
+* right multiplication by `S² = -1` sends `(u, v)` to `(-u, -v)` (`col_mul_S_sq`);
+* right multiplication by `R = T * S` sends `(u, v)` to `(u + v, -u)` (`col_mul_R`), so the
+  `⟨R⟩`-orbit is the *triple of lines* `±u`, `±v`, `±(u + v)` — a Farey triangle, of which `⟨R⟩`
+  (order 6) is exactly the symmetry group;
+* `⟨S²⟩ = ⟨R³⟩ = {±1}` acts trivially, which is why the edge and the triangle are the right
+  coarse invariants and the amalgamated subgroup is the kernel of both readings.
+
+What is *not* here: the set-level invariance (`triangleLines (X * R) = triangleLines X`), the
+acyclicity of the incidence graph, and the bridge from acyclicity to "no nonempty reduced word
+dies". Those are the tree unit; the column formulas are what it reads the vertices with.
+-/
+
+/-- The `j`-th column of an `SL(2, ℤ)` matrix, as a pair of integers. -/
+def col (X : SL(2, ℤ)) (j : Fin 2) : ℤ × ℤ := (X.1 0 j, X.1 1 j)
+
+lemma col_zero (X : SL(2, ℤ)) : col X 0 = (X.1 0 0, X.1 1 0) := rfl
+
+lemma col_one (X : SL(2, ℤ)) : col X 1 = (X.1 0 1, X.1 1 1) := rfl
+
+/-- Right multiplication by `S` sends the columns `(u, v)` to `(v, -u)`: the `⟨S⟩`-orbit of a matrix
+is its unordered pair of columns up to sign. -/
+lemma col_mul_S (X : SL(2, ℤ)) :
+    col (X * S) 0 = col X 1 ∧ col (X * S) 1 = -col X 0 := by
+  constructor <;>
+    · ext <;> simp [col, coe_mul, coe_S, Matrix.mul_apply, Fin.sum_univ_two]
+
+lemma col_mul_S_sq (X : SL(2, ℤ)) :
+    col (X * S ^ 2) 0 = -col X 0 ∧ col (X * S ^ 2) 1 = -col X 1 := by
+  have hS2 : (S : SL(2, ℤ)) ^ 2 = -1 := by rw [pow_two, S_mul_S_eq]
+  have h : (X * S ^ 2 : SL(2, ℤ)) = -(X : SL(2, ℤ)) := by rw [hS2, mul_neg, mul_one]
+  constructor <;> · rw [h]; ext <;> simp [col]
+
+/-- Right multiplication by `R = T * S` sends the columns `(u, v)` to `(u + v, -u)`: the `⟨R⟩`-orbit
+of a matrix is the triple of lines `±u`, `±v`, `±(u + v)`, a Farey triangle. -/
+lemma col_mul_R (X : SL(2, ℤ)) :
+    col (X * (T * S)) 0 = col X 0 + col X 1 ∧ col (X * (T * S)) 1 = -col X 0 := by
+  constructor <;>
+    · ext <;> simp [col, coe_mul, coe_T, coe_S, Matrix.mul_apply, Fin.sum_univ_two]
+
 end ModularGroup
 
 namespace LeanCategories.ForMathlib
