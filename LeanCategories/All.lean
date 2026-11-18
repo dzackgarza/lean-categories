@@ -311,6 +311,8 @@ public import LeanCategories.Homological.DerivedDimension
 public import LeanCategories.Foundation.Mathlib
 public import LeanCategories.Foundation.Cardinality
 public import LeanCategories.Foundation.Sets
+public import LeanCategories.Foundation.WellOrderedSets
+public import LeanCategories.Foundation.EnumeratedMonotone
 public import LeanCategories.Foundation.RankingDataTests
 public import LeanCategories.Foundation.Subsets
 public import LeanCategories.Foundation.IsoElements
