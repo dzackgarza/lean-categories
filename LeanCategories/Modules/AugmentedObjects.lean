@@ -348,6 +348,22 @@ def twoTerm (Q P M : ModuleCat.{v} R) (d : Q ⟶ P) (ε : P ⟶ M) (h : d ≫ ε
   augment := ε
   comp_augment := h
 
+/-- The `1`-truncation of a two-term selected object, as an actual morphism of selected diagrams:
+the augmentation and the chosen term in degree `0` are carried by the identity and everything above
+degree `0` is sent to zero. This is what a truncation retains: the defining diagram maps, with the
+dropped differential no longer visible. -/
+def coverToTwoTerm (Q P M : ModuleCat.{v} R) (d : Q ⟶ P) (ε : P ⟶ M) (h : d ≫ ε = 0) :
+    oneTerm R P M ε ⟶ twoTerm R Q P M d ε h where
+  point := 𝟙 M
+  term
+    | 0 => 𝟙 P
+    | _ + 1 => 0
+  comm_diff n := by
+    match n with
+    | 0 => exact zero_comp.trans zero_comp.symm
+    | _ + 1 => exact zero_comp.trans zero_comp.symm
+  comm_augment := (Category.comp_id ε).trans (Category.id_comp ε).symm
+
 /-- A one-term object is a framing exactly when its augmentation is an isomorphism
 (FOUNDATIONS Definition 13.11: a free resolution of length zero is a chosen basis). -/
 theorem oneTerm_isFraming_iff {P M : ModuleCat.{v} R} (ε : P ⟶ M) :
