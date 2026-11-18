@@ -112,6 +112,19 @@ noncomputable def cochainComplexOf (S : AugmentedGradedObject C) : CochainComple
       | 0 => exact S.comp_diff 0
       | j + 1 => exact S.comp_diff (j + 1))
 
+/-! ### The open obligation (cochain level)
+
+`cochainAugmentation S : cochainComplexOf S ⟶ single₀Cochain S.point` is not here. Its commutation
+fails for a type-checking reason: with the components defined by `match` on the degree, the goal
+is not type-correct under implicit transparency, so
+
+`simp only [zero_comp, comp_zero]`
+
+makes no progress (`LeanCategories/Modules/ChainComplexModel.lean` failed at the degree-zero branch),
+and `S.comp_augment` cannot be applied through the unreduced `single₀Cochain.match_1` motive. The
+chain-level `augmentation` above avoids this by using `ChainComplex.single₀`, whose object and
+differential are given by structure fields rather than by a `match` on `ℤ`. -/
+
 end Cochain
 
 end LeanCategories.Modules
