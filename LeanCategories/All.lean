@@ -200,6 +200,7 @@ public import LeanCategories.ForMathlib.LocallyDiscreteStrongTrans
 public import LeanCategories.Lattices.Valued.ValueFibration
 public import LeanCategories.Modules.Total
 public import LeanCategories.Lattices.Valued.BilRefinements
+public import LeanCategories.Modules.AugmentedObjects
 public import LeanCategories.Modules.TruncatedResolutions
 public import LeanCategories.Modules.Localization
 public import LeanCategories.Modules.Presented
