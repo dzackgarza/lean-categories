@@ -275,4 +275,19 @@ example : ¬ ∃ (n : ℕ) (_ : NeZero n) (v : ZMod n → Bool),
     (fun a b hab => by cases a <;> cases b <;> simp_all)
     (fun a b c hab hac hbc => by cases a <;> cases b <;> cases c <;> simp_all)
 
+-- the six elements of `<T * S>`: listed, closed under multiplication, and containing it
+example : (1 : SL(2, ℤ)) ∈ zpowersRSet := one_mem_zpowersRSet
+
+example : (T * S : SL(2, ℤ)) ^ 3 ∈ zpowersRSet := by decide
+
+example : (T * S : SL(2, ℤ)) ∈ Subgroup.zpowers (T * S) → (T * S : SL(2, ℤ)) ∈ zpowersRSet :=
+  fun h => mem_zpowersRSet h
+
+-- a product of an `<S>`-letter and an `<R>`-letter is never in `<R>`
+example : (S * (T * S) : SL(2, ℤ)) ∉ Subgroup.zpowers (T * S) :=
+  eight_products_avoid_zpowersR S (T * S) (Or.inl rfl) (Or.inl rfl)
+
+example : ((S : SL(2, ℤ)) ^ 3 * (T * S) ^ 5) ∉ Subgroup.zpowers (T * S) :=
+  eight_products_avoid_zpowersR _ _ (Or.inr rfl) (Or.inr (Or.inr (Or.inr rfl)))
+
 end LeanCategories.ForMathlib
