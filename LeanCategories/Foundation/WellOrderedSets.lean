@@ -252,4 +252,16 @@ theorem wellOrderedSet_orderType_fin {n : ℕ} (r : RankingData X (Fin n)) :
 
 end RankingData
 
+/-- The well-ordered sets as the property subcategory of the linear orders: the classifier whose
+total is the category of well-ordered sets and whose forgetful functor is `toLinearOrder`. This is
+`Classifier.ofProperty` at the property that defines the objects, so the classifier, its total and
+its forgetful functor are not restated here. -/
+def wellOrderedSets : Classifier TotallyOrderedSets.{u} :=
+  Classifier.ofProperty IsWellOrderedLinearOrder
+
+@[simp] theorem wellOrderedSets_total : wellOrderedSets.total = WellOrderedSets.{u} := rfl
+
+@[simp] theorem wellOrderedSets_forget :
+    wellOrderedSets.forget = WellOrderedSetCat.toLinearOrder.toCatHom := rfl
+
 end LeanCategories.Foundation

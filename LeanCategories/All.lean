@@ -314,6 +314,9 @@ public import LeanCategories.Foundation.Cardinality
 public import LeanCategories.Foundation.Sets
 public import LeanCategories.Foundation.WellOrderedSets
 public import LeanCategories.Foundation.EnumeratedMonotone
+public import LeanCategories.Catalogue.Semantics.Foundation.WellOrderedSets
+public import LeanCategories.Catalogue.Semantics.Foundation.WellOrderedSetsRegistration
+public import LeanCategories.Catalogue.Semantics.Foundation.WellOrderedSetsTests
 public import LeanCategories.Foundation.RankingDataTests
 public import LeanCategories.Foundation.Subsets
 public import LeanCategories.Foundation.IsoElements
