@@ -77,3 +77,29 @@ no ties"), for *every* Farey basis and not only the truncation:
 Still open, and unchanged by this: the dictionary from a reduced word to a closed reduced walk in the
 incidence graph, and the bridge from `PresentedGroup sl2zRelators` (via `amalgamPushoutEquiv`) to the
 matrices these heights are read off.
+
+## Progress: the walk's letters, moves and heights
+
+The dictionary the previous section names as still open is a walk on the incidence graph of Farey
+edges and triangles. Its first half is now in `ModularGroupPresentation.lean` (section "The letters,
+their moves, and the heights of the walk"):
+
+* `Letter` — the six letters `S`, `S³` of the `ℤ/4` factor and `R`, `R²`, `R⁴`, `R⁵` of the `ℤ/6`
+  factor, i.e. every element of the two factors outside the amalgamated `⟨S²⟩`;
+* `Letter.act` and `Letter.col_mul_val` — the local move of each letter on a matrix's two columns, and
+  the dictionary showing it is exactly the column action of the matrix product (six concrete
+  computations on the explicit matrices);
+* `HT`, `EH`, `EH_mean` — the two kinds of vertex height in the doubled normalization (a triangle is
+  twice its `ℓ¹` cusp sum minus the tiebreak; an edge is the mean of its two triangles);
+* `HT_ne` — adjacent vertices never have equal height, now *for every Farey basis*: the `2·(B - B')`
+  in the comparison can only be offset by the tiebreak when `B = B'`, which by `triH_eq_imp_std` is
+  the standard edge, where `eps_add_of_std` says exactly one of the two triangles is `{0, 1, ∞}`;
+* `at_most_one_down` with `downA_iff`/`downB_iff`/`downC_iff` — at most one side of a triangle has a
+  lower opposite triangle, i.e. `no_two_flips_decrease` in the heights' own vocabulary.
+
+So both hypotheses of the maximum-vertex criterion are now theorems about the walk's own heights.
+
+What the dictionary still needs, and nothing else: the prefix products along a word, the two
+comparisons between consecutive vertices (short now, from `HT_ne`, `at_most_one_down` and
+`EH_mean`), the maximum-vertex argument, and the parity split — for an odd-length word the cyclic walk
+has one degenerate step, and its two seam comparisons are the only finite work left.

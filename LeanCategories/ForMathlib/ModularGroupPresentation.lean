@@ -2018,6 +2018,212 @@ theorem stdTri_triH {u v : ℤ × ℤ} (hd : fdet u v = 1)
       simp only [fdet, triH, hℓ, Prod.fst_add, Prod.snd_add, Prod.fst_neg, Prod.snd_neg] at hd ⊢ <;>
       solve | omega | norm_num | (exfalso; exact absurd hT (by decide))
 
+/-!
+### The letters, their moves, and the heights of the walk
+
+The walk that decides "no nonempty reduced word dies" lives on the incidence graph of Farey edges and
+triangles. Its letters are the six elements `S`, `S³` of the `ℤ/4` factor and `R`, `R²`, `R⁴`, `R⁵` of
+the `ℤ/6` factor (`R = T * S`) — every element of the two factors outside the amalgamated
+`⟨S²⟩ = {±1}` — and each letter acts on a matrix's two columns by an explicit local move `Letter.act`:
+`S` swaps and negates the columns (a Farey edge is fixed, the triangle flips), an `R`-letter leaves the
+triangle fixed and moves the edge. `Letter.col_mul_val` is the dictionary between the letters and the
+matrix product, by direct computation on the six concrete matrices.
+
+The heights are the ones the module docstring describes, in the doubled normalization that makes the
+criterion's two hypotheses come out as exactly `no_two_flips_decrease` plus "no ties":
+
+* `HT` — a triangle vertex: twice the `ℓ¹` sum of its three cusps, less the tiebreak `eps`;
+* `EH` — an edge vertex: the mean of the heights of its two incident triangles (`EH_mean`).
+
+Two facts make the maximum-vertex argument run, and with the tie classification of the previous
+section both are now provable for every Farey basis rather than measured:
+
+* `HT_ne` — the two triangles on a side never have equal height: the `2·(B - B')` in the comparison
+  can only be offset by the tiebreak when `B = B'`, and by `triH_eq_imp_std` that is the standard edge,
+  where `eps_add_of_std` says exactly one of the two triangles is `{0, 1, ∞}`;
+* `at_most_one_down` — at most one side of a triangle has a lower opposite triangle, which is
+  `no_two_flips_decrease` transcribed into these heights (`downA_iff`, `downB_iff`, `downC_iff`).
+
+What the walk still needs: the prefix products along a word and the two comparisons between
+consecutive vertices, the maximum-vertex argument, and the parity split (for an odd-length word the
+cyclic walk has one degenerate step, and the two seam comparisons are the only finite work there).
+-/
+
+
+/-! ## Letters, their columns, and the local move facts -/
+
+/-- The six letters of the amalgam `⟨S⟩ *_{⟨S²⟩} ⟨R⟩`, `R = T * S`: `S`, `S³` in the `ℤ/4` factor and
+`R`, `R²`, `R⁴`, `R⁵` in the `ℤ/6` factor, i.e. every element of the two factors outside the
+amalgamated `⟨S²⟩ = {±1}`. -/
+inductive Letter
+  | s1 | s3 | r1 | r2 | r4 | r5
+  deriving DecidableEq, Repr
+
+namespace Letter
+
+/-- The matrix of a letter. -/
+def val (a : Letter) : SL(2, ℤ) :=
+  match a with
+  | s1 => (S : SL(2, ℤ))
+  | s3 => S ^ 3
+  | r1 => T * S
+  | r2 => (T * S) ^ 2
+  | r4 => (T * S) ^ 4
+  | r5 => (T * S) ^ 5
+
+/-- Whether a letter lies in the `⟨S⟩` factor. -/
+def isS : Letter → Bool
+  | s1 => true
+  | s3 => true
+  | r1 => false
+  | r2 => false
+  | r4 => false
+  | r5 => false
+
+/-- The local move of a letter on the columns `(u, v)` of a matrix: the columns of `Y * a`. -/
+def act (a : Letter) (u v : ℤ × ℤ) : (ℤ × ℤ) × (ℤ × ℤ) :=
+  match a with
+  | s1 => (v, -u)
+  | s3 => (-v, u)
+  | r1 => (u + v, -u)
+  | r2 => (v, -(u + v))
+  | r4 => (-(u + v), u)
+  | r5 => (-v, u + v)
+
+lemma mat_s3 : (!![0, -1; 1, 0] : Matrix (Fin 2) (Fin 2) ℤ) ^ 3 = !![0, 1; -1, 0] := by decide
+
+lemma mat_r2 : (!![1, -1; 1, 0] : Matrix (Fin 2) (Fin 2) ℤ) ^ 2 = !![0, -1; 1, -1] := by decide
+
+lemma mat_r4 : (!![1, -1; 1, 0] : Matrix (Fin 2) (Fin 2) ℤ) ^ 4 = !![-1, 1; -1, 0] := by decide
+
+lemma mat_r5 : (!![1, -1; 1, 0] : Matrix (Fin 2) (Fin 2) ℤ) ^ 5 = !![0, 1; -1, 1] := by decide
+
+/-- The columns of `Y * a` are the local move of `a` applied to the columns of `Y`. -/
+theorem col_mul_val (a : Letter) (Y : SL(2, ℤ)) :
+    col (Y * a.val) 0 = (a.act (col Y 0) (col Y 1)).1 ∧
+      col (Y * a.val) 1 = (a.act (col Y 0) (col Y 1)).2 := by
+  cases a <;> refine ⟨?_, ?_⟩ <;> ext <;>
+    simp [val, act, col, coe_mul, mat_s3, mat_r2, mat_r4, mat_r5, Matrix.mul_apply,
+      Fin.sum_univ_two] <;>
+    ring
+
+end Letter
+
+
+/-! ## The heights of the two kinds of vertex -/
+
+/-- The tiebreak flag: whether the triangle is the fundamental one `{0, 1, ∞}`. -/
+def eps (u v : ℤ × ℤ) : ℤ := if triF u v = stdTri0 then 1 else 0
+
+lemma eps_nonneg (u v : ℤ × ℤ) : 0 ≤ eps u v := by
+  unfold eps; split <;> norm_num
+
+lemma eps_le_one (u v : ℤ × ℤ) : eps u v ≤ 1 := by
+  unfold eps; split <;> norm_num
+
+/-- The height of a triangle vertex: twice the `ℓ¹` sum of its three cusps, less the tiebreak. -/
+def HT (u v : ℤ × ℤ) : ℤ := 4 * triH u v - 2 * eps u v
+
+/-- The height of an edge vertex: the mean of the heights of its two incident triangles. -/
+def EH (u v : ℤ × ℤ) : ℤ := 2 * triH u v + 2 * triH v (-u) - eps u v - eps v (-u)
+
+/-- `EH` is the mean of the two incident triangle heights, in the doubled normalization. -/
+lemma EH_mean (u v : ℤ × ℤ) : HT u v + HT v (-u) = 2 * EH u v := by
+  simp only [HT, EH]; ring
+
+/-- The two triangles on a Farey side are never both the fundamental one and never both not: if the
+side is standard, exactly one of them is `{0, 1, ∞}`. -/
+lemma eps_add_of_std {u v : ℤ × ℤ} (hd : fdet u v = 1) (he : edgeF u v = stdEdge) :
+    eps u v + eps v (-u) = 1 := by
+  have hmem : ∀ w : ℤ × ℤ, w ∈ edgeF u v → w = E1 ∨ w = -E1 ∨ w = E2 ∨ w = -E2 := by
+    intro w hw
+    rw [he] at hw
+    simpa [stdEdge, edgeF, E1, E2, Finset.mem_insert, Finset.mem_singleton] using hw
+  have hu := hmem u (by simp [edgeF])
+  have hv := hmem v (by simp [edgeF])
+  simp only [fdet, Prod.fst_add, Prod.snd_add, Prod.fst_neg, Prod.snd_neg] at hd
+  rcases hu with rfl | rfl | rfl | rfl <;> rcases hv with rfl | rfl | rfl | rfl <;>
+    solve
+      | (exfalso; simp only [fdet, E1, E2, Prod.fst_add, Prod.snd_add, Prod.fst_neg,
+          Prod.snd_neg] at hd; norm_num at hd)
+      | decide
+
+/-- **No ties.** The two triangles on a Farey side have different heights: the tiebreak `eps` is
+exactly the O(1) correction that separates the one tied pair. -/
+theorem HT_ne {u v : ℤ × ℤ} (hd : fdet u v = 1) : HT u v ≠ HT v (-u) := by
+  intro h
+  have h2 : 2 * (triH u v - triH v (-u)) = eps u v - eps v (-u) := by
+    simp only [HT] at h; linarith
+  have hbounds : -1 ≤ eps u v - eps v (-u) := by
+    have := eps_nonneg u v; have := eps_le_one v (-u); linarith
+  have hbounds2 : eps u v - eps v (-u) ≤ 1 := by
+    have := eps_le_one u v; have := eps_nonneg v (-u); linarith
+  have hB : triH u v = triH v (-u) := by
+    rcases lt_trichotomy (triH u v) (triH v (-u)) with hlt | heq | hgt
+    · exfalso; nlinarith
+    · exact heq
+    · exfalso; nlinarith
+  have hstd : edgeF u v = stdEdge := triH_eq_imp_std hd (by rw [hB])
+  have hsum := eps_add_of_std hd hstd
+  rw [hB] at h2
+  have hzero : eps u v - eps v (-u) = 0 := by linarith
+  omega
+
+/-! ## At most one side of a triangle is lower -/
+
+/-- The flip across the side `{u, v}` is lower than the triangle. -/
+def downA (u v : ℤ × ℤ) : Prop := triH v (-u) < triH u v
+
+/-- The flip across the side `{u, u + v}` is lower than the triangle. -/
+def downB (u v : ℤ × ℤ) : Prop := triH (u + v) u < triH u v
+
+/-- The flip across the side `{v, u + v}` is lower than the triangle. -/
+def downC (u v : ℤ × ℤ) : Prop := triH (u + v) v < triH u v
+
+/-- The three "the flip is lower" conditions, in the `ℓ¹` language of `no_two_flips_decrease`. -/
+lemma downA_iff (u v : ℤ × ℤ) : downA u v ↔ hℓ (v - u) < hℓ (u + v) := by
+  have h1 : triH v (-u) = hℓ u + hℓ v + hℓ (v - u) := by
+    simp only [triH, sub_eq_add_neg, hl_neg]
+    ring
+  have h2 : triH u v = hℓ u + hℓ v + hℓ (u + v) := by simp only [triH]
+  rw [downA, h1, h2]
+  constructor <;> intro h <;> linarith
+
+lemma downB_iff (u v : ℤ × ℤ) : downB u v ↔ hℓ (twoUaddV u v) < hℓ v := by
+  have h1 : triH (u + v) u = hℓ (u + v) + hℓ u + hℓ (twoUaddV u v) := by
+    simp only [triH, twoUaddV]
+    congr 2
+    ext <;> simp <;> ring
+  have h2 : triH u v = hℓ (u + v) + hℓ u + hℓ v := by simp only [triH]; ring
+  rw [downB, h1, h2]
+  constructor <;> intro h <;> linarith
+
+lemma downC_iff (u v : ℤ × ℤ) : downC u v ↔ hℓ (UaddTwoV u v) < hℓ u := by
+  have h1 : triH (u + v) v = hℓ (u + v) + hℓ v + hℓ (UaddTwoV u v) := by
+    simp only [triH, UaddTwoV]
+    congr 2
+    ext <;> simp <;> ring
+  have h2 : triH u v = hℓ (u + v) + hℓ v + hℓ u := by simp only [triH]; ring
+  rw [downC, h1, h2]
+  constructor <;> intro h <;> linarith
+
+/-- At most one of the three sides of a triangle has a lower opposite triangle: this is
+`no_two_flips_decrease` in the height's own vocabulary, and it is what makes the maximum-vertex
+argument run. -/
+theorem at_most_one_down (u v : ℤ × ℤ) :
+    ¬ (downA u v ∧ downB u v) ∧ ¬ (downA u v ∧ downC u v) ∧ ¬ (downB u v ∧ downC u v) := by
+  have h := no_two_flips_decrease u v
+  have eA := downA_iff u v
+  have eB := downB_iff u v
+  have eC := downC_iff u v
+  refine ⟨?_, ?_, ?_⟩
+  · rintro ⟨h1, h2⟩
+    exact h.1 ⟨eA.mp h1, eB.mp h2⟩
+  · rintro ⟨h1, h2⟩
+    exact h.2.1 ⟨eA.mp h1, eC.mp h2⟩
+  · rintro ⟨h1, h2⟩
+    exact h.2.2 ⟨eB.mp h1, eC.mp h2⟩
+
 end ModularGroup
 
 namespace LeanCategories.ForMathlib
