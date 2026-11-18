@@ -145,4 +145,23 @@ example : ∃ (i : Fin 8) (b : ℤ), ((-S * T ^ (5 : ℤ) : SL(2, ℤ))) = cuspL
 example : colHeight ((cuspLift 5 * T ^ (2 : ℤ) : SL(2, ℤ))).1 ≤ 1 :=
   (colHeight_le_one_iff _).mpr ⟨5, 2, rfl⟩
 
+example : firstColumn (S : SL(2, ℤ)) = (0, 1) := by decide
+
+example : firstColumn ((S * T ^ (9 : ℤ) : SL(2, ℤ))) = firstColumn (S : SL(2, ℤ)) :=
+  firstColumn_mul_T_zpow S 9
+
+example : (cuspLift 4 * T ^ (3 : ℤ) : SL(2, ℤ)) ≠ cuspLift 4 * T ^ (4 : ℤ) := by decide
+
+example : (cuspLift 3 * T ^ (2 : ℤ) : SL(2, ℤ)) ≠ cuspLift 5 * T ^ (2 : ℤ) := by decide
+
+example (h : (cuspLift 4 * T ^ (3 : ℤ) : SL(2, ℤ)) = cuspLift 4 * T ^ (3 : ℤ)) :
+    ((4, (3 : ℤ)) : Fin 8 × ℤ) = ((4, (3 : ℤ)) : Fin 8 × ℤ) :=
+  cuspLift_pair_injective h
+
+example : ∃! p : Fin 8 × ℤ, (S : SL(2, ℤ)) = cuspLift p.1 * T ^ p.2 :=
+  (colHeight_le_one_iff_existsUnique S).mp (by decide)
+
+example : ∃! p : Fin 8 × ℤ, ((-S * T ^ (5 : ℤ) : SL(2, ℤ))) = cuspLift p.1 * T ^ p.2 :=
+  (colHeight_le_one_iff_existsUnique _).mp (by decide)
+
 end LeanCategories.ForMathlib
