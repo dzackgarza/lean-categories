@@ -1075,7 +1075,9 @@ triangle height the sum of `|p| + |q|` over the three cusps:
 
 So the criterion to prove is "at most one smaller neighbour **and no ties**", and this height needs
 exactly one tiebreak, at the height-four pair. Six of those seven numbers are the reason the naive
-attempt would stall only at the last step.
+attempt would stall only at the last step. The "at most one smaller neighbour" half is now a
+theorem — `no_two_flips_decrease` below — and it holds for *every* pair of integer vectors, not
+only bases.
 -/
 
 theorem S_sq_ne_one : (S : SL(2, ℤ)) ^ 2 ≠ 1 := by
@@ -1389,6 +1391,112 @@ lemma fdet_repr_unique (u v w : ℤ × ℤ) (h : fdet u v = 1) {α β : ℤ}
   · have : fdet w u = fdet (α * u.1 + β * v.1, α * u.2 + β * v.2) u := by rw [hw]
     rw [this, fdet_combo_left, hvu]
     ring
+
+/-- The `ℓ¹` height of an integer vector. -/
+def hℓ (x : ℤ × ℤ) : ℤ := |x.1| + |x.2|
+
+/-- `2u + v`. -/
+def twoUaddV (u v : ℤ × ℤ) : ℤ × ℤ := (2 * u.1 + v.1, 2 * u.2 + v.2)
+
+/-- `u + 2v`. -/
+def UaddTwoV (u v : ℤ × ℤ) : ℤ × ℤ := (u.1 + 2 * v.1, u.2 + 2 * v.2)
+
+lemma hℓ_add_le (x y : ℤ × ℤ) : hℓ (x + y) ≤ hℓ x + hℓ y := by
+  simp only [hℓ, Prod.fst_add, Prod.snd_add]
+  linarith [abs_add_le x.1 y.1, abs_add_le x.2 y.2]
+
+lemma hℓ_sub_le (x y : ℤ × ℤ) : hℓ (x - y) ≤ hℓ x + hℓ y := by
+  have := hℓ_add_le x (-y)
+  simpa [hℓ, Prod.fst_sub, Prod.snd_sub, abs_neg, sub_eq_add_neg] using this
+
+lemma hℓ_double (x : ℤ × ℤ) : hℓ ((2 * x.1, 2 * x.2) : ℤ × ℤ) = 2 * hℓ x := by
+  simp only [hℓ, abs_mul]
+  norm_num
+  linarith
+
+lemma double_eq_add_sub (u v : ℤ × ℤ) :
+    ((2 * v.1, 2 * v.2) : ℤ × ℤ) = (u + v) + (v - u) := by
+  ext <;> simp <;> ring
+
+lemma double_eq_add_sub' (u v : ℤ × ℤ) :
+    ((2 * u.1, 2 * u.2) : ℤ × ℤ) = (u + v) + (u - v) := by
+  ext <;> simp <;> ring
+
+lemma double_add_eq (u v : ℤ × ℤ) :
+    ((2 * (u + v).1, 2 * (u + v).2) : ℤ × ℤ) = twoUaddV u v + v := by
+  ext <;> simp only [twoUaddV, Prod.fst_add, Prod.snd_add] <;> ring
+
+lemma double_eq_sub (u v : ℤ × ℤ) :
+    ((2 * u.1, 2 * u.2) : ℤ × ℤ) = twoUaddV u v - v := by
+  ext <;> simp [twoUaddV]
+
+lemma double_add_eq' (u v : ℤ × ℤ) :
+    ((2 * (u + v).1, 2 * (u + v).2) : ℤ × ℤ) = UaddTwoV u v + u := by
+  ext <;> simp only [UaddTwoV, Prod.fst_add, Prod.snd_add] <;> ring
+
+lemma double_eq_sub' (u v : ℤ × ℤ) :
+    ((2 * v.1, 2 * v.2) : ℤ × ℤ) = UaddTwoV u v - u := by
+  ext <;> simp only [UaddTwoV, Prod.fst_sub, Prod.snd_sub] <;> ring
+
+/-- **At most one flip decreases the height.** For any two integer vectors, at most one of the three
+neighbour triangles of `{u, v, u + v}` has smaller `ℓ¹`-height. -/
+theorem no_two_flips_decrease (u v : ℤ × ℤ) :
+    ¬ (hℓ (v - u) < hℓ (u + v) ∧ hℓ (twoUaddV u v) < hℓ v) ∧
+    ¬ (hℓ (v - u) < hℓ (u + v) ∧ hℓ (UaddTwoV u v) < hℓ u) ∧
+    ¬ (hℓ (twoUaddV u v) < hℓ v ∧ hℓ (UaddTwoV u v) < hℓ u) := by
+  -- `hℓ (u + v)` above `hℓ v` from the first condition
+  have ha_v : hℓ (v - u) < hℓ (u + v) → hℓ (u + v) > hℓ v := by
+    intro h1
+    have h2 : hℓ ((2 * v.1, 2 * v.2) : ℤ × ℤ) ≤ hℓ (u + v) + hℓ (v - u) := by
+      rw [double_eq_add_sub]
+      exact hℓ_add_le _ _
+    rw [hℓ_double] at h2
+    linarith
+  have ha_u : hℓ (v - u) < hℓ (u + v) → hℓ (u + v) > hℓ u := by
+    intro h1
+    have h2 : hℓ ((2 * u.1, 2 * u.2) : ℤ × ℤ) ≤ hℓ (u + v) + hℓ (u - v) := by
+      rw [double_eq_add_sub']
+      exact hℓ_add_le _ _
+    have h4 : hℓ (u - v) = hℓ (v - u) := by
+      rw [show u - v = -(v - u) by abel]
+      simp only [hℓ, Prod.fst_neg, Prod.snd_neg, abs_neg]
+    rw [hℓ_double, h4] at h2
+    linarith
+  have hb_v : hℓ (twoUaddV u v) < hℓ v → hℓ (u + v) < hℓ v := by
+    intro h1
+    have h2 : hℓ ((2 * (u + v).1, 2 * (u + v).2) : ℤ × ℤ) ≤ hℓ (twoUaddV u v) + hℓ v := by
+      rw [double_add_eq]
+      exact hℓ_add_le _ _
+    rw [hℓ_double] at h2
+    linarith
+  have hb_u : hℓ (twoUaddV u v) < hℓ v → hℓ u < hℓ v := by
+    intro h1
+    have h2 : hℓ ((2 * u.1, 2 * u.2) : ℤ × ℤ) ≤ hℓ (twoUaddV u v) + hℓ v := by
+      rw [double_eq_sub]
+      exact hℓ_sub_le _ _
+    rw [hℓ_double] at h2
+    linarith
+  have hc_v : hℓ (UaddTwoV u v) < hℓ u → hℓ v < hℓ u := by
+    intro h1
+    have h2 : hℓ ((2 * v.1, 2 * v.2) : ℤ × ℤ) ≤ hℓ (UaddTwoV u v) + hℓ u := by
+      rw [double_eq_sub']
+      exact hℓ_sub_le _ _
+    rw [hℓ_double] at h2
+    linarith
+  have hc_u : hℓ (UaddTwoV u v) < hℓ u → hℓ (u + v) < hℓ u := by
+    intro h1
+    have h2 : hℓ ((2 * (u + v).1, 2 * (u + v).2) : ℤ × ℤ) ≤ hℓ (UaddTwoV u v) + hℓ u := by
+      rw [double_add_eq']
+      exact hℓ_add_le _ _
+    rw [hℓ_double] at h2
+    linarith
+  refine ⟨?_, ?_, ?_⟩
+  · rintro ⟨h1, h2⟩
+    linarith [ha_v h1, hb_v h2]
+  · rintro ⟨h1, h2⟩
+    linarith [ha_u h1, hc_u h2]
+  · rintro ⟨h1, h2⟩
+    linarith [hb_u h1, hc_v h2]
 
 end ModularGroup
 

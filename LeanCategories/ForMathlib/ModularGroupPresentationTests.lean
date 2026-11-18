@@ -255,4 +255,16 @@ example : ∃ ε₁ ε₂ : ℤ, (ε₁ = 1 ∨ ε₁ = -1) ∧ (ε₂ = 1 ∨ �
 example {α β : ℤ} (h : ((2 : ℤ), 3) = (α * (1 : ℤ) + β * 0, α * 0 + β * 1)) : α = 2 :=
   (fdet_repr_unique ((1 : ℤ), 0) ((0 : ℤ), 1) ((2 : ℤ), 3) (by decide) h).1
 
+example : hℓ ((3 : ℤ), -4) = 7 := by decide
+
+example : hℓ ((1 : ℤ), 1) + hℓ ((1 : ℤ), -1) = 4 := by decide
+
+example : ¬ (hℓ (((0 : ℤ), 1) - ((1 : ℤ), 0)) < hℓ (((1 : ℤ), 0) + ((0 : ℤ), 1)) ∧
+    hℓ (twoUaddV ((1 : ℤ), 0) ((0 : ℤ), 1)) < hℓ ((0 : ℤ), 1)) :=
+  (no_two_flips_decrease ((1 : ℤ), 0) ((0 : ℤ), 1)).1
+
+example : ¬ (hℓ (twoUaddV ((1 : ℤ), 1) ((2 : ℤ), 1)) < hℓ ((2 : ℤ), 1) ∧
+    hℓ (UaddTwoV ((1 : ℤ), 1) ((2 : ℤ), 1)) < hℓ ((1 : ℤ), 1)) :=
+  (no_two_flips_decrease ((1 : ℤ), 1) ((2 : ℤ), 1)).2.2
+
 end LeanCategories.ForMathlib
