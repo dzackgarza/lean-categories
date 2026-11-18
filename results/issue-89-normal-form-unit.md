@@ -237,3 +237,14 @@ So the "no nonempty reduced word dies" half of the tree unit is done for cyclica
 words, i.e. for even length. What remains is the parity split — an odd-length word is only linearly
 alternating, `hcyc` fails, and the walk has one degenerate step at the seam — and then the bridge from
 `PresentedGroup sl2zRelators` to these letters.
+
+## Progress: the two ends of the walk
+
+For the odd-length parity split the two ends must be pinned: at index `0` the basis is the identity, so
+`Hk_zero` reads the height there off `(E1, E2)`, and `EH_std = 15`, `HT_std = 14` are those two
+numbers. (The first step of the walk goes strictly up at that end — `16` when `l[0]` is `⟨S⟩`-type,
+`19` when it is `⟨R⟩`-type — which is what rules out index `0` being a maximum.)
+
+Still open: the mirror statement at the last index (the columns of the inverse of the last letter), the
+odd-length maximum-vertex argument built on the two ends, and then the bridge from
+`PresentedGroup sl2zRelators`.

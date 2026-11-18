@@ -3229,6 +3229,29 @@ theorem no_reduced_word_dies (l : List Letter) (hne : l ≠ [])
       exact (halt k hkpos).symm
   exact no_cycle hne hprod htyn htyp
 
+/-!
+### The two ends of the walk
+
+For the parity split the odd-length case needs the two ends of the walk pinned down: at index `0` the
+basis is the identity, so `Hk_zero` (`Hk l 0` is `EH` or `HT` of `(E1, E2)`), and those two numbers are
+`EH_std = 15` and `HT_std = 14` — which is what makes the first step of the walk strictly go up at one
+end (`16` resp. `19` there). The mirror statement at the last index needs the columns of the inverse
+of the last letter, which is the part still open.
+-/
+
+
+/-- The height at the start of the walk: the basis there is the identity. -/
+lemma Hk_zero (l : List Letter) : Hk l 0 = if (L l 0).isS then EH E1 E2 else HT E1 E2 := by
+  have h : Hk l 0 = if (L l 0).isS then EH (U l 0) (V l 0) else HT (U l 0) (V l 0) := rfl
+  rw [h]
+  have hU : U l 0 = E1 := by simp [U, Y_zero, col, E1]
+  have hV : V l 0 = E2 := by simp [V, Y_zero, col, E2]
+  rw [hU, hV]
+
+/-- The two heights at the two ends, numerically. -/
+lemma EH_std : EH E1 E2 = 15 := by decide
+lemma HT_std : HT E1 E2 = 14 := by decide
+
 end ModularGroup
 
 namespace LeanCategories.ForMathlib
