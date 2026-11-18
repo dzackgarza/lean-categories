@@ -490,7 +490,10 @@ eight pairs `(±1, 0)`, `(0, ±1)`, `(±1, ±1)`, each one coset. `cuspLift : Fi
 the eight representatives (`1`, `-1`, `S`, `-S`, `S T⁻¹ S⁻¹` and the sign-and-inverse variants), and
 `colHeight_le_one_iff` is the exact statement
 
-  `colHeight A ≤ 1 ↔ ∃ i b, A = cuspLift i * T ^ b`.
+  `colHeight A ≤ 1 ↔ ∃ i b, A = cuspLift i * T ^ b`,
+
+and `colHeight_le_one_iff_existsUnique` sharpens it to a unique pair, i.e. `Fin 8 × ℤ` bijects onto
+the stratum (`cuspLift_pair_injective`).
 
 This is the vertex-stabilizer arithmetic of the tree action: the eight are the eight `⟨T⟩`-cosets
 the stratum meets. It is all of component 2 that is arithmetic, and what it does *not* give is the
@@ -522,18 +525,27 @@ lemma cuspLift_six : (cuspLift 6).1 = !![1, 0; -1, 1] := by decide
 
 lemma cuspLift_seven : (cuspLift 7).1 = !![-1, 0; 1, -1] := by decide
 
+/-- The first column of an `SL(2, ℤ)` matrix, as a pair of integers. -/
+def firstColumn (X : SL(2, ℤ)) : ℤ × ℤ := (X.1 0 0, X.1 1 0)
+
+lemma mul_T_zpow_zero_zero (X : SL(2, ℤ)) (b : ℤ) : (X * T ^ b).1 0 0 = X.1 0 0 := by
+  rw [show (X * T ^ b).1 = X.1 * (T ^ b).1 from rfl, coe_T_zpow, Matrix.mul_apply,
+    Fin.sum_univ_two]
+  simp
+
+lemma mul_T_zpow_one_zero (X : SL(2, ℤ)) (b : ℤ) : (X * T ^ b).1 1 0 = X.1 1 0 := by
+  rw [show (X * T ^ b).1 = X.1 * (T ^ b).1 from rfl, coe_T_zpow, Matrix.mul_apply,
+    Fin.sum_univ_two]
+  simp
+
+lemma firstColumn_mul_T_zpow (X : SL(2, ℤ)) (b : ℤ) :
+    firstColumn (X * T ^ b) = firstColumn X := by
+  rw [firstColumn, firstColumn, mul_T_zpow_zero_zero, mul_T_zpow_one_zero]
+
 /-- Right multiplication by a power of `T` fixes the first column, so it fixes `colHeight`. -/
 lemma colHeight_mul_T_zpow (X : SL(2, ℤ)) (b : ℤ) :
     colHeight (X * T ^ b).1 = colHeight X.1 := by
-  have h00 : (X * T ^ b).1 0 0 = X.1 0 0 := by
-    rw [show (X * T ^ b).1 = X.1 * (T ^ b).1 from rfl, coe_T_zpow, Matrix.mul_apply,
-      Fin.sum_univ_two]
-    simp
-  have h10 : (X * T ^ b).1 1 0 = X.1 1 0 := by
-    rw [show (X * T ^ b).1 = X.1 * (T ^ b).1 from rfl, coe_T_zpow, Matrix.mul_apply,
-      Fin.sum_univ_two]
-    simp
-  rw [colHeight_apply, colHeight_apply, h00, h10]
+  rw [colHeight_apply, colHeight_apply, mul_T_zpow_zero_zero, mul_T_zpow_one_zero]
 
 lemma colHeight_cuspLift (i : Fin 8) : colHeight (cuspLift i).1 = 1 := by
   fin_cases i <;> decide
@@ -862,6 +874,49 @@ theorem of_one_mul_of_zero_pow_six :
     eq_of_mul_inv_eq_one sl2zTS_relator
   rw [show (6 : ℕ) = 3 * 2 by norm_num, pow_mul, hcube, ← pow_mul,
     show (2 * 2 : ℕ) = 4 by norm_num, sl2zS_pow_four]
+/-- The first columns of the eight lifts are pairwise distinct: that is what makes the eight cosets
+distinct rather than merely eight. -/
+lemma cuspLift_firstColumn_injective :
+    Function.Injective (fun i : Fin 8 => firstColumn (cuspLift i)) := by decide
+
+/-- The parametric description of the stratum is injective: `cuspLift i * T ^ b` determines `i` and
+`b`. The index is read off the first column (`cuspLift_firstColumn_injective`, which right
+multiplication by `T` leaves alone) and then `b` is read off the `(0, 1)` entry of `T ^ b`. -/
+theorem cuspLift_mul_T_zpow_injective {i i' : Fin 8} {b b' : ℤ}
+    (h : cuspLift i * T ^ b = cuspLift i' * T ^ b') : i = i' ∧ b = b' := by
+  have hcol : firstColumn (cuspLift i) = firstColumn (cuspLift i') := by
+    have := congrArg firstColumn h
+    simpa [firstColumn_mul_T_zpow] using this
+  have hii : i = i' := cuspLift_firstColumn_injective hcol
+  subst hii
+  refine ⟨rfl, ?_⟩
+  have h1 : T ^ b = T ^ b' := mul_left_cancel h
+  have h2 := congrArg (fun X : SL(2, ℤ) => X.1 0 1) h1
+  rw [coe_T_zpow, coe_T_zpow] at h2
+  exact h2
+
+/-- `Fin 8 × ℤ` parametrizes the stratum without repetition. -/
+theorem cuspLift_pair_injective :
+    Function.Injective (fun p : Fin 8 × ℤ => cuspLift p.1 * T ^ p.2) := by
+  rintro ⟨i, b⟩ ⟨i', b'⟩ h
+  obtain ⟨rfl, rfl⟩ := cuspLift_mul_T_zpow_injective h
+  rfl
+
+/-- **The cusp stratum, exactly.** `A : SL(2, ℤ)` has first-column height at most one exactly when
+it is `cuspLift i * T ^ b` for a *unique* pair `(i, b)`. This closes the arithmetic of component 2:
+the stratum is a bijective image of `Fin 8 × ℤ`. What is not arithmetic, and is what
+`Sl2zPresentationComplete` still asks, is the word-level statement that the eight lifts' canonical
+words are a transversal — that no word of `PresentedGroup sl2zRelators` is normal-closure equivalent
+to two of them. -/
+theorem colHeight_le_one_iff_existsUnique (A : SL(2, ℤ)) :
+    colHeight A.1 ≤ 1 ↔ ∃! p : Fin 8 × ℤ, A = cuspLift p.1 * T ^ p.2 := by
+  rw [colHeight_le_one_iff]
+  constructor
+  · rintro ⟨i, b, rfl⟩
+    exact ⟨(i, b), rfl, fun q hq => cuspLift_pair_injective (by simpa using hq.symm)⟩
+  · rintro ⟨⟨i, b⟩, h, _⟩
+    exact ⟨i, b, h⟩
+
 end ModularGroup
 
 namespace LeanCategories.ForMathlib
