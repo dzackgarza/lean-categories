@@ -46,72 +46,50 @@ elements generate `GL(2, ℤ)` (`gl2zGenerators`), each relator of the adjoined 
 `SL(2, ℤ)` one along `sl2zInGl`, with `e` of order exactly two
 (`gl2zToGroup_of_two_sq`, `gl2zToGroup_of_two_ne_one`).
 
-## What is not here, and exactly what would close the issue
+## How item 1's completeness is proved here
 
-**Component 1 of item 1's completeness is proved here**: the Euclidean descent on the first column
-(`colHeight_step`, `exists_word_mul_colHeight_le_one`, section "Component 1 of the completeness
-proof" below). Every `A : SL(2, ℤ)` is a word in `S` and `T` times a matrix whose first column has
-height at most one, and each step of the descent is `A = S ^ ε * T ^ q * A'` with
-`colHeight A' < colHeight A`. The stratum itself is now classified as well
-(`colHeight_le_one_iff`: `colHeight A ≤ 1` exactly when `A = cuspLift i * T ^ b` for one of eight
-explicit `cuspLift i`, i.e. the stratum is eight cosets of `⟨T⟩`). **What is not proved is
-component 2's word-level statement** —
-that those eight cosets are a transversal for the words of the presentation, i.e. that no word of
-`PresentedGroup sl2zRelators` is normal-closure equivalent to two of them — and it carries the whole
-of the remaining difficulty; the last two paragraphs of this section say why no version of the
-descent reaches it.
+The presentation `⟨S, T | S⁴, (TS)³ = S²⟩` is complete: `sl2zToGroup_injective`, and with
+surjectivity the isomorphism `sl2zPresentation : PresentedGroup sl2zRelators ≃* SL(2, ℤ)`. There are
+two halves, with two different techniques.
 
-*Completeness* of both presentations — that the relators generate the whole kernel, equivalently
-that `sl2zToGroup` and `gl2zToGroup` are injective — is **not** proved. That is the load-bearing
-half of item 1: a coset enumeration on a presentation with too few relators returns a quotient, not
-the group. The gap is named `Sl2zPresentationComplete` and `Gl2zPresentationComplete` below rather
-than assumed. In Mathlib's presentation vocabulary
-(`Mathlib/GroupTheory/Presentation.lean:52`) the missing fact is the structure field
-`Group.Presentation.lift_ker_eq_normalClosure` for `Group.Presentation (SL(2, ℤ)) (Fin 2)` with
-`val = sl2zGenVal` and `rel = sl2zRelators`; the generating field of that structure is
-`sl2zGenerators`. For item 2 the same field is missing, and it follows from item 1's plus the
-reconciliation of `PresentedGroup gl2zRelators` with `PresentedGroup sl2zRelators ⋊ ⟨e⟩`, which is
-not formalized either.
+*Surjectivity* (`sl2zToGroup_surjective`) is the Euclidean descent on the first column of a matrix
+(`colHeight_step`, `exists_word_mul_colHeight_le_one`): every `A : SL(2, ℤ)` is `S ^ ε * T ^ q * A'`
+with `colHeight A' < colHeight A`, so the descent lands in the stratum `colHeight ≤ 1`, which is
+classified as the eight cosets `cuspLift i * T ^ b` (`colHeight_le_one_iff`).
 
-For item 2 the missing field is again injectivity (`Gl2zPresentationComplete`), and the reduction of
-that to item 1's field is not formalized either. The reduction needs three things: (a) the
-generator-inverting endomorphism `P_SL →* P_SL` taking `S ↦ S⁻¹`, `T ↦ T⁻¹` (both relator
-obligations are group manipulations from `sl2zS_pow_four` and `sl2zTS_relator`); (b) the conjugation
-identity
-`e * i a * e⁻¹ = i (inv a)` for `e = PresentedGroup.of 2` and `i` the map from the `SL(2, ℤ)`
-presentation to the `GL(2, ℤ)` one, by generator extensionality from the relators `eSe⁻¹S` and
-`eTe⁻¹T`; and (c) the resulting normal form `∀ q, ∃ a, ∃ k : ℤ, i a * e ^ k = q`. Given (a)–(c), an
-element killed by `gl2zToGroup` has `sl2zToGroup a = 1` and `eGL ^ k = 1` by the uniqueness in
-`gl2z_isComplement`, hence is `1`. None of (a)–(c) is written here.
+*Injectivity* (`sl2zToGroup_injective`) is the Bass–Serre statement in elementary form: no nonempty
+reduced word dies. In the generators `S` and `R = TS` the presentation is the amalgam
+`ℤ/4 *_{ℤ/2} ℤ/6` (`sl2zAmalgamEquiv`), and the proof has two stages.
 
-The issue's reading of the presented group as the amalgam `ℤ/4 *_{ℤ/2} ℤ/6` is proved in the form
-that is checkable here: the change of generators from `S, T` to `S, R = TS`, after which the
-relators read `S⁴` and `R³S⁻²` (`sl2zAmalgamRelators`, `sl2zAmalgamEquiv`), which is the
-amalgamation of `S⁴` with `R⁶` over `⟨S²⟩ = ⟨R³⟩`. What is not formalized is the identification
-with the *categorical* `Monoid.PushoutI` of `ℤ/4 ← ℤ/2 → ℤ/6`; the section note before
-`sl2zAmalgamRelators` records why (`PushoutI`'s universal property needs a homomorphism out of a
-cyclic factor into a nonabelian group, which Mathlib does not have at this pin).
+* The normal form (`reduced_aux`): a *shortest* word for an element, with every exponent reduced into
+  the factor's period (`modw`), has no zero exponent, no two adjacent entries in one factor, and no
+  entry equal to the base element `±1`. The last two facts come from the local rewritings
+  `WP_merge_false/true`, `WP_base_false/true`, `WP_absorb_s/r` — each replaces one or two entries by
+  fewer entries of the same value — applied at an arbitrary position (`pair_shorter`, `splice`).
+  Hence the shortest word is empty, or a single base entry, or a word of the six letters
+  `S, S³, R, R², R⁴, R⁵` with adjacent letters in different factors.
+* No such word has product one (`no_die`), by the walk over the incidence graph of Farey edges and
+  triangles developed in the sections below: the two heights `HT` (a triangle) and `EH` (an edge) have
+  no local maximum on a closed reduced walk, and the parity split handles the seam of an odd-length
+  word.
 
-Two proofs of item 1's completeness are known, and what each still costs here is different.
+From these, `phiSL_eq_one`, `phiSL_injective`, `sl2zToGroup_injective` and `sl2zPresentation` follow.
+The issue's named gap `Sl2zPresentationComplete` is `sl2zToGroup_injective`, proved as
+`sl2zPresentationComplete`.
 
-*Normal forms for the amalgam.* Mathlib at this pin **does** have them: `Monoid.PushoutI`'s
-`NormalWord` with its `equiv : PushoutI φ ≃ NormalWord d` (`Mathlib/GroupTheory/PushoutI.lean:553`),
-`prod_injective` (`:560`), `of_injective` (`:583`), `Reduced.eq_empty_of_mem_range` (`:628`) and the
-amalgam intersection `inf_of_range_eq_base_range` (`:647`), together with `Monoid.CoprodI.Word`'s
-unique reduced words for the free product. So the "unique reduced words for
-`ℤ/4 *_{ℤ/2} ℤ/6`" half is in the library, and the other end is now here too: `amalgamPushoutEquiv`
-identifies `PresentedGroup sl2zAmalgamRelators` with the pushout `AmalgamPushout` of
-`ℤ/4 ← ℤ/2 → ℤ/6`, the cyclic factors being taken as one-relator *presentations* `Cyclic n` so that
-a homomorphism *out of* them needs no `ZMod` recursion into a nonabelian target. What remains is the
-middle: injectivity of the induced map `AmalgamPushout →* SL(2, ℤ)`, which does not follow from the
-normal form and is the tree statement below.
+*Still open is item 2's completeness*, `Gl2zPresentationComplete = Function.Injective gl2zToGroup`.
+It reduces to item 1's plus a reconciliation of `PresentedGroup gl2zRelators` with
+`PresentedGroup sl2zRelators ⋊ ⟨e⟩` — a normal form `∀ q, ∃ a, ∃ k : ℤ, i a * e ^ k = q` — which is
+not formalized. The `e`-half is here (`e ^ 2 = 1`, `e S e⁻¹ = S⁻¹`, `e T e⁻¹ = T⁻¹`,
+`gl2z_isComplement`, and `e` of order exactly two in the presentation); what is missing is the normal
+form that combines it with item 1.
 
-*Serre's tree action of `SL(2, ℤ)`.* The tree is the barycentric subdivision of the dual of the
-Farey tessellation: its vertices of `Z/4`-type are the midpoints of Farey edges (fixed by `S`) and
-those of `Z/6`-type the centroids of Farey triangles (fixed by `TS`), its edges have stabilizer
-`⟨S²⟩ = {±1}`, and the vertex-stabilizer statement is component 2. Mathlib has no Farey graph and no
-Bass–Serre theory, and acyclicity of that graph — which is what "no nonempty reduced word
-dies" comes to — is the missing lemma.
+The issue's reading of the presented group as the amalgam `ℤ/4 *_{ℤ/2} ℤ/6` is also formalized all
+the way to Mathlib's categorical pushout: `amalgamPushoutEquiv` identifies
+`PresentedGroup sl2zAmalgamRelators` with `Monoid.PushoutI` of `ℤ/4 ← ℤ/2 → ℤ/6`, the cyclic factors
+being taken as one-relator *presentations* `Cyclic n` so that a homomorphism *out of* them needs no
+`ZMod` recursion into a nonabelian target. The proof of item 1 above does not go through that
+identification: it reads the amalgam directly off the generators `S` and `R` and the two relators.
 
 ## Sources
 
@@ -635,10 +613,10 @@ theorem colHeight_le_one_iff (A : SL(2, ℤ)) :
   · rintro ⟨i, b, rfl⟩
     rw [colHeight_mul_T_zpow, colHeight_cuspLift]
 
-/-- Lean-categories#89 item 1 in the form the theorem would take: the presentation
+/-- Lean-categories#89 item 1 in the form the theorem takes: the presentation
 `⟨S, T | S⁴, (TS)³ = S²⟩` is *complete*, i.e. the relators generate the whole kernel of the free
-group's map onto `SL(2, ℤ)`. This is **not proved** here; see the module docstring. It is what a
-coset enumeration on the presentation consumes. -/
+group's map onto `SL(2, ℤ)`. Proved as `sl2zPresentationComplete` at the end of the section
+`ModularGroup`; it is what a coset enumeration on the presentation consumes. -/
 def Sl2zPresentationComplete : Prop := Function.Injective sl2zToGroup
 
 /-!
@@ -3199,14 +3177,14 @@ the walk of its prefixes is a closed reduced walk in the incidence graph of Fare
 whose height has no local maximum. -/
 theorem no_reduced_word_dies (l : List Letter) (hne : l ≠ [])
     (hprod : (l.map Letter.val).prod = 1)
-    (halt : ∀ (i : ℕ), 0 < i → (L l i).isS ≠ (L l (i - 1)).isS)
+    (halt : ∀ (i : ℕ), 0 < i → i < l.length → (L l i).isS ≠ (L l (i - 1)).isS)
     (hcyc : (L l 0).isS ≠ (L l (l.length - 1)).isS) : False := by
   have hn : 0 < l.length := List.length_pos_iff.mpr hne
   have htyn : ∀ (k : ℕ) (hk : k < l.length), (L l (nxt l.length k)).isS ≠ (L l k).isS := by
     intro k hk
     rcases Nat.lt_or_ge (k + 1) l.length with h | h
     · rw [nxt, Nat.mod_eq_of_lt h]
-      simpa using halt (k + 1) (by omega)
+      simpa using halt (k + 1) (by omega) (by omega)
     · have hkn : k + 1 = l.length := by omega
       rw [nxt, hkn, Nat.mod_self]
       have hk' : k = l.length - 1 := by omega
@@ -3226,7 +3204,7 @@ theorem no_reduced_word_dies (l : List Letter) (hne : l ≠ [])
         rw [show k + l.length - 1 = k - 1 + l.length by omega, Nat.add_mod_right,
           Nat.mod_eq_of_lt (by omega)]
       rw [e]
-      exact (halt k hkpos).symm
+      exact (halt k hkpos hk).symm
   exact no_cycle hne hprod htyn htyp
 
 /-!
@@ -3342,30 +3320,33 @@ different factors has product one only if it is empty.**
 * `no_die` — both parities: for even length the word is also cyclically alternating and the closed
   reduced walk of `no_reduced_word_dies` applies.
 
-What remains before `Sl2zPresentationComplete` is the glue from `PresentedGroup sl2zRelators`: every
-element there must be shown to be (a base element times) such a word.
+This is the second stage of `sl2zToGroup_injective`; the first stage — that a shortest word for an
+element is such a word, or empty, or a single base entry — is `reduced_aux` in the bridge below.
 -/
 
 
 /-- In a linearly alternating word the type of a letter depends only on the parity of its index. -/
-theorem isS_parity {l : List Letter} (halt : ∀ (i : ℕ), 0 < i → (L l i).isS ≠ (L l (i - 1)).isS)
-    (i : ℕ) :
-    (L l i).isS = if i % 2 = 0 then (L l 0).isS else !(L l 0).isS := by
+theorem isS_parity {l : List Letter}
+    (halt : ∀ (i : ℕ), 0 < i → i < l.length → (L l i).isS ≠ (L l (i - 1)).isS) :
+    ∀ (i : ℕ), i < l.length →
+      (L l i).isS = if i % 2 = 0 then (L l 0).isS else !(L l 0).isS := by
+  intro i
   induction i using Nat.strong_induction_on with
   | _ i ih =>
+    intro hi
     match i with
     | 0 => simp
     | 1 =>
-      have h : (L l 1).isS = !(L l 0).isS := bool_eq_not (halt 1 (by omega))
+      have h : (L l 1).isS = !(L l 0).isS := bool_eq_not (halt 1 (by omega) (by omega))
       rw [h]
       simp
     | i + 2 =>
       have e1 : i + 2 - 1 = i + 1 := by omega
       have hstep : (L l (i + 2)).isS = (L l i).isS := by
-        rw [bool_eq_not (halt (i + 2) (by omega)), e1,
-          bool_eq_not (halt (i + 1) (by omega)), show i + 1 - 1 = i from by omega,
+        rw [bool_eq_not (halt (i + 2) (by omega) (by omega)), e1,
+          bool_eq_not (halt (i + 1) (by omega) (by omega)), show i + 1 - 1 = i from by omega,
           Bool.not_not]
-      rw [hstep, ih i (by omega)]
+      rw [hstep, ih i (by omega) (by omega)]
       congr 1
       rw [Nat.add_mod]
       norm_num
@@ -3377,13 +3358,13 @@ vertex is interior, where both neighbours are lower — which the turn forbids. 
 theorem no_die_odd {l : List Letter} (hne : l ≠ [])
     (hodd : ∃ m, l.length = 2 * m + 1) (hbig : 1 < l.length)
     (hprod : (l.map Letter.val).prod = 1)
-    (halt : ∀ (i : ℕ), 0 < i → (L l i).isS ≠ (L l (i - 1)).isS) : False := by
+    (halt : ∀ (i : ℕ), 0 < i → i < l.length → (L l i).isS ≠ (L l (i - 1)).isS) : False := by
   have hn : 0 < l.length := List.length_pos_iff.mpr hne
   -- the two ends carry the same type
   have hsame : (L l 0).isS = (L l (l.length - 1)).isS := by
     obtain ⟨m, hm⟩ := hodd
     have hel : l.length - 1 = 2 * m := by omega
-    have hl := isS_parity halt (l.length - 1)
+    have hl := isS_parity halt (l.length - 1) (by omega)
     rw [hel, Nat.mod_eq_zero_of_dvd ⟨m, by ring⟩] at hl
     rw [hel]
     exact hl.symm
@@ -3393,7 +3374,7 @@ theorem no_die_odd {l : List Letter} (hne : l ≠ [])
   -- the first step goes up, so `0` is not the highest index
   have hstep1 : Hk l 0 < Hk l 1 := by
     refine Hk_zero_lt_one hne ?_
-    have h1n : (L l 1).isS = !(L l 0).isS := bool_eq_not (halt 1 (by omega))
+    have h1n : (L l 1).isS = !(L l 0).isS := bool_eq_not (halt 1 (by omega) (by omega))
     rw [h1n]
     exact fun hh => absurd hh (by simp)
   have hmax1 : Hk l 1 ≤ Hk l k₀ := hmax _ (Finset.mem_range.mpr hbig)
@@ -3419,13 +3400,13 @@ theorem no_die_odd {l : List Letter} (hne : l ≠ [])
     simp only [prv]; exact Nat.mod_lt _ hn
   have htyn : (L l (nxt l.length k₀)).isS ≠ (L l k₀).isS := by
     rw [show nxt l.length k₀ = k₀ + 1 from by simp only [nxt]; exact Nat.mod_eq_of_lt hlt]
-    exact halt (k₀ + 1) (by omega)
+    exact halt (k₀ + 1) (by omega) (by omega)
   have htyp : (L l (prv l.length k₀)).isS ≠ (L l k₀).isS := by
     rw [show prv l.length k₀ = k₀ - 1 from by
       simp only [prv]
       rw [show k₀ + l.length - 1 = k₀ - 1 + l.length by omega, Nat.add_mod_right,
         Nat.mod_eq_of_lt (by omega)]]
-    exact (halt k₀ hpos).symm
+    exact (halt k₀ hpos hk₀).symm
   have h1 : Hk l (nxt l.length k₀) ≤ Hk l k₀ := hmax _ (Finset.mem_range.mpr hnx)
   have h2 : Hk l (prv l.length k₀) ≤ Hk l k₀ := hmax _ (Finset.mem_range.mpr hpv)
   have e1 : Hk l (nxt l.length k₀) ≠ Hk l k₀ := step_Hk hprod hk₀ hnx htyn
@@ -3452,14 +3433,14 @@ even-length case is the closed reduced walk of `no_reduced_word_dies`; the odd-l
 `no_die_odd` is the same walk with its two ends pinned down. -/
 theorem no_die {l : List Letter} (hne : l ≠ [])
     (hprod : (l.map Letter.val).prod = 1)
-    (halt : ∀ (i : ℕ), 0 < i → (L l i).isS ≠ (L l (i - 1)).isS) : False := by
+    (halt : ∀ (i : ℕ), 0 < i → i < l.length → (L l i).isS ≠ (L l (i - 1)).isS) : False := by
   have hn : 0 < l.length := List.length_pos_iff.mpr hne
   rcases Nat.even_or_odd l.length with ⟨m, hm⟩ | ⟨m, hm⟩
   · -- even length: the word is also cyclically alternating
     refine no_reduced_word_dies l hne hprod halt ?_
     have hmpos : 0 < m := by omega
     have hodd : l.length - 1 = 2 * (m - 1) + 1 := by omega
-    have hpar := isS_parity halt (l.length - 1)
+    have hpar := isS_parity halt (l.length - 1) (by omega)
     rw [hodd] at hpar
     have h1 : (2 * (m - 1)) % 2 = 0 := Nat.mod_eq_zero_of_dvd ⟨m - 1, by ring⟩
     have h2 : (2 * (m - 1) + 1) % 2 = 1 := by
@@ -3497,10 +3478,10 @@ by `sl2zAmalgamEquiv`), this section sets up the dictionary:
   `sl2zOfAmalgam`), and `phiSL_WP` — **the dictionary**: `phiSL (WP w) = WS w`, so a word's two readings
   agree. With `phiSL_s`/`phiSL_r` giving `phiSL` on the powers of each generator.
 
-What remains: every element of the presented group is `WP w` for some word (surjectivity, from the two
-generators), a word of minimal length for a given element is alternating with no base entries (the two
-reductions `S⁴ = 1`, `R⁶ = 1`, merging equal factors, and `S² = R³` for base entries), and then `no_die`
-turns such a word into the contradiction.
+The three pieces of `sl2zToGroup_injective` are `WP_surjective` (every element is a word),
+`reduced_aux` (a shortest word is alternating with no base entries, from the local rewritings
+`WP_zero_head_false/true`, `WP_merge_false/true`, `WP_base_false/true`, `WP_absorb_s/r`), and `no_die`
+(such a word cannot have product one).
 -/
 
 
@@ -3548,6 +3529,521 @@ lemma phiSL_WP (w : List (Bool × ℤ)) : phiSL (WP w) = WS w := by
   apply List.map_congr_left
   intro p _
   by_cases hp : p.1 <;> simp [hp, phiSL_r, phiSL_s]
+
+/-!
+### The bridge, II: words, and the subgroup they sweep out
+
+* `WP_nil`, `WP_cons`, `WP_append` — `WP` is a list product, so it is multiplicative under
+  concatenation;
+* `WP_map_rev_neg` — reversing a word and negating its exponents inverts its value, which closes
+  `WPsub` under inverses;
+* `WP_surjective` — **every** element of the amalgam presentation is `WP w` for some word.
+
+With this the remaining task is exactly the normal-form problem: a word `w` with `phiSL (WP w) = 1`
+must be shortened, preserving its value, until it is either empty or an alternating word of the six
+letters — at which point `no_die` applies.
+-/
+
+@[simp] lemma WP_nil : WP ([] : List (Bool × ℤ)) = 1 := by simp [WP]
+
+@[simp] lemma WP_cons (p : Bool × ℤ) (w : List (Bool × ℤ)) :
+    WP (p :: w) = (if p.1 then rGen else sGen) ^ p.2 * WP w := by
+  simp [WP]
+
+lemma WP_append (a b : List (Bool × ℤ)) : WP (a ++ b) = WP a * WP b := by
+  simp [WP, List.map_append, List.prod_append]
+
+/-- Reversing a word and negating its exponents inverts its value. -/
+lemma WP_map_rev_neg (w : List (Bool × ℤ)) :
+    WP ((w.reverse).map (fun p => (p.1, -p.2))) = (WP w)⁻¹ := by
+  induction w with
+  | nil => simp
+  | cons p t ih =>
+    simp only [List.reverse_cons, List.map_append, WP_append, ih, List.map_cons, List.map_nil,
+      WP_cons, WP_nil, mul_one, _root_.mul_inv_rev, zpow_neg]
+
+/-- The subgroup of the amalgam presentation swept out by words over the two factors. -/
+def WPsub : Subgroup (PresentedGroup sl2zAmalgamRelators) where
+  carrier := {q | ∃ w : List (Bool × ℤ), WP w = q}
+  mul_mem' := by
+    rintro _ _ ⟨a, rfl⟩ ⟨b, rfl⟩
+    exact ⟨a ++ b, WP_append a b⟩
+  one_mem' := ⟨[], WP_nil⟩
+  inv_mem' := by
+    rintro _ ⟨a, rfl⟩
+    exact ⟨(a.reverse).map (fun p => (p.1, -p.2)), WP_map_rev_neg a⟩
+
+lemma sGen_mem_WPsub : sGen ∈ WPsub :=
+  ⟨[(false, 1)], by simp [WP_cons]⟩
+
+lemma rGen_mem_WPsub : rGen ∈ WPsub :=
+  ⟨[(true, 1)], by simp [WP_cons]⟩
+
+/-- **Surjectivity of `WP`.** Every element of the amalgam presentation is a word over the two
+factors: the words form a subgroup containing both generators, and those generate. -/
+theorem WP_surjective (q : PresentedGroup sl2zAmalgamRelators) :
+    ∃ w : List (Bool × ℤ), WP w = q := by
+  have hle :
+      Subgroup.closure (Set.range (PresentedGroup.of (rels := sl2zAmalgamRelators))) ≤ WPsub := by
+    rw [Subgroup.closure_le]
+    rintro x ⟨i, rfl⟩
+    fin_cases i
+    · exact sGen_mem_WPsub
+    · exact rGen_mem_WPsub
+  rw [PresentedGroup.closure_range_of] at hle
+  exact hle (Subgroup.mem_top q)
+
+/-!
+### The bridge, III: minimal words and the six letters
+
+The remaining half of the bridge is a normal-form argument, run as a minimal-counterexample proof
+rather than as a rewriting algorithm:
+
+* `gp`, `period`, `modp`, `modw` — the generator of an entry's factor and the reduction of an exponent
+  into the factor's period (`S⁴ = R⁶ = 1`, `zpow_eq_zpow_emod'`), applied entrywise by `modw`, which
+  does not change the word's value (`WP_modw`);
+* the six *local rewritings* (`WP_zero_head_false/true`, `WP_merge_false/true`, `WP_base_false/true`,
+  `WP_absorb_s/r`) — each replaces one or two entries by fewer entries with the same value;
+* `zero_shorter`, `pair_shorter` — those rewritings, applied at any position, make a word strictly
+  shorter; `splice` is the index-to-split dictionary they are applied through.
+
+Consequently a *shortest* word for an element has no zero exponent, no two adjacent entries in the same
+factor, and, unless it has length one, no entry equal to the base element `±1` of either factor: it is
+a word of the six letters `S, S³, R, R², R⁴, R⁵` with adjacent letters in different factors —
+precisely the input of `no_die`.
+-/
+
+/-- The generator of an entry's factor: `false` is `S`, `true` is `R = T * S`. -/
+def gp (p : Bool × ℤ) : PresentedGroup sl2zAmalgamRelators := if p.1 then rGen else sGen
+
+lemma WP_cons_false (m : ℤ) (t : List (Bool × ℤ)) :
+    WP ((false, m) :: t) = (sGen : PresentedGroup sl2zAmalgamRelators) ^ m * WP t := rfl
+
+lemma WP_cons_true (m : ℤ) (t : List (Bool × ℤ)) :
+    WP ((true, m) :: t) = (rGen : PresentedGroup sl2zAmalgamRelators) ^ m * WP t := rfl
+
+/-- The exponent period of a factor: `S⁴ = 1` and `R⁶ = 1`. -/
+def period (b : Bool) : ℤ := if b then 6 else 4
+
+lemma period_pos (b : Bool) : 0 < period b := by cases b <;> decide
+
+/-- The base element `±1`, read in either factor: `S² = R³`. -/
+lemma base_r : (sGen : PresentedGroup sl2zAmalgamRelators) ^ (2 : ℤ) = rGen ^ (3 : ℤ) := by
+  rw [show (2 : ℤ) = ((2 : ℕ) : ℤ) by norm_num, show (3 : ℤ) = ((3 : ℕ) : ℤ) by norm_num,
+    zpow_natCast, zpow_natCast]
+  exact rGen_cube.symm
+
+/-! #### The local rewritings -/
+
+lemma WP_zero_head_false (t : List (Bool × ℤ)) : WP ((false, 0) :: t) = WP t := by
+  rw [WP_cons_false, zpow_zero, one_mul]
+
+lemma WP_zero_head_true (t : List (Bool × ℤ)) : WP ((true, 0) :: t) = WP t := by
+  rw [WP_cons_true, zpow_zero, one_mul]
+
+lemma WP_merge_false (m n : ℤ) (t : List (Bool × ℤ)) :
+    WP ((false, m) :: (false, n) :: t) = WP ((false, m + n) :: t) := by
+  rw [WP_cons_false, WP_cons_false, WP_cons_false, ← mul_assoc, ← zpow_add]
+
+lemma WP_merge_true (m n : ℤ) (t : List (Bool × ℤ)) :
+    WP ((true, m) :: (true, n) :: t) = WP ((true, m + n) :: t) := by
+  rw [WP_cons_true, WP_cons_true, WP_cons_true, ← mul_assoc, ← zpow_add]
+
+lemma WP_base_false (n : ℤ) (t : List (Bool × ℤ)) :
+    WP ((false, 2) :: (true, n) :: t) = WP ((true, 3 + n) :: t) := by
+  rw [WP_cons_false, WP_cons_true, WP_cons_true, base_r, ← mul_assoc, ← zpow_add]
+
+lemma WP_base_true (m : ℤ) (t : List (Bool × ℤ)) :
+    WP ((true, 3) :: (false, m) :: t) = WP ((false, 2 + m) :: t) := by
+  rw [WP_cons_true, WP_cons_false, WP_cons_false, ← base_r, ← mul_assoc, ← zpow_add]
+
+lemma WP_absorb_s (m : ℤ) (t : List (Bool × ℤ)) :
+    WP ((false, m) :: (true, 3) :: t) = WP ((false, m + 2) :: t) := by
+  rw [WP_cons_false, WP_cons_true, WP_cons_false, ← base_r, ← mul_assoc, ← zpow_add]
+
+lemma WP_absorb_r (m : ℤ) (t : List (Bool × ℤ)) :
+    WP ((true, m) :: (false, 2) :: t) = WP ((true, m + 3) :: t) := by
+  rw [WP_cons_true, WP_cons_false, WP_cons_true, base_r, ← mul_assoc, ← zpow_add]
+
+/-! #### Shortening a word at any position -/
+
+/-- An entry equal to the base element `±1`. -/
+def IsBase (p : Bool × ℤ) : Prop := p = (false, 2) ∨ p = (true, 3)
+
+instance (p : Bool × ℤ) : Decidable (IsBase p) := by unfold IsBase; infer_instance
+
+/-- A zero exponent can be deleted. -/
+lemma zero_shorter (a : List (Bool × ℤ)) (b : Bool) (t : List (Bool × ℤ)) :
+    ∃ u, WP u = WP (a ++ (b, 0) :: t) ∧ u.length < (a ++ (b, 0) :: t).length := by
+  induction a with
+  | nil =>
+    refine ⟨t, ?_, by simp⟩
+    cases b
+    · exact (WP_zero_head_false t).symm
+    · exact (WP_zero_head_true t).symm
+  | cons r a ih =>
+    obtain ⟨u, hu, hlen⟩ := ih
+    refine ⟨r :: u, ?_, by simp at hlen ⊢; omega⟩
+    rw [List.cons_append, WP_cons, WP_cons, hu]
+
+/-- Two adjacent entries either in the same factor, or one of them the base element, can be replaced
+by a single entry: the word gets strictly shorter. -/
+lemma pair_shorter : ∀ (a : List (Bool × ℤ)) (p q : Bool × ℤ) (t : List (Bool × ℤ)),
+    (p.1 = q.1 ∨ IsBase p ∨ IsBase q) →
+      ∃ u, WP u = WP (a ++ p :: q :: t) ∧ u.length < (a ++ p :: q :: t).length
+  | [], p, q, t, h => by
+    rcases p with ⟨bp, mp⟩
+    rcases q with ⟨bq, mq⟩
+    simp only [IsBase, Prod.mk.injEq] at h
+    cases bp <;> cases bq <;> simp at h
+    · exact ⟨(false, mp + mq) :: t, (WP_merge_false mp mq t).symm, by simp⟩
+    · rcases h with h | h
+      · obtain rfl : mp = 2 := h
+        exact ⟨(true, 3 + mq) :: t, (WP_base_false mq t).symm, by simp⟩
+      · obtain rfl : mq = 3 := h
+        exact ⟨(false, mp + 2) :: t, (WP_absorb_s mp t).symm, by simp⟩
+    · rcases h with h | h
+      · obtain rfl : mp = 3 := h
+        exact ⟨(false, 2 + mq) :: t, (WP_base_true mq t).symm, by simp⟩
+      · obtain rfl : mq = 2 := h
+        exact ⟨(true, mp + 3) :: t, (WP_absorb_r mp t).symm, by simp⟩
+    · exact ⟨(true, mp + mq) :: t, (WP_merge_true mp mq t).symm, by simp⟩
+  | r :: a, p, q, t, h => by
+    obtain ⟨u, hu, hlen⟩ := pair_shorter a p q t h
+    refine ⟨r :: u, ?_, by simp at hlen ⊢; omega⟩
+    rw [List.cons_append, WP_cons, WP_cons, hu]
+
+/-- Every index with a successor in a list splits it as `a ++ p :: q :: b`, with `p` and `q` the
+entries at that index and the next one. -/
+lemma splice {w : List (Bool × ℤ)} {i : ℕ} (h : i + 1 < w.length) :
+    ∃ a b, w = a ++ w[i]'(by omega) :: w[i + 1]'h :: b := by
+  refine ⟨w.take i, w.drop (i + 2), ?_⟩
+  have h1 : w.drop i = w[i]'(by omega) :: w[i + 1]'h :: w.drop (i + 2) := by
+    rw [List.drop_eq_getElem_cons (show i < w.length by omega), List.drop_eq_getElem_cons h]
+  calc w = w.take i ++ w.drop i := (List.take_append_drop i w).symm
+    _ = w.take i ++ (w[i]'(by omega) :: w[i + 1]'h :: w.drop (i + 2)) := by rw [h1]
+
+/-- The exponent of an entry, reduced into the factor's period. -/
+def modp (p : Bool × ℤ) : Bool × ℤ := (p.1, p.2 % period p.1)
+
+/-- The word with every exponent reduced into the factor's period. -/
+def modw (w : List (Bool × ℤ)) : List (Bool × ℤ) := w.map modp
+
+lemma WP_cons_gp (p : Bool × ℤ) (t : List (Bool × ℤ)) :
+    WP (p :: t) = gp p ^ p.2 * WP t := rfl
+
+lemma gp_zpow_emod (p : Bool × ℤ) : gp p ^ p.2 = gp p ^ (p.2 % period p.1) := by
+  rcases p with ⟨b, n⟩
+  cases b
+  · exact zpow_eq_zpow_emod' n sGen_pow_four
+  · exact zpow_eq_zpow_emod' n rGen_pow_six
+
+lemma gp_modp_pow (p : Bool × ℤ) : gp (modp p) ^ (modp p).2 = gp p ^ p.2 := by
+  rw [gp_zpow_emod p]
+  rfl
+
+lemma modw_nil : modw ([] : List (Bool × ℤ)) = [] := rfl
+
+lemma modw_cons (p : Bool × ℤ) (t : List (Bool × ℤ)) : modw (p :: t) = modp p :: modw t := rfl
+
+lemma WP_modw (w : List (Bool × ℤ)) : WP (modw w) = WP w := by
+  induction w with
+  | nil => rfl
+  | cons p t ih => rw [modw_cons, WP_cons_gp, ih, WP_cons_gp, gp_modp_pow]
+
+lemma modw_length (w : List (Bool × ℤ)) : (modw w).length = w.length := List.length_map ..
+
+lemma modp_nonneg (p : Bool × ℤ) : 0 ≤ (modp p).2 :=
+  Int.emod_nonneg _ (ne_of_gt (period_pos p.1))
+
+lemma modp_lt (p : Bool × ℤ) : (modp p).2 < period (modp p).1 := by
+  have h := Int.emod_lt_of_pos p.2 (period_pos p.1)
+  simpa [modp] using h
+
+/-! #### The six letters -/
+
+/-- An entry is one of the six letters `S, S³, R, R², R⁴, R⁵`. -/
+def Six (p : Bool × ℤ) : Prop :=
+  p = (false, 1) ∨ p = (false, 3) ∨ p = (true, 1) ∨ p = (true, 2) ∨ p = (true, 4) ∨
+    p = (true, 5)
+
+instance (p : Bool × ℤ) : Decidable (Six p) := by unfold Six; infer_instance
+
+/-- The letter of a six-letter entry. -/
+def ofPair (p : Bool × ℤ) : Letter :=
+  if p.1 then
+    (if p.2 = 2 then Letter.r2 else if p.2 = 4 then Letter.r4 else if p.2 = 5 then Letter.r5
+      else Letter.r1)
+  else (if p.2 = 3 then Letter.s3 else Letter.s1)
+
+/-- The matrix of a six-letter entry, read in `SL(2, ℤ)`. -/
+lemma val_ofPair {p : Bool × ℤ} (hp : Six p) :
+    (ofPair p).val =
+      (if p.1 then (T * S : SL(2, ℤ)) ^ p.2 else (S : SL(2, ℤ)) ^ p.2) := by
+  rcases hp with rfl | rfl | rfl | rfl | rfl | rfl <;> decide
+
+/-- A six-letter entry lies in the `⟨S⟩` factor exactly when its flag is `false`. -/
+lemma isS_ofPair {p : Bool × ℤ} (hp : Six p) : (ofPair p).isS = !p.1 := by
+  rcases hp with rfl | rfl | rfl | rfl | rfl | rfl <;> decide
+
+lemma WS_map_ofPair (w : List (Bool × ℤ)) (h : ∀ p ∈ w, Six p) :
+    WS w = ((w.map ofPair).map Letter.val).prod := by
+  induction w with
+  | nil => simp [WS]
+  | cons p t ih =>
+    have hp : Six p := h p (by simp)
+    have ht : ∀ q ∈ t, Six q := fun q hq => h q (by simp [hq])
+    have hstep : WS (p :: t) =
+        (if p.1 then (T * S : SL(2, ℤ)) ^ p.2 else (S : SL(2, ℤ)) ^ p.2) * WS t := rfl
+    rw [hstep, ih ht, List.map_cons, List.map_cons, List.prod_cons, val_ofPair hp]
+
+lemma WS_base_false : WS ([(false, 2)] : List (Bool × ℤ)) = (S : SL(2, ℤ)) ^ 2 := by
+  simp [WS]
+
+lemma WS_base_true : WS ([(true, 3)] : List (Bool × ℤ)) = (S : SL(2, ℤ)) ^ 2 := by
+  have h : (T * S : SL(2, ℤ)) ^ (3 : ℤ) = (S : SL(2, ℤ)) ^ 2 := by
+    rw [show (3 : ℤ) = ((3 : ℕ) : ℤ) by norm_num, zpow_natCast, T_mul_S_pow_three_eq_S_sq]
+  simpa [WS] using h
+
+lemma isS_L_ofPair {v : List (Bool × ℤ)} (hsix : ∀ p ∈ v, Six p) {i : ℕ} (hi : i < v.length) :
+    (L (v.map ofPair) i).isS = !(v[i]'hi).1 := by
+  have h1 : i < (v.map ofPair).length := by simpa using hi
+  rw [L_eq h1, List.getElem_map]
+  exact isS_ofPair (hsix _ (List.getElem_mem hi))
+
+lemma six_of {p : Bool × ℤ} (h1 : 0 < p.2) (h2 : p.2 < period p.1) (h3 : ¬ IsBase p) :
+    Six p := by
+  rcases p with ⟨b, m⟩
+  have h1' : 0 < m := h1
+  have h2' : m < period b := h2
+  cases b
+  · have h2'' : m < 4 := by simpa [period] using h2'
+    have h3' : m ≠ 2 := fun h => h3 (Or.inl (by rw [h]))
+    simp only [Six, Prod.mk.injEq, Bool.false_eq_true, true_and, false_and, or_false, false_or,
+      and_false]
+    omega
+  · have h2'' : m < 6 := by simpa [period] using h2'
+    have h3' : m ≠ 3 := fun h => h3 (Or.inr (by rw [h]))
+    simp only [Six, Prod.mk.injEq, Bool.false_eq_true, true_and, false_and, or_false, false_or,
+      and_false]
+    omega
+
+lemma getD_eq_getElem' {l : List (Bool × ℤ)} {i : ℕ} (h : i < l.length) (d : Bool × ℤ) :
+    l.getD i d = l[i]'h := by
+  simp only [List.getD, List.getElem?_eq_getElem h]; rfl
+
+/-! ## A minimal word has no zero exponent, no adjacent pair in one factor, no base entry -/
+
+lemma ne_zero_of_min {w : List (Bool × ℤ)}
+    (hmin : ∀ u, WP u = WP w → w.length ≤ u.length) {p : Bool × ℤ} (hp : p ∈ w) :
+    p.2 ≠ 0 := by
+  intro h0
+  obtain ⟨a, b, hw⟩ := List.append_of_mem hp
+  obtain ⟨u, hu, hlen⟩ := zero_shorter a p.1 b
+  have hpe : (p.1, (0 : ℤ)) = p := by rw [← h0]
+  rw [hpe] at hu hlen
+  have h1 : u.length < w.length := by rw [hw]; exact hlen
+  have h2 := hmin u (by rw [hu, hw])
+  omega
+
+lemma not_bad_of_min {w : List (Bool × ℤ)}
+    (hmin : ∀ u, WP u = WP w → w.length ≤ u.length) {p q : Bool × ℤ} {t : List (Bool × ℤ)}
+    (hw : w = p :: q :: t) : ¬(p.1 = q.1 ∨ IsBase p ∨ IsBase q) := by
+  intro hbad
+  obtain ⟨u, hu, hlen⟩ := pair_shorter [] p q t hbad
+  have h2 : WP u = WP w := by
+    simp only [List.nil_append] at hu
+    rw [hu, hw]
+  have h1 := hmin u h2
+  rw [hw] at h1
+  simp only [List.length_cons] at h1
+  simp only [List.nil_append, List.length_cons] at hlen
+  omega
+
+lemma min_of_tail {w : List (Bool × ℤ)} (hmin : ∀ u, WP u = WP w → w.length ≤ u.length)
+    (p : Bool × ℤ) (t : List (Bool × ℤ)) (hw : w = p :: t) :
+    ∀ u, WP u = WP t → t.length ≤ u.length := by
+  intro u hu
+  by_contra hlt
+  have hlt' : u.length < t.length := by omega
+  have h1 : WP (p :: u) = WP w := by rw [hw, WP_cons, WP_cons, hu]
+  have h2 := hmin (p :: u) h1
+  rw [hw] at h2
+  simp only [List.length_cons] at h2
+  omega
+
+/-- A word with adjacent entries in different factors. -/
+inductive AltW : List (Bool × ℤ) → Prop
+  | nil : AltW []
+  | single (p : Bool × ℤ) : AltW [p]
+  | cons {p q : Bool × ℤ} {t : List (Bool × ℤ)} (h : p.1 ≠ q.1) (ht : AltW (q :: t)) :
+      AltW (p :: q :: t)
+
+/-- **The shape of a shortest word.** A word of minimal length for its value, with every exponent
+already reduced into its factor's period, is empty, or a word of six letters with adjacent letters in
+different factors, or a single base entry. -/
+theorem reduced_aux (w : List (Bool × ℤ))
+    (hmin : ∀ u, WP u = WP w → w.length ≤ u.length)
+    (hcan : ∀ p ∈ w, 0 ≤ p.2 ∧ p.2 < period p.1) :
+    w = [] ∨ ((∀ p ∈ w, Six p) ∧ AltW w) ∨ (∃ p, w = [p] ∧ IsBase p) := by
+  induction w with
+  | nil => exact Or.inl rfl
+  | cons p t ih =>
+    have hshift : ∀ u, WP u = WP t → t.length ≤ u.length := min_of_tail hmin p t rfl
+    have hcant : ∀ r ∈ t, 0 ≤ r.2 ∧ r.2 < period r.1 := fun r hr => hcan r (by simp [hr])
+    rcases t with _ | ⟨q, t'⟩
+    · -- the word is the single entry `p`
+      by_cases hb : IsBase p
+      · exact Or.inr (Or.inr ⟨p, rfl, hb⟩)
+      · have hp1 : 0 < p.2 := by
+          have h1 := (hcan p (by simp)).1
+          have h0 := ne_zero_of_min hmin (p := p) (by simp)
+          omega
+        refine Or.inr (Or.inl ⟨?_, AltW.single p⟩)
+        intro x hx
+        simp only [List.mem_singleton] at hx
+        rw [hx]
+        exact six_of hp1 (hcan p (by simp)).2 hb
+    · -- the word has at least two entries
+      have hpq : ¬(p.1 = q.1 ∨ IsBase p ∨ IsBase q) := not_bad_of_min hmin rfl
+      have hcant' : ∀ r ∈ (q :: t'), 0 ≤ r.2 ∧ r.2 < period r.1 :=
+        fun r hr => hcan r (by simp [hr])
+      have hp1 : 0 < p.2 := by
+        have h1 := (hcan p (by simp)).1
+        have h0 := ne_zero_of_min hmin (p := p) (by simp)
+        omega
+      have hp6 : Six p := six_of hp1 (hcan p (by simp)).2 (fun hb => hpq (Or.inr (Or.inl hb)))
+      rcases ih hshift hcant' with h0 | ⟨hsix, halt⟩ | ⟨r, hr, hb⟩
+      · exact absurd h0 (by simp)
+      · refine Or.inr (Or.inl ⟨?_, AltW.cons (fun h => hpq (Or.inl h)) halt⟩)
+        intro x hx
+        rcases List.mem_cons.mp hx with rfl | hx'
+        · exact hp6
+        · exact hsix x hx'
+      · exact (not_bad_of_min hmin (p := p) (q := r) (t := []) (by rw [hr])
+          (Or.inr (Or.inr hb))).elim
+
+lemma altW_getD {w : List (Bool × ℤ)} (h : AltW w) :
+    ∀ (i : ℕ), 0 < i → i < w.length →
+      (w.getD i ((false, 0) : Bool × ℤ)).1 ≠
+        (w.getD (i - 1) ((false, 0) : Bool × ℤ)).1 := by
+  induction h with
+  | nil => intro i hi hil; simp at hil
+  | single p => intro i hi hil; simp only [List.length_cons, List.length_nil] at hil; omega
+  | @cons p q t hp hq ih =>
+    intro i hi hil
+    match i with
+    | 0 => omega
+    | 1 => intro h; exact hp h.symm
+    | k + 2 =>
+      have h1 : 0 < k + 1 := by omega
+      have h2 : k + 1 < (q :: t).length := by
+        simp only [List.length_cons] at hil
+        simp only [List.length_cons]
+        omega
+      simpa using ih (k + 1) h1 h2
+
+lemma isS_alt_L {v : List (Bool × ℤ)} (hsix : ∀ p ∈ v, Six p)
+    (halt : ∀ (i : ℕ), 0 < i → i < v.length →
+      (v.getD i ((false, 0) : Bool × ℤ)).1 ≠
+        (v.getD (i - 1) ((false, 0) : Bool × ℤ)).1) :
+    ∀ (i : ℕ), 0 < i → i < (v.map ofPair).length →
+      (L (v.map ofPair) i).isS ≠ (L (v.map ofPair) (i - 1)).isS := by
+  intro i hi hil
+  have hi' : i < v.length := by simpa using hil
+  have h1 : i - 1 < v.length := by omega
+  rw [isS_L_ofPair hsix hi', isS_L_ofPair hsix h1]
+  have e1 : (v[i]'hi').1 = (v.getD i ((false, 0) : Bool × ℤ)).1 := by
+    rw [getD_eq_getElem' hi']
+  have e2 : (v[i - 1]'h1).1 = (v.getD (i - 1) ((false, 0) : Bool × ℤ)).1 := by
+    rw [getD_eq_getElem' h1]
+  rw [e1, e2]
+  intro h
+  exact halt i hi hi' (Bool.not_inj h)
+
+set_option maxHeartbeats 2000000 in
+/-- **No word dies in the amalgam presentation.** If an element of `⟨S, R | S⁴, R³S⁻²⟩` maps to `1`
+in `SL(2, ℤ)`, it is `1`. -/
+theorem phiSL_eq_one {g : PresentedGroup sl2zAmalgamRelators} (hg : phiSL g = 1) : g = 1 := by
+  classical
+  obtain ⟨w₀, hw₀⟩ := WP_surjective g
+  have hex : ∃ n, ∃ w : List (Bool × ℤ), WP w = g ∧ w.length = n := ⟨_, w₀, hw₀, rfl⟩
+  let n₀ := Nat.find hex
+  obtain ⟨w, hw, hwlen⟩ : ∃ w : List (Bool × ℤ), WP w = g ∧ w.length = n₀ := Nat.find_spec hex
+  have hmin : ∀ u : List (Bool × ℤ), WP u = g → n₀ ≤ u.length := by
+    intro u hu
+    by_contra hlt
+    exact Nat.find_min hex (by omega) ⟨u, hu, rfl⟩
+  have hvWP : WP (modw w) = g := by rw [WP_modw, hw]
+  have hvlen : (modw w).length = n₀ := by rw [modw_length, hwlen]
+  have hminv : ∀ u : List (Bool × ℤ), WP u = WP (modw w) → (modw w).length ≤ u.length := by
+    intro u hu
+    rw [hvlen]
+    exact hmin u (by rw [hu, hvWP])
+  have hWS : WS (modw w) = 1 := by rw [← phiSL_WP (modw w), hvWP]; exact hg
+  have hcan : ∀ p ∈ modw w, 0 ≤ p.2 ∧ p.2 < period p.1 := by
+    intro p hp
+    obtain ⟨q, -, rfl⟩ := List.mem_map.mp hp
+    exact ⟨modp_nonneg q, modp_lt q⟩
+  rcases reduced_aux (modw w) hminv hcan with h0 | ⟨hsix, halt⟩ | ⟨p, hp, hb⟩
+  · rw [h0] at hvWP
+    rw [← hvWP]; rfl
+  · by_cases hv0 : modw w = []
+    · rw [hv0] at hvWP
+      rw [← hvWP]; rfl
+    · have hprod : (((modw w).map ofPair).map Letter.val).prod = 1 := by
+        rw [← WS_map_ofPair (modw w) hsix, hWS]
+      have halt' := isS_alt_L hsix (altW_getD halt)
+      refine (no_die ?_ hprod halt').elim
+      intro h
+      exact hv0 (List.map_eq_nil_iff.mp h)
+  · rw [hp] at hWS
+    rcases hb with rfl | rfl
+    · rw [WS_base_false] at hWS
+      exact absurd hWS S_sq_ne_one
+    · rw [WS_base_true] at hWS
+      exact absurd hWS S_sq_ne_one
+
+/-! ### The presentation is complete
+
+`phiSL_eq_one` says a word over the two factors that dies in `SL(2, ℤ)` is already trivial in the
+amalgam presentation. Injectivity of `phiSL` follows, and then injectivity of `sl2zToGroup` through
+the equivalence `sl2zAmalgamEquiv` between the issue's presentation and the amalgam one.
+-/
+
+/-- **`phiSL` is injective.** -/
+theorem phiSL_injective : Function.Injective phiSL := by
+  intro a b hab
+  have h : phiSL (a * b⁻¹) = 1 := by rw [map_mul, map_inv, hab, mul_inv_cancel]
+  have h1 : a * b⁻¹ = 1 := phiSL_eq_one h
+  rwa [mul_inv_eq_one] at h1
+
+/-- The two maps between the issue's presentation and the amalgam one are mutually inverse. -/
+theorem sl2zOfAmalgam_sl2zToAmalgam (z : PresentedGroup sl2zRelators) :
+    sl2zOfAmalgam (sl2zToAmalgam z) = z := by
+  have := congrArg (fun f => f z) sl2zOfAmalgam_comp_toAmalgam
+  simpa using this
+
+/-- **lean-categories#89 item 1, completeness.** The map from the presentation
+`⟨S, T | S⁴, (TS)³S⁻²⟩` to `SL(2, ℤ)` is injective, so the presentation is the group. -/
+theorem sl2zToGroup_injective : Function.Injective sl2zToGroup := by
+  intro x y hxy
+  have hx : phiSL (sl2zToAmalgam x) = sl2zToGroup x := by
+    show sl2zToGroup (sl2zOfAmalgam (sl2zToAmalgam x)) = sl2zToGroup x
+    rw [sl2zOfAmalgam_sl2zToAmalgam]
+  have hy : phiSL (sl2zToAmalgam y) = sl2zToGroup y := by
+    show sl2zToGroup (sl2zOfAmalgam (sl2zToAmalgam y)) = sl2zToGroup y
+    rw [sl2zOfAmalgam_sl2zToAmalgam]
+  have h1 : sl2zToAmalgam x = sl2zToAmalgam y := phiSL_injective (by rw [hx, hy, hxy])
+  have h2 : sl2zOfAmalgam (sl2zToAmalgam x) = sl2zOfAmalgam (sl2zToAmalgam y) := by rw [h1]
+  rwa [sl2zOfAmalgam_sl2zToAmalgam, sl2zOfAmalgam_sl2zToAmalgam] at h2
+
+/-- **lean-categories#89 item 1.** `⟨S, T | S⁴, (TS)³ = S²⟩` presents `SL(2, ℤ)`. -/
+noncomputable def sl2zPresentation : PresentedGroup sl2zRelators ≃* SL(2, ℤ) :=
+  MulEquiv.ofBijective sl2zToGroup ⟨sl2zToGroup_injective, sl2zToGroup_surjective⟩
+
+/-- Lean-categories#89 item 1's completeness, in the form the issue names it. -/
+theorem sl2zPresentationComplete : Sl2zPresentationComplete := sl2zToGroup_injective
 
 end ModularGroup
 
