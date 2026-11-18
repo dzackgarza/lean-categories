@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 -/
 module
 
+public import Mathlib.Data.List.GetD
 public import Mathlib.LinearAlgebra.Matrix.FixedDetMatrices
 public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
 public import Mathlib.GroupTheory.Complement
@@ -3828,10 +3829,6 @@ lemma six_of {p : Bool × ℤ} (h1 : 0 < p.2) (h2 : p.2 < period p.1) (h3 : ¬ I
       and_false]
     omega
 
-lemma getD_eq_getElem' {l : List (Bool × ℤ)} {i : ℕ} (h : i < l.length) (d : Bool × ℤ) :
-    l.getD i d = l[i]'h := by
-  simp only [List.getD, List.getElem?_eq_getElem h]; rfl
-
 /-! ## A minimal word has no zero exponent, no adjacent pair in one factor, no base entry -/
 
 lemma ne_zero_of_min {w : List (Bool × ℤ)}
@@ -3954,9 +3951,9 @@ lemma isS_alt_L {v : List (Bool × ℤ)} (hsix : ∀ p ∈ v, Six p)
   have h1 : i - 1 < v.length := by omega
   rw [isS_L_ofPair hsix hi', isS_L_ofPair hsix h1]
   have e1 : (v[i]'hi').1 = (v.getD i ((false, 0) : Bool × ℤ)).1 := by
-    rw [getD_eq_getElem' hi']
+    rw [List.getD_eq_getElem _ _ hi']
   have e2 : (v[i - 1]'h1).1 = (v.getD (i - 1) ((false, 0) : Bool × ℤ)).1 := by
-    rw [getD_eq_getElem' h1]
+    rw [List.getD_eq_getElem _ _ h1]
   rw [e1, e2]
   intro h
   exact halt i hi hi' (Bool.not_inj h)
