@@ -71,6 +71,23 @@ example (k : ℕ) :
       (TruncationRefinement (C := ModuleCat ℤ) k).ι ⋙ pointFunctor (C := ModuleCat ℤ) :=
   truncationRefinementPoint_eq k
 
+/-- 3. The general truncation keeps every chosen term below `k`. -/
+example (k n : ℕ) (h : n < k) : (intKoszul.truncate k).term n = intKoszul.term n :=
+  truncate_term_of_lt intKoszul h
+
+/-- 3. ... kills every chosen term in degree `k` and above -/
+example (k n : ℕ) (h : k ≤ n) : IsZero ((intKoszul.truncate k).term n) := by
+  rw [truncate_term_of_ge intKoszul h]
+  exact isZero_zero _
+
+/-- 3. ... has length at most `k` -/
+example (k : ℕ) : (intKoszul.truncate k).LengthLe k := truncate_lengthLe intKoszul k
+
+/-- 3. ... and truncating twice at the same degree changes nothing. -/
+example (k : ℕ) : ((intKoszul.truncate k).truncate k).term =
+    (intKoszul.truncate k).term :=
+  truncate_idem_term intKoszul k
+
 /-- 4. The same underlying augmented model is a full resolution. -/
 example : intKoszul.CofiberVanishes := intKoszul_cofiberVanishes
 

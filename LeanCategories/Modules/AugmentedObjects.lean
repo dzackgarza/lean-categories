@@ -298,6 +298,103 @@ augmentation point. -/
 theorem refinementPoint_ιOfLE (P Q : ObjectProperty (AugmentedGradedObject C)) (h : P ≤ Q) :
     ObjectProperty.ιOfLE h ⋙ refinementPoint (C := C) Q = refinementPoint (C := C) P := rfl
 
+section Casts
+
+variable {C : Type u} [Category.{v} C]
+
+/-- Casts along an equality and its reverse cancel. -/
+lemma eqToHom_comp_eqToHom_cancel {X Y : C} (p : X = Y) (q : Y = X) :
+    eqToHom p ≫ eqToHom q = 𝟙 X := by
+  rw [eqToHom_trans, eqToHom_refl]
+
+/-- Casts along an equality and its reverse cancel in a composite. -/
+lemma eqToHom_comp_eqToHom_cancel_assoc {X Y Z : C} (p : X = Y) (q : Y = X) (f : X ⟶ Z) :
+    eqToHom p ≫ eqToHom q ≫ f = f := by
+  rw [← Category.assoc, eqToHom_comp_eqToHom_cancel, Category.id_comp]
+
+end Casts
+
+section Truncate
+
+open ZeroObject
+
+variable [HasZeroObject C]
+
+/-- The chosen terms of the `k`-truncation of a selected augmented object: the terms in degrees
+below `k`, and the zero object above. -/
+noncomputable def truncTerm (S : AugmentedGradedObject C) (k : ℕ) : ℕ → C :=
+  fun n => if n < k then S.term n else 0
+
+/-- The chosen differentials of the `k`-truncation: the differentials of `S` in degrees below `k`,
+and zero above. -/
+noncomputable def truncDiff (S : AugmentedGradedObject C) (k n : ℕ) :
+    truncTerm S k (n + 1) ⟶ truncTerm S k n :=
+  if h : n + 1 < k then
+    eqToHom (by simp [truncTerm, h]) ≫ S.diff n ≫
+      eqToHom (by simp [truncTerm, show n < k by omega])
+  else 0
+
+/-- The augmentation of the `k`-truncation. -/
+noncomputable def truncAugment (S : AugmentedGradedObject C) (k : ℕ) :
+    truncTerm S k 0 ⟶ S.point :=
+  if h : 0 < k then eqToHom (by simp [truncTerm, h]) ≫ S.augment else 0
+
+/-- The `k`-truncation of a selected augmented object: the chosen terms and differentials in
+degrees below `k`, the zero object above, and the augmentation, which survives exactly when
+`0 < k`. This is truncation as an operation on selected diagrams, not only as the predicate
+`TruncationRefinement`. -/
+noncomputable def truncate (S : AugmentedGradedObject C) (k : ℕ) : AugmentedGradedObject C where
+  term := truncTerm S k
+  diff := truncDiff S k
+  comp_diff n := by
+    simp only [truncDiff]
+    by_cases h2 : n + 2 < k
+    · have h1 : n + 1 < k := by omega
+      have h0 : n < k := by omega
+      simp [h2, h1, eqToHom_comp_eqToHom_cancel_assoc]
+      rw [← Category.assoc, S.comp_diff n, zero_comp]
+    · by_cases h1 : n + 1 < k
+      · simp [h2, h1]
+      · by_cases h0 : n < k
+        · simp [h2, h1, h0]
+        · simp [h2, h1, h0]
+  point := S.point
+  augment := truncAugment S k
+  comp_augment := by
+    simp only [truncDiff, truncAugment]
+    by_cases h1 : 1 < k
+    · have h0 : 0 < k := by omega
+      simp [h1, h0, eqToHom_comp_eqToHom_cancel_assoc, S.comp_augment]
+    · by_cases h0 : 0 < k
+      · simp [h1, h0]
+      · simp [h1, h0]
+
+/-- A truncation keeps every chosen term below `k`. -/
+theorem truncate_term_of_lt (S : AugmentedGradedObject C) {k n : ℕ} (h : n < k) :
+    (truncate S k).term n = S.term n := by
+  simp [truncate, truncTerm, h]
+
+/-- A truncation kills every chosen term in degree `k` and above. -/
+theorem truncate_term_of_ge (S : AugmentedGradedObject C) {k n : ℕ} (h : k ≤ n) :
+    (truncate S k).term n = 0 := by
+  simp [truncate, truncTerm, show ¬ n < k by omega]
+
+/-- A truncation has length at most `k`. -/
+theorem truncate_lengthLe (S : AugmentedGradedObject C) (k : ℕ) : (truncate S k).LengthLe k :=
+  fun n hn => by
+    rw [truncate_term_of_ge S hn]
+    exact isZero_zero C
+
+/-- Truncating twice at the same degree changes nothing: it is idempotent on chosen terms. -/
+theorem truncate_idem_term (S : AugmentedGradedObject C) (k : ℕ) :
+    (truncate (truncate S k) k).term = (truncate S k).term := by
+  funext n
+  by_cases hn : n < k
+  · rw [truncate_term_of_lt _ hn, truncate_term_of_lt S hn]
+  · rw [truncate_term_of_ge _ (by omega), truncate_term_of_ge S (by omega)]
+
+end Truncate
+
 end AugmentedGradedObject
 
 end General
