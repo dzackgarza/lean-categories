@@ -207,4 +207,20 @@ example : colHeight (S : SL(2, ℤ)).1 = 1 := colHeight_letters.1
 
 example : colHeight ((T * S : SL(2, ℤ)) ^ 5).1 = 1 := colHeight_letters.2.2.2.2.2
 
+/-! ### The column dictionary, on the smallest inputs -/
+
+example : col (S : SL(2, ℤ)) 0 = (0, 1) := by decide
+
+example : col ((S * S : SL(2, ℤ))) 0 = col (S : SL(2, ℤ)) 1 :=
+  (col_mul_S S).1
+
+example : col ((S * S : SL(2, ℤ))) 1 = -col (S : SL(2, ℤ)) 0 :=
+  (col_mul_S S).2
+
+example : col ((T * S ^ 2 : SL(2, ℤ))) 0 = -col (T : SL(2, ℤ)) 0 :=
+  (col_mul_S_sq T).1
+
+example : col ((T * S : SL(2, ℤ))) 0 = col (1 : SL(2, ℤ)) 0 + col (1 : SL(2, ℤ)) 1 :=
+  (col_mul_R 1).1
+
 end LeanCategories.ForMathlib
