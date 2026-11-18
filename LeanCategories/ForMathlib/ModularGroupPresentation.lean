@@ -2347,6 +2347,122 @@ theorem HT_ne_flipC {u v : ℤ × ℤ} (hd : fdet u v = 1) : HT (u + v) v ≠ HT
   rw [e1, e2] at h
   exact fun hh => h hh.symm
 
+/-!
+### Prefix products, and the walk's vertices and heights
+
+The walk of a reduced word is read off the columns of its prefix products. This section builds that
+data for a word `l : List Letter`:
+
+* `Y l j` — the product of the first `j` letters, with `Y_zero`, `Y_succ`, `Y_length`, and the two
+  *cyclic* forms `Y_nxt` and `Y_prv`: stepping forward across the end of the word uses that the whole
+  word's product is one, and stepping back to `prv` is the same statement read backwards;
+* `nxt` and `prv` — the cyclic successor and predecessor of an index;
+* `cols_nxt`, `cols_prv` — the one-step column dictionary: the columns after a step are the letter's
+  move `Letter.act` applied to the columns before it, and likewise backwards. These are what turn every
+  comparison between two vertices of the walk into a statement about a single letter's move, one of
+  whose legs is a flip `flA`/`flB`/`flC`;
+* `vtx`, `hgt` — the vertex of the walk at an index (an edge over an `⟨S⟩`-letter, a triangle over an
+  `⟨R⟩`-letter) and its height.
+
+What remains for the dictionary is the two comparisons at each index — the step (`HT_ne`,
+`HT_ne_flipB`, `HT_ne_flipC`) and the turn (`EH_mean` and `at_most_one_down`) — the maximum-vertex
+argument, and the parity split.
+-/
+
+
+/-! ## Prefix products along a word -/
+
+/-- The product of the first `j` letters of a word. -/
+def Y (l : List Letter) (j : ℕ) : SL(2, ℤ) := ((l.take j).map Letter.val).prod
+
+lemma Y_zero (l : List Letter) : Y l 0 = 1 := by simp [Y]
+
+lemma Y_succ {l : List Letter} {j : ℕ} (h : j < l.length) :
+    Y l (j + 1) = Y l j * (l[j]).val := by
+  have h1 : l.take (j + 1) = l.take j ++ [l[j]] := by
+    rw [List.take_add_one, List.getElem?_eq_getElem h]
+    rfl
+  simp only [Y, h1, List.map_append, List.map_cons, List.map_nil, List.prod_append,
+    List.prod_singleton, List.prod_nil, mul_one]
+
+lemma Y_length (l : List Letter) : Y l l.length = (l.map Letter.val).prod := by
+  simp [Y]
+
+/-- The cyclic successor of an index modulo `n`. -/
+def nxt (n k : ℕ) : ℕ := (k + 1) % n
+
+/-- The cyclic predecessor of an index modulo `n`. -/
+def prv (n k : ℕ) : ℕ := (k + n - 1) % n
+
+/-- **The one-step dictionary**: the prefix product after a letter is the prefix product before it,
+times the letter. This holds cyclically too, the wrap using that the whole word's product is one. -/
+lemma Y_nxt {l : List Letter} (hprod : (l.map Letter.val).prod = 1) {k : ℕ}
+    (hk : k < l.length) :
+    Y l (nxt l.length k) = Y l k * (l[k]).val := by
+  have hn : 0 < l.length := lt_of_le_of_lt (Nat.zero_le k) hk
+  rcases Nat.lt_or_ge (k + 1) l.length with h | h
+  · rw [nxt, Nat.mod_eq_of_lt h]; exact Y_succ hk
+  · have hkn : k + 1 = l.length := by omega
+    have h1 : Y l k * (l[k]).val = Y l l.length := by
+      rw [← hkn]; exact (Y_succ hk).symm
+    rw [nxt, hkn, Nat.mod_self, Y_zero, h1, Y_length, hprod]
+
+/-- The same one step backwards: the prefix product at `k` is the one at `prv` times the letter
+there. -/
+lemma Y_prv {l : List Letter} (hprod : (l.map Letter.val).prod = 1) {k : ℕ}
+    (hk : k < l.length) (hprv : prv l.length k < l.length) :
+    Y l k = Y l (prv l.length k) * (l[prv l.length k]).val := by
+  have hn : 0 < l.length := lt_of_le_of_lt (Nat.zero_le k) hk
+  have key : Y l k = Y l (prv l.length k + 1) := by
+    rcases Nat.eq_zero_or_pos k with hk0 | hkpos
+    · subst hk0
+      have e : prv l.length 0 + 1 = l.length := by
+        simp only [prv, Nat.zero_add]
+        rw [Nat.mod_eq_of_lt (by omega)]
+        omega
+      rw [e, Y_length, hprod, Y_zero]
+    · have e : prv l.length k + 1 = k := by
+        simp only [prv]
+        rw [show k + l.length - 1 = k - 1 + l.length by omega, Nat.add_mod_right,
+          Nat.mod_eq_of_lt (by omega)]
+        omega
+      rw [e]
+  rw [key, Y_succ hprv]
+
+
+/-- The columns after a step are the letter's move applied to the columns before it. -/
+lemma cols_nxt {l : List Letter} (hprod : (l.map Letter.val).prod = 1) {k : ℕ}
+    (hk : k < l.length) :
+    col (Y l (nxt l.length k)) 0 =
+        ((l[k]).act (col (Y l k) 0) (col (Y l k) 1)).1 ∧
+      col (Y l (nxt l.length k)) 1 =
+        ((l[k]).act (col (Y l k) 0) (col (Y l k) 1)).2 := by
+  rw [Y_nxt hprod hk]
+  exact Letter.col_mul_val (l[k]) (Y l k)
+
+/-- The columns before a step are the previous letter's move applied to the columns before that. -/
+lemma cols_prv {l : List Letter} (hprod : (l.map Letter.val).prod = 1) {k : ℕ}
+    (hk : k < l.length) (hprv : prv l.length k < l.length) :
+    col (Y l k) 0 =
+        ((l[prv l.length k]).act (col (Y l (prv l.length k)) 0)
+          (col (Y l (prv l.length k)) 1)).1 ∧
+      col (Y l k) 1 =
+        ((l[prv l.length k]).act (col (Y l (prv l.length k)) 0)
+          (col (Y l (prv l.length k)) 1)).2 := by
+  rw [Y_prv hprod hk hprv]
+  exact Letter.col_mul_val (l[prv l.length k]) (Y l (prv l.length k))
+
+/-- The vertex of the walk at an index: an edge over an `⟨S⟩`-letter, a triangle over an
+`⟨R⟩`-letter. -/
+noncomputable def vtx (l : List Letter) (k : ℕ) (hk : k < l.length) : Finset (ℤ × ℤ) :=
+  if (l[k]).isS then edgeF (col (Y l k) 0) (col (Y l k) 1)
+  else triF (col (Y l k) 0) (col (Y l k) 1)
+
+/-- The height of the walk at an index, read off the columns of the prefix product. -/
+noncomputable def hgt (l : List Letter) (k : ℕ) (hk : k < l.length) : ℤ :=
+  if (l[k]).isS then EH (col (Y l k) 0) (col (Y l k) 1)
+  else HT (col (Y l k) 0) (col (Y l k) 1)
+
 end ModularGroup
 
 namespace LeanCategories.ForMathlib

@@ -122,3 +122,23 @@ So all three sides of every Farey triangle now have strictly unequal height from
 triangle. What the dictionary still needs: the prefix products along a word, the two comparisons
 between consecutive vertices of the walk (now short: `HT_ne`/`HT_ne_flipB`/`HT_ne_flipC` for the step,
 `EH_mean` and `at_most_one_down` for the turn), the maximum-vertex argument, and the parity split.
+
+## Progress: the walk's prefix products, vertices and heights
+
+The walk is read off the columns of a word's prefix products, and that data is now in the module
+(section "Prefix products, and the walk's vertices and heights"):
+
+* `Y l j` — the product of the first `j` letters of `l : List Letter`, with `Y_zero`, `Y_succ`,
+  `Y_length` and the two *cyclic* forms `Y_nxt`/`Y_prv`; stepping forward across the end of the word
+  uses that the whole word's product is one, and `Y_prv` is the same statement read backwards;
+* `nxt`/`prv` — cyclic successor and predecessor of an index;
+* `cols_nxt`/`cols_prv` — the one-step column dictionary: the columns after a step are the letter's
+  move `Letter.act` applied to the columns before it, and likewise backwards. This is what turns a
+  comparison between two vertices of the walk into a statement about one letter's move, one leg of
+  which is a flip `flA`/`flB`/`flC`;
+* `vtx`, `hgt` — the vertex at an index (edge over an `⟨S⟩`-letter, triangle over an `⟨R⟩`-letter) and
+  its height.
+
+Remaining for the dictionary: the two comparisons at each index (step: `HT_ne`, `HT_ne_flipB`,
+`HT_ne_flipC`; turn: `EH_mean`, `at_most_one_down`), the maximum-vertex argument, and the parity
+split with its two seam computations.
