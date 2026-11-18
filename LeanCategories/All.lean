@@ -152,6 +152,8 @@ public import LeanCategories.AlgebraicGeometry.TenNodalStratumClosure
 public import LeanCategories.Analytic.LocalModel
 public import LeanCategories.Algebra.MonoidAlgebra
 public import LeanCategories.Algebra.PureSubmodule
+public import LeanCategories.Algebra.RealFormData
+public import LeanCategories.Algebra.SatakeDiagramData
 public import LeanCategories.ForMathlib.AdicCompletionIntegers
 public import LeanCategories.ForMathlib.AddSubgroupCompletion
 public import LeanCategories.ForMathlib.AdicCompletionUniform
@@ -372,6 +374,7 @@ public import LeanCategories.Lattices.Valued.CarrierIntActionTests
 public import LeanCategories.Lattices.Valued.PrimitiveReduction
 public import LeanCategories.Lattices.Valued.RationalPolyhedralCone
 public import LeanCategories.Lattices.Valued.RationalConeDuality
+public import LeanCategories.Lattices.Valued.FanCoarsening
 public import LeanCategories.Lattices.Valued.LocallyRationalDecomposition
 public import LeanCategories.Lattices.Valued.ConicalLocus
 public import LeanCategories.Lattices.Valued.FibreRefinement
@@ -527,6 +530,7 @@ public import LeanCategories.AlgebraicGeometry.ProjectiveSpectrum.BaseChange
 public import LeanCategories.AlgebraicGeometry.ProjectiveSpectrum.Basic
 public import LeanCategories.AlgebraicGeometry.RelativeProj.Affine
 public import LeanCategories.AlgebraicGeometry.RelativeProj.Basic
+public import LeanCategories.AlgebraicGeometry.Toric.AffineToric
 public import LeanCategories.CategoryTheory.EqToHom
 public import LeanCategories.CategoryTheory.GradedObject.MonObj
 public import LeanCategories.RingTheory.GradedAlgebra.DirectSum

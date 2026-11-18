@@ -3670,3 +3670,79 @@ downstream assertions, computational observations, or downstream diagnostics.
   follows from `BilinModuleCat.IsPrimitiveEmbedding.of_iso`), an `End`/`Aut`-to-hom coercion instance
   or `Action.ρIso`, and `IsRegular (2 : ℤ)` from `IsDomain`. Filed here because the GitHub connector
   cannot create issues: this entry is the issue.
+
+### #86 — Araki's classification of real forms by Satake diagrams is stated, not proved
+
+- **Need:** issue #86, item 3 — for a complex semisimple Lie algebra `g` with Dynkin diagram `A`,
+  the isomorphism classes of real forms of `g` correspond bijectively to the `Aut(A)`-orbits of
+  admissible pairs of `A` (Araki, *On root systems and an infinitesimal classification of
+  irreducible symmetric spaces*, J. Math. Osaka City Univ. 13 (1962), pp. 32–33; Kolb, *Quantum
+  symmetric Kac–Moody pairs*, Adv. Math. 267 (2014), Theorem 2.7, p. 11). Either direction of the
+  correspondence, and the construction `(X, τ) ↦ θ(X, τ)` of the involution underlying it (Kolb,
+  *op. cit.*, Theorem 2.5, p. 10), would discharge it; so would the weaker statement that every
+  real form of `g` *is* isomorphic to one attached to an admissible pair.
+- **Evidence:** `LeanCategories/Algebra/RealFormData.lean` contains the statement as the structure
+  `RealFormCorrespondence` and the `Prop`-valued definition `ArakiClassification`, which is
+  asserted nowhere. What *is* proved there: `RealForm.isoSetoid` (isomorphism of real forms is an
+  equivalence relation), `RealForm.ofScalarExtension` (the definition is inhabited) and
+  `RealForm.bracket_copy_ofScalarExtension` (the bracket compatibility
+  `LieAlgebra.ExtendScalars.bracket_tmul` that makes the image a Lie subalgebra). On the diagram
+  side `diagramAutomorphismGroup` and `diagramTriality_not_preserves` formalize the audit
+  correction of 2026-10-29 on issue #86 (triality moves a black node, so the classification is with
+  `Aut(A)`-orbits and not with pairs). Searched: the formalization corpus
+  (`scripts/formalization_corpus.py search`, queries `Satake`, `SatakeDiagram`, `realForm`,
+  `admissible pair`, `restricted root`) returns only TauCeti's Satake *parameters* of modular
+  forms and two machine-learning-adjacent `realForm` hits — no Satake-diagram or real-form
+  classification anywhere; this repository had no `Satake` declaration before this file
+  (`rg -il satake LeanCategories` → only `K3SBBoundaryData.lean`, a Satake compactification
+  docstring). Mathlib at the pinned revision has `LieAlgebra.IsSemisimple`
+  (`Algebra/Lie/Semisimple/Defs.lean:105`), `RootPairing`
+  (`LinearAlgebra/RootSystem/Defs.lean:80`) and `RootPairing.Base.cartanMatrix`
+  (`LinearAlgebra/RootSystem/CartanMatrix.lean:106`), but nothing classifying real forms.
+- **Gap and impact:** the consumer named in the issue — the functor from Satake diagrams to real
+  forms — cannot be built from this file; a consumer must supply the correspondence itself. Each of
+  the two present directions is blocked on independent mathematics: real forms require a
+  semisimplicity/Cartan-subalgebra API for `g` (Mathlib has `Algebra/Lie/CartanExists.lean` but no
+  Dynkin-diagram extraction from a semisimple Lie algebra), and the diagram side requires the
+  transport of the four admissibility conditions along `Aut(A)`, which is not in this file (see the
+  next entry).
+- **Coverage:** inspected: Kolb's Definition 2.3, Example 2.4, Propositions 2.2, 2.5, Theorem 2.7
+  (arXiv 1207.6036v2, pp. 8–11), the corpus queries above, `LeanCategories/Algebra/*` and
+  `LeanCategories/Lattices/Valued/*` for prior art. Not inspected: Araki 1962 itself (not in
+  `.tmp-sources/` and not obtained); the appendix proof of Kolb's Theorem 2.7 (pp. 55–58), which is
+  where the Kac–Wang reduction of the correspondence actually sits.
+- **Repair link:** port the appendix of Kolb (arXiv 1207.6036v2) together with Kac–Wang's
+  classification of involutions of the second kind; the upstream candidates are
+  `RealFormCorrespondence` (as data) and a `Nonempty`-free existence theorem replacing
+  `ArakiClassification`. Filed here because the GitHub connector cannot amend the issue itself.
+
+### #86 — the `Aut(A)`-action on admissible pairs is not proved well defined
+
+- **Need:** for `σ ∈ Aut(A)` and an admissible pair `(X, τ)`, the pair `(σ X, στσ⁻¹)` must be
+  admissible again, so that `Aut(A)`-orbits of admissible pairs are a quotient of the admissible
+  pairs rather than of all pairs (`SameDiagramOrbit` in
+  `LeanCategories/Algebra/RealFormData.lean` is currently defined on `Finset ι × Equiv.Perm ι`).
+- **Evidence:** four transports are missing, in increasing cost: (1) `τ² = id` and `τ ∈ Aut(A, σX)`
+  are group computations and are cheap; (2) `σX` of finite type — `IsFiniteTypeSubdiagram`
+  (`LeanCategories/Algebra/SatakeDiagramData.lean`) is stated on the coordinate subspace of `X` in
+  `ℚ^ι` precisely so that this transport is a reindexing of `Finset.univ` along `σ`
+  (`Fintype.sum_equiv`) with `d ∘ σ` for the rescaling — not written; (3) `τ|_{σX} = -w_{σX}` —
+  needs `W_{σX} = σ W_X σ⁻¹` and that the longest element transports, together with uniqueness of
+  the longest element (Bourbaki, *Lie Groups and Lie Algebras* Ch. IV–VI, V §6.2, Cor. 3 — the
+  uniqueness is cited in `IsLongestElementOfSubdiagram`, not proved); (4)
+  `α_{σj}(ρ^∨_{σX}) = α_j(ρ^∨_X)` — the parabolic Weyl vector coefficients transport, which is the
+  same reindexing on the sums of `IsParabolicWeylVectorCoefficient`.
+- **Gap and impact:** `SameDiagramOrbit` is a relation but is not proved to be an equivalence on
+  admissible pairs, so the diagram side of #86 cannot be quotiented. No statement in the two files
+  depends on the missing transport: `RealFormCorrespondence` uses `SameDiagramOrbit` only as the
+  target of its `injective` field, which is data.
+- **Coverage:** inspected the four conditions as implemented (`IsAdmissiblePair`,
+  `IsFiniteTypeSubdiagram`, `AgreesWithNegativeLongestElement`, `HasIntegralParabolicWeylPairing`);
+  Mathlib searched for `Subgroup.map`, `Fintype.sum_equiv`, `Finset.sum_bij`, `Subgroup.comap` at
+  the pinned revision (all present). Not inspected: whether Mathlib's `RootPairing.Base.equivOfCartanMatrixEq`
+  (`LinearAlgebra/RootSystem/CartanMatrix.lean:361`) can be used to build the transport directly
+  instead of reindexing the sums by hand.
+- **Repair link:** the transport theorem `IsAdmissiblePair.smul` for `σ : diagramAutomorphismGroup A`
+  followed by `SameDiagramOrbit`'s equivalence laws; it makes `RealFormCorrespondence.injective` a
+  statement about a genuine quotient. Upstream candidate: the same transport for `RootPairing`
+  sub-diagrams, which belongs with `RootPairing.Base.equivOfCartanMatrixEq`.
