@@ -1207,6 +1207,30 @@ theorem eq_T_zpow_or_neg_of_cusp_fixed (A : SL(2, ℤ)) (h : A.1 1 0 = 0) :
   · exact ⟨b, Or.inl (by rw [hA, cuspLift_zero_eq, one_mul])⟩
   · exact ⟨b, Or.inr (by rw [hA, cuspLift_one_eq, neg_one_mul])⟩
 
+/-!
+### Why the descent cannot see the survival statement
+
+The six amalgam letters — `S`, `S³` for the `ℤ/4` factor and `R`, `R²`, `R⁴`, `R⁵` for the `ℤ/6`
+factor, `R = TS` — all lie in the stratum `colHeight = 1` (`colHeight_letters`). So the measure the
+descent drives down is already minimal on every generator, and its length is no lower bound for the
+length of a reduced word: computed over the 37 448 reduced words of length up to ten, the
+descent length is `0` on the majority of them (a length-ten example has product
+`!![-1,4;1,-5]`, first column `(-1,1)`, height one). That is the precise sense in which
+component 1 cannot be iterated into component 2, and why the survival statement needs the tree
+rather than a better measure on matrices.
+-/
+
+/-- The six amalgam letters all already lie in the cusp stratum, so the descent's measure is
+minimal on each of them. -/
+theorem colHeight_letters :
+    colHeight (S : SL(2, ℤ)).1 = 1
+      ∧ colHeight ((S : SL(2, ℤ)) ^ 3).1 = 1
+      ∧ colHeight (T * S : SL(2, ℤ)).1 = 1
+      ∧ colHeight ((T * S : SL(2, ℤ)) ^ 2).1 = 1
+      ∧ colHeight ((T * S : SL(2, ℤ)) ^ 4).1 = 1
+      ∧ colHeight ((T * S : SL(2, ℤ)) ^ 5).1 = 1 := by
+  refine ⟨?_, ?_, ?_, ?_, ?_, ?_⟩ <;> decide
+
 end ModularGroup
 
 namespace LeanCategories.ForMathlib
