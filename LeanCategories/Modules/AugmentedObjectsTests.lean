@@ -5,6 +5,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import LeanCategories.Modules.AugmentedObjects
+public import LeanCategories.Modules.ChainComplexModel
 public import LeanCategories.Modules.StableEnhancement
 public import LeanCategories.Modules.TangentFraming
 
@@ -140,6 +141,14 @@ example {C : Type} [Category C] [Abelian C] {K L : CochainComplex C ℤ} (φ : K
     suspension (CochainComplex.mappingCone φ) ≅
       CochainComplex.mappingCone (φ⟦(1 : ℤ)⟧') :=
   cofiberSuspension φ
+
+/-- 4. The selected diagram is a chain complex: the chosen terms and differentials satisfy `d² = 0`
+by construction. -/
+example : ChainComplex (ModuleCat ℤ) ℕ := chainComplex intKoszul
+
+/-- 4. Its terms and differentials are the chosen ones. -/
+example (n : ℕ) : (chainComplex intKoszul).d (n + 1) n = intKoszul.diff n :=
+  chainComplex_d intKoszul n
 
 /-- 5. The module framing case: a one-term object is a framing exactly when its augmentation is an
 isomorphism. -/
