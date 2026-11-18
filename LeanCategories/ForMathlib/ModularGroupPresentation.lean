@@ -9,6 +9,7 @@ public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
 public import Mathlib.GroupTheory.Complement
 public import Mathlib.GroupTheory.Generators
 public import Mathlib.GroupTheory.PresentedGroup
+public import Mathlib.GroupTheory.PushoutI
 
 /-!
 # Finite presentations of `SL(2, ℤ)` and `GL(2, ℤ)` (lean-categories#89)
@@ -98,13 +99,12 @@ Two proofs of item 1's completeness are known, and what each still costs here is
 `prod_injective` (`:560`), `of_injective` (`:583`), `Reduced.eq_empty_of_mem_range` (`:628`) and the
 amalgam intersection `inf_of_range_eq_base_range` (`:647`), together with `Monoid.CoprodI.Word`'s
 unique reduced words for the free product. So the "unique reduced words for
-`ℤ/4 *_{ℤ/2} ℤ/6`" half is in the library. What is missing is at the two ends of it: (a) the
-identification of `PresentedGroup sl2zAmalgamRelators` with a `PushoutI` of a diagram of cyclic
-groups — which needs a homomorphism *out of* a cyclic group into a nonabelian one, and the library
-has no such constructor at this pin (`ZMod.lift` is additive, so its targets are abelian; the
-multiplicative homs in the library go into `Mˣ` or come out of a presentation's own `lift`), so this
-half has to be built by a `ZMod` recursion first; and (b) injectivity of the induced map
-`PushoutI →* SL(2, ℤ)`, which does not follow from the normal form and is the tree statement below.
+`ℤ/4 *_{ℤ/2} ℤ/6`" half is in the library, and the other end is now here too: `amalgamPushoutEquiv`
+identifies `PresentedGroup sl2zAmalgamRelators` with the pushout `AmalgamPushout` of
+`ℤ/4 ← ℤ/2 → ℤ/6`, the cyclic factors being taken as one-relator *presentations* `Cyclic n` so that
+a homomorphism *out of* them needs no `ZMod` recursion into a nonabelian target. What remains is the
+middle: injectivity of the induced map `AmalgamPushout →* SL(2, ℤ)`, which does not follow from the
+normal form and is the tree statement below.
 
 *Serre's tree action of `SL(2, ℤ)`.* The tree is the barycentric subdivision of the dual of the
 Farey tessellation: its vertices of `Z/4`-type are the midpoints of Farey edges (fixed by `S`) and
@@ -792,6 +792,250 @@ def sl2zAmalgamEquiv : PresentedGroup sl2zRelators ≃* PresentedGroup sl2zAmalg
   map_mul' := sl2zToAmalgam.map_mul
 
 /-!
+### Item 1: the presentation *is* the amalgam `ℤ/4 *_{ℤ/2} ℤ/6`
+
+The eight cocycle-free definitions below make the identification with Mathlib's categorical pushout
+`Monoid.PushoutI` (lean-categories#89's open sketch, now closed):
+
+* `cyclicRelators n` / `Cyclic n` / `cyclicGen n` — the one-relator presentation
+  `⟨x | x ^ n⟩` of the cyclic group of order `n`. Taking the diagram's factors as
+  *presented* cyclic groups is what makes a homomorphism *out of* them available:
+  `PresentedGroup.toGroup` needs no `ZMod` recursion, so the missing constructor the
+  earlier sketch named (`ZMod.lift` is additive, hence abelian-target) is not needed.
+* `cyclicTwoToFour`, `cyclicTwoToSix` — the diagram `ℤ/2 ⇉ ℤ/4, ℤ/6` (generator to the square, resp.
+  the cube), over `amalgamGroup` indexed by `Bool` and `AmalgamPushout := PushoutI amalgamMap`.
+* `amalgamPushoutEquiv : PresentedGroup sl2zAmalgamRelators ≃* AmalgamPushout`, built from
+  `pushoutToAmalgam` (the pushout's universal property, checked on the two generators and the base)
+  and `amalgamToPushout` (`PresentedGroup.toGroup` on the two generators, the second relator being
+  `pushout_gen_six_cube`: in the pushout, the cube of the `ℤ/6` generator is the square of the
+  `ℤ/4` one because both are the image of the `ℤ/2` generator).
+
+So the presented group is the amalgam, and with `Monoid.PushoutI`'s normal forms
+(`NormalWord`, `equiv`, `prod_injective`, `inf_of_range_eq_base_range`) the vocabulary of reduced
+words is available for it. What that does *not* give — and what `Sl2zPresentationComplete` still
+asks — is that the induced map `AmalgamPushout →* SL(2, ℤ)` is injective: the normal form theorem is
+about the pushout itself, not about a map out of it, and the survival of reduced words in
+`SL(2, ℤ)` is the Farey/Bass–Serre statement recorded in the module docstring.
+-/
+
+def cyclicRelators (n : ℕ) : Set (FreeGroup (Fin 1)) := {FreeGroup.of 0 ^ n}
+
+abbrev Cyclic (n : ℕ) : Type := PresentedGroup (cyclicRelators n)
+
+def cyclicGen (n : ℕ) : Cyclic n := PresentedGroup.of 0
+
+lemma cyclicGen_pow (n : ℕ) : cyclicGen n ^ n = 1 := by
+  simpa [cyclicGen, PresentedGroup.of, ← map_pow] using
+    (PresentedGroup.one_of_mem (rels := cyclicRelators n) (x := FreeGroup.of 0 ^ n)
+      (by simp [cyclicRelators]))
+
+def cyclicTwoToFour : Cyclic 2 →* Cyclic 4 :=
+  PresentedGroup.toGroup (f := fun _ => cyclicGen 4 ^ 2) (by
+    intro r hr
+    simp only [cyclicRelators, Set.mem_singleton_iff] at hr
+    subst hr
+    rw [map_pow, FreeGroup.lift_apply_of, ← pow_mul]
+    norm_num
+    exact cyclicGen_pow 4)
+
+def cyclicTwoToSix : Cyclic 2 →* Cyclic 6 :=
+  PresentedGroup.toGroup (f := fun _ => cyclicGen 6 ^ 3) (by
+    intro r hr
+    simp only [cyclicRelators, Set.mem_singleton_iff] at hr
+    subst hr
+    rw [map_pow, FreeGroup.lift_apply_of, ← pow_mul]
+    norm_num
+    exact cyclicGen_pow 6)
+
+theorem amalgamR_pow_six :
+    (PresentedGroup.of (rels := sl2zAmalgamRelators) (1 : Fin 2)) ^ 6 = 1 := by
+  have h3 := amalgamR_cube
+  rw [show (6 : ℕ) = 3 * 2 by norm_num, pow_mul, h3, ← pow_mul]
+  norm_num
+  exact amalgamS_pow_four
+
+def cyclicFourToAmalgam : Cyclic 4 →* PresentedGroup sl2zAmalgamRelators :=
+  PresentedGroup.toGroup (f := fun _ => PresentedGroup.of (0 : Fin 2)) (by
+    intro r hr
+    simp only [cyclicRelators, Set.mem_singleton_iff] at hr
+    subst hr
+    rw [map_pow, FreeGroup.lift_apply_of]
+    exact amalgamS_pow_four)
+
+def cyclicSixToAmalgam : Cyclic 6 →* PresentedGroup sl2zAmalgamRelators :=
+  PresentedGroup.toGroup (f := fun _ => PresentedGroup.of (1 : Fin 2)) (by
+    intro r hr
+    simp only [cyclicRelators, Set.mem_singleton_iff] at hr
+    subst hr
+    rw [map_pow, FreeGroup.lift_apply_of]
+    exact amalgamR_pow_six)
+
+def cyclicTwoToAmalgam : Cyclic 2 →* PresentedGroup sl2zAmalgamRelators :=
+  PresentedGroup.toGroup (f := fun _ => (PresentedGroup.of (0 : Fin 2)) ^ 2) (by
+    intro r hr
+    simp only [cyclicRelators, Set.mem_singleton_iff] at hr
+    subst hr
+    rw [map_pow, FreeGroup.lift_apply_of, ← pow_mul]
+    norm_num
+    exact amalgamS_pow_four)
+
+lemma cyclicFourToAmalgam_gen :
+    cyclicFourToAmalgam (cyclicGen 4) = PresentedGroup.of (0 : Fin 2) :=
+  PresentedGroup.toGroup.of _
+
+lemma cyclicSixToAmalgam_gen :
+    cyclicSixToAmalgam (cyclicGen 6) = PresentedGroup.of (1 : Fin 2) :=
+  PresentedGroup.toGroup.of _
+
+lemma cyclicTwoToFour_gen : cyclicTwoToFour (cyclicGen 2) = cyclicGen 4 ^ 2 :=
+  PresentedGroup.toGroup.of _
+
+lemma cyclicTwoToSix_gen : cyclicTwoToSix (cyclicGen 2) = cyclicGen 6 ^ 3 :=
+  PresentedGroup.toGroup.of _
+
+lemma cyclicTwoToAmalgam_gen :
+    cyclicTwoToAmalgam (cyclicGen 2) = (PresentedGroup.of (0 : Fin 2)) ^ 2 :=
+  PresentedGroup.toGroup.of _
+
+abbrev amalgamGroup : Bool → Type
+  | false => Cyclic 4
+  | true => Cyclic 6
+
+instance (i : Bool) : Group (amalgamGroup i) := by
+  match i with
+  | false => exact inferInstanceAs (Group (Cyclic 4))
+  | true => exact inferInstanceAs (Group (Cyclic 6))
+
+abbrev amalgamMap : ∀ i, Cyclic 2 →* amalgamGroup i
+  | false => cyclicTwoToFour
+  | true => cyclicTwoToSix
+
+abbrev AmalgamPushout : Type := Monoid.PushoutI amalgamMap
+
+def pushoutToAmalgam : AmalgamPushout →* PresentedGroup sl2zAmalgamRelators :=
+  Monoid.PushoutI.lift (fun i => match i with
+      | false => cyclicFourToAmalgam
+      | true => cyclicSixToAmalgam)
+    cyclicTwoToAmalgam (by
+      intro i
+      match i with
+      | false =>
+        refine PresentedGroup.ext fun j => ?_
+        fin_cases j
+        change cyclicFourToAmalgam (cyclicTwoToFour (cyclicGen 2)) =
+          cyclicTwoToAmalgam (cyclicGen 2)
+        rw [cyclicTwoToFour_gen, cyclicTwoToAmalgam_gen, map_pow, cyclicFourToAmalgam_gen]
+      | true =>
+        refine PresentedGroup.ext fun j => ?_
+        fin_cases j
+        change cyclicSixToAmalgam (cyclicTwoToSix (cyclicGen 2)) =
+          cyclicTwoToAmalgam (cyclicGen 2)
+        rw [cyclicTwoToSix_gen, cyclicTwoToAmalgam_gen, map_pow, cyclicSixToAmalgam_gen,
+          amalgamR_cube])
+
+/-! ### The other direction and the equivalence -/
+
+def amalgamToPushoutGenerators : Fin 2 → AmalgamPushout :=
+  ![Monoid.PushoutI.of (φ := amalgamMap) false (cyclicGen 4),
+    Monoid.PushoutI.of (φ := amalgamMap) true (cyclicGen 6)]
+
+lemma amalgamToPushoutGenerators_zero :
+    amalgamToPushoutGenerators 0 = Monoid.PushoutI.of (φ := amalgamMap) false (cyclicGen 4) := rfl
+
+lemma amalgamToPushoutGenerators_one :
+    amalgamToPushoutGenerators 1 = Monoid.PushoutI.of (φ := amalgamMap) true (cyclicGen 6) := rfl
+
+lemma pushout_of_one_apply_base :
+    Monoid.PushoutI.of (φ := amalgamMap) true (cyclicTwoToSix (cyclicGen 2)) =
+      Monoid.PushoutI.base amalgamMap (cyclicGen 2) :=
+  Monoid.PushoutI.of_apply_eq_base (φ := amalgamMap) true (cyclicGen 2)
+
+lemma pushout_of_zero_apply_base :
+    Monoid.PushoutI.of (φ := amalgamMap) false (cyclicTwoToFour (cyclicGen 2)) =
+      Monoid.PushoutI.base amalgamMap (cyclicGen 2) :=
+  Monoid.PushoutI.of_apply_eq_base (φ := amalgamMap) false (cyclicGen 2)
+
+/-- In the pushout, the cube of the `ℤ/6` generator is the square of the `ℤ/4` one: both are the
+image of the `ℤ/2` generator. -/
+theorem pushout_gen_six_cube :
+    (Monoid.PushoutI.of (φ := amalgamMap) true (cyclicGen 6)) ^ 3 =
+      (Monoid.PushoutI.of (φ := amalgamMap) false (cyclicGen 4)) ^ 2 := by
+  have e1 : (Monoid.PushoutI.of (φ := amalgamMap) true (cyclicGen 6)) ^ 3 =
+      Monoid.PushoutI.of (φ := amalgamMap) true (cyclicTwoToSix (cyclicGen 2)) := by
+    rw [← map_pow]
+    exact congrArg _ cyclicTwoToSix_gen.symm
+  have e0 : (Monoid.PushoutI.of (φ := amalgamMap) false (cyclicGen 4)) ^ 2 =
+      Monoid.PushoutI.of (φ := amalgamMap) false (cyclicTwoToFour (cyclicGen 2)) := by
+    rw [← map_pow]
+    exact congrArg _ cyclicTwoToFour_gen.symm
+  rw [e1, e0, pushout_of_one_apply_base, pushout_of_zero_apply_base]
+
+def amalgamToPushout : PresentedGroup sl2zAmalgamRelators →* AmalgamPushout :=
+  PresentedGroup.toGroup (f := amalgamToPushoutGenerators) (by
+    intro r hr
+    simp only [sl2zAmalgamRelators, Set.mem_insert_iff, Set.mem_singleton_iff] at hr
+    rcases hr with rfl | rfl
+    · rw [map_pow, FreeGroup.lift_apply_of, amalgamToPushoutGenerators_zero, ← map_pow,
+        cyclicGen_pow, map_one]
+    · rw [map_mul, map_pow, map_zpow, FreeGroup.lift_apply_of, FreeGroup.lift_apply_of,
+        amalgamToPushoutGenerators_zero, amalgamToPushoutGenerators_one, pushout_gen_six_cube]
+      group)
+
+lemma amalgamToPushout_of (i : Fin 2) :
+    amalgamToPushout (PresentedGroup.of i) = amalgamToPushoutGenerators i :=
+  PresentedGroup.toGroup.of _
+
+theorem pushoutToAmalgam_comp_amalgamToPushout :
+    pushoutToAmalgam.comp amalgamToPushout = MonoidHom.id _ := by
+  refine PresentedGroup.ext fun i => ?_
+  fin_cases i
+  · change pushoutToAmalgam (amalgamToPushout (PresentedGroup.of (0 : Fin 2))) =
+      PresentedGroup.of 0
+    rw [amalgamToPushout_of, amalgamToPushoutGenerators_zero]
+    simp only [pushoutToAmalgam, Monoid.PushoutI.lift_of]
+    exact cyclicFourToAmalgam_gen
+  · change pushoutToAmalgam (amalgamToPushout (PresentedGroup.of (1 : Fin 2))) =
+      PresentedGroup.of 1
+    rw [amalgamToPushout_of, amalgamToPushoutGenerators_one]
+    simp only [pushoutToAmalgam, Monoid.PushoutI.lift_of]
+    exact cyclicSixToAmalgam_gen
+
+theorem amalgamToPushout_comp_pushoutToAmalgam :
+    amalgamToPushout.comp pushoutToAmalgam = MonoidHom.id _ := by
+  refine Monoid.PushoutI.hom_ext_nonempty (fun i => ?_)
+  match i with
+  | false =>
+    refine PresentedGroup.ext fun j => ?_
+    fin_cases j
+    change amalgamToPushout (pushoutToAmalgam
+        (Monoid.PushoutI.of (φ := amalgamMap) false (cyclicGen 4))) =
+      Monoid.PushoutI.of (φ := amalgamMap) false (cyclicGen 4)
+    simp only [pushoutToAmalgam, Monoid.PushoutI.lift_of, cyclicFourToAmalgam_gen,
+      amalgamToPushout_of, amalgamToPushoutGenerators_zero]
+  | true =>
+    refine PresentedGroup.ext fun j => ?_
+    fin_cases j
+    change amalgamToPushout (pushoutToAmalgam
+        (Monoid.PushoutI.of (φ := amalgamMap) true (cyclicGen 6))) =
+      Monoid.PushoutI.of (φ := amalgamMap) true (cyclicGen 6)
+    simp only [pushoutToAmalgam, Monoid.PushoutI.lift_of, cyclicSixToAmalgam_gen,
+      amalgamToPushout_of, amalgamToPushoutGenerators_one]
+
+/-- **The presented group is the amalgam.** `⟨S, R | S⁴, R³ = S²⟩` is the pushout of
+`ℤ/4 ← ℤ/2 → ℤ/6` (`cyclicTwoToFour`, `cyclicTwoToSix`), which is the sense in which item 1's
+presentation is the amalgam `ℤ/4 *_{ℤ/2} ℤ/6`. -/
+def amalgamPushoutEquiv : PresentedGroup sl2zAmalgamRelators ≃* AmalgamPushout where
+  toFun := amalgamToPushout
+  invFun := pushoutToAmalgam
+  left_inv a := by
+    have := congrArg (fun f => f a) pushoutToAmalgam_comp_amalgamToPushout
+    simpa using this
+  right_inv b := by
+    have := congrArg (fun f => f b) amalgamToPushout_comp_pushoutToAmalgam
+    simpa using this
+  map_mul' := amalgamToPushout.map_mul
+
+/-!
 ### Item 1: the two cyclic factors, and exactly what is still missing
 
 The presentation's first generator has order exactly four, and the word `T S` order exactly six —
@@ -807,12 +1051,14 @@ asks is the one remaining amalgam datum: that `⟨S⟩` and `⟨T S⟩` meet in 
 presented group — equivalently, that no nonempty reduced word in the two factors is trivial. The
 descent above does not reach it (see the section "Component 1 of the completeness proof": the base
 case of the descent's induction quantifies over all words whose product has `colHeight ≤ 1`, which
-already includes `ker sl2zToGroup`). Mathlib's `Monoid.PushoutI`
-(`Mathlib/GroupTheory/PushoutI.lean`) does supply the amalgam normal forms — `NormalWord`, `equiv`,
-`prod_injective`, `inf_of_range_eq_base_range` — but the library constructs no pushout instance for
-`SL(2, ℤ)`, the normal form does not by itself make a map *out of* the pushout injective, and there
-is no Farey graph and no Bass–Serre theory. Closing it is a unit of its own, not a probe or a repair
-of this file.
+already includes `ker sl2zToGroup`), and the stratum classification below does not reach it either —
+that is arithmetic about matrices, while the residue is a statement about words. The pushout
+identification is done (`amalgamPushoutEquiv`, above), so the one datum left is: the induced map
+`AmalgamPushout →* SL(2, ℤ)` is injective, equivalently no nonempty reduced word of the amalgam dies
+there. `Monoid.PushoutI`'s normal forms (`NormalWord`, `equiv`, `prod_injective`,
+`inf_of_range_eq_base_range`) are about the pushout, not about a map out of it, and there is no
+Farey graph and no Bass–Serre theory at this pin. Closing it is a unit of its own, not a probe or a
+repair of this file.
 -/
 
 theorem S_sq_ne_one : (S : SL(2, ℤ)) ^ 2 ≠ 1 := by
