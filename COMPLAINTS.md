@@ -3974,3 +3974,12 @@ downstream assertions, computational observations, or downstream diagnostics.
 - **Repair link:** formalizing the converse needs the Pell existence statement (units of norm one in
   `ℚ(√D)`, unbounded powers of the fundamental solution) — a unit of its own, in a new issue, since
   `#87` excludes it. The rank-at-least-three clause needs a source chosen first.
+- **Searches run for the rank-at-least-three source** (2026-11-18): web search
+  `orthogonal group of an indefinite integral lattice of rank at least 3 is infinite theorem`. No
+  citable statement was found: the hits were seminar abstracts, course notes and unrelated question
+  sets. The one near-hit is Shimura, *Arithmetic of Quadratic Forms*, Section 32 ("strong
+  approximation in an indefinite orthogonal group of more than two variables"), known only from a
+  book preview that does not display the theorem or its number; strong approximation presupposes
+  infiniteness rather than stating it, so it is not cited here. Recorded as unverified: an infinitude
+  statement for `O(L)` of an indefinite lattice of rank at least three is expected to be classical but
+  is **not** sourced, and nothing in this repository relies on it.
