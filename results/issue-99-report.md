@@ -234,6 +234,12 @@ Additions of this sweep: `Registry/EnumerationCompleteness.lean` (imports at
 | A4 | Any replacement of the reachable-category bound is a theorem about reachable categories | **met vacuously** | no replacement is offered: `SemanticState.routes` keeps `fuel := 32` (`Semantic.lean:1730`) and the kernel's `limit := 4096` is untouched. Theorems about reachability are stated with an explicit hypothesis (`RouteDiscovery.lean:330,337,357`), none of them about a concrete registry. |
 | A5 | Existing `CohereProbes` outcomes unchanged | **blocked, not verifiable here** | `rg -l 'CohereProbes'` over the repository: no hits; the file and its outcomes belong to `lean-cas-dsl`, which this session cannot read. What is checkable is unchanged: the repository's own route/comparison probes still elaborate and no existing probe was modified. |
 
+Executed again at the end of the sweep: `lake build` of the six modules (`RouteDiscovery`,
+`ComparisonProbes`, `Presentation`, `PresentationProbes`, `EnumerationCompleteness`,
+`AcceptanceProbes`) — 4961 jobs, `Build completed successfully`, 13 m 17 s wall at load 22 on 4
+cores. That run re-executed every elaboration-time check (the four `run_cmd` presentation checks
+and the `run_meta` registry checks) and they passed.
+
 Checks of this sweep: `lake build` of `RouteDiscovery`, `ComparisonProbes`, `Presentation`,
 `PresentationProbes`, `EnumerationCompleteness`, `AcceptanceProbes` — 4961 jobs, success; gate linter
 flags on the new files, no long lines, no unused-variable warnings; `#print axioms` on
