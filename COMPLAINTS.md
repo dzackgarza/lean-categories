@@ -3801,3 +3801,24 @@ downstream assertions, computational observations, or downstream diagnostics.
   subcategory only when it can name it (`.`atom`-carried endpoints of the same ambient), or run the
   comparison `withTransparency .all` and `withoutModifyingState` over the metavariable context. The
   property-subcategory row is then a classifier on the ambient row, as the error message asks.
+
+### #95 — two catalogue test modules in `Foundation/` are outside the build
+
+- **Need:** every `*Tests` module under `LeanCategories/Catalogue/Semantics/Foundation/` should be
+  elaborated by `just test`, so that the refusals it asserts are evidence rather than dead code.
+- **Evidence:** `PowerSetsTests.lean` (rejecting the global-image operation and a source-specialized
+  direct image as the whole `𝒫` action) and `FiniteOrdersTests.lean` (rejecting a carrier
+  presentation specialized at one size, an omitted structural route, and an order isomorphism
+  substituted for a set carrier comparison) both exist, but nothing imports either:
+  `rg -n "PowerSetsTests|FiniteOrdersTests"` finds only their own namespaces. The default build
+  target reaches tests through `LeanCategories.lean → LeanCategories.Catalogue → Catalogue.lean`,
+  which names neither module.
+- **Gap and impact:** the two modules are elaborated only when a worker runs them by hand, so a
+  regression in the rows they cover leaves the gate green. `FiniteSubsetsTests.lean` (#95) is
+  therefore imported from `Catalogue.lean` in the commit that adds it.
+- **Coverage:** inspected `LeanCategories.lean`, `LeanCategories/All.lean` and
+  `LeanCategories/Catalogue.lean` at `72a79b19`; the two modules' contents beyond their `run_meta`
+  probes were not audited, and neither was run.
+- **Repair link:** add both imports to `Catalogue.lean` in one commit that also repairs whatever the
+  two modules then report. Filed here because this unit added their sibling and found the gap; it is
+  not this issue's obligation.

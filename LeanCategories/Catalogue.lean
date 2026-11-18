@@ -68,6 +68,7 @@ public import LeanCategories.Catalogue.Semantics.Algebra.AdditiveOperations
 public import LeanCategories.Catalogue.Semantics.Algebra.GroupMaps
 public import LeanCategories.Catalogue.Semantics.Algebra.LinearAlgebra
 public import LeanCategories.Catalogue.Semantics.Foundation.FiniteSubsets
+public import LeanCategories.Catalogue.Semantics.Foundation.FiniteSubsetsTests
 public import LeanCategories.Catalogue.Semantics.Foundation.Maps
 public import LeanCategories.Catalogue.Semantics.Algebra.FiniteSums
 public import LeanCategories.Catalogue.Semantics.Algebra.Calculus
