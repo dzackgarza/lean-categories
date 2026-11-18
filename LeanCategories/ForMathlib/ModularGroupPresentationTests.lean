@@ -164,4 +164,30 @@ example : ∃! p : Fin 8 × ℤ, (S : SL(2, ℤ)) = cuspLift p.1 * T ^ p.2 :=
 example : ∃! p : Fin 8 × ℤ, ((-S * T ^ (5 : ℤ) : SL(2, ℤ))) = cuspLift p.1 * T ^ p.2 :=
   (colHeight_le_one_iff_existsUnique _).mp (by decide)
 
+/-! ### Item 1 as an amalgam: the pushed identification, on the smallest inputs -/
+
+example : cyclicGen 4 ^ 4 = 1 := cyclicGen_pow 4
+
+example : cyclicGen 6 ^ 6 = 1 := cyclicGen_pow 6
+
+example : cyclicTwoToFour (cyclicGen 2) = cyclicGen 4 ^ 2 := cyclicTwoToFour_gen
+
+example : cyclicTwoToSix (cyclicGen 2) = cyclicGen 6 ^ 3 := cyclicTwoToSix_gen
+
+example : cyclicFourToAmalgam (cyclicGen 4) = PresentedGroup.of (0 : Fin 2) :=
+  cyclicFourToAmalgam_gen
+
+example : (PresentedGroup.of (rels := sl2zAmalgamRelators) (1 : Fin 2)) ^ 6 = 1 :=
+  amalgamR_pow_six
+
+example : (Monoid.PushoutI.of (φ := amalgamMap) true (cyclicGen 6)) ^ 3 =
+    (Monoid.PushoutI.of (φ := amalgamMap) false (cyclicGen 4)) ^ 2 := pushout_gen_six_cube
+
+example : PresentedGroup sl2zAmalgamRelators ≃* AmalgamPushout := amalgamPushoutEquiv
+
+example : pushoutToAmalgam (Monoid.PushoutI.of (φ := amalgamMap) false (cyclicGen 4)) =
+    PresentedGroup.of (0 : Fin 2) := by
+  simp only [pushoutToAmalgam, Monoid.PushoutI.lift_of]
+  exact cyclicFourToAmalgam_gen
+
 end LeanCategories.ForMathlib
