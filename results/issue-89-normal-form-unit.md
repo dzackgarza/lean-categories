@@ -34,6 +34,18 @@ only for a pushout one maps *into*), no Farey graph and no Bass–Serre theory.
    and is what the elementary route cannot supply; it is where a formalized amalgam normal form (or
    unique reduced words for `ℤ/4 *_{ℤ/2} ℤ/6`) enters.
 
+## Why no height descent can finish it
+
+The descent landed by the concurrent session (`colHeight_step`, and
+`exists_lift_mul_colHeight_le_one` which drives every `A` to `colHeight ≤ 1`) cannot be iterated to a
+proof: the cusp stratum contains the identity, so the cusp statement *at `A = 1`* is exactly
+`Function.Injective sl2zToGroup`. A second descent — on the row height `colHeight Aᵀ`, via the
+transpose, which is word-realizable by `S ↦ S⁻¹`, `T ↦ S T⁻¹ S⁻¹` since `Sᵀ = S⁻¹` and
+`(T⁻¹)ᵀ = S T S⁻¹` — shrinks the cusp stratum to finitely many matrices but does not help: for each
+of those the obligation is still "every word evaluating here is relation-equivalent to a fixed
+word", and the case `A = 1` is the theorem itself. So the missing step is a normal-form/acyclicity
+theorem, not more integer arithmetic.
+
 The consumer named in the issue — Todd–Coxeter enumeration of cosets of finite-index subgroups of
 `GL(2, ℤ)` — needs (1) and (2): with only the relations already verified, an enumeration returns a
 quotient of `SL(2, ℤ)`, not `SL(2, ℤ)`.
