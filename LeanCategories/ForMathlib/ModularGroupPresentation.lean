@@ -57,6 +57,12 @@ than assumed. In Mathlib's presentation vocabulary
 reconciliation of `PresentedGroup gl2zRelators` with `PresentedGroup sl2zRelators ⋊ ⟨e⟩`, which is
 not formalized either.
 
+The issue's identification of the presented group with the amalgam `ℤ/4 *_{ℤ/2} ℤ/6` is also
+**not** formalized: there is no `MulEquiv` from `PresentedGroup sl2zRelators` to a
+`Monoid.PushoutI` of `ℤ/4 ← ℤ/2 → ℤ/6`, and not even the Tietze rewrite from the generators
+`S, T` to `S, R = TS`, which is the form in which `R³ = S²` reads as the amalgamation of `S⁴` with
+`R⁶` over `⟨S²⟩ = ⟨R³⟩`.
+
 Two proofs of item 1's completeness are known, and neither is in the library at this pin: unique
 reduced words for the amalgam (`ℤ/4 *_{ℤ/2} ℤ/6` acting on its Bass-Serre tree, which would go
 through `Monoid.PushoutI`'s normal form, `Mathlib/GroupTheory/PushoutI.lean:197`), and Serre's
