@@ -426,4 +426,158 @@ theorem natCard_matrixOrthogonalGroup_le_four {a b c : ℤ}
         Nat.mul_le_mul hSO hidx
     _ = 4 := by norm_num
 
+
+/-! ## The hyperbolic plane -/
+
+/-- The Gram matrix of the integral hyperbolic plane. -/
+abbrev hyperbolicPairMatrix : Matrix (Fin 2) (Fin 2) ℤ := !![0, 1; 1, 0]
+
+/-- The underlying matrix of an element of the orthogonal group of a Gram matrix. -/
+abbrev orthoMatrix (B : Matrix n n ℤ) (g : MatrixOrthogonalGroup B) : Matrix n n ℤ :=
+  ((g : Matrix.GeneralLinearGroup n ℤ) : Matrix n n ℤ)
+
+theorem orthoMatrix_injective (B : Matrix n n ℤ) : Function.Injective (orthoMatrix B) :=
+  fun _ _ hgh => Subtype.ext (Units.ext hgh)
+
+theorem orthoMatrix_mul (B : Matrix n n ℤ) (g h : MatrixOrthogonalGroup B) :
+    orthoMatrix B (g * h) = orthoMatrix B g * orthoMatrix B h :=
+  rfl
+
+theorem hyperbolicPairMatrix_det : hyperbolicPairMatrix.det = -1 := by
+  rw [hyperbolicPairMatrix, Matrix.det_fin_two]
+  norm_num
+
+theorem hyperbolicPairMatrix_transpose : hyperbolicPairMatrixᵀ = hyperbolicPairMatrix := by
+  ext i j
+  fin_cases i <;> fin_cases j <;> norm_num [hyperbolicPairMatrix]
+
+theorem hyperbolicPairMatrix_mul_self : hyperbolicPairMatrix * hyperbolicPairMatrix = 1 := by
+  ext i j
+  fin_cases i <;> fin_cases j <;>
+    norm_num [hyperbolicPairMatrix, Matrix.mul_apply, Fin.sum_univ_two]
+
+/-- The swap `U` as an isometry of the hyperbolic plane, of determinant `-1`. -/
+def hyperbolicSwap : MatrixOrthogonalGroup hyperbolicPairMatrix :=
+  ⟨⟨hyperbolicPairMatrix, hyperbolicPairMatrix, hyperbolicPairMatrix_mul_self,
+      hyperbolicPairMatrix_mul_self⟩, by
+    change hyperbolicPairMatrix.transpose * hyperbolicPairMatrix * hyperbolicPairMatrix =
+      hyperbolicPairMatrix
+    rw [hyperbolicPairMatrix_transpose, hyperbolicPairMatrix_mul_self, Matrix.one_mul]⟩
+
+/-- `-U` as an isometry of the hyperbolic plane. -/
+def hyperbolicNegSwap : MatrixOrthogonalGroup hyperbolicPairMatrix :=
+  ⟨⟨-hyperbolicPairMatrix, -hyperbolicPairMatrix,
+      by rw [neg_mul_neg, hyperbolicPairMatrix_mul_self],
+      by rw [neg_mul_neg, hyperbolicPairMatrix_mul_self]⟩, by
+    change (-hyperbolicPairMatrix).transpose * hyperbolicPairMatrix * (-hyperbolicPairMatrix) =
+      hyperbolicPairMatrix
+    rw [Matrix.transpose_neg, hyperbolicPairMatrix_transpose, Matrix.neg_mul,
+      hyperbolicPairMatrix_mul_self, Matrix.neg_mul, Matrix.one_mul, neg_neg]⟩
+
+/-- `-1` as an isometry of the hyperbolic plane. -/
+def hyperbolicNegOne : MatrixOrthogonalGroup hyperbolicPairMatrix :=
+  ⟨⟨-1, -1, by rw [neg_mul_neg, Matrix.one_mul],
+      by rw [neg_mul_neg, Matrix.one_mul]⟩, by
+    change (-1 : Matrix (Fin 2) (Fin 2) ℤ).transpose * hyperbolicPairMatrix * (-1) =
+      hyperbolicPairMatrix
+    rw [Matrix.transpose_neg, Matrix.transpose_one, Matrix.neg_mul, Matrix.one_mul,
+      Matrix.mul_neg, Matrix.mul_one, neg_neg]⟩
+
+@[simp]
+theorem orthoMatrix_hyperbolicSwap :
+    orthoMatrix hyperbolicPairMatrix hyperbolicSwap = hyperbolicPairMatrix :=
+  rfl
+
+@[simp]
+theorem orthoMatrix_hyperbolicNegOne :
+    orthoMatrix hyperbolicPairMatrix hyperbolicNegOne = -1 :=
+  rfl
+
+@[simp]
+theorem orthoMatrix_hyperbolicNegSwap :
+    orthoMatrix hyperbolicPairMatrix hyperbolicNegSwap = -hyperbolicPairMatrix :=
+  rfl
+
+theorem hyperbolicPairMatrix_det_ne_zero : (0 : ℤ) * 0 - 1 * 1 ≠ 0 := by norm_num
+
+theorem hyperbolicPairMatrix_sq :
+    ∃ σ : ℚ, σ ≠ 0 ∧ ((0 : ℚ) * 0 - (1 : ℚ) * 1) = -σ ^ 2 :=
+  ⟨1, one_ne_zero, by norm_num⟩
+
+/-- **`O(U) = {±1, ±U}`**: every isometry of the integral hyperbolic plane is the identity, minus
+the identity, the swap `U = !![0, 1; 1, 0]`, or minus the swap. -/
+theorem matrixOrthogonalGroup_hyperbolicPair {M : MatrixOrthogonalGroup hyperbolicPairMatrix} :
+    orthoMatrix hyperbolicPairMatrix M = 1 ∨ orthoMatrix hyperbolicPairMatrix M = -1 ∨
+      orthoMatrix hyperbolicPairMatrix M = hyperbolicPairMatrix ∨
+        orthoMatrix hyperbolicPairMatrix M = -hyperbolicPairMatrix := by
+  have hval := coe_matrixOrthogonalDeterminant hyperbolicPairMatrix M
+  rcases Int.units_eq_one_or (matrixOrthogonalDeterminant hyperbolicPairMatrix M) with hu | hu
+  · have hdet : (orthoMatrix hyperbolicPairMatrix M).det = 1 := by
+      rw [← hval, hu]
+      norm_num
+    rcases specialMatrixOrthogonalGroup_eq_pm_one hyperbolicPairMatrix_det_ne_zero
+      hyperbolicPairMatrix_sq (by
+        rw [mem_specialMatrixOrthogonalGroup]
+        exact hdet) with h | h
+    · exact Or.inl h
+    · exact Or.inr (Or.inl h)
+  · have hdet : (orthoMatrix hyperbolicPairMatrix M).det = -1 := by
+      rw [← hval, hu]
+      norm_num
+    have hJM : hyperbolicSwap * M ∈ specialMatrixOrthogonalGroup hyperbolicPairMatrix := by
+      rw [mem_specialMatrixOrthogonalGroup]
+      change (orthoMatrix hyperbolicPairMatrix (hyperbolicSwap * M)).det = 1
+      rw [orthoMatrix_mul, Matrix.det_mul, orthoMatrix_hyperbolicSwap, hyperbolicPairMatrix_det,
+        hdet]
+      norm_num
+    rcases specialMatrixOrthogonalGroup_eq_pm_one hyperbolicPairMatrix_det_ne_zero
+      hyperbolicPairMatrix_sq hJM with h | h
+    · right; right; left
+      have hh : hyperbolicPairMatrix * orthoMatrix hyperbolicPairMatrix M = 1 := by
+        have h' : orthoMatrix hyperbolicPairMatrix (hyperbolicSwap * M) = 1 := h
+        rwa [orthoMatrix_mul, orthoMatrix_hyperbolicSwap] at h'
+      calc orthoMatrix hyperbolicPairMatrix M
+          = hyperbolicPairMatrix *
+              (hyperbolicPairMatrix * orthoMatrix hyperbolicPairMatrix M) := by
+            rw [← Matrix.mul_assoc, hyperbolicPairMatrix_mul_self, Matrix.one_mul]
+        _ = hyperbolicPairMatrix * 1 := by rw [hh]
+        _ = hyperbolicPairMatrix := Matrix.mul_one _
+    · right; right; right
+      have hh : hyperbolicPairMatrix * orthoMatrix hyperbolicPairMatrix M = -1 := by
+        have h' : orthoMatrix hyperbolicPairMatrix (hyperbolicSwap * M) = -1 := h
+        rwa [orthoMatrix_mul, orthoMatrix_hyperbolicSwap] at h'
+      calc orthoMatrix hyperbolicPairMatrix M
+          = hyperbolicPairMatrix *
+              (hyperbolicPairMatrix * orthoMatrix hyperbolicPairMatrix M) := by
+            rw [← Matrix.mul_assoc, hyperbolicPairMatrix_mul_self, Matrix.one_mul]
+        _ = hyperbolicPairMatrix * (-1) := by rw [hh]
+        _ = -hyperbolicPairMatrix := by rw [Matrix.mul_neg, Matrix.mul_one]
+
+/-- The four isometries `1`, `-1`, `U`, `-U` of the hyperbolic plane are distinct. -/
+theorem injective_hyperbolic_isometries :
+    Function.Injective fun i : Fin 4 =>
+      match i with
+      | 0 => (1 : MatrixOrthogonalGroup hyperbolicPairMatrix)
+      | 1 => hyperbolicNegOne
+      | 2 => hyperbolicSwap
+      | 3 => hyperbolicNegSwap := by
+  intro i j h
+  fin_cases i <;> fin_cases j <;> first
+    | rfl
+    | (exfalso
+       exact absurd (congrArg (orthoMatrix hyperbolicPairMatrix) h) (by decide))
+
+/-- The orthogonal group of the hyperbolic plane has exactly four elements. -/
+theorem natCard_matrixOrthogonalGroup_hyperbolicPair :
+    Nat.card (MatrixOrthogonalGroup hyperbolicPairMatrix) = 4 := by
+  haveI hfin : Finite (MatrixOrthogonalGroup hyperbolicPairMatrix) :=
+    finite_matrixOrthogonalGroup hyperbolicPairMatrix_det_ne_zero hyperbolicPairMatrix_sq
+  have h4 : Nat.card (Fin 4) = 4 := by simp
+  have hge : 4 ≤ Nat.card (MatrixOrthogonalGroup hyperbolicPairMatrix) := by
+    have := Nat.card_le_card_of_injective _ injective_hyperbolic_isometries
+    omega
+  have hle : Nat.card (MatrixOrthogonalGroup hyperbolicPairMatrix) ≤ 4 :=
+    natCard_matrixOrthogonalGroup_le_four hyperbolicPairMatrix_det_ne_zero hyperbolicPairMatrix_sq
+  omega
+
 end LeanCategories.Modules.Bilinear.Valued
