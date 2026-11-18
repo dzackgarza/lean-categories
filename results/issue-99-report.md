@@ -216,3 +216,27 @@ Every theorem added by this unit outside those probes — `EdgeRef.exists_kind`,
 `selectComparison_eq_competing_of_two`, `reaches_measure_le`, `finite_reach_of_finite_sublevels`,
 `finite_reach_of_finite_edges`, `walk_length_le_card`, and the rest — depends only on
 `[propext, Classical.choice, Quot.sound]` or on nothing, checked with `#print axioms`.
+
+## Acceptance sweep — verdict per item
+
+Additions of this sweep: `Registry/EnumerationCompleteness.lean` (imports at
+`LeanCategories/Catalogue.lean:20`), `Registry/AcceptanceProbes.lean` (`:21`).
+
+| # | Item | Verdict | Statement / evidence |
+| --- | --- | --- | --- |
+| 1 | Route representation keeps declared parameters and edge sequences | **met** | `Route.steps`/`Route.refs` (`Semantic.lean:1717-1726`), `Route.refs_retains_steps` (`RouteDiscovery.lean:305`); probe `id99.routeLabelsRetained` (`AcceptanceProbes.lean:46`): a constructor-image step keeps its label — `mapRoute.refs = #[EdgeRef.constructMap ⟨"ctor.arr"⟩ (EdgeRef.functor ⟨"fun.ab"⟩)]`. |
+| 2 | Comparison selection keeps exact witnesses and direction; competitors distinguishable and ambiguous | **met** | `ComparisonWitness` (`RouteDiscovery.lean:81`), `mem_comparisonCandidates_iff` (`:162`), `comparisonCandidates_pair_retained` (`:215`), `selectComparison_eq_competing_of_two` (`:260`); probes `id99.competing`/`id99.competingIds` (`ComparisonProbes.lean:70,76`). |
+| 3 | The search establishes its closure/termination/completeness hypotheses, or reports the resource outcome; no safeguard removed without replacement | **met, with one limit** | `boundedWalks` (`EnumerationCompleteness.lean:43`), `boundedWalks_complete` (`:52`, every walk whose steps lie in `next` and whose length fits the fuel is enumerated), `boundedWalks_complete_of_enclosure` (`:86`, fuel replaced by the enclosure's cardinality, using `walk_length_le_card`). Probes: `id99.enumerationComplete` (`AcceptanceProbes.lean:52`, 7 continuations at fuel 2 over the complete two-vertex graph), `id99.walkEnumerated` (`:57`). **Limit:** the enumeration proved complete is depth-bounded; `SemanticState.routes` (`Semantic.lean:1730`) instead prunes visited vertices and is `partial`, so no theorem unfolds it and the `fuel : Nat := 32` there remains a resource bound. No safeguard was removed. |
+| 4 | Existing outcomes preserved; explicit composites not rejected | **met** | `OperationBindingTests.lean` and `AdditiveOperationsTests.lean:65-86` untouched and elaborating; `id99.simpleRoutesOnly`/`id99.explicitRevisiting` (`ComparisonProbes.lean:114,120`). |
+| A1 | Registry stated as a 2-computad with finite-product sources; `Route` a composite, `EdgeRef` a generating 1-cell | **partially met — one exact failure** | `EdgeRef.exists_kind` (`Presentation.lean:77`), `ComputadPresentation`/`SemanticState.presentation` (`:89`,`:99`), `Route.steps_are_oneCells` (`:113`). **Failure:** `edgesFrom` propagates a constructor action only at `#[.category inner]` nodes (`Semantic.lean:1701-1712`), so a generating 1-cell out of a finite-product source gets no derived edges: measured 1 at a unary node and 0 at a two-input node (`id99.unaryEdgeDerivedCheck` `PresentationProbes.lean:59`, `id99.twoInputEdgeNotDerivedCheck` `:65`). |
+| A2 | Route identification is a retained registered 2-cell, never a quotient | **met** | as item 2; `ComparisonSelection.unrelated` is documented as "no registered cell relates the pair" (`RouteDiscovery.lean:88-92`), never as inequality. |
+| A3 | Each registered pullback states strict or iso-comma, with isofibration evidence for a strict one | **met as classification; evidence clause inapplicable and unprovable at this pin** | `PullbackKind` (`Presentation.lean:132`), `reindexingPullbacks` (`:149`), `reindexingPullbacks_isoComma` (`:156`): every registered classifier's reindexing is an **iso-comma**, built from `CategoricalPullback` (`CategoryTheory/OneCat/CategoricalPullback.lean:47-55`; `Mathlib/…/Categorical/Basic.lean:74-88`). No `IsIsoFibration`/`IsoComma` declaration exists at this pin, and no strict `Cat` pullback, so the evidence cannot be stated; the classification is per row, not by closure. |
+| A4 | Any replacement of the reachable-category bound is a theorem about reachable categories | **met vacuously** | no replacement is offered: `SemanticState.routes` keeps `fuel := 32` (`Semantic.lean:1730`) and the kernel's `limit := 4096` is untouched. Theorems about reachability are stated with an explicit hypothesis (`RouteDiscovery.lean:330,337,357`), none of them about a concrete registry. |
+| A5 | Existing `CohereProbes` outcomes unchanged | **blocked, not verifiable here** | `rg -l 'CohereProbes'` over the repository: no hits; the file and its outcomes belong to `lean-cas-dsl`, which this session cannot read. What is checkable is unchanged: the repository's own route/comparison probes still elaborate and no existing probe was modified. |
+
+Checks of this sweep: `lake build` of `RouteDiscovery`, `ComparisonProbes`, `Presentation`,
+`PresentationProbes`, `EnumerationCompleteness`, `AcceptanceProbes` — 4961 jobs, success; gate linter
+flags on the new files, no long lines, no unused-variable warnings; `#print axioms` on
+`boundedWalks_complete`, `boundedWalks_complete_of_enclosure` and the three acceptance probes:
+`[propext, Classical.choice, Quot.sound]` or less. `just test` still not run (7.1 G free on `/`, and
+another session is mid-edit in this shared checkout).

@@ -17,6 +17,8 @@ public import LeanCategories.Catalogue.Registry.RouteDiscovery
 public import LeanCategories.Catalogue.Registry.ComparisonProbes
 public import LeanCategories.Catalogue.Registry.Presentation
 public import LeanCategories.Catalogue.Registry.PresentationProbes
+public import LeanCategories.Catalogue.Registry.EnumerationCompleteness
+public import LeanCategories.Catalogue.Registry.AcceptanceProbes
 public import LeanCategories.Catalogue.Registry.Snapshot
 public import LeanCategories.Catalogue.Registry.Computation
 public import LeanCategories.Catalogue.Registry.Typed
