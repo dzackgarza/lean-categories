@@ -2825,6 +2825,140 @@ lemma HT_act_r5' : HT (-v) (u + v) = HT u v := HT_act_r5 u v
 
 end PerLetter
 
+/-!
+### The two comparisons of the walk: the step and the turn
+
+Both hypotheses of the maximum-vertex criterion are now theorems about the walk's own heights, for
+every letter, with the basis `(u, v)` arbitrary:
+
+* `EH_act_s1`, `EH_act_s3` — an `⟨S⟩`-letter does not change the height of an *edge* vertex: the two
+  columns swap and negate, so it is the same edge and its two incident triangles are read in the other
+  order (the mirror of `HT_act_r*`, which says an `⟨R⟩`-letter does not change a *triangle's* height);
+* `step_ne` — **the step**: consecutive vertices of the walk have different heights. Over an
+  `⟨S⟩`-letter the vertex is the edge `(u, v)` and the next is the flip `A`, and `EH` is the mean of
+  `HT` of the two, so the two differ unless the two are equal, which is `HT_ne`; over an `⟨R⟩`-letter
+  the vertex is the triangle and the next is the edge of `(u+v, -u)` and its kind, and the same
+  arithmetic gives `HT_ne_flipB` / `HT_ne_flipC`;
+* `turn_not_both` — **the turn**: the two neighbours of a vertex are never both lower. At an edge this
+  is immediate (`EH` is the mean of the two triangles, so at most one of them is below it); at a
+  triangle it is exactly "at most one flip is lower", i.e. `not_both_AB` / `not_both_AC`.
+
+What remains for the dictionary is only indexing: read these two facts at the walk's own indices (the
+one-step dictionary `cols_nxt`, `cols_prv` already does the transport), run the maximum-vertex
+argument, and split by the parity of the word's length.
+-/
+
+
+/-- An `⟨S⟩`-letter does not change the height of an edge vertex: the two columns swap and negate, so
+the edge is the same edge and its two incident triangles are read in the other order. -/
+theorem EH_act_s1 (u v : ℤ × ℤ) : EH v (-u) = EH u v := by
+  have e1 : -u + -v = -(u + v) := by abel
+  have h1 : triH (-u) (-v) = triH u v := by
+    simp only [triH, hl_neg, e1]
+  have h2 : eps (-u) (-v) = eps u v := by simp only [eps, triF_negneg u v]
+  simp only [EH, h1, h2]
+  try ring
+
+/-- The other `⟨S⟩`-letter, likewise: `S³` is `S` composed with `S² = -1`. -/
+theorem EH_act_s3 (u v : ℤ × ℤ) : EH (-v) u = EH u v := by
+  have e1 : -v + u = -(v + -u) := by abel
+  have h1 : triH (-v) u = triH v (-u) := by
+    simp only [triH, hl_neg, e1]
+  have h2 : eps (-v) u = eps v (-u) := by
+    have e : triF (-v) u = triF v (-u) := by
+      rw [triF_comm' (-v) u]
+      exact triF_u_negv u v
+    simp only [eps, e]
+  simp only [EH, h1, h2, neg_neg]
+  try ring
+
+/-- In the letters' own unfolded form: the height of the edge at `act s1` is the height of the edge
+at `(u, v)`. -/
+theorem EH_act_s1' (u v : ℤ × ℤ) :
+    EH (Letter.act Letter.s1 u v).1 (Letter.act Letter.s1 u v).2 = EH u v := by
+  simpa only [Letter.act] using EH_act_s1 u v
+
+theorem EH_act_s3' (u v : ℤ × ℤ) :
+    EH (Letter.act Letter.s3 u v).1 (Letter.act Letter.s3 u v).2 = EH u v := by
+  simpa only [Letter.act] using EH_act_s3 u v
+
+
+/-- **The step.** Consecutive vertices of the walk have different heights, for every letter: the edge
+over an `⟨S⟩`-letter against the triangle it moves to (a flip), and the triangle over an `⟨R⟩`-letter
+against the edge it moves to (the mean of the triangle and a flip). -/
+theorem step_ne {u v : ℤ × ℤ} (hd : fdet u v = 1) (a : Letter) :
+    (if a.isS then EH u v else HT u v) ≠
+      (if a.isS then HT (a.act u v).1 (a.act u v).2
+        else EH (a.act u v).1 (a.act u v).2) := by
+  cases a <;> simp only [Letter.isS, Bool.false_eq_true, reduceIte, Letter.act]
+  · intro h
+    have hm := EH_mean u v
+    rw [h] at hm
+    exact HT_ne hd (by linarith)
+  · intro h
+    rw [HT_negv u v] at h
+    have hm := EH_mean u v
+    rw [h] at hm
+    exact HT_ne hd (by linarith)
+  · intro h
+    have hm := EH_mean (u + v) (-u)
+    rw [HT_act_r1', HT_other_r1 u v, ← h] at hm
+    exact HT_ne_flipB hd (by linarith)
+  · intro h
+    have hm := EH_mean v (-(u + v))
+    rw [HT_act_r2', HT_other_r2 u v, ← h] at hm
+    exact HT_ne_flipC hd (by linarith)
+  · intro h
+    have hm := EH_mean (-(u + v)) u
+    rw [HT_act_r4'] at hm
+    simp only [neg_neg] at hm
+    rw [← h] at hm
+    exact HT_ne_flipB hd (by linarith)
+  · intro h
+    have hm := EH_mean (-v) (u + v)
+    rw [HT_act_r5'] at hm
+    simp only [neg_neg] at hm
+    rw [← h] at hm
+    exact HT_ne_flipC hd (by linarith)
+
+/-- **The turn.** The two neighbours of a vertex of the walk are never both lower: an edge's height is
+the mean of its two incident triangles, and at most one side of a triangle is lower
+(`not_both_AB`, `not_both_AC`). -/
+theorem turn_not_both {u v : ℤ × ℤ} (hd : fdet u v = 1) (a : Letter) :
+    ¬ ((if a.isS then HT u v else EH u v) < (if a.isS then EH u v else HT u v) ∧
+        (if a.isS then HT (a.act u v).1 (a.act u v).2
+          else EH (a.act u v).1 (a.act u v).2) < (if a.isS then EH u v else HT u v)) := by
+  cases a <;> simp only [Letter.isS, Bool.false_eq_true, reduceIte, Letter.act]
+  · rintro ⟨h1, h2⟩
+    have hm := EH_mean u v
+    linarith
+  · rintro ⟨h1, h2⟩
+    rw [HT_negv u v] at h2
+    have hm := EH_mean u v
+    linarith
+  · rintro ⟨h1, h2⟩
+    have hm := EH_mean u v
+    have hm2 := EH_mean (u + v) (-u)
+    rw [HT_act_r1', HT_other_r1 u v] at hm2
+    exact not_both_AB u v hd (by rw [HT_flipA]; linarith) (by rw [HT_flipB]; linarith)
+  · rintro ⟨h1, h2⟩
+    have hm := EH_mean u v
+    have hm2 := EH_mean v (-(u + v))
+    rw [HT_act_r2', HT_other_r2 u v] at hm2
+    exact not_both_AC u v hd (by rw [HT_flipA]; linarith) (by rw [HT_flipC]; linarith)
+  · rintro ⟨h1, h2⟩
+    have hm := EH_mean u v
+    have hm2 := EH_mean (-(u + v)) u
+    rw [HT_act_r4'] at hm2
+    simp only [neg_neg] at hm2
+    exact not_both_AB u v hd (by rw [HT_flipA]; linarith) (by rw [HT_flipB]; linarith)
+  · rintro ⟨h1, h2⟩
+    have hm := EH_mean u v
+    have hm2 := EH_mean (-v) (u + v)
+    rw [HT_act_r5'] at hm2
+    simp only [neg_neg] at hm2
+    exact not_both_AC u v hd (by rw [HT_flipA]; linarith) (by rw [HT_flipC]; linarith)
+
 end ModularGroup
 
 namespace LeanCategories.ForMathlib

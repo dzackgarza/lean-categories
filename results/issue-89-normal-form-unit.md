@@ -180,3 +180,21 @@ closed in the module (section "At most one side of a triangle is lower in the ti
 
 Still open: `EH`'s invariance under `⟨S⟩`-letters, the two per-letter comparison statements (a
 near-compiling draft exists), the maximum-vertex argument, and the parity split.
+
+## Progress: both comparisons of the walk
+
+The two hypotheses of the maximum-vertex criterion are now theorems about the walk's own heights, for
+every letter, with the basis `(u, v)` arbitrary (section "The two comparisons of the walk"):
+
+* `EH_act_s1`, `EH_act_s3` — an `⟨S⟩`-letter does not change the height of an *edge* vertex (the mirror
+  of `HT_act_r*`, which says an `⟨R⟩`-letter does not change a *triangle's* height);
+* `step_ne` — **the step**: consecutive vertices have different heights. Over an `⟨S⟩`-letter the next
+  vertex is the flip `A` and `EH` is the mean of the two triangles' `HT`, so equality would be a tie
+  (`HT_ne`); over an `⟨R⟩`-letter the same arithmetic gives `HT_ne_flipB`/`HT_ne_flipC`;
+* `turn_not_both` — **the turn**: the two neighbours of a vertex are never both lower. At an edge this
+  is immediate (the mean), at a triangle it is exactly "at most one flip is lower"
+  (`not_both_AB`/`not_both_AC`).
+
+Remaining for the dictionary is only indexing: read these at the walk's own indices (the one-step
+dictionary `cols_nxt`/`cols_prv` does the transport), run the maximum-vertex argument, and split by the
+parity of the word's length.
