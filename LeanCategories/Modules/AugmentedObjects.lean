@@ -278,6 +278,21 @@ the refinement: the refinements do not change the underlying augmentation point.
 theorem refinementPoint_eq (P : ObjectProperty (AugmentedGradedObject C)) :
     refinementPoint P = P.ι ⋙ pointFunctor := rfl
 
+/-- The `k`-truncation refinement: the selected augmented objects whose chosen terms vanish in every
+degree `k` or above. Truncation is one of the independently imposed refinements. -/
+def TruncationRefinement (k : ℕ) : ObjectProperty (AugmentedGradedObject C) :=
+  fun S => S.LengthLe k
+
+/-- Forgetting the truncation refinement commutes with the underlying augmentation. -/
+theorem truncationRefinementPoint_eq (k : ℕ) :
+    refinementPoint (C := C) (TruncationRefinement (C := C) k) =
+      (TruncationRefinement (C := C) k).ι ⋙ pointFunctor (C := C) := rfl
+
+/-- Truncation levels are nested: a longer truncation retains everything a shorter one does. -/
+theorem truncationRefinement_mono {k k' : ℕ} (h : k ≤ k') :
+    TruncationRefinement (C := C) k ≤ TruncationRefinement (C := C) k' :=
+  fun _ hS n hn => hS n (le_trans h hn)
+
 /-- A finer refinement forgets through the coarser one without changing the underlying
 augmentation point. -/
 theorem refinementPoint_ιOfLE (P Q : ObjectProperty (AugmentedGradedObject C)) (h : P ≤ Q) :

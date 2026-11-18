@@ -5,6 +5,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Free
+public import Mathlib.Algebra.Polynomial.Derivation
 public import LeanCategories.Modules.AugmentedObjects
 
 /-!
@@ -26,9 +27,13 @@ consequence of the sheaf datum and not the definition, which is why the definiti
 in `SheafOfModules R` rather than in `ModuleCat`.
 
 `FreeSheaf` is Mathlib's `SheafOfModules.free`, the coproduct of `n` copies of the structure sheaf.
-The tangent sheaf `T_X` itself is *data* here: no tangent sheaf of a manifold or scheme is
-constructed in this file, so the nontrivial specimen "the tangent sheaf of `X` is free of rank `n`"
-does not exist here; `isTangentFraming_free` is the trivial, parallelizable instance.
+
+The one tangent object realized here is the **affine line** `𝔸¹_R`, whose tangent module is the
+module `Derivation R R[X] R[X]` of vector fields: it is free of rank one, so it carries a framing
+(`affineLineTangent_isFraming`). What is still missing is the sheaf-level dictionary: no tangent
+sheaf of a manifold or of an arbitrary scheme is constructed here, and the affine framing above is
+stated through `ModuleCat`, not through the tilde equivalence between `R[X]`-modules and sheaves of
+modules on `Spec R[X]`.
 -/
 
 @[expose] public section
@@ -76,5 +81,40 @@ theorem tangentFraming_iff_isIso {n : ℕ} (T : SheafOfModules.{u} R)
     IsTangentFraming R T φ ↔ IsIso φ := Iff.rfl
 
 end Site
+
+section AffineLine
+
+open Polynomial LeanCategories.Modules.AugmentedGradedObject
+
+variable (R : Type u) [CommRing R]
+
+/-- The tangent module of the affine line `𝔸¹_R`: the module of `R`-derivations `R[X] ⟶ R[X]`, i.e.
+the module of vector fields on `𝔸¹_R`. -/
+abbrev AffineLineTangent := Derivation R R[X] R[X]
+
+/-- The tangent module of the affine line is free of rank one: a derivation of `R[X]` is determined
+by its value at `X` (`Polynomial.derivation_ext`), and `Polynomial.mkDerivation` inverts evaluation
+(`Polynomial.mkDerivation_X`). -/
+noncomputable def affineLineTangentEquiv : AffineLineTangent R ≃ₗ[R[X]] R[X] where
+  toFun D := D Polynomial.X
+  invFun a := Polynomial.mkDerivation R a
+  map_add' D D' := rfl
+  map_smul' b D := by simp
+  left_inv D := Polynomial.derivation_ext (by simp)
+  right_inv a := by simp
+
+/-- The framing of the tangent module of the affine line: the free module of rank one mapped onto
+the derivations by the comparison above. -/
+noncomputable def affineLineTangentIso :
+    ModuleCat.of R[X] R[X] ≅ ModuleCat.of R[X] (AffineLineTangent R) :=
+  (LinearEquiv.toModuleIso (affineLineTangentEquiv R)).symm
+
+/-- The affine line is parallelizable: its tangent module carries a framing in the module case. -/
+theorem affineLineTangent_isFraming :
+    (oneTerm R[X] (ModuleCat.of R[X] R[X]) (ModuleCat.of R[X] (AffineLineTangent R))
+      (affineLineTangentIso R).hom).IsFraming :=
+  (oneTerm_isFraming_iff (R := R[X]) _).mpr (affineLineTangentIso R).isIso_hom
+
+end AffineLine
 
 end LeanCategories.Modules

@@ -19,7 +19,7 @@ asserts the *statements*: each example fails to elaborate if the named statement
 
 noncomputable section
 
-open CategoryTheory CategoryTheory.Limits
+open CategoryTheory CategoryTheory.Limits Polynomial
 open LeanCategories.Modules LeanCategories.Modules.AugmentedGradedObject
 
 namespace LeanCategories.Modules
@@ -60,6 +60,16 @@ the chosen term in degree `0` by the identity. -/
 example : intCover ⟶ intKoszul :=
   coverToTwoTerm ℤ (ModuleCat.of ℤ ℤ) (ModuleCat.of ℤ ℤ) (ModuleCat.of ℤ (ZMod 2)) twoMul
     intToZModTwo twoMul_comp_intToZModTwo
+
+/-- 3. Truncation is an independently imposed refinement, and its levels are nested. -/
+example : TruncationRefinement (C := ModuleCat ℤ) 1 ≤ TruncationRefinement (C := ModuleCat ℤ) 2 :=
+  truncationRefinement_mono (by omega)
+
+/-- 3. Forgetting the truncation refinement commutes with the underlying augmentation. -/
+example (k : ℕ) :
+    refinementPoint (C := ModuleCat ℤ) (TruncationRefinement (C := ModuleCat ℤ) k) =
+      (TruncationRefinement (C := ModuleCat ℤ) k).ι ⋙ pointFunctor (C := ModuleCat ℤ) :=
+  truncationRefinementPoint_eq k
 
 /-- 4. The same underlying augmented model is a full resolution. -/
 example : intKoszul.CofiberVanishes := intKoszul_cofiberVanishes
@@ -104,6 +114,14 @@ example {C : Type} [Category C] (J : GrothendieckTopology C) [HasWeakSheafify J 
 example {C : Type} [Category C] (J : GrothendieckTopology C) [HasWeakSheafify J AddCommGrpCat]
     [J.WEqualsLocallyBijective AddCommGrpCat] (R : Sheaf J RingCat) (n : ℕ) :
     IsTangentFraming R (FreeSheaf (J := J) R n) (𝟙 _) := isTangentFraming_free R n
+
+/-- 5. The tangent module of the affine line is the module of vector fields, and it is free of rank
+one: a derivation of `R[X]` is determined by its value at `X`. -/
+example : AffineLineTangent ℤ ≃ₗ[ℤ[X]] ℤ[X] := affineLineTangentEquiv (R := ℤ)
+
+/-- 5. The affine line is parallelizable: its tangent module carries a framing. -/
+example : (oneTerm ℤ[X] (ModuleCat.of ℤ[X] ℤ[X]) (ModuleCat.of ℤ[X] (AffineLineTangent ℤ))
+    (affineLineTangentIso ℤ).hom).IsFraming := affineLineTangent_isFraming (R := ℤ)
 
 /-- 6. Forgetting a refinement and forgetting the selected diagram commute definitionally. -/
 example (P : ObjectProperty (AugmentedGradedObject (ModuleCat ℤ))) :
