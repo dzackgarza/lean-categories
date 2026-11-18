@@ -109,23 +109,13 @@ theorem toBilin'_neg_fun_right {ι : Type*} [Fintype ι] [DecidableEq ι] (M : M
     Matrix.toBilin' M u (fun i => -v i) = -Matrix.toBilin' M u v := by
   rw [show (fun i => -v i) = -v from rfl, toBilin'_neg_right]
 
-theorem toBilin'_add_fun_left {ι : Type*} [Fintype ι] [DecidableEq ι] (M : Matrix ι ι ℤ)
-    (u v w : ι → ℤ) :
-    Matrix.toBilin' M (fun i => u i + v i) w = Matrix.toBilin' M u w + Matrix.toBilin' M v w := by
-  rw [show (fun i => u i + v i) = u + v from rfl, toBilin'_add_left]
-
-theorem toBilin'_add_fun_right {ι : Type*} [Fintype ι] [DecidableEq ι] (M : Matrix ι ι ℤ)
-    (u v w : ι → ℤ) :
-    Matrix.toBilin' M u (fun i => v i + w i) = Matrix.toBilin' M u v + Matrix.toBilin' M u w := by
-  rw [show (fun i => v i + w i) = v + w from rfl, toBilin'_add_right]
-
+/-- Symmetry of `Matrix.toBilin'` of a symmetric matrix, as a rewrite rule: Mathlib's
+`Matrix.isSymm_toBilin'_iff_isSymm` with `LinearMap.BilinForm.isSymm_iff`. -/
 theorem toBilin'_symm {ι : Type*} [Fintype ι] [DecidableEq ι] (M : Matrix ι ι ℤ)
     (hM : M.IsSymm) (u v : ι → ℤ) :
-    Matrix.toBilin' M u v = Matrix.toBilin' M v u := by
-  rw [Matrix.toBilin'_apply, Matrix.toBilin'_apply, Finset.sum_comm]
-  refine Finset.sum_congr rfl fun i _ => Finset.sum_congr rfl fun j _ => ?_
-  rw [hM.apply j i]
-  ring
+    Matrix.toBilin' M u v = Matrix.toBilin' M v u :=
+  LinearMap.IsSymm.eq ((LinearMap.BilinForm.isSymm_iff (B := Matrix.toBilin' M)).mp
+    (Matrix.isSymm_toBilin'_iff_isSymm.mpr hM)) u v
 
 /-! ## The lattice `T_dP = U ⊥ U(2) ⊥ E₈ ⊥ E₈` -/
 

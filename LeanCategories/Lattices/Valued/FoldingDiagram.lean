@@ -171,7 +171,7 @@ of the root in the cone of the root set. -/
 theorem rootMirrorCone_folded_iff (g : OrthogonalGroup L.obj) (hg : g * g = 1)
     (R : Set L.obj.obj.carrier) (y : L.obj.obj.carrier)
     {z : (realForm L).obj.carrier} (hz : z ∈ realFormFixedImage g) :
-    z ∈ rootMirrorCone L (foldedRootSet g R) (foldedVector g y) ↔
+    z ∈ rootMirrorCone L (foldedRootImage g R) (foldedVector g y) ↔
       z ∈ rootMirrorCone L R y := by
   obtain ⟨u, hu⟩ := hz
   rw [mem_rootMirrorCone, mem_rootMirrorCone]
@@ -210,9 +210,9 @@ theorem chamberOf_folded_trace_walls (g : OrthogonalGroup L.obj) (hg : g * g = 1
     (hR : IsChamberWithWalls L t R)
     {v : L.obj.obj.carrier} (hv : toRealForm L v ∈ rootInteriorCone L t R) :
     chamberOf L t (toRealForm L v) ∩ realFormFixedImage g =
-        rootInteriorCone L t (foldedRootSet g R) ∩ realFormFixedImage g ∧
+        rootInteriorCone L t (foldedRootImage g R) ∩ realFormFixedImage g ∧
       ∀ y ∈ R, ∀ z ∈ realFormFixedImage g,
-        (z ∈ rootMirrorCone L (foldedRootSet g R) (foldedVector g y) ↔
+        (z ∈ rootMirrorCone L (foldedRootImage g R) (foldedVector g y) ↔
           z ∈ rootMirrorCone L R y) :=
   ⟨chamberOf_folded_trace g hg t hpos ht hR hv, fun y _ _ hz =>
     rootMirrorCone_folded_iff g hg R y hz⟩

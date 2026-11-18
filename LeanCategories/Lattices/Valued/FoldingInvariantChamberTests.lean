@@ -59,18 +59,24 @@ lattice interior vector, and the completeness of the wall set — not the three 
 `IsChamberWithWalls`, which is what the theorem produces. -/
 example [Module.Projective ℤ (involutionFixedSubmodule (L := tdpFiniteLattice) tdpIsometry)]
     (R : Set tdpFiniteLattice.obj.obj.carrier)
-    (hroots : foldedRootSetInvariant tdpIsometry R ⊆
-      negativeReflectiveRoots (invariantFixedLattice (L := tdpFiniteLattice) tdpIsometry))
     (w : involutionFixedSubmodule (L := tdpFiniteLattice) tdpIsometry)
     (hw : 0 < (invariantFixedLattice (L := tdpFiniteLattice) tdpIsometry).obj.obj.pairing w w)
-    (hwv : ∀ v ∈ foldedRootSetInvariant tdpIsometry R,
+    (hwv : ∀ v ∈ foldedRootSet (L := tdpFiniteLattice) tdpIsometry R,
       0 < (invariantFixedLattice (L := tdpFiniteLattice) tdpIsometry).obj.obj.pairing w v)
     (hcomplete : ∀ ρ ∈ negativeReflectiveRoots
         (invariantFixedLattice (L := tdpFiniteLattice) tdpIsometry),
-      ∃ v ∈ foldedRootSetInvariant tdpIsometry R, ∃ k : ℤ, k ≠ 0 ∧ ρ = k • v) :
+      ∃ v ∈ foldedRootSet (L := tdpFiniteLattice) tdpIsometry R, ∃ k : ℤ, k ≠ 0 ∧ ρ = k • v) :
     IsChamberWithWalls (invariantFixedLattice (L := tdpFiniteLattice) tdpIsometry)
-      (toRealForm _ w) (foldedRootSetInvariant tdpIsometry R) :=
-  isChamberWithWalls_invariant tdpIsometry R hroots w hw hwv hcomplete
+      (toRealForm _ w) (foldedRootSet (L := tdpFiniteLattice) tdpIsometry R) :=
+  isChamberWithWalls_invariant tdpIsometry R w hw hwv hcomplete
+
+/-- Definition 3.7's folded root set is a set of roots of the invariant lattice — proved, not
+assumed. -/
+example [Module.Projective ℤ (involutionFixedSubmodule (L := tdpFiniteLattice) tdpIsometry)]
+    (R : Set tdpFiniteLattice.obj.obj.carrier) :
+    foldedRootSet (L := tdpFiniteLattice) tdpIsometry R ⊆
+      negativeReflectiveRoots (invariantFixedLattice (L := tdpFiniteLattice) tdpIsometry) :=
+  foldedRootSet_subset_negativeReflectiveRoots tdpIsometry R
 
 /-! ## Axiom footprint -/
 

@@ -32,8 +32,12 @@ Engel, Garza and Schaffler, *Compact moduli of Enriques surfaces of degree 2*, N
   `pairing_folded_self_of_fixed`), and it is the case analysis of `pairing_folded_self_of_not_fixed`
   that decides which roots survive the folding.
 * Definition 3.7 (printed p. 12): the folded diagram `G^J` has the vertices `α^J` for the roots
-  `α` of `G` for which `α^J` is again a root of `Λ^{J=1}` (`foldedRootFamily`,
-  `foldedCoxeterDiagram`).
+  `α` of `G` for which `α^J` is again a root of `Λ^{J=1}`. `foldedRootImage` is the image of the
+  root set under folding and `foldedRootSet` is Definition 3.7's set: the image members that have
+  negative square and integral reflection on `M^σ`, i.e. the folds that are roots of `M^σ`.
+  `foldedDiagramOfRoots` is the diagram of that set — indexed by the surviving folds, so it drops
+  the non-root folds and needs no negative-square hypothesis; `foldedCoxeterDiagram` is the same
+  construction on a family whose folds all survive.
 * Lemma 3.8 (printed p. 12): "Let `C` be a chamber for the action of `W(Γ_dP,e)` on the positive
   cone `C(T_dP)` whose intersection with `T_En` has maximal dimension. Then `C^J := C ∩ T_En ⊗ R`
   is a fundamental chamber for `W(Γ_{En,2,e})` and its Coxeter diagram is the folded diagram."
@@ -308,14 +312,62 @@ noncomputable def foldedRootFamily (g : OrthogonalGroup L.obj) {ι : Type*}
     (r : ι → L.obj.obj.carrier) : ι → L.obj.obj.carrier :=
   fun i => foldedVector g (r i)
 
-/-- The folded root set: the image of a root set under folding. -/
-noncomputable def foldedRootSet (g : OrthogonalGroup L.obj) (R : Set L.obj.obj.carrier) :
+/-- The **image** of a root set under folding: the set of folded vectors `α^J`, `α ∈ R`. This is
+not Definition 3.7's folded root set — it also contains the folds that are not roots of `M^σ`; that
+filter is `foldedRootSet` below. -/
+noncomputable def foldedRootImage (g : OrthogonalGroup L.obj) (R : Set L.obj.obj.carrier) :
     Set L.obj.obj.carrier :=
   foldedVector g '' R
 
-theorem foldedRootSet_range (g : OrthogonalGroup L.obj) {ι : Type*}
+/-- **Definition 3.7's folded root set** (AEGS printed p. 12): "the diagram with the vectors `α^J`
+for the roots `α` in `G` for which the folded vectors `α^J` happen to be roots of `Λ^{J=1}`". The
+three conditions are exactly "`α^J` is a root of `M^σ`": it is a fold of a root of `R`, it has
+negative square, and its reflection is integral on `M^σ`. Nothing here is assumed — a fold that
+fails the last two conditions is *dropped*, which is what makes the folded diagram smaller than the
+diagram it comes from. -/
+noncomputable def foldedRootSet (g : OrthogonalGroup L.obj) (R : Set L.obj.obj.carrier) :
+    Set (involutionFixedSubmodule g) :=
+  {v | (v : L.obj.obj.carrier) ∈ foldedRootImage g R ∧
+    L.obj.obj.pairing (v : L.obj.obj.carrier) (v : L.obj.obj.carrier) < 0 ∧
+    ∀ x : involutionFixedSubmodule g,
+      L.obj.obj.pairing (v : L.obj.obj.carrier) (v : L.obj.obj.carrier) ∣
+        2 * L.obj.obj.pairing (v : L.obj.obj.carrier) (x : L.obj.obj.carrier)}
+
+theorem mem_foldedRootSet_iff (g : OrthogonalGroup L.obj) (R : Set L.obj.obj.carrier)
+    (v : involutionFixedSubmodule g) :
+    v ∈ foldedRootSet g R ↔
+      (v : L.obj.obj.carrier) ∈ foldedRootImage g R ∧
+        L.obj.obj.pairing (v : L.obj.obj.carrier) (v : L.obj.obj.carrier) < 0 ∧
+        ∀ x : involutionFixedSubmodule g,
+          L.obj.obj.pairing (v : L.obj.obj.carrier) (v : L.obj.obj.carrier) ∣
+            2 * L.obj.obj.pairing (v : L.obj.obj.carrier) (x : L.obj.obj.carrier) :=
+  Iff.rfl
+
+/-- A folded root in the sense of Definition 3.7 is a vector of the folded image. -/
+theorem foldedRootSet_subset_image (g : OrthogonalGroup L.obj) (R : Set L.obj.obj.carrier) :
+    Set.range (fun v : {v // v ∈ foldedRootSet g R} => ((v.1 : involutionFixedSubmodule g) :
+      L.obj.obj.carrier)) ⊆ foldedRootImage g R := by
+  rintro x ⟨v, rfl⟩
+  exact ((mem_foldedRootSet_iff g R v.1).mp v.2).1
+
+/-- **The folded root set is a set of negative square vectors** — by construction, not by
+hypothesis: this is the field of `IsChamberWithWalls` that folding does supply. -/
+theorem foldedRootSet_negSquare (g : OrthogonalGroup L.obj) (R : Set L.obj.obj.carrier)
+    {v : involutionFixedSubmodule g} (hv : v ∈ foldedRootSet g R) :
+    L.obj.obj.pairing (v : L.obj.obj.carrier) (v : L.obj.obj.carrier) < 0 :=
+  ((mem_foldedRootSet_iff g R v).mp hv).2.1
+
+/-- The folded root set is a set of reflective vectors of `M^σ` — again by construction. -/
+theorem foldedRootSet_isReflective (g : OrthogonalGroup L.obj) (R : Set L.obj.obj.carrier)
+    {v : involutionFixedSubmodule g} (hv : v ∈ foldedRootSet g R) :
+    ∀ x : involutionFixedSubmodule g,
+      L.obj.obj.pairing (v : L.obj.obj.carrier) (v : L.obj.obj.carrier) ∣
+        2 * L.obj.obj.pairing (v : L.obj.obj.carrier) (x : L.obj.obj.carrier) :=
+  ((mem_foldedRootSet_iff g R v).mp hv).2.2
+
+theorem foldedRootImage_range (g : OrthogonalGroup L.obj) {ι : Type*}
     (r : ι → L.obj.obj.carrier) :
-    foldedRootSet g (Set.range r) = Set.range (foldedRootFamily g r) := by
+    foldedRootImage g (Set.range r) = Set.range (foldedRootFamily g r) := by
   ext x
   constructor
   · rintro ⟨y, ⟨i, rfl⟩, rfl⟩
@@ -323,13 +375,33 @@ theorem foldedRootSet_range (g : OrthogonalGroup L.obj) {ι : Type*}
   · rintro ⟨i, rfl⟩
     exact ⟨r i, ⟨i, rfl⟩, rfl⟩
 
-/-- **The folded Coxeter diagram** (AEGS Definition 3.7): the Coxeter diagram of the folded
-vectors that are again of negative square, with the normalized pairing-square edge weights. -/
+/-- **The folded Coxeter diagram of a root family with negative-square folds** (AEGS Definition
+3.7 on a family whose folds all survive): the normalized pairing-square edge weights. The version
+that needs no such hypothesis, because it is indexed by `foldedRootSet` itself, is
+`foldedDiagramOfRoots` below. -/
 noncomputable def foldedCoxeterDiagram (g : OrthogonalGroup L.obj) {ι : Type*}
     (r : ι → L.obj.obj.carrier)
     (hr : ∀ i, L.obj.obj.pairing (foldedRootFamily g r i) (foldedRootFamily g r i) < 0) :
     CoxeterDiagram ι :=
   coxeterDiagramOfRoots L (foldedRootFamily g r) hr
+
+/-- **The folded diagram** (AEGS Definition 3.7): the Coxeter diagram of the folded root set, with
+one vertex per surviving fold and the normalized pairing-square edge weights. Its index type is
+`{v // v ∈ foldedRootSet g R}`, so the dropped folds are not vertices and **no** negative-square
+hypothesis is needed: each vertex carries its own. -/
+noncomputable def foldedDiagramOfRoots (g : OrthogonalGroup L.obj) (R : Set L.obj.obj.carrier) :
+    CoxeterDiagram {v : involutionFixedSubmodule g // v ∈ foldedRootSet g R} :=
+  coxeterDiagramOfRoots L
+    (fun v => ((v.1 : involutionFixedSubmodule g) : L.obj.obj.carrier))
+    (fun v => foldedRootSet_negSquare g R v.2)
+
+theorem foldedDiagramOfRoots_edges (g : OrthogonalGroup L.obj) (R : Set L.obj.obj.carrier)
+    (i j : {v : involutionFixedSubmodule g // v ∈ foldedRootSet g R}) :
+    (foldedDiagramOfRoots g R).edges i j =
+      coxeterDiagramOfRootsEdges L
+        (fun v : {v // v ∈ foldedRootSet g R} =>
+          ((v.1 : involutionFixedSubmodule g) : L.obj.obj.carrier)) i j :=
+  rfl
 
 theorem foldedCoxeterDiagram_edges (g : OrthogonalGroup L.obj) {ι : Type*}
     (r : ι → L.obj.obj.carrier)
@@ -348,7 +420,7 @@ AEGS Lemma 3.8, with no hypothesis beyond the involution and the isometry proper
 theorem mem_weylChamberCone_folded_iff (g : OrthogonalGroup L.obj) (hg : g * g = 1)
     (t : (realForm L).obj.carrier) (v : involutionFixedSubmodule g)
     (R : Set L.obj.obj.carrier) :
-    toRealForm L (v : L.obj.obj.carrier) ∈ weylChamberCone L t (foldedRootSet g R) ↔
+    toRealForm L (v : L.obj.obj.carrier) ∈ weylChamberCone L t (foldedRootImage g R) ↔
       toRealForm L (v : L.obj.obj.carrier) ∈ weylChamberCone L t R := by
   rw [mem_weylChamberCone_iff, mem_weylChamberCone_iff]
   constructor
@@ -363,7 +435,7 @@ theorem mem_weylChamberCone_folded_iff (g : OrthogonalGroup L.obj) (hg : g * g =
 theorem mem_rootInteriorCone_folded_iff (g : OrthogonalGroup L.obj) (hg : g * g = 1)
     (t : (realForm L).obj.carrier) (v : involutionFixedSubmodule g)
     (R : Set L.obj.obj.carrier) :
-    toRealForm L (v : L.obj.obj.carrier) ∈ rootInteriorCone L t (foldedRootSet g R) ↔
+    toRealForm L (v : L.obj.obj.carrier) ∈ rootInteriorCone L t (foldedRootImage g R) ↔
       toRealForm L (v : L.obj.obj.carrier) ∈ rootInteriorCone L t R := by
   rw [mem_rootInteriorCone_iff, mem_rootInteriorCone_iff]
   constructor
@@ -383,7 +455,7 @@ theorem chamberOf_folded_trace (g : OrthogonalGroup L.obj) (hg : g * g = 1)
     (ht : 0 < realFormQuadratic L t) (hR : IsChamberWithWalls L t R)
     {v : L.obj.obj.carrier} (hv : toRealForm L v ∈ rootInteriorCone L t R) :
     chamberOf L t (toRealForm L v) ∩ realFormFixedImage g =
-      rootInteriorCone L t (foldedRootSet g R) ∩ realFormFixedImage g := by
+      rootInteriorCone L t (foldedRootImage g R) ∩ realFormFixedImage g := by
   rw [IsChamberWithWalls.chamberOf_eq L t hpos ht hR hv]
   ext w
   constructor

@@ -34,38 +34,38 @@ everything that is *not* arithmetic.
 
 ## The arithmetic input that is *not* here, stated exactly
 
-`isChamberWithWalls_invariant` takes three hypotheses. None of them is a restatement of
-`IsChamberWithWalls`: the first is a divisibility statement in `ℤ`, the second an existence
-statement about a *lattice* vector, the third a classification statement about the roots of `M^σ`.
-They are:
+`isChamberWithWalls_invariant` takes two hypotheses. Neither restates `IsChamberWithWalls`: the
+first is an existence statement about a *lattice* vector, the second a classification statement
+about the roots of `M^σ`.
 
-1. `hroots`: every folded vector `α^J` of the chamber's wall set whose square is negative is a
-   negative reflective root of `M^σ`, i.e. `(α^J)² ∣ 2 (α^J · v)` for every `v ∈ M^σ`.
-   This is **AEGS Lemma 3.4 (printed pp. 11–12), cases (1)–(3)**, together with its divisibility
-   argument (`div(α_I) = 2` in `T_En`). It is *not* a formal consequence of folding: the only data
-   a general argument could use are `α²`, `α · σα` and the divisibility of `α` itself. Take
-   `α² = -4` and `α · σα = -2` (so `(α^J)² = 2(-4) + 2(-2) = -12`) and a fixed `v` with
-   `α · v = 2`; since `α^J · v = 2 (α · v) = 4`, integrality of the reflection in `α^J` would need
-   `-12 ∣ 2 · 4 = 8`, which fails. So the fold of a reflective root of negative square is not
-   reflective in general, and this input has to come from the classification of the roots of the
-   particular lattice, as it does in the source. (Hand computation, not formalized.)
-2. `hpoint`: an interior *lattice* vector of the folded chamber — `w ∈ M^σ` with `w² > 0` and
+1. `hpoint`: an interior *lattice* vector of the folded chamber — `w ∈ M^σ` with `w² > 0` and
    `w · α^J > 0` for every folded root. In the source this is the fundamental chamber `C^J` of
    Lemma 3.8, whose interior is nonempty because `W(Γ_{En,2,e})` is a reflection group with
    finitely many walls (AEGS §3.4, equations (2)–(3), printed p. 10, and the folded diagrams of
    Figures 7–8). A real point is not enough for the predicate's *lattice* presentation, and a
    lattice one is what Vinberg's algorithm produces.
-3. `hcomplete`: every negative reflective root of `M^σ` is a nonzero integer multiple of a folded
-   root — the completeness of the wall set. This is **AEGS Lemma 3.4's converse**, "vice versa, all
-   roots of `T_En` are of these three types" (printed p. 12), proved there from Namikawa
+2. `hcomplete`: every negative reflective root of `M^σ` is a nonzero integer multiple of a folded
+   root — the completeness of the wall set. This is **AEGS Lemma 3.4's converse**, "vice versa,
+   all roots of `T_En` are of these three types" (printed p. 12), proved there from Namikawa
    [Nam85, 2.13 and 2.15]: up to `Γ_En = O(T_En)` there is one type of `(-2)`-vector and two types
    of `(-4)`-vector, so the folded set exhausts the mirrors that can meet the folded chamber.
 
-For the worked lattice `T_dP` of `FoldingEnriques.lean` these three cannot yet be *instantiated*,
-and the reason is data, not method: the 19- and 22-vertex Coxeter diagrams `G(T^dP)` of AEGS
-Figure 5 (printed p. 11) are printed as pictures; the text tabulates only the relations (4) and (5)
-and the two folded diagrams of Figures 7–8. Without the simple roots of that chamber as vectors,
-`hroots` and `hcomplete` have no input; `hpoint` likewise. Computing the folded diagrams by folding
+The third input that earlier drafts of this module took as a hypothesis — that the folds are roots
+of `M^σ` — is **not** an input any more: AEGS Definition 3.7 keeps only the folds that *are* roots
+of `M^σ`, and that is `foldedRootSet` (`Folding.lean`), whose membership *is* the root condition.
+`foldedRootSet_subset_negativeReflectiveRoots` derives the `roots_mem` field from it, so the
+predicate's root field is proved rather than assumed. The filter is not cosmetic: for a root `α` of
+an arbitrary integral lattice the fold `α^J` can have negative square and still fail the
+divisibility of a root. Take `α² = -4`, `α · σα = -2` (so `(α^J)² = -12`); then `α^J · v = 2 α · v`
+for a fixed `v`, and integrality of the reflection in `α^J` at a fixed `v` with `α · v = 2` would
+need `-12 ∣ 8`. (Hand computation, not formalized.) So the source's filter, and then its
+classification, is exactly what turns folding into a chamber.
+
+For the worked lattice `T_dP` of `FoldingEnriques.lean` the two remaining inputs cannot yet be
+*instantiated*, and the reason is data, not method: the 19- and 22-vertex Coxeter diagrams
+`G(T^dP)` of AEGS Figure 5 (printed p. 11) are printed as pictures; the text tabulates only the
+relations (4) and (5) and the two folded diagrams of Figures 7–8. Without the simple roots of that
+chamber as vectors, `hpoint` and `hcomplete` have no input. Computing the folded diagrams by folding
 (AEGS §3.8) is exactly what those data would certify.
 
 ## References
@@ -202,34 +202,52 @@ theorem realForm_mem_span_fixed (g : OrthogonalGroup L.obj) (hg : g * g = 1)
 
 /-! ## The chamber of the invariant lattice -/
 
-/-- The folded root set as a subset of the invariant lattice. -/
-noncomputable def foldedRootSetInvariant (g : OrthogonalGroup L.obj)
-    (R : Set L.obj.obj.carrier) : Set (involutionFixedSubmodule g) :=
-  {v | (v : L.obj.obj.carrier) ∈ foldedRootSet g R}
+/-- **Definition 3.7's folded root set is a set of roots of the invariant lattice** — proved, not
+assumed: membership in `foldedRootSet` is exactly "`α^J` has negative square and integral
+reflection on `M^σ`", and the invariant lattice's pairing is the ambient pairing
+(`invariantFixedLattice_pairing`). -/
+theorem foldedRootSet_subset_negativeReflectiveRoots (g : OrthogonalGroup L.obj)
+    [Module.Projective ℤ (involutionFixedSubmodule g)] (R : Set L.obj.obj.carrier) :
+    foldedRootSet (L := L) g R ⊆
+      negativeReflectiveRoots (invariantFixedLattice (L := L) g) := by
+  intro v hv
+  have hneg := foldedRootSet_negSquare (L := L) g R hv
+  have hdvd := foldedRootSet_isReflective (L := L) g R hv
+  have hsq : (invariantFixedLattice (L := L) g).obj.obj.pairing v v
+      = L.obj.obj.pairing (v : L.obj.obj.carrier) (v : L.obj.obj.carrier) :=
+    invariantFixedLattice_pairing g v v
+  refine ⟨⟨?_, ?_⟩, ?_⟩
+  · change IsRegular ((invariantFixedLattice (L := L) g).obj.obj.pairing v v)
+    rw [hsq]
+    exact IsRegular.of_ne_zero (ne_of_lt hneg)
+  · intro y
+    change (invariantFixedLattice (L := L) g).obj.obj.pairing v v ∣
+      2 * (invariantFixedLattice (L := L) g).obj.obj.pairing v y
+    rw [hsq, invariantFixedLattice_pairing g v y]
+    exact hdvd y
+  · exact hneg
 
-theorem mem_foldedRootSetInvariant_iff (g : OrthogonalGroup L.obj)
-    (R : Set L.obj.obj.carrier) (v : involutionFixedSubmodule g) :
-    v ∈ foldedRootSetInvariant g R ↔ (v : L.obj.obj.carrier) ∈ foldedRootSet g R :=
-  Iff.rfl
+/-- **`M^σ` is a chamber with the folded walls**, the wall set being Definition 3.7's folded root
+set: the folds that are roots of `M^σ`.
 
-/-- **`M^σ` is a chamber with the folded walls.** The three hypotheses are the arithmetic inputs of
-AEGS §3.7 spelled out in the module docstring: the folded roots are negative reflective roots of
-`M^σ` (Lemma 3.4, cases (1)–(3)), an interior lattice vector exists, and the folded roots are a
-complete wall set (Lemma 3.4's converse, from Namikawa 2.13/2.15). -/
+The `roots_mem` field is **derived** (`foldedRootSet_subset_negativeReflectiveRoots`), not assumed:
+`foldedRootSet` keeps only the folds that are reflective of negative square in `M^σ`, so membership
+in it *is* the root condition. The two remaining hypotheses are the arithmetic inputs of AEGS §3.7
+that folding does not supply (see the module docstring): an interior lattice vector, and the
+completeness of the wall set (Lemma 3.4's converse). -/
 theorem isChamberWithWalls_invariant (g : OrthogonalGroup L.obj)
     [Module.Projective ℤ (involutionFixedSubmodule g)]
     (R : Set L.obj.obj.carrier)
-    (hroots : foldedRootSetInvariant g R ⊆
-      negativeReflectiveRoots (invariantFixedLattice (L := L) g))
     (w : involutionFixedSubmodule g)
     (hw : 0 < (invariantFixedLattice (L := L) g).obj.obj.pairing w w)
-    (hwv : ∀ v ∈ foldedRootSetInvariant g R,
+    (hwv : ∀ v ∈ foldedRootSet (L := L) g R,
       0 < (invariantFixedLattice (L := L) g).obj.obj.pairing w v)
     (hcomplete : ∀ ρ ∈ negativeReflectiveRoots (invariantFixedLattice (L := L) g),
-      ∃ v ∈ foldedRootSetInvariant g R, ∃ k : ℤ, k ≠ 0 ∧ ρ = k • v) :
+      ∃ v ∈ foldedRootSet (L := L) g R, ∃ k : ℤ, k ≠ 0 ∧ ρ = k • v) :
     IsChamberWithWalls (invariantFixedLattice (L := L) g)
-      (toRealForm _ w) (foldedRootSetInvariant g R) := by
-  refine ⟨hroots, ⟨toRealForm _ w, ⟨⟨?_, ?_⟩, ?_⟩⟩, ?_⟩
+      (toRealForm _ w) (foldedRootSet (L := L) g R) := by
+  refine ⟨foldedRootSet_subset_negativeReflectiveRoots g R,
+    ⟨toRealForm _ w, ⟨⟨?_, ?_⟩, ?_⟩⟩, ?_⟩
   · have hQ : 0 < realFormQuadratic (invariantFixedLattice (L := L) g) (toRealForm _ w) := by
       rw [realFormQuadratic_apply]
       rw [invariant_pairing_toRealForm]
@@ -241,15 +259,14 @@ theorem isChamberWithWalls_invariant (g : OrthogonalGroup L.obj)
       exact_mod_cast hw
     rw [associated_self_apply]; exact hQ
   · intro v hv
-    have hpair := invariant_pairing_toRealForm (L := L) g w (v : involutionFixedSubmodule g)
-    have hpos : (0 : ℝ) < ((invariantFixedLattice (L := L) g).obj.obj.pairing w
-        (v : involutionFixedSubmodule g) : ℝ) := by
+    have hpair := invariant_pairing_toRealForm (L := L) g w v
+    have hpos : (0 : ℝ) < ((invariantFixedLattice (L := L) g).obj.obj.pairing w v : ℝ) := by
       exact_mod_cast hwv v hv
     exact hpair ▸ hpos
   · intro z hz
     have hz' : z ∈ positiveCone.upper
         (realFormQuadratic (invariantFixedLattice (L := L) g)) (toRealForm _ w) ∧
-        ∀ r ∈ foldedRootSetInvariant g R,
+        ∀ r ∈ foldedRootSet (L := L) g R,
           0 < (realForm (invariantFixedLattice (L := L) g)).obj.pairing z (toRealForm _ r) := hz
     refine (mem_weylRegularLocus_iff (L := invariantFixedLattice (L := L) g)
       (t := toRealForm _ w) (x := z)).mpr ⟨hz'.1, ?_⟩
@@ -272,31 +289,29 @@ theorem isChamberWithWalls_invariant (g : OrthogonalGroup L.obj)
     exact mul_ne_zero (Int.cast_ne_zero.mpr hk) (ne_of_gt (hz'.2 v hv))
 
 /-- **The invariant chamber is the folded chamber**: at an interior point, the chamber of the
-invariant lattice is the cone cut out by the folded roots. -/
+invariant lattice is the cone cut out by Definition 3.7's folded root set. -/
 theorem chamberOf_invariant_folded (g : OrthogonalGroup L.obj)
     [Module.Projective ℤ (involutionFixedSubmodule g)]
     (R : Set L.obj.obj.carrier)
-    (hroots : foldedRootSetInvariant g R ⊆
-      negativeReflectiveRoots (invariantFixedLattice (L := L) g))
     (w : involutionFixedSubmodule g)
     (hw : 0 < (invariantFixedLattice (L := L) g).obj.obj.pairing w w)
-    (hwv : ∀ v ∈ foldedRootSetInvariant g R,
+    (hwv : ∀ v ∈ foldedRootSet (L := L) g R,
       0 < (invariantFixedLattice (L := L) g).obj.obj.pairing w v)
     (hcomplete : ∀ ρ ∈ negativeReflectiveRoots (invariantFixedLattice (L := L) g),
-      ∃ v ∈ foldedRootSetInvariant g R, ∃ k : ℤ, k ≠ 0 ∧ ρ = k • v)
+      ∃ v ∈ foldedRootSet (L := L) g R, ∃ k : ℤ, k ≠ 0 ∧ ρ = k • v)
     (hpos : (integralSignature (invariantFixedLattice (L := L) g)).1 = 1)
     {z : (realForm (invariantFixedLattice (L := L) g)).obj.carrier}
     (hz : z ∈ rootInteriorCone (invariantFixedLattice (L := L) g) (toRealForm _ w)
-      (foldedRootSetInvariant g R)) :
+      (foldedRootSet (L := L) g R)) :
     chamberOf (invariantFixedLattice (L := L) g) (toRealForm _ w) z =
       rootInteriorCone (invariantFixedLattice (L := L) g) (toRealForm _ w)
-        (foldedRootSetInvariant g R) := by
+        (foldedRootSet (L := L) g R) := by
   have hQ : 0 < realFormQuadratic (invariantFixedLattice (L := L) g) (toRealForm _ w) := by
     rw [realFormQuadratic_apply]
     rw [invariant_pairing_toRealForm]
     exact_mod_cast hw
   exact IsChamberWithWalls.chamberOf_eq (L := invariantFixedLattice (L := L) g)
     (t := toRealForm _ w) hpos hQ
-    (isChamberWithWalls_invariant g R hroots w hw hwv hcomplete) hz
+    (isChamberWithWalls_invariant g R w hw hwv hcomplete) hz
 
 end LeanCategories.Lattices.Valued
