@@ -163,6 +163,15 @@ example : CochainComplex (ModuleCat ℤ) ℤ := cochainComplexOf intKoszul
 example (m : ℕ) : (cochainComplexOf intKoszul).X (Int.negSucc m) = intKoszul.term (m + 1) := rfl
 
 
+/-- 4. The augmentation of a selected augmented object is an arrow of the cochain category, so the
+mapping-cone triangle applies to the object itself. -/
+example : cochainComplexOf intCover ⟶ singleCochain intCover.point := cochainAugmentation intCover
+
+/-- 4. Its cofiber sequence is a distinguished triangle in the homotopy category. -/
+example : cofiberTriangle (cochainAugmentation intKoszul) ∈
+    distTriang (HomotopyCategory (ModuleCat ℤ) (ComplexShape.up ℤ)) :=
+  cochainAugmentation_triangle_distinguished intKoszul
+
 /-- 5. The module framing case: a one-term object is a framing exactly when its augmentation is an
 isomorphism. -/
 example (P M : ModuleCat ℤ) (ε : P ⟶ M) :

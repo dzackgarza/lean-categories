@@ -6,6 +6,7 @@ module
 
 public import Mathlib.Algebra.Homology.Single
 public import LeanCategories.Modules.AugmentedObjects
+public import LeanCategories.Modules.StableEnhancement
 
 /-!
 # The chain-complex model of a selected augmented object
@@ -83,8 +84,7 @@ variable [HasZeroObject C]
 /-- The reversed terms: the chosen term `P_0` sits in degree `0`, `P_{n+1}` in degree `-(n+1)`, and
 every positive degree carries the zero object. -/
 noncomputable def cochainTerm (S : AugmentedGradedObject C) : ℤ → C
-  | Int.ofNat 0 => S.term 0
-  | Int.ofNat (_ + 1) => 0
+  | Int.ofNat n => if n = 0 then S.term 0 else 0
   | Int.negSucc m => S.term (m + 1)
 
 /-- The reversed chosen differentials: in a negative degree the chosen differential of `S`, and zero
@@ -112,19 +112,58 @@ noncomputable def cochainComplexOf (S : AugmentedGradedObject C) : CochainComple
       | 0 => exact S.comp_diff 0
       | j + 1 => exact S.comp_diff (j + 1))
 
-/-! ### The open obligation (cochain level)
+/-- The cochain complex supported in degree zero at `M`. -/
+noncomputable def singleCochain (M : C) : CochainComplex C ℤ :=
+  CochainComplex.of
+    (fun i => match i with
+      | Int.ofNat n => if n = 0 then M else 0
+      | Int.negSucc _ => 0)
+    (fun _ => 0) (fun _ => zero_comp)
 
-`cochainAugmentation S : cochainComplexOf S ⟶ single₀Cochain S.point` is not here. Its commutation
-fails for a type-checking reason: with the components defined by `match` on the degree, the goal
-is not type-correct under implicit transparency, so
-
-`simp only [zero_comp, comp_zero]`
-
-makes no progress (`LeanCategories/Modules/ChainComplexModel.lean` failed at the degree-zero branch),
-and `S.comp_augment` cannot be applied through the unreduced `single₀Cochain.match_1` motive. The
-chain-level `augmentation` above avoids this by using `ChainComplex.single₀`, whose object and
-differential are given by structure fields rather than by a `match` on `ℤ`. -/
+/-- The augmentation of a selected augmented object, as a map of cochain complexes into the cochain
+complex supported in degree zero at the augmentation point. -/
+noncomputable def cochainAugmentation (S : AugmentedGradedObject C) :
+    cochainComplexOf S ⟶ singleCochain S.point :=
+  CochainComplex.ofHom
+    (fun i => match i with
+      | Int.ofNat 0 => S.augment
+      | Int.ofNat (_ + 1) => 0
+      | Int.negSucc _ => 0)
+    (fun i => by
+      have hd : ∀ j : ℤ, (singleCochain S.point).d j (j + 1) = 0 := by
+        intro j
+        simp [singleCochain, CochainComplex.of_d, zero_comp]
+        rfl
+      have hx : ∀ j : ℤ, (cochainComplexOf S).d j (j + 1) = cochainDiff S j := by
+        intro j
+        simp [cochainComplexOf, CochainComplex.of_d]
+      match i with
+      | Int.ofNat 0 =>
+        rw [hd, hx]
+        exact (comp_zero).trans (zero_comp.symm)
+      | Int.ofNat (_ + 1) =>
+        rw [hd, hx]
+        exact (comp_zero).trans (zero_comp.symm)
+      | Int.negSucc 0 =>
+        rw [hd, hx]
+        exact (zero_comp).trans (S.comp_augment.symm)
+      | Int.negSucc (_ + 1) =>
+        rw [hd, hx]
+        exact (zero_comp).trans (comp_zero.symm))
 
 end Cochain
 
-end LeanCategories.Modules
+section AugmentationTriangle
+
+variable {C : Type u} [Category.{v} C] [Abelian C]
+
+/-- **The cofiber sequence of a selected augmented object's augmentation is a distinguished
+triangle**: the mapping cone of `cochainAugmentation S` carries the cofiber, and its third map lands
+in the suspension `Σ` of the cochain model. -/
+theorem cochainAugmentation_triangle_distinguished (S : AugmentedGradedObject C) :
+    cofiberTriangle (cochainAugmentation S) ∈
+      distTriang (HomotopyCategory C (ComplexShape.up ℤ)) :=
+  cofiberTriangle_distinguished _
+
+end AugmentationTriangle
+
