@@ -294,4 +294,41 @@ theorem rankedFin_eq_rankedEnumeratedSet {n : ℕ} (X : Type) (r : RankingData X
 theorem rankedCountable_eq_rankedEnumeratedSet (X : Type) (r : RankingData X ℕ) :
     CasCatalogue.Foundation.Rankings.rankedCountable X r = r.rankedEnumeratedSet := rfl
 
+/-! ### The three research expectations on the selected objects (#96 item 3)
+
+`test_enumerated_sets_construct.sage` (`cardinality() == cardinal(2)`, `ranking_map()(obj[1]) == NN(1)`),
+`test_ordered_enumerated_sets_construct.sage` (`enumeration` and its `inverse`, `order_type() ==
+ordinal(3)`) and `test_sets_counting_well_order_construct.sage` (the counting well-order of a finite
+set, and `NN` for itself) read the selected objects, not only the rankings. These are those readings
+on the smallest objects that decide them. -/
+
+/-- `cardinality() == cardinal(3)`: the standard finite ordinal object has three elements, its count
+read along the ranking rather than assumed of its carrier. -/
+theorem rankedOrdinal_three_cardinality :
+    Nat.card (CasCatalogue.Foundation.Rankings.rankedOrdinal 3).carrier = 3 :=
+  RankingData.natCard_fin (⟨Equiv.refl (Fin 3)⟩ : RankingData (Fin 3) (Fin 3))
+
+/-- The object's enumeration and its inverse are mutually inverse at the point `2`: indexing the
+point at position `2` returns `2`. -/
+theorem rankedOrdinal_three_indexMap_nthMap :
+    (EnumeratedSetCat.indexMap (CasCatalogue.Foundation.Rankings.rankedOrdinal 3)).hom
+        ((EnumeratedSetCat.nthMap (CasCatalogue.Foundation.Rankings.rankedOrdinal 3)).hom
+          ⟨2, RankingData.toEncodableFin_decode_isSome
+            (⟨Equiv.refl (Fin 3)⟩ : RankingData (Fin 3) (Fin 3)) (by decide)⟩) = 2 :=
+  CasCatalogue.Foundation.Rankings.indexMap_nthMap_rankedFin 3 (Fin 3)
+    (⟨Equiv.refl (Fin 3)⟩ : RankingData (Fin 3) (Fin 3)) 2
+
+/-- The countably ranked object of `ℕ` counts as `0` under `Nat.card`: its carrier is infinite. -/
+theorem rankedCountable_nat_cardinality :
+    Nat.card (CasCatalogue.Foundation.Rankings.rankedCountable ℕ natIdentityRanking).carrier = 0 :=
+  RankingData.natCard_nat natIdentityRanking
+
+/-- `NN.counting_well_order() is NN`: the countably ranked object's `nth` at position `5` is `5`,
+at every position. -/
+theorem rankedCountable_nat_nthMap :
+    (EnumeratedSetCat.nthMap
+        (CasCatalogue.Foundation.Rankings.rankedCountable ℕ natIdentityRanking)).hom
+      ⟨5, by rw [RankingData.toEncodableNat_decode]; rfl⟩ = 5 :=
+  CasCatalogue.Foundation.Rankings.nthMap_rankedNat ℕ natIdentityRanking 5
+
 end LeanCategories.Foundation
