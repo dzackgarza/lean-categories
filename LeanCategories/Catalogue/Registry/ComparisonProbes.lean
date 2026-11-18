@@ -111,16 +111,48 @@ def cycleSpecimen : SemanticState :=
         declaration := ``sameEndpoint, realization := ``sameEndpoint
         expression := .atomic ⟨"fun.ba"⟩, structural := true }] }
 
-theorem id99.simpleRoutesOnly :
-    (cycleSpecimen.routes (.atom ⟨"cat.a"⟩) (.atom ⟨"cat.b"⟩)).size = 1 := by
-  native_decide
+/-! The two claims below are executable checks, not theorems. `SemanticState.routes` is a `partial
+def` (`Registry/Semantic.lean:1729`) and `SemanticState.routeEdges?` (`:1746`) is a `do`-block whose
+`for` loop is `Array.forIn`, so neither kernel-reduces: `decide` fails at `(routes …).size.beq 1`
+and at `routeEdges? … .isSome`, `simp [SemanticState.routes]` and `simp [SemanticState.routeEdges?]`
+leave the goal, and `rfl` is not definitional. A `native_decide` proof therefore carries
+`Lean.ofReduceBool`, which the kernel-axiom audit rejects (`Tools/AxiomAudit.lean`, permitted
+`[propext, Classical.choice, Quot.sound]`); that audit failed on the two `native_decide` sites this
+block replaces. The same terms are evaluated at elaboration instead: a wrong value fails the build,
+and no axiom enters the environment.
+
+TODO(LC-12): the optimal form is a theorem. It needs `SemanticState.routes` and
+`SemanticState.routeEdges?` rewritten as structurally recursive, `List`-based enumerations
+(`List.foldl` and `List.find?` in place of `Array.forIn`), after which `decide` closes both; tracked
+in COMPLAINTS.md as "Missing theorem: kernel-checked route-enumeration probes". -/
+
+/-- `id99.simpleRoutesOnly` as a computation: the enumeration of simple routes in the two-cycle
+specimen has exactly the direct route. -/
+def id99.simpleRoutesOnlyCheck : Bool :=
+  (cycleSpecimen.routes (.atom ⟨"cat.a"⟩) (.atom ⟨"cat.b"⟩)).size == 1
+
+open Lean Elab Command in
+run_cmd
+  liftTermElabM do
+    let e ← Lean.Elab.Term.elabTerm (← `(id99.simpleRoutesOnlyCheck)) (some (mkConst ``Bool))
+    let value ← unsafe Lean.Meta.evalExpr Bool (mkConst ``Bool) e
+    unless value do
+      throwError "id99.simpleRoutesOnly: the two-cycle specimen does not have exactly one route"
 
 /-- The explicitly specified composite `a → b → a → b` is accepted step by step: the simplicity
-restriction of the enumeration does not reject a route the caller states. -/
-theorem id99.explicitRevisiting :
-    (cycleSpecimen.routeEdges? (.atom ⟨"cat.a"⟩) (.atom ⟨"cat.b"⟩)
-      #[.functor ⟨"fun.ab"⟩, .functor ⟨"fun.ba"⟩,
-        .functor ⟨"fun.ab"⟩]).isSome = true := by
-  native_decide
+restriction of the enumeration does not reject a route the caller states. `id99.explicitRevisiting`
+as a computation, checked at elaboration (see the LC-12 note above). -/
+def id99.explicitRevisitingCheck : Bool :=
+  (cycleSpecimen.routeEdges? (.atom ⟨"cat.a"⟩) (.atom ⟨"cat.b"⟩)
+    #[.functor ⟨"fun.ab"⟩, .functor ⟨"fun.ba"⟩, .functor ⟨"fun.ab"⟩]).isSome
+
+open Lean Elab Command in
+run_cmd
+  liftTermElabM do
+    let e ← Lean.Elab.Term.elabTerm (← `(id99.explicitRevisitingCheck))
+      (some (mkConst ``Bool))
+    let value ← unsafe Lean.Meta.evalExpr Bool (mkConst ``Bool) e
+    unless value do
+      throwError "id99.explicitRevisiting: the explicit composite was rejected by routeEdges?"
 
 end CasCatalogue.RouteDiscoveryProbes

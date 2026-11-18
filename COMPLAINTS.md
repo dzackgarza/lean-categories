@@ -1174,6 +1174,24 @@ not a decidable quotient equality or a new mathematical comparison.
   of a registered category). Resolved when `obj.sets.units` cites `units_underlying` and
   `mor.sets.units_inverse` cites `units_inverse`.
 
+### `native_decide` in the registry probes: the axiom audit's red step on main
+
+- **Repaired (the two #91 sites):** `RouteDiscoveryProbes.id99.simpleRoutesOnly` and
+  `id99.explicitRevisiting` (`Catalogue/Registry/ComparisonProbes.lean:116`, `:124` — landed on main
+  by `9c6d4ebb`) are now `id99.simpleRoutesOnlyCheck` / `id99.explicitRevisitingCheck`, checked by
+  `run_cmd` + `Lean.Meta.evalExpr` at elaboration; no declaration carries `Lean.ofReduceBool`.
+  No theorem is available at them: `decide` fails at `:116` (stuck at `(routes …).size.beq 1`;
+  `SemanticState.routes` is `partial`, `Registry/Semantic.lean:1729`) and at the `routeEdges?` term
+  (`:124`, `Array.forIn`); `simp` and `rfl` fail too.
+- **Not repaired (the four #99 sites):** `PresentationProbes.id99.oneCellPresentation`,
+  `id99.unaryEdgeDerived`, `id99.twoInputEdgeNotDerived`, `id99.productSourceRows`
+  (`Catalogue/Registry/PresentationProbes.lean:50`, `:57`, `:65`, `:70`, from `4daba6d9`) still fail
+  the audit, which therefore stays red on `main`. `decide` fails on them as well (`:50` stuck at
+  `constructorSpecimen.presentation.oneCells.size.beq 1`). Owner: #99.
+- **Optimal:** rewrite `SemanticState.routes` (structural on `fuel`, `List.foldl`) and
+  `routeEdges?`, `presentation`, `edgesFrom` over `List`; all six then kernel-reduce and `decide`
+  restores theorems. Tracked in the commit message of #91's registration commit.
+
 ## Workflow papercuts
 
 ### `Topology/BarySubdiv` does not elaborate at Mathlib master: `FreeAbelianGroup` renamed
