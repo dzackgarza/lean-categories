@@ -1972,10 +1972,36 @@ def validateProperty (state : SemanticState) (e : PropertyEntry) : MetaM Unit :=
       throwError "property {e.id.raw}: its receiver has no structural route to the host of \
         {e.classifier.raw}"
 
+/-- The registered atom category that `e`'s declaration is a property subcategory of, if any.
+
+Everything here runs in one elaboration scope, and only a `CategoryId` — plain data — leaves it: the
+metavariables standing for the declaration's universes must not escape. They did when the ambient
+category was returned as an `Expr`, so an ambient matching no registered category (for instance
+`ObjectProperty.FullSubcategory (C := LinOrd) …`) left an unassigned universe metavariable for the
+enclosing command to report, instead of answering the question this check asks. -/
+def propertySubcategoryAmbient? (state : SemanticState) (e : NamedCategoryEntry) :
+    MetaM (Option (Option CategoryId)) := do
+  let declared ← mkConstWithFreshMVarLevels e.declaration
+  let (args, _, _) ← forallMetaTelescopeReducing (← inferType declared)
+  let carrier ← whnf (← mkAppM ``CategoryTheory.Bundled.α #[mkAppN declared args])
+  unless carrier.isAppOf ``CategoryTheory.ObjectProperty.FullSubcategory do return none
+  let ambient := carrier.getAppArgs[0]!
+  for other in state.categories do
+    unless other.expression matches .atom _ do continue
+    if other.id == e.id then continue
+    let otherDeclared ← mkConstWithFreshMVarLevels other.declaration
+    let (otherArgs, _, _) ← forallMetaTelescopeReducing (← inferType otherDeclared)
+    let otherCarrier ← mkAppM ``CategoryTheory.Bundled.α #[mkAppN otherDeclared otherArgs]
+    if ← withTransparency .all <| isDefEq otherCarrier ambient then
+      return some (some other.id)
+  return some none
+
 /-- CC-PROP: a property category is owned by its classifier. An atom category whose declaration is
 a registered classifier's total, or a full subcategory of a registered atom category cut out by a
 property, is rejected: the property must be a classifier and the category its total or a
-refinement, so that no category can be introduced as a label. -/
+refinement, so that no category can be introduced as a label. The ambient comparison runs in one
+scope with all of its metavariables, so a category that is not a property subcategory of anything
+registered is admitted without leaving an unassigned universe metavariable behind. -/
 def validateNotPropertyAtom (state : SemanticState) (e : NamedCategoryEntry) : MetaM Unit := do
   unless e.expression matches .atom _ do return
   for classifier in state.classifiers do
@@ -1988,25 +2014,11 @@ def validateNotPropertyAtom (state : SemanticState) (e : NamedCategoryEntry) : M
     if isTotal then
       throwError "category {e.id.raw} is the total of classifier {classifier.id.raw}: register it \
         as its classifier total, not as an atom"
-  let carrier? ← withoutModifyingState do
-    let declared ← mkConstWithFreshMVarLevels e.declaration
-    let (args, _, _) ← forallMetaTelescopeReducing (← inferType declared)
-    let carrier ← whnf (← mkAppM ``CategoryTheory.Bundled.α #[mkAppN declared args])
-    if carrier.isAppOf ``CategoryTheory.ObjectProperty.FullSubcategory then
-      return some (← instantiateMVars carrier.getAppArgs[0]!)
-    return none
-  let some ambient := carrier? | return
-  for other in state.categories do
-    unless other.expression matches .atom _ do continue
-    if other.id == e.id then continue
-    let isAmbient ← withoutModifyingState do
-      let declared ← mkConstWithFreshMVarLevels other.declaration
-      let (args, _, _) ← forallMetaTelescopeReducing (← inferType declared)
-      let otherCarrier ← mkAppM ``CategoryTheory.Bundled.α #[mkAppN declared args]
-      withTransparency .all <| isDefEq otherCarrier ambient
-    if isAmbient then
-      throwError "category {e.id.raw} is a property subcategory of {other.id.raw}: register the \
-        property as a classifier on {other.id.raw}"
+  match ← withoutModifyingState <| propertySubcategoryAmbient? state e with
+  | some (some other) =>
+      throwError "category {e.id.raw} is a property subcategory of {other.raw}: register the \
+        property as a classifier on {other.raw}"
+  | _ => pure ()
 
 /-- The index category `J` of a registered limit row: its declaration is a family of
 `LimitCone (F : J ⥤ C)`. -/

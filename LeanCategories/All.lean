@@ -281,6 +281,7 @@ public import LeanCategories.Homological.TorBridge
 public import LeanCategories.Homological.CyclicTor
 public import LeanCategories.Homological.TorExercise3A6
 public import LeanCategories.Homological.TorExercise3A2
+public import LeanCategories.Homological.TorFiniteStage
 public import LeanCategories.Homological.SimplexChains
 public import LeanCategories.Homological.ChainLevelSteps
 public import LeanCategories.Homological.SkeletonHomology
@@ -322,6 +323,7 @@ public import LeanCategories.Foundation.WellOrderedSets
 public import LeanCategories.Foundation.EnumeratedMonotone
 public import LeanCategories.Catalogue.Semantics.Foundation.WellOrderedSets
 public import LeanCategories.Catalogue.Semantics.Foundation.WellOrderedSetsRegistration
+public import LeanCategories.Catalogue.Registry.PropertySubcategoryAtomTests
 public import LeanCategories.Catalogue.Semantics.Foundation.WellOrderedSetsTests
 public import LeanCategories.Foundation.WellOrderedSetsTests
 public import LeanCategories.Foundation.RankingDataTests

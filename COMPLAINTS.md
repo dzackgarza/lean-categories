@@ -3817,38 +3817,34 @@ downstream assertions, computational observations, or downstream diagnostics.
   followed by `SameDiagramOrbit`'s equivalence laws; it makes `RealFormCorrespondence.injective` a
   statement about a genuine quotient. Upstream candidate: the same transport for `RootPairing`
   sub-diagrams, which belongs with `RootPairing.Base.equivOfCartanMatrixEq`.
-### #97 — an atomic category row over a `FullSubcategory` carrier leaves an unassigned universe metavariable
+### #97 — an atomic category row over a `FullSubcategory` carrier left an unassigned universe metavariable (repaired)
 
-- **Need:** a `normalized_registry .category` row for the category #97 introduces.
-- **Evidence:** registering `LeanCategories.Foundation.WellOrderedSets` (an `ObjCat` over
-  `IsWellOrderedLinearOrder.FullSubcategory`) as an **atom** fails with
-  `unknown universe metavariable ?_uniq.N` at the row, for every shape tried: `{}` and
-  `{ familyFibre := none }` realizations, realization in the same module and in an imported module,
-  explicit `CategoryRealization.{u+1, u, u, u}` and `.{1, 0, 0, 0}` instantiations, and both
-  `Cat.of C` and `⟨C, inferInstance⟩` bundlings. The same row registers when the carrier is not a
-  `FullSubcategory` (`Cat.of PartOrd` for `cat.partially_ordered_sets`), and `CountableSets` /
-  `EnumeratedSets` register only because they are written as `.classifierTotal`, which skips the
-  check. Root cause: `LeanCategories/Catalogue/Registry/Semantic.lean:1971`
-  `validateNotPropertyAtom` reads the declaration's carrier with `whnf` at default transparency
-  (`:1986`) and, for a `FullSubcategory` application, takes `getAppArgs[0]` (`:1988`) — the
-  *property*, not the ambient category — then `isDefEq`s every other registered atom category's
-  carrier against it (`:1991`–`:2001`); the comparisons fail and the fresh universe metavariables of
-  `mkConstWithFreshMVarLevels` (`:1995`) stay unassigned, which Lean reports when the command ends.
-- **Route taken (not a workaround for this unit, but the registry's own prescription):** the same
-  error asks to "register the property as a classifier on" the host, and #97's category *is* the
-  property subcategory of the linear orders on `IsWellOrder X (· < ·)`. So
-  `LeanCategories.Foundation.wellOrderedSets := Classifier.ofProperty IsWellOrderedLinearOrder`
-  (`Foundation/WellOrderedSets.lean`, total and forgetful functor from `Classifier.ofProperty`), and
-  the row is `.classifierTotal ClassifierId.setsWellOrdered`; the projection-subcategory validation
-  and the realizations named by the rows live in
-  `Catalogue/Semantics/Foundation/WellOrderedSets{Registration,Tests}.lean`, where the last of those
-  checks the registered declaration and endpoints of each row.
-- **Still open upstream:** an atomic `.category` row over a `FullSubcategory`-carried declaration
-  remains refused, so any later property subcategory of a bundled category has to be registered the
-  same way (classifier on its host) rather than as an atom. The repair is in `validateNotPropertyAtom`:
-  compare the *ambient* category (the `FullSubcategory`'s index) rather than the property, run the
-  comparison `withTransparency .all`, and do not leave the fresh level metavariables of
-  `mkConstWithFreshMVarLevels` unassigned.
+- **Need:** a `normalized_registry .category` row for any category whose declaration is an `ObjCat`
+  over an `ObjectProperty.FullSubcategory`, registering it as an atom.
+- **Evidence (before the repair):** every such row failed with
+  `unknown universe metavariable ?_uniq.N` at the row — for `{}` and `{ familyFibre := none }`
+  realizations, realizations in the same module and imported, explicit
+  `CategoryRealization.{u+1, u, u, u}` and `.{1, 0, 0, 0}` instantiations, and both `Cat.of C` and
+  `⟨C, inferInstance⟩` bundlings. Rows whose carrier is not a `FullSubcategory`
+  (`Cat.of PartOrd` for `cat.partially_ordered_sets`) were unaffected. Cause:
+  `validateNotPropertyAtom` returned the ambient category as an `Expr` out of the
+  `withoutModifyingState` scope that had created its level metavariables, so an ambient matching no
+  registered category left one unassigned for the enclosing command to report.
+- **Repair:** `Catalogue/Registry/Semantic.lean`, `propertySubcategoryAmbient?` — the ambient
+  comparison now runs in one elaboration scope and returns only a `CategoryId`, so nothing carrying
+  metavariables escapes; `validateNotPropertyAtom` consumes that. The check keeps both of its
+  answers: an atom that is a registered classifier's total, or a property subcategory of a
+  registered category, is refused by name; an atom whose ambient no row names is admitted. Decided
+  by `Catalogue/Registry/PropertySubcategoryAtomTests.lean`, which requires, in one module, the
+  refusal of `LeanCategories.Foundation.WellOrderedSets` as the total
+  `clf.linear_orders.well_ordered`, the refusal of a property subcategory of `cat.totally_ordered_sets`
+  by that name, the admission of a full subcategory of an unregistered ambient, and the admission of
+  a category that is not a subcategory — with no `unknown universe metavariable` in any refusal.
+- **Not a workaround:** #97's category row is still registered as the classifier
+  `clf.linear_orders.well_ordered`'s total (`Foundation/WellOrderedSets.lean`'s `wellOrderedSets`,
+  `Classifier.ofProperty …`). That is what the rule demands — the well-ordered sets *are* the
+  property subcategory of the linear orders — and the repaired check enforces exactly that, since an
+  atom row for `LeanCategories.Foundation.WellOrderedSets` is now refused as that total.
 ### #95 — two catalogue test modules in `Foundation/` are outside the build
 
 - **Need:** every `*Tests` module under `LeanCategories/Catalogue/Semantics/Foundation/` should be
