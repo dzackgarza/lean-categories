@@ -20,6 +20,7 @@ public import LeanCategories.Catalogue.Registry.PresentationProbes
 public import LeanCategories.Catalogue.Registry.EnumerationCompleteness
 public import LeanCategories.Catalogue.Registry.AcceptanceProbes
 public import LeanCategories.Catalogue.Registry.RouteSearchCompleteness
+public import LeanCategories.Catalogue.Registry.IsoCommaExample
 public import LeanCategories.Catalogue.Registry.Snapshot
 public import LeanCategories.Catalogue.Registry.Computation
 public import LeanCategories.Catalogue.Registry.Typed
