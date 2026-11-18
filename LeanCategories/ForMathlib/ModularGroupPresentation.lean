@@ -1060,14 +1060,22 @@ there. `Monoid.PushoutI`'s normal forms (`NormalWord`, `equiv`, `prod_injective`
 Farey graph and no Bass–Serre theory at this pin. Closing it is a unit of its own, not a probe or a
 repair of this file.
 
-One measured warning for whoever builds it. The obvious height on Farey triangles — the sum
-of `|p| + |q|` over the three cusps — does *not* satisfy the acyclicity criterion as it stands:
-checked over the 180 bases with `|entries| ≤ 4` and `det = 1`, no triangle ever has two flips
-that decrease it and none has three, but the fundamental triangle `{0, 1, ∞}` has a neighbour of
-*equal* height, so "no edge joins equal heights" fails and the maximum-vertex argument does not
-close. Either the height needs a tiebreak at the fundamental level, or the criterion must be
-weakened to "the subgraph induced on each level is acyclic", which the same data does support.
-Taking the sum at face value and expecting `omega` to finish would fail at exactly this point.
+One measured constraint for whoever builds it, in its final form. On the incidence graph of Farey
+edges and triangles (bases with `|entries| ≤ 5`, `det = 1`: 78 triangles, 117 edges), with the
+triangle height the sum of `|p| + |q|` over the three cusps:
+
+* **no triangle has two flips that decrease its height** — the "at most one smaller neighbour" half
+  holds everywhere, so the maximum-vertex argument has exactly one obstruction;
+* the only two tie edges of the whole graph are the single edge between the *two* triangles of
+  height four, `{0, 1, ∞}` and `{0, -1, ∞}`; there are exactly two triangles with no smaller
+  neighbour, and they are those two;
+* the level sets are forests (sizes `2, 4, 4, 8, 4, 12, 4, 8` at heights `4, 6, 8, …`), so the
+  weaker criterion "each level is acyclic" does hold — but it is *not enough* on its own: a cycle
+  whose maximum is attained on a path of two or more vertices survives it.
+
+So the criterion to prove is "at most one smaller neighbour **and no ties**", and this height needs
+exactly one tiebreak, at the height-four pair. Six of those seven numbers are the reason the naive
+attempt would stall only at the last step.
 -/
 
 theorem S_sq_ne_one : (S : SL(2, ℤ)) ^ 2 ≠ 1 := by
