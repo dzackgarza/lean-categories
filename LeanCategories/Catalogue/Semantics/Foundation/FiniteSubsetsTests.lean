@@ -138,4 +138,29 @@ run_meta do
     validateSemanticEntryDeclaration (.functor { powerSetRow with
       declaration := `CasCatalogue.Foundation.FiniteSubsets.directImage })
 
+open Lean Meta in
+run_meta do
+  let state ← semanticState
+  -- Neither `𝒫_fin` nor `𝒫` is a resolution edge: a construction functor is not `structural`, and
+  -- the structural graph is built from `structural` rows only (`SemanticState.structuralEdges`), so
+  -- the "selected structural routes" of #95 have no row to name.
+  for id in [FunctorId.finiteSubsetsDirectImage, FunctorId.setsPowerSet] do
+    let some row := state.functor? id
+      | throwError "missing the registered functor {id.raw}"
+    if row.structural then
+      throwError "functor {id.raw} is registered as a structural route"
+    if state.structuralEdges.any (·.ref == .functor id) then
+      throwError "functor {id.raw} is a structural edge"
+  -- Every row of this semantics is written in a `lean-categories` module, so neither the kernel nor
+  -- a leaf supplies it: the registry refuses any other module root (`addSemanticEntryChecked`).
+  let env ← getEnv
+  for declaration in [`CasCatalogue.Foundation.FiniteSubsets.directImage,
+      `CasCatalogue.Foundation.PowerSets.powerSetFunctor,
+      `CasCatalogue.Foundation.FiniteSubsets.inclusionCell] do
+    let some index := env.getModuleIdxFor? declaration
+      | throwError "declaration {declaration} is not in the environment"
+    let module := env.header.moduleNames[index.toNat]!
+    unless module.getRoot == `LeanCategories do
+      throwError "declaration {declaration} is supplied by {module}, not by `lean-categories`"
+
 end CasCatalogue.Foundation.FiniteSubsetsTests
