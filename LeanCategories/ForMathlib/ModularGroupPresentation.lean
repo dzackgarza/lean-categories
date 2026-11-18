@@ -57,11 +57,24 @@ than assumed. In Mathlib's presentation vocabulary
 reconciliation of `PresentedGroup gl2zRelators` with `PresentedGroup sl2zRelators ⋊ ⟨e⟩`, which is
 not formalized either.
 
-The issue's identification of the presented group with the amalgam `ℤ/4 *_{ℤ/2} ℤ/6` is also
-**not** formalized: there is no `MulEquiv` from `PresentedGroup sl2zRelators` to a
-`Monoid.PushoutI` of `ℤ/4 ← ℤ/2 → ℤ/6`, and not even the Tietze rewrite from the generators
-`S, T` to `S, R = TS`, which is the form in which `R³ = S²` reads as the amalgamation of `S⁴` with
-`R⁶` over `⟨S²⟩ = ⟨R³⟩`.
+For item 2 the missing field is again injectivity (`Gl2zPresentationComplete`), and the reduction of
+that to item 1's field is not formalized either. The reduction needs three things: (a) the
+generator-inverting endomorphism `P_SL →* P_SL` taking `S ↦ S⁻¹`, `T ↦ T⁻¹` (both relator
+obligations are group manipulations from `sl2zS_pow_four` and `sl2zTS_relator`); (b) the conjugation
+identity
+`e * i a * e⁻¹ = i (inv a)` for `e = PresentedGroup.of 2` and `i` the map from the `SL(2, ℤ)`
+presentation to the `GL(2, ℤ)` one, by generator extensionality from the relators `eSe⁻¹S` and
+`eTe⁻¹T`; and (c) the resulting normal form `∀ q, ∃ a, ∃ k : ℤ, i a * e ^ k = q`. Given (a)–(c), an
+element killed by `gl2zToGroup` has `sl2zToGroup a = 1` and `eGL ^ k = 1` by the uniqueness in
+`gl2z_isComplement`, hence is `1`. None of (a)–(c) is written here.
+
+The issue's reading of the presented group as the amalgam `ℤ/4 *_{ℤ/2} ℤ/6` is proved in the form
+that is checkable here: the change of generators from `S, T` to `S, R = TS`, after which the
+relators read `S⁴` and `R³S⁻²` (`sl2zAmalgamRelators`, `sl2zAmalgamEquiv`), which is the
+amalgamation of `S⁴` with `R⁶` over `⟨S²⟩ = ⟨R³⟩`. What is not formalized is the identification
+with the *categorical* `Monoid.PushoutI` of `ℤ/4 ← ℤ/2 → ℤ/6`; the section note before
+`sl2zAmalgamRelators` records why (`PushoutI`'s universal property needs a homomorphism out of a
+cyclic factor into a nonabelian group, which Mathlib does not have at this pin).
 
 Two proofs of item 1's completeness are known, and neither is in the library at this pin: unique
 reduced words for the amalgam (`ℤ/4 *_{ℤ/2} ℤ/6` acting on its Bass-Serre tree, which would go
@@ -184,6 +197,156 @@ theorem sl2zToGroup_surjective : Function.Surjective sl2zToGroup := by
 group's map onto `SL(2, ℤ)`. This is **not proved** here; see the module docstring. It is what a
 coset enumeration on the presentation consumes. -/
 def Sl2zPresentationComplete : Prop := Function.Injective sl2zToGroup
+
+/-!
+### Item 1, second half: the presentation is the amalgam
+
+The relators `S⁴` and `(TS)³S⁻²` are a change of generators away from the form in which the
+presentation is visibly the amalgam `ℤ/4 *_{ℤ/2} ℤ/6`: with `R = TS` they read `S⁴` and `R³S⁻²`,
+i.e. `S` has order dividing `4`, `R` order dividing `6`, and the two `ℤ/2`'s `⟨S²⟩ = ⟨R³⟩` are
+identified. `sl2zAmalgamRelators` is that relator set on the same two generator slots, and
+`sl2zAmalgamEquiv` is the change of generators, `T ↦ R S⁻¹` and `R ↦ T S`, proved inverse on both
+sides by the presentations' universal property.
+
+What is *not* here: the identification of `PresentedGroup sl2zAmalgamRelators` with Mathlib's
+categorical pushout `Monoid.PushoutI` of `ℤ/4 ← ℤ/2 → ℤ/6`
+(`Mathlib/GroupTheory/PushoutI.lean`), or with the coproduct modulo the base subgroup. `PushoutI`'s
+universal property (`PushoutI.homEquiv`) needs a homomorphism *out of* each cyclic factor, and
+Mathlib at this pin has no such homomorphism into a nonabelian group: the only general tool is the
+*additive* `ZMod.lift` of `Mathlib/Data/ZMod/Basic.lean:1151`, whose target is required to be an
+`AddGroup`, i.e. commutative (`Lean`'s additive groups are the commutative ones), while a map out of
+`Multiplicative (ZMod 4)` into a presentation is not additive. The route that avoids it — Mathlib's
+`zmodMulEquivOfGenerator` (`Mathlib/GroupTheory/SpecificGroups/Cyclic.lean:573`), which *is* an
+isomorphism `Multiplicative (ZMod n) ≃* G` for a cyclic `G` with a chosen generator — applies after
+`orderOf` facts about the generators of the `SL(2, ℤ)` presentation that are not proved here
+(`orderOf S = 4` and `orderOf (TS) = 6` need the completeness of item 1 to move from `SL(2, ℤ)`
+back, or an independent argument).
+-/
+
+/-- The same group in the generators `S` and `R = TS`: `S⁴` and `R³S⁻²`. -/
+def sl2zAmalgamRelators : Set (FreeGroup (Fin 2)) :=
+  {FreeGroup.of 0 ^ 4, FreeGroup.of 1 ^ 3 * (FreeGroup.of 0) ^ (-2 : ℤ)}
+
+theorem sl2zS_pow_four : (PresentedGroup.of (rels := sl2zRelators) 0) ^ 4 = 1 := by
+  simpa [PresentedGroup.of, ← map_mul, ← map_pow, ← map_zpow] using
+    (PresentedGroup.one_of_mem (rels := sl2zRelators) (x := FreeGroup.of 0 ^ 4)
+      (by simp [sl2zRelators]))
+
+theorem sl2zTS_relator :
+    ((PresentedGroup.of (rels := sl2zRelators) 1 * PresentedGroup.of (rels := sl2zRelators) 0) ^ 3 *
+        ((PresentedGroup.of (rels := sl2zRelators) 0) ^ 2)⁻¹) = 1 := by
+  simpa [PresentedGroup.of, ← map_mul, ← map_pow, ← map_inv] using
+    (PresentedGroup.one_of_mem (rels := sl2zRelators)
+      (x := (FreeGroup.of 1 * FreeGroup.of 0) ^ 3 * ((FreeGroup.of 0) ^ 2)⁻¹)
+      (by simp [sl2zRelators]))
+
+theorem amalgamS_pow_four : (PresentedGroup.of (rels := sl2zAmalgamRelators) 0) ^ 4 = 1 := by
+  simpa [PresentedGroup.of, ← map_mul, ← map_pow, ← map_zpow] using
+    (PresentedGroup.one_of_mem (rels := sl2zAmalgamRelators) (x := FreeGroup.of 0 ^ 4)
+      (by simp [sl2zAmalgamRelators]))
+
+theorem amalgamR_relator :
+    (PresentedGroup.of (rels := sl2zAmalgamRelators) 1) ^ 3 *
+        ((PresentedGroup.of (rels := sl2zAmalgamRelators) 0) ^ 2)⁻¹ = 1 := by
+  simpa [PresentedGroup.of, ← map_mul, ← map_pow, ← map_inv] using
+    (PresentedGroup.one_of_mem (rels := sl2zAmalgamRelators)
+      (x := FreeGroup.of 1 ^ 3 * ((FreeGroup.of 0) ^ 2)⁻¹)
+      (by simp [sl2zAmalgamRelators]))
+
+theorem amalgamR_cube :
+    (PresentedGroup.of (rels := sl2zAmalgamRelators) 1) ^ 3 =
+      (PresentedGroup.of (rels := sl2zAmalgamRelators) 0) ^ 2 :=
+  eq_of_mul_inv_eq_one amalgamR_relator
+
+/-- `T ↦ R S⁻¹` in the amalgam-generator presentation. -/
+def sl2zGenValAmalgam : Fin 2 → PresentedGroup sl2zAmalgamRelators :=
+  ![PresentedGroup.of 0, PresentedGroup.of 1 * (PresentedGroup.of 0)⁻¹]
+
+lemma sl2zGenValAmalgam_zero : sl2zGenValAmalgam 0 = PresentedGroup.of 0 := rfl
+
+lemma sl2zGenValAmalgam_one :
+    sl2zGenValAmalgam 1 = PresentedGroup.of 1 * (PresentedGroup.of 0)⁻¹ := rfl
+
+theorem sl2zRelators_map_one_amalgam :
+    ∀ r ∈ sl2zRelators, FreeGroup.lift sl2zGenValAmalgam r = 1 := by
+  intro r hr
+  simp only [sl2zRelators, Set.mem_insert_iff, Set.mem_singleton_iff] at hr
+  rcases hr with rfl | rfl
+  · simpa [sl2zGenValAmalgam_zero, FreeGroup.lift_apply_of, map_pow] using amalgamS_pow_four
+  · have key : (PresentedGroup.of (rels := sl2zAmalgamRelators) 1 *
+          (PresentedGroup.of (rels := sl2zAmalgamRelators) 0)⁻¹) *
+          PresentedGroup.of (rels := sl2zAmalgamRelators) 0 =
+        PresentedGroup.of (rels := sl2zAmalgamRelators) 1 := by group
+    simpa [sl2zGenValAmalgam_zero, sl2zGenValAmalgam_one, FreeGroup.lift_apply_of, map_pow,
+      map_mul, map_zpow, key] using amalgamR_relator
+
+/-- `⟨S, T | S⁴, (TS)³S⁻²⟩ →* ⟨S, R | S⁴, R³S⁻²⟩`, `T ↦ R S⁻¹`. -/
+def sl2zToAmalgam : PresentedGroup sl2zRelators →* PresentedGroup sl2zAmalgamRelators :=
+  PresentedGroup.toGroup sl2zRelators_map_one_amalgam
+
+theorem sl2zToAmalgam_of (i : Fin 2) :
+    sl2zToAmalgam (PresentedGroup.of i) = sl2zGenValAmalgam i :=
+  PresentedGroup.toGroup.of sl2zRelators_map_one_amalgam
+
+/-- `R ↦ T S` in the original presentation. -/
+def sl2zGenValOrig : Fin 2 → PresentedGroup sl2zRelators :=
+  ![PresentedGroup.of 0, PresentedGroup.of 1 * PresentedGroup.of 0]
+
+lemma sl2zGenValOrig_zero : sl2zGenValOrig 0 = PresentedGroup.of 0 := rfl
+
+lemma sl2zGenValOrig_one :
+    sl2zGenValOrig 1 = PresentedGroup.of 1 * PresentedGroup.of 0 := rfl
+
+theorem sl2zAmalgamRelators_map_one :
+    ∀ r ∈ sl2zAmalgamRelators, FreeGroup.lift sl2zGenValOrig r = 1 := by
+  intro r hr
+  simp only [sl2zAmalgamRelators, Set.mem_insert_iff, Set.mem_singleton_iff] at hr
+  rcases hr with rfl | rfl
+  · simpa [sl2zGenValOrig_zero, FreeGroup.lift_apply_of, map_pow] using sl2zS_pow_four
+  · simpa [sl2zGenValOrig_zero, sl2zGenValOrig_one, FreeGroup.lift_apply_of, map_pow, map_mul,
+      map_zpow] using sl2zTS_relator
+
+/-- `⟨S, R | S⁴, R³S⁻²⟩ →* ⟨S, T | S⁴, (TS)³S⁻²⟩`, `R ↦ T S`. -/
+def sl2zOfAmalgam : PresentedGroup sl2zAmalgamRelators →* PresentedGroup sl2zRelators :=
+  PresentedGroup.toGroup sl2zAmalgamRelators_map_one
+
+theorem sl2zOfAmalgam_of (i : Fin 2) :
+    sl2zOfAmalgam (PresentedGroup.of i) = sl2zGenValOrig i :=
+  PresentedGroup.toGroup.of sl2zAmalgamRelators_map_one
+
+theorem sl2zToAmalgam_comp_ofAmalgam :
+    sl2zToAmalgam.comp sl2zOfAmalgam = MonoidHom.id _ := by
+  refine PresentedGroup.ext fun i => ?_
+  fin_cases i
+  · change sl2zToAmalgam (sl2zOfAmalgam (PresentedGroup.of 0)) = PresentedGroup.of 0
+    rw [sl2zOfAmalgam_of, sl2zGenValOrig_zero, sl2zToAmalgam_of, sl2zGenValAmalgam_zero]
+  · change sl2zToAmalgam (sl2zOfAmalgam (PresentedGroup.of 1)) = PresentedGroup.of 1
+    rw [sl2zOfAmalgam_of, sl2zGenValOrig_one, map_mul, sl2zToAmalgam_of, sl2zToAmalgam_of,
+      sl2zGenValAmalgam_one, sl2zGenValAmalgam_zero]
+    group
+
+theorem sl2zOfAmalgam_comp_toAmalgam :
+    sl2zOfAmalgam.comp sl2zToAmalgam = MonoidHom.id _ := by
+  refine PresentedGroup.ext fun i => ?_
+  fin_cases i
+  · change sl2zOfAmalgam (sl2zToAmalgam (PresentedGroup.of 0)) = PresentedGroup.of 0
+    rw [sl2zToAmalgam_of, sl2zGenValAmalgam_zero, sl2zOfAmalgam_of, sl2zGenValOrig_zero]
+  · change sl2zOfAmalgam (sl2zToAmalgam (PresentedGroup.of 1)) = PresentedGroup.of 1
+    rw [sl2zToAmalgam_of, sl2zGenValAmalgam_one, map_mul, map_inv, sl2zOfAmalgam_of,
+      sl2zOfAmalgam_of, sl2zGenValOrig_one, sl2zGenValOrig_zero]
+    group
+
+/-- lean-categories#89 item 1 in the generators `S` and `R = TS`. -/
+def sl2zAmalgamEquiv : PresentedGroup sl2zRelators ≃* PresentedGroup sl2zAmalgamRelators where
+  toFun := sl2zToAmalgam
+  invFun := sl2zOfAmalgam
+  left_inv a := by
+    have := congrArg (fun f => f a) sl2zOfAmalgam_comp_toAmalgam
+    simpa using this
+  right_inv b := by
+    have := congrArg (fun f => f b) sl2zToAmalgam_comp_ofAmalgam
+    simpa using this
+  map_mul' := sl2zToAmalgam.map_mul
 
 end ModularGroup
 
