@@ -96,4 +96,69 @@ run_cmd
       unless value do
         throwError "issue #99 probe {name}: {message}"
 
+/-! ### The rewritten search against the pre-rewrite algorithm -/
+
+/-- The pre-rewrite algorithm, transcribed from the former `partial def SemanticState.routes`:
+stop at the target, else recurse through `fuel - 1` with an explicit subscript accumulator. Kept
+only to compare against the total `SemanticState.routeSteps`. -/
+partial def legacyRouteSteps (state : SemanticState) (target : CategoryExpr)
+    (current : CategoryExpr) (visited : List CategoryExpr) (fuel : Nat) :
+    Array (Array StructuralEdge) :=
+  if current.syntacticEq target then #[#[]]
+  else if fuel = 0 then #[]
+  else
+    (state.edgesFrom current).foldl (init := #[]) fun acc edge =>
+      if !(visited.any (·.syntacticEq edge.target)) then
+        acc ++ (legacyRouteSteps state target edge.target (edge.target :: visited)
+          (fuel - 1)).map (#[edge] ++ ·)
+      else acc
+
+/-- The pre-rewrite search, packaged as routes. -/
+def legacyRoutes (state : SemanticState) (source target : CategoryExpr)
+    (fuel : Nat := 32) : Array Route :=
+  (legacyRouteSteps state target source [source] fuel).map fun steps => { source, target, steps }
+
+/-- A cyclic three-vertex graph: it exercises the target short-circuit, the pruning gate and several
+competing routes at once. -/
+def rewriteSpecimen : SemanticState where
+  functors := #[
+    { id := ⟨"fun.ab"⟩, source := .atom ⟨"cat.a"⟩, target := .atom ⟨"cat.b"⟩
+      declaration := ``sameEndpoint, realization := ``sameEndpoint
+      expression := .atomic ⟨"fun.ab"⟩, structural := true },
+    { id := ⟨"fun.ba"⟩, source := .atom ⟨"cat.b"⟩, target := .atom ⟨"cat.a"⟩
+      declaration := ``sameEndpoint, realization := ``sameEndpoint
+      expression := .atomic ⟨"fun.ba"⟩, structural := true },
+    { id := ⟨"fun.bc"⟩, source := .atom ⟨"cat.b"⟩, target := .atom ⟨"cat.c"⟩
+      declaration := ``sameEndpoint, realization := ``sameEndpoint
+      expression := .atomic ⟨"fun.bc"⟩, structural := true },
+    { id := ⟨"fun.ac"⟩, source := .atom ⟨"cat.a"⟩, target := .atom ⟨"cat.c"⟩
+      declaration := ``sameEndpoint, realization := ``sameEndpoint
+      expression := .atomic ⟨"fun.ac"⟩, structural := true }]
+
+/-- The routes a search returns, rendered by their edge labels: comparable without an equality on
+`Route`. -/
+def routeKeys (routes : Array Route) : List (List String) :=
+  routes.toList.map fun route => route.refs.toList.map EdgeRef.label
+
+/-- The rewrite preserves the search's answers: over the cyclic specimen, the new `routes` and the
+pre-rewrite algorithm return the same routes, in the same order, for every pair and fuel here. -/
+def id99.rewritePreservesSearchCheck : Bool :=
+  let pairs : List (CategoryExpr × CategoryExpr) :=
+    [(.atom ⟨"cat.a"⟩, .atom ⟨"cat.c"⟩), (.atom ⟨"cat.a"⟩, .atom ⟨"cat.a"⟩),
+      (.atom ⟨"cat.b"⟩, .atom ⟨"cat.c"⟩), (.atom ⟨"cat.c"⟩, .atom ⟨"cat.a"⟩)]
+  let fuels : List Nat := [0, 1, 2, 3, 5]
+  pairs.all fun (source, target) =>
+    fuels.all fun fuel =>
+      routeKeys (rewriteSpecimen.routes source target fuel) ==
+        routeKeys (legacyRoutes rewriteSpecimen source target fuel)
+
+open Lean Elab Command in
+run_cmd
+  liftTermElabM do
+    let e ← Lean.Elab.Term.elabTerm (← `(id99.rewritePreservesSearchCheck))
+      (some (mkConst ``Bool))
+    let value ← unsafe Lean.Meta.evalExpr Bool (mkConst ``Bool) e
+    unless value do
+      throwError "issue #99 probe: the rewritten search disagrees with the pre-rewrite algorithm"
+
 end CasCatalogue.AcceptanceProbes
