@@ -179,4 +179,49 @@ theorem integralOrthogonalSumGroupHom_injective (L₁ L₂ : IntegralLatticeCat 
     Function.Injective (integralOrthogonalSumGroupHom L₁ L₂) :=
   BilinModuleCat.prodCongrHom_injective _ _
 
+/-! ## Products of subgroups of orthogonal groups
+
+For subgroups `P₁ ≤ O(L₁)` and `P₂ ≤ O(L₂)`, the product `P₁ × P₂` is a subgroup of
+`O(L₁) × O(L₂)`; its image under the orthogonal-sum map is a subgroup of `O(L₁ ⊕ L₂)`, and the map
+restricts to a group isomorphism `P₁ × P₂ ≃* (P₁ × P₂).map` onto it. This is the consumer item
+"products of subgroups of lattice orthogonal groups" of lean-categories#91.
+-/
+
+/-- The image of a product of subgroups of `O(L₁)` and `O(L₂)` in `O(L₁ ⊕ L₂)`. -/
+noncomputable def orthogonalSumSubgroup (L₁ L₂ : IntegralLatticeCat R)
+    (P₁ : Subgroup (OrthogonalGroup L₁)) (P₂ : Subgroup (OrthogonalGroup L₂)) :
+    Subgroup (OrthogonalGroup (orthogonalSum L₁ L₂)) :=
+  (P₁.prod P₂).map (integralOrthogonalSumGroupHom L₁ L₂)
+
+/-- Membership in the product subgroup: an element is the image of a pair of elements of the two
+factor subgroups. -/
+theorem mem_orthogonalSumSubgroup (L₁ L₂ : IntegralLatticeCat R)
+    (P₁ : Subgroup (OrthogonalGroup L₁)) (P₂ : Subgroup (OrthogonalGroup L₂))
+    (g : OrthogonalGroup (orthogonalSum L₁ L₂)) :
+    g ∈ orthogonalSumSubgroup L₁ L₂ P₁ P₂ ↔
+      ∃ g₁ ∈ P₁, ∃ g₂ ∈ P₂, integralOrthogonalSumGroupHom L₁ L₂ (g₁, g₂) = g := by
+  rw [orthogonalSumSubgroup, Subgroup.mem_map]
+  constructor
+  · rintro ⟨⟨g₁, g₂⟩, hg, hfg⟩
+    exact ⟨g₁, (Subgroup.mem_prod.mp hg).1, g₂, (Subgroup.mem_prod.mp hg).2, hfg⟩
+  · rintro ⟨g₁, h₁, g₂, h₂, hfg⟩
+    exact ⟨(g₁, g₂), Subgroup.mem_prod.mpr ⟨h₁, h₂⟩, hfg⟩
+
+/-- The product `P₁ × P₂` of the two factor subgroups is isomorphic to its image in
+`O(L₁ ⊕ L₂)`: the orthogonal-sum map is injective, so it restricts to a bijection onto the image
+and the product structure is that of `P₁ × P₂`. -/
+noncomputable def orthogonalSumSubgroupMulEquiv (L₁ L₂ : IntegralLatticeCat R)
+    (P₁ : Subgroup (OrthogonalGroup L₁)) (P₂ : Subgroup (OrthogonalGroup L₂)) :
+    P₁.prod P₂ ≃* orthogonalSumSubgroup L₁ L₂ P₁ P₂ :=
+  Subgroup.equivMapOfInjective _ _ (integralOrthogonalSumGroupHom_injective L₁ L₂)
+
+/-- The restricted isomorphism is the orthogonal-sum map on elements. -/
+@[simp]
+theorem orthogonalSumSubgroupMulEquiv_apply (L₁ L₂ : IntegralLatticeCat R)
+    (P₁ : Subgroup (OrthogonalGroup L₁)) (P₂ : Subgroup (OrthogonalGroup L₂))
+    (g : P₁.prod P₂) :
+    (orthogonalSumSubgroupMulEquiv L₁ L₂ P₁ P₂ g : OrthogonalGroup (orthogonalSum L₁ L₂)) =
+      integralOrthogonalSumGroupHom L₁ L₂ (g : OrthogonalGroup L₁ × OrthogonalGroup L₂) :=
+  rfl
+
 end LeanCategories.Lattices.Valued

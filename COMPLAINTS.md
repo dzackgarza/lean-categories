@@ -861,6 +861,33 @@ not a decidable quotient equality or a new mathematical comparison.
 - **Optimal:** `⊥` as a symmetric monoidal structure on `QuadModuleCat R W`; `IsometryClass R W`
   is then its skeleton monoid. TODO(LC-12) in the file.
 
+### Missing definition: `Sym_C(I)`, the permutation group appearing in #91's stabilizer item
+
+- **Need:** lean-categories#91's consumer clause asks for the stabilizer of a family
+  `v : I → L` of lattice vectors "under `O(L) × Sym_C(I)` itself". `Sym_C(I)` is used as a group
+  acting on the index set; the stabilizer needs that group as a subgroup of `Equiv.Perm I`.
+- **Searches:** repository-wide `Sym_C`, `SymC`, `symC` (no declaration); corpus
+  `stabilizer product group family vectors`, `symmetric group acting on functions orbit stabilizer
+  lattice`, `MulAction stabilizer Pi` (0 files each). Mathlib has `Equiv.Perm` and the stabilizer
+  API, and no cone-, fan- or structure-preserving permutation subgroup.
+- **Found:** nothing that names `C` or the subgroup. The repository's nearest objects are the
+  pointwise stabilizers of submodules and of flags (`MulAction.stabilizer (OrthogonalGroup L) P`,
+  `Lattices/Valued/CuspFlagFiniteness.lean:46`, `OrthogonalGroup.lean` `submoduleStabilizer`),
+  none of which acts on an index set.
+- **Did instead:** `Lattices/Valued/FamilyStabilizer.lean` defines the action of
+  `O(L) × Equiv.Perm I` on families, the stabilizer `familyStabilizer` of a family, its
+  membership criterion, the image `familyStabilizerImage` in `O(L)`, and
+  `image_range_of_mem_familyStabilizer`. That is the full-`Equiv.Perm` form of the item: every
+  `Sym_C(I)` would be a subgroup of it, so the delivered statements lose only the carrier of
+  `Sym_C(I)`, not the stabilizer construction.
+- **Gap and impact:** a consumer cannot state the stabilizer *under `Sym_C(I)`* — only under
+  `Equiv.Perm I` — until `C` and its preservation condition are defined. No mathematics in the
+  delivered file blocks that step; the missing piece is the definition, whose source (`C`) is not
+  in this repository.
+- **Optimal:** `Sym_C(I) : Subgroup (Equiv.Perm I)` (or a bundled permutation group) at whatever
+  owner defines `C`, then `familyStabilizer` read through `Subgroup.comap`/`subgroupOf` along
+  `Sym_C(I) × O(L) → O(L) × Equiv.Perm I`.
+
 ### Missing construction: no registered binary product in the category of groups
 
 - **Need:** lean-categories#91's consumer clause asks for products of subgroups of lattice
