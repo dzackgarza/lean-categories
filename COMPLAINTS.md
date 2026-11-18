@@ -3875,3 +3875,33 @@ downstream assertions, computational observations, or downstream diagnostics.
   that has fetched `main` (`Catalogue.lean` staged by path or via `hash-object`/`update-index`, as
   this unit does), and a push should be repeated against the tip a fetch has just returned rather
   than the tip read earlier.
+
+### `native_decide` in `Registry/ComparisonProbes.lean` keeps the repository axiom audit red on main
+
+- **Need:** the repository's own axiom audit — `lake exe lean-categories-axiom-audit`, the
+  `_lean-axiom-audit` step of `just test` — must pass on `main`, so that `just test` is the
+  acceptance build for every unit instead of a gate with a known red step.
+- **Evidence:** at `main` = `24efa194`, `lake exe lean-categories-axiom-audit` fails with
+  `error: LeanCategories/Tools/AxiomAudit.lean:43:0: nonstandard axiom dependencies:
+  [(CasCatalogue.RouteDiscoveryProbes.id99.explicitRevisiting, [_private …
+  native_decide.ax_1_1]), (CasCatalogue.RouteDiscoveryProbes.id99.simpleRoutesOnly, [_private …
+  native_decide.ax_1_1])]`. The two theorems are
+  `LeanCategories/Catalogue/Registry/ComparisonProbes.lean:114` and `:120`, both closed by
+  `native_decide` (`:116`, `:124`). The file is unmodified in the working tree, its content equals
+  `HEAD`'s, and it landed in `9c6d4ebb` (2026-11-18 02:25:49), an ancestor of this unit's base
+  `72a79b19`; the audit and its constant list are untouched by #96, and the seventeen `#print axioms`
+  checks over the declarations #96 adds give `[propext, Classical.choice, Quot.sound]` only. The
+  failure is therefore pre-existing on `main` and not introduced by this unit.
+- **Gap and impact:** no commit in the repository can report `just test` green while these two
+  proofs stand, because the axiom step is repository-wide (`Tools/AxiomAudit.lean` enumerates the
+  whole environment). The finding itself is correct — `native_decide` adds the compiler's axiom —
+  so the defect is the two proofs, not the audit. Consumers: every unit whose delivery evidence is
+  `just test`, and the audit gate itself.
+- **Coverage:** inspected the flagged theorems, the audit message, the file's git status and content
+  against `HEAD`, and the ancestry of `9c6d4ebb`. Not inspected: whether either statement has a
+  `decide`-only or `rfl`-level proof (both count the routes of a small explicit `SemanticState`), and
+  whether these registry probes belong in the built library at all rather than in a test module.
+- **Repair link:** replace the two `native_decide` proofs with kernel-checked computations over the
+  finite route enumeration, or move `RouteDiscoveryProbes` out of the built library; then re-run
+  `lake exe lean-categories-axiom-audit`. The registry comparison probes the rest of that file
+  supplies (`id99.competing`, `:70`–`:98`) are unaffected.
