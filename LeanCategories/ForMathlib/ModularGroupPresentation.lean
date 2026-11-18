@@ -2959,6 +2959,52 @@ theorem turn_not_both {u v : ℤ × ℤ} (hd : fdet u v = 1) (a : Letter) :
     simp only [neg_neg] at hm2
     exact not_both_AC u v hd (by rw [HT_flipA]; linarith) (by rw [HT_flipC]; linarith)
 
+/-!
+### The walk's height as a function of the index
+
+The maximum-vertex argument wants a height that is a plain function of the index, with no index
+proofs in the way. This section provides exactly that: `U l k` and `V l k` are the two columns of the
+prefix product `Y l k`, `H l k` is the walk's height there (junk off the word), `H_eq` reads it off,
+and `H_next` expresses the height one step on in the basis at `k` — the letter's move applied to that
+basis, via `cols_nxt`. What remains for the dictionary is the same statement one step *back*
+(`H_prev`, which needs the letter case analysis plus `cols_prv`), the maximum-vertex argument itself,
+and the parity split.
+-/
+
+
+/-- The first column of the prefix product. -/
+noncomputable def U (l : List Letter) (k : ℕ) : ℤ × ℤ := col (Y l k) 0
+
+/-- The second column of the prefix product. -/
+noncomputable def V (l : List Letter) (k : ℕ) : ℤ × ℤ := col (Y l k) 1
+
+/-- The height of the walk at an index, as a total function of the index (junk off the word). -/
+noncomputable def H (l : List Letter) (k : ℕ) : ℤ :=
+  match l[k]? with
+  | none => 0
+  | some a =>
+    if a.isS then EH (col (Y l k) 0) (col (Y l k) 1) else HT (col (Y l k) 0) (col (Y l k) 1)
+
+lemma H_eq {l : List Letter} {k : ℕ} (hk : k < l.length) :
+    H l k = if (l[k]).isS then EH (U l k) (V l k) else HT (U l k) (V l k) := by
+  simp only [H, U, V, List.getElem?_eq_getElem hk]
+
+/-- The height one step on, expressed in the basis at `k`: the letter's move applied to it. -/
+lemma H_next {l : List Letter} (hprod : (l.map Letter.val).prod = 1) {k : ℕ}
+    (hk : k < l.length) (hnx : nxt l.length k < l.length)
+    (hty : (l[nxt l.length k]).isS ≠ (l[k]).isS) :
+    H l (nxt l.length k) =
+      (if (l[k]).isS then
+          HT ((l[k]).act (U l k) (V l k)).1 ((l[k]).act (U l k) (V l k)).2
+        else EH ((l[k]).act (U l k) (V l k)).1 ((l[k]).act (U l k) (V l k)).2) := by
+  rw [H_eq hnx]
+  simp only [U, V]
+  obtain ⟨c1, c2⟩ := cols_nxt hprod hk
+  rw [c1, c2]
+  cases h1 : (l[k]).isS <;> cases h2 : (l[nxt l.length k]).isS <;>
+    simp only [h1, h2, Bool.false_eq_true, Bool.true_eq_false, reduceIte] at hty ⊢
+  all_goals first | rfl | exact absurd rfl hty
+
 end ModularGroup
 
 namespace LeanCategories.ForMathlib

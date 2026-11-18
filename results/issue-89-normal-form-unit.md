@@ -198,3 +198,14 @@ every letter, with the basis `(u, v)` arbitrary (section "The two comparisons of
 Remaining for the dictionary is only indexing: read these at the walk's own indices (the one-step
 dictionary `cols_nxt`/`cols_prv` does the transport), run the maximum-vertex argument, and split by the
 parity of the word's length.
+
+## Progress: the walk's height as a function of the index
+
+The maximum-vertex argument needs a height that is a plain function of the index, without index
+proofs in the way; that is now in the module (section "The walk's height as a function of the index"):
+`U l k`, `V l k` are the two columns of the prefix product, `H l k` the walk's height there (junk off
+the word), `H_eq` reads it off, and `H_next` expresses the height one step on in the basis at `k` (the
+letter's move applied to that basis, through `cols_nxt`).
+
+Still open: the same statement one step *back* (`H_prev`, which needs the letter case analysis plus
+`cols_prv`), the maximum-vertex argument, and the parity split.
