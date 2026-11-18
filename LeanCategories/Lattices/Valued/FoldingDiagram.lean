@@ -22,8 +22,10 @@ carries the **diagram** side of the same construction, which is what §3.8 of th
   `π` — the source's "the folded diagram `G^J` has the vectors `α^J` … as vertices", one vertex
   per *orbit*, which is why the folded diagram is smaller than the diagram it comes from.
 * **The walls of the folded chamber** (`rootMirror_folded_inter_fixed`,
-  `rootMirrorCone_folded_inter_fixed`, `chamberOf_folded_trace_walls`): inside the invariant part
-  of the real form, the mirror section of a folded root is the mirror section of the root, and
+  `rootMirrorCone_folded_iff`, `chamberOf_folded_trace_walls`): inside the invariant part
+  `M^σ ⊗ ℝ` of the real form (`realFormFixedPart`, the fixed locus of the involution, not merely
+  the image of the fixed lattice), the mirror section of a folded root is the mirror section of the
+  root, and
   the folded root set is the wall set of the chamber that the root set cuts out
   (`IsChamberWithWalls`, `#23`). This is the content of AEGS Lemma 3.8 stated at the level it is
   proved there: the chamber `C^J := C ∩ T_En ⊗ R` is cut out by the folded simple roots, and its
@@ -145,77 +147,66 @@ theorem foldedCoxeterDiagram_edges_actsThrough (g : OrthogonalGroup L.obj) {ι :
 
 /-! ## The walls of the folded chamber -/
 
-/-- **The mirror of the fold is the mirror**, in the invariant part of the real form. This is the
-sentence of AEGS Lemma 3.8's proof: "the intersection of the positive cone `C(T_En)` with `α^⊥`
-is the same as with `α_J^⊥`". -/
-theorem rootMirror_folded_inter_fixed (g : OrthogonalGroup L.obj) (hg : g * g = 1)
-    (y : L.obj.obj.carrier) :
-    rootMirror L (foldedVector g y) ∩ realFormFixedImage g =
-      rootMirror L y ∩ realFormFixedImage g := by
+/-- **The mirror of the fold is the mirror**, in the invariant part `M^σ ⊗ ℝ` of the real form.
+This is the sentence of AEGS Lemma 3.8's proof: "the intersection of the positive cone `C(T_En)`
+with `α^⊥` is the same as with `α_J^⊥`". -/
+theorem rootMirror_folded_inter_fixed (g : OrthogonalGroup L.obj) (y : L.obj.obj.carrier) :
+    rootMirror L (foldedVector g y) ∩ (realFormFixedPart g : Set (realForm L).obj.carrier) =
+      rootMirror L y ∩ (realFormFixedPart g : Set (realForm L).obj.carrier) := by
   ext z
   constructor
-  · rintro ⟨hz, u, hu⟩
-    refine ⟨?_, u, hu⟩
-    rw [mem_rootMirror_iff] at hz ⊢
-    rw [← hu] at hz ⊢
-    exact (realForm_pairing_folded_eq_zero_iff g hg u y).mp hz
-  · rintro ⟨hz, u, hu⟩
-    refine ⟨?_, u, hu⟩
-    rw [mem_rootMirror_iff] at hz ⊢
-    rw [← hu] at hz ⊢
-    exact (realForm_pairing_folded_eq_zero_iff g hg u y).mpr hz
+  · rintro ⟨hz, hz'⟩
+    exact ⟨(mem_rootMirror_iff (L := L) (r := y) (x := z)).mpr
+      ((realForm_pairing_folded_eq_zero_iff_part g hz' y).mp
+        ((mem_rootMirror_iff (L := L) (r := foldedVector g y) (x := z)).mp hz)), hz'⟩
+  · rintro ⟨hz, hz'⟩
+    exact ⟨(mem_rootMirror_iff (L := L) (r := foldedVector g y) (x := z)).mpr
+      ((realForm_pairing_folded_eq_zero_iff_part g hz' y).mpr
+        ((mem_rootMirror_iff (L := L) (r := y) (x := z)).mp hz)), hz'⟩
 
-/-- **The wall of the folded chamber is the trace of the wall**: in the invariant part of the real
-form, the mirror section of a folded root in the cone of the folded root set is the mirror section
-of the root in the cone of the root set. -/
-theorem rootMirrorCone_folded_iff (g : OrthogonalGroup L.obj) (hg : g * g = 1)
+/-- **The wall of the folded chamber is the trace of the wall**: in the invariant part `M^σ ⊗ ℝ` of
+the real form, the mirror section of a folded root in the cone of the folded root set is the mirror
+section of the root in the cone of the root set. -/
+theorem rootMirrorCone_folded_iff (g : OrthogonalGroup L.obj)
     (R : Set L.obj.obj.carrier) (y : L.obj.obj.carrier)
-    {z : (realForm L).obj.carrier} (hz : z ∈ realFormFixedImage g) :
+    {z : (realForm L).obj.carrier} (hz : z ∈ realFormFixedPart g) :
     z ∈ rootMirrorCone L (foldedRootImage g R) (foldedVector g y) ↔
       z ∈ rootMirrorCone L R y := by
-  obtain ⟨u, hu⟩ := hz
   rw [mem_rootMirrorCone, mem_rootMirrorCone]
   constructor
   · rintro ⟨h0, hnn⟩
-    refine ⟨?_, ?_⟩
-    · rw [← hu] at h0 ⊢
-      exact (realForm_pairing_folded_eq_zero_iff g hg u y).mp h0
-    · intro s hs
-      rw [← hu] at hnn ⊢
-      exact (realForm_pairing_folded_nonneg_iff g hg u s).mp
-        (hnn (foldedVector g s) ⟨s, hs, rfl⟩)
+    refine ⟨(realForm_pairing_folded_eq_zero_iff_part g hz y).mp h0, ?_⟩
+    intro s hs
+    exact (realForm_pairing_folded_nonneg_iff_part g hz s).mp (hnn (foldedVector g s) ⟨s, hs, rfl⟩)
   · rintro ⟨h0, hnn⟩
-    refine ⟨?_, ?_⟩
-    · rw [← hu] at h0 ⊢
-      exact (realForm_pairing_folded_eq_zero_iff g hg u y).mpr h0
-    · intro s hs
-      obtain ⟨w, hw, rfl⟩ := hs
-      have hu' : toRealForm L (u : L.obj.obj.carrier) = z := hu
-      rw [← hu'] at hnn ⊢
-      exact (realForm_pairing_folded_nonneg_iff g hg u w).mpr (hnn w hw)
+    refine ⟨(realForm_pairing_folded_eq_zero_iff_part g hz y).mpr h0, ?_⟩
+    intro s hs
+    obtain ⟨w, hw, rfl⟩ := hs
+    exact (realForm_pairing_folded_nonneg_iff_part g hz w).mpr (hnn w hw)
 
-/-- **Folding a chamber along a diagram involution** (AEGS Lemma 3.8). Let `R` be the wall set of a
-chamber of `W(M)` (`IsChamberWithWalls`, `#23`) and `σ` an involution of `M`. Then, inside the
-invariant part of the real form:
+/-- **Folding a chamber along an involution** (AEGS Lemma 3.8). Let `R` be the wall set of a chamber
+of `W(M)` (`IsChamberWithWalls`, `#23`) and `σ` an involution of `M`. Then, inside the invariant
+part `M^σ ⊗ ℝ` of the real form:
 
 * the folded roots cut out exactly the trace of the chamber, and
 * every wall of the trace is the trace of a wall: the mirror section of the folded root is the
-  mirror section of the root, so the folded root set is the wall set of `C^J = C ∩ M^σ ⊗ R`.
+  mirror section of the root, so the folded root set is the wall set of `C^J = C ∩ M^σ ⊗ ℝ`.
 
 The reflections in the folded roots are those of the invariant lattice; their classification is
 AEGS Lemma 3.4 and is not part of this statement (see the module docstring). -/
-theorem chamberOf_folded_trace_walls (g : OrthogonalGroup L.obj) (hg : g * g = 1)
+theorem chamberOf_folded_trace_walls (g : OrthogonalGroup L.obj)
     (t : (realForm L).obj.carrier) (hpos : (integralSignature L).1 = 1)
     (ht : 0 < realFormQuadratic L t) (R : Set L.obj.obj.carrier)
     (hR : IsChamberWithWalls L t R)
     {v : L.obj.obj.carrier} (hv : toRealForm L v ∈ rootInteriorCone L t R) :
-    chamberOf L t (toRealForm L v) ∩ realFormFixedImage g =
-        rootInteriorCone L t (foldedRootImage g R) ∩ realFormFixedImage g ∧
-      ∀ y ∈ R, ∀ z ∈ realFormFixedImage g,
+    chamberOf L t (toRealForm L v) ∩ (realFormFixedPart g : Set (realForm L).obj.carrier) =
+        rootInteriorCone L t (foldedRootImage g R) ∩
+          (realFormFixedPart g : Set (realForm L).obj.carrier) ∧
+      ∀ y ∈ R, ∀ z ∈ realFormFixedPart g,
         (z ∈ rootMirrorCone L (foldedRootImage g R) (foldedVector g y) ↔
           z ∈ rootMirrorCone L R y) :=
-  ⟨chamberOf_folded_trace g hg t hpos ht hR hv, fun y _ _ hz =>
-    rootMirrorCone_folded_iff g hg R y hz⟩
+  ⟨chamberOf_folded_trace g t hpos ht hR hv, fun y _ _ hz =>
+    rootMirrorCone_folded_iff g R y hz⟩
 
 /-! ## The worked folded diagram: the `E₈` block of `T_dP` folds to `E₈(2)`
 

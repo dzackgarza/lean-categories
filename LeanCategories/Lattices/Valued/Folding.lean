@@ -44,7 +44,8 @@ Engel, Garza and Schaffler, *Compact moduli of Enriques surfaces of degree 2*, N
   The proof is two lines and is exactly what is formalized here: "the intersection of the
   positive cone `C(T_En)` with `α^⊥` is the same as with `α_J^⊥`". That is
   `mem_weylChamberCone_folded_iff` and `mem_rootInteriorCone_folded_iff` — the folded roots cut
-  out, in the invariant part of the real form, the trace of the cone cut out by `R` — and
+  out, in the invariant part `M^σ ⊗ ℝ` (`realFormFixedPart`) of the real form, the trace of the
+  cone cut out by `R` — and
   `chamberOf_folded_trace`, which identifies that trace with the chamber of any of its points by
   `IsChamberWithWalls.chamberOf_eq` (`#23`).
 
@@ -233,7 +234,9 @@ theorem pairing_fixed_folded_of_not_fixed (g : OrthogonalGroup L.obj) (hg : g * 
 
 /-! ## The invariant part of the real form -/
 
-/-- The invariant part of the real form, as the image of the invariant sublattice. -/
+/-- The image of the invariant sublattice in the real form. This is *not* the invariant part
+`M^σ ⊗ ℝ` — that is `realFormFixedPart` below, and `realFormFixedImage_subset_fixedPart` relates
+the two; the cone theorems of this file are stated for the fixed part. -/
 noncomputable def realFormFixedImage (g : OrthogonalGroup L.obj) :
     Set (realForm L).obj.carrier :=
   Set.range fun v : involutionFixedSubmodule g => toRealForm L (v : L.obj.obj.carrier)
@@ -243,6 +246,91 @@ theorem mem_realFormFixedImage_iff (g : OrthogonalGroup L.obj)
     z ∈ realFormFixedImage g ↔ ∃ v : involutionFixedSubmodule g,
       toRealForm L (v : L.obj.obj.carrier) = z :=
   Iff.rfl
+
+/-- **The invariant part of the real form** `M^σ ⊗ ℝ`, as the fixed locus of the involution — not
+merely the image of the fixed lattice. This is the object the folding theorem is about: the
+chamber of `W(M)` is traced in `M^σ ⊗ ℝ`, and `realFormFixedImage_subset_fixedPart` relates the
+two readings. -/
+noncomputable def realFormFixedPart (g : OrthogonalGroup L.obj) :
+    Submodule ℝ (realForm L).obj.carrier :=
+  (realFormOrthogonalHom L g).fixedSubmodule
+
+theorem mem_realFormFixedPart_iff (g : OrthogonalGroup L.obj)
+    {z : (realForm L).obj.carrier} :
+    z ∈ realFormFixedPart g ↔ realFormOrthogonalHom L g z = z :=
+  LinearMap.mem_fixedSubmodule_iff
+
+/-- The image of the fixed lattice lies in the fixed locus of the real form. -/
+theorem realFormFixedImage_subset_fixedPart (g : OrthogonalGroup L.obj) :
+    realFormFixedImage g ⊆ realFormFixedPart g := by
+  rintro z ⟨v, rfl⟩
+  exact (mem_realFormFixedPart_iff g).mpr (by
+    change realFormOrthogonalHom L g (toRealForm L (v : L.obj.obj.carrier)) = toRealForm L ↑v
+    rw [realFormOrthogonalHom_toRealForm, (mem_involutionFixedSubmodule_iff g).mp v.2])
+
+/-- **A point of the fixed locus pairs with the image of a fixed lattice vector as with the
+vector itself.** This is what lets the pairing lemmas below be stated for every point of
+`M^σ ⊗ ℝ` instead of for the image of the fixed lattice: `σ` preserves the pairing, and it fixes
+`z`. -/
+theorem realForm_pairing_isometry_left_of_mem_fixedPart (g : OrthogonalGroup L.obj)
+    {z : (realForm L).obj.carrier} (hz : z ∈ realFormFixedPart g) (y : L.obj.obj.carrier) :
+    (realForm L).obj.pairing z (toRealForm L (g.1 y))
+      = (realForm L).obj.pairing z (toRealForm L y) := by
+  have h := realFormIsometry_pairing L g z (toRealForm L y)
+  rw [mem_realFormFixedPart_iff] at hz
+  rw [hz, realFormOrthogonalHom_toRealForm] at h
+  exact h
+
+/-- AEGS Lemma 3.8's "the intersection of the positive cone with `α^⊥` is the same as with
+`α_J^⊥`", in the fixed case, for every point of `M^σ ⊗ ℝ`. -/
+theorem realForm_pairing_folded_of_fixed_part (g : OrthogonalGroup L.obj)
+    {z : (realForm L).obj.carrier} (_hz : z ∈ realFormFixedPart g)
+    {y : L.obj.obj.carrier} (hy : g.1 y = y) :
+    (realForm L).obj.pairing z (toRealForm L (foldedVector g y))
+      = (realForm L).obj.pairing z (toRealForm L y) := by
+  rw [foldedVector_of_fixed g hy]
+
+/-- The same in the non-fixed case: the fold pairs by twice the root. -/
+theorem realForm_pairing_folded_of_not_fixed_part (g : OrthogonalGroup L.obj)
+    {z : (realForm L).obj.carrier} (hz : z ∈ realFormFixedPart g)
+    {y : L.obj.obj.carrier} (hy : g.1 y ≠ y) :
+    (realForm L).obj.pairing z (toRealForm L (foldedVector g y))
+      = 2 * (realForm L).obj.pairing z (toRealForm L y) := by
+  rw [foldedVector_of_not_fixed g hy, toRealForm_add, BilinModuleCat.pairing_add_right,
+    realForm_pairing_isometry_left_of_mem_fixedPart g hz y]
+  ring
+
+/-- **The folded mirror is the mirror**, for every point of `M^σ ⊗ ℝ`. -/
+theorem realForm_pairing_folded_eq_zero_iff_part (g : OrthogonalGroup L.obj)
+    {z : (realForm L).obj.carrier} (hz : z ∈ realFormFixedPart g) (y : L.obj.obj.carrier) :
+    (realForm L).obj.pairing z (toRealForm L (foldedVector g y)) = 0 ↔
+      (realForm L).obj.pairing z (toRealForm L y) = 0 := by
+  by_cases hy : g.1 y = y
+  · rw [realForm_pairing_folded_of_fixed_part g hz hy]
+  · rw [realForm_pairing_folded_of_not_fixed_part g hz hy, mul_eq_zero]
+    constructor
+    · rintro (h | h)
+      · exact absurd h (by norm_num)
+      · exact h
+    · exact Or.inr
+
+theorem realForm_pairing_folded_nonneg_iff_part (g : OrthogonalGroup L.obj)
+    {z : (realForm L).obj.carrier} (hz : z ∈ realFormFixedPart g) (y : L.obj.obj.carrier) :
+    0 ≤ (realForm L).obj.pairing z (toRealForm L (foldedVector g y)) ↔
+      0 ≤ (realForm L).obj.pairing z (toRealForm L y) := by
+  by_cases hy : g.1 y = y
+  · rw [realForm_pairing_folded_of_fixed_part g hz hy]
+  · rw [realForm_pairing_folded_of_not_fixed_part g hz hy]
+    constructor <;> intro h <;> linarith
+
+theorem realForm_pairing_folded_pos_iff_part (g : OrthogonalGroup L.obj)
+    {z : (realForm L).obj.carrier} (hz : z ∈ realFormFixedPart g) (y : L.obj.obj.carrier) :
+    0 < (realForm L).obj.pairing z (toRealForm L (foldedVector g y)) ↔
+      0 < (realForm L).obj.pairing z (toRealForm L y) := by
+  by_cases hy : g.1 y = y
+  · rw [realForm_pairing_folded_of_fixed_part g hz hy]
+  · rw [realForm_pairing_folded_of_not_fixed_part g hz hy]
+    constructor <;> intro h <;> linarith
 
 /-- The pairing of an invariant vector with the fold is the pairing with the root: this is the
 step "the intersection of the positive cone with `α^⊥` is the same as with `α_J^⊥`" of AEGS
@@ -417,53 +505,52 @@ theorem foldedCoxeterDiagram_edges (g : OrthogonalGroup L.obj) {ι : Type*}
 real form, the cone of the folded root set is the trace of the cone of the root set. This is the
 step "the intersection of the positive cone `C(T_En)` with `α^⊥` is the same as with `α_J^⊥`" of
 AEGS Lemma 3.8, with no hypothesis beyond the involution and the isometry property. -/
-theorem mem_weylChamberCone_folded_iff (g : OrthogonalGroup L.obj) (hg : g * g = 1)
-    (t : (realForm L).obj.carrier) (v : involutionFixedSubmodule g)
-    (R : Set L.obj.obj.carrier) :
-    toRealForm L (v : L.obj.obj.carrier) ∈ weylChamberCone L t (foldedRootImage g R) ↔
-      toRealForm L (v : L.obj.obj.carrier) ∈ weylChamberCone L t R := by
+theorem mem_weylChamberCone_folded_iff (g : OrthogonalGroup L.obj)
+    (t : (realForm L).obj.carrier) {z : (realForm L).obj.carrier}
+    (hz : z ∈ realFormFixedPart g) (R : Set L.obj.obj.carrier) :
+    z ∈ weylChamberCone L t (foldedRootImage g R) ↔ z ∈ weylChamberCone L t R := by
   rw [mem_weylChamberCone_iff, mem_weylChamberCone_iff]
   constructor
   · rintro ⟨hu, hc⟩
-    exact ⟨hu, fun r hr => (realForm_pairing_folded_nonneg_iff g hg v r).mp (hc _ ⟨r, hr, rfl⟩)⟩
+    exact ⟨hu, fun r hr => (realForm_pairing_folded_nonneg_iff_part g hz r).mp
+      (hc _ ⟨r, hr, rfl⟩)⟩
   · rintro ⟨hu, hc⟩
     refine ⟨hu, fun s hs => ?_⟩
     obtain ⟨r, hr, rfl⟩ := hs
-    exact (realForm_pairing_folded_nonneg_iff g hg v r).mpr (hc r hr)
+    exact (realForm_pairing_folded_nonneg_iff_part g hz r).mpr (hc r hr)
 
 /-- The same for the interior cone. -/
-theorem mem_rootInteriorCone_folded_iff (g : OrthogonalGroup L.obj) (hg : g * g = 1)
-    (t : (realForm L).obj.carrier) (v : involutionFixedSubmodule g)
-    (R : Set L.obj.obj.carrier) :
-    toRealForm L (v : L.obj.obj.carrier) ∈ rootInteriorCone L t (foldedRootImage g R) ↔
-      toRealForm L (v : L.obj.obj.carrier) ∈ rootInteriorCone L t R := by
+theorem mem_rootInteriorCone_folded_iff (g : OrthogonalGroup L.obj)
+    (t : (realForm L).obj.carrier) {z : (realForm L).obj.carrier}
+    (hz : z ∈ realFormFixedPart g) (R : Set L.obj.obj.carrier) :
+    z ∈ rootInteriorCone L t (foldedRootImage g R) ↔ z ∈ rootInteriorCone L t R := by
   rw [mem_rootInteriorCone_iff, mem_rootInteriorCone_iff]
   constructor
   · rintro ⟨hu, hc⟩
-    exact ⟨hu, fun r hr => (realForm_pairing_folded_pos_iff g hg v r).mp (hc _ ⟨r, hr, rfl⟩)⟩
+    exact ⟨hu, fun r hr => (realForm_pairing_folded_pos_iff_part g hz r).mp
+      (hc _ ⟨r, hr, rfl⟩)⟩
   · rintro ⟨hu, hc⟩
     refine ⟨hu, fun s hs => ?_⟩
     obtain ⟨r, hr, rfl⟩ := hs
-    exact (realForm_pairing_folded_pos_iff g hg v r).mpr (hc r hr)
+    exact (realForm_pairing_folded_pos_iff_part g hz r).mpr (hc r hr)
 
 /-- **The folding theorem** (AEGS Lemma 3.8): let `R` be a wall set of a chamber of `W(M)`
 (`IsChamberWithWalls`, `#23`) and `σ` an involution of `M`. Then, inside the invariant part of the
 real form, the folded roots cut out exactly the chamber of any point of the interior cone of `R`:
 the folded set is the wall set of that chamber of the invariant sublattice. -/
-theorem chamberOf_folded_trace (g : OrthogonalGroup L.obj) (hg : g * g = 1)
+theorem chamberOf_folded_trace (g : OrthogonalGroup L.obj)
     (t : (realForm L).obj.carrier) (hpos : (integralSignature L).1 = 1)
     (ht : 0 < realFormQuadratic L t) (hR : IsChamberWithWalls L t R)
     {v : L.obj.obj.carrier} (hv : toRealForm L v ∈ rootInteriorCone L t R) :
-    chamberOf L t (toRealForm L v) ∩ realFormFixedImage g =
-      rootInteriorCone L t (foldedRootImage g R) ∩ realFormFixedImage g := by
+    chamberOf L t (toRealForm L v) ∩ (realFormFixedPart g : Set (realForm L).obj.carrier) =
+      rootInteriorCone L t (foldedRootImage g R) ∩
+        (realFormFixedPart g : Set (realForm L).obj.carrier) := by
   rw [IsChamberWithWalls.chamberOf_eq L t hpos ht hR hv]
   ext w
   constructor
-  · rintro ⟨hw, u, hu⟩
-    rw [← hu] at hw ⊢
-    exact ⟨(mem_rootInteriorCone_folded_iff g hg t u R).mpr hw, u, rfl⟩
-  · rintro ⟨hw, u, hu⟩
-    rw [← hu] at hw ⊢
-    exact ⟨(mem_rootInteriorCone_folded_iff g hg t u R).mp hw, u, rfl⟩
+  · rintro ⟨hw, hz⟩
+    exact ⟨(mem_rootInteriorCone_folded_iff g t hz R).mpr hw, hz⟩
+  · rintro ⟨hw, hz⟩
+    exact ⟨(mem_rootInteriorCone_folded_iff g t hz R).mp hw, hz⟩
 
 end LeanCategories.Lattices.Valued
