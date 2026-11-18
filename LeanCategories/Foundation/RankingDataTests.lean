@@ -5,6 +5,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import LeanCategories.Catalogue.Semantics.Foundation.Rankings
+public import LeanCategories.Foundation.EnumeratedMonotone
 public import LeanCategories.Foundation.Sets
 public import Mathlib.Tactic.FinCases
 
@@ -261,5 +262,36 @@ theorem rankedFinBoolHom_not_monotone :
           (EnumeratedSetCat.leMap boolPreexistingObject).hom (x, y) := by
   intro h
   exact rankedFin_bool_le_not_preexisting.2 (h false true rankedFin_bool_le_not_preexisting.1)
+
+/-! ### The two ranked-object constructions coincide (#96)
+
+A ranked object is built twice: from `toEncodableFin`/`toEncodableNat`
+(`CasCatalogue.Foundation.Rankings.rankedFin`, `.rankedCountable`) and from `toEncodable`
+(`RankingData.rankedEnumeratedSet`). They are two constructions of one object, and these say so. -/
+
+/-- For a finite index the two derived encodings are equal: they encode alike, and their decoders
+agree — the value's index inside the bound and `none` outside it, which is the check `decode_fin`
+supplies. -/
+theorem toEncodableFin_eq_toEncodable {n : ℕ} {X : Type} (r : RankingData X (Fin n)) :
+    r.toEncodableFin = r.toEncodable := by
+  have hdec : ∀ m, r.toEncodableFin.decode m = r.toEncodable.decode m := by
+    intro m
+    by_cases h : m < n
+    · rw [RankingData.toEncodableFin_decode_of_lt r h]
+      show some (r.unrank ⟨m, h⟩) = (Encodable.decode (α := Fin n) m).map r.unrank
+      rw [RankingData.decode_fin, dite_eq_left h, Option.map_some]
+    · rw [RankingData.toEncodableFin_decode_of_not_lt r h]
+      show none = (Encodable.decode (α := Fin n) m).map r.unrank
+      rw [RankingData.decode_fin, dite_eq_right h, Option.map_none]
+  exact EnumeratedSetCat.encodable_ext (fun _ => rfl) hdec
+
+/-- `rankedFin` is `rankedEnumeratedSet`: two constructions of the ranked object, one object. -/
+theorem rankedFin_eq_rankedEnumeratedSet {n : ℕ} (X : Type) (r : RankingData X (Fin n)) :
+    CasCatalogue.Foundation.Rankings.rankedFin n X r = r.rankedEnumeratedSet :=
+  congrArg (fun e => @EnumeratedSetCat.mk X e) (toEncodableFin_eq_toEncodable r)
+
+/-- `rankedCountable` is `rankedEnumeratedSet`, definitionally. -/
+theorem rankedCountable_eq_rankedEnumeratedSet (X : Type) (r : RankingData X ℕ) :
+    CasCatalogue.Foundation.Rankings.rankedCountable X r = r.rankedEnumeratedSet := rfl
 
 end LeanCategories.Foundation

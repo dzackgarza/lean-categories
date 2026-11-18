@@ -87,6 +87,20 @@ def homOfFun {X Y : EnumeratedSetCat.{u}} (f : X.carrier → Y.carrier) : X ⟶ 
 @[simp] theorem homOfFun_apply {X Y : EnumeratedSetCat.{u}} (f : X.carrier → Y.carrier)
     (x : X.carrier) : (homOfFun f).hom x = f x := rfl
 
+/-- Two encodings of one type that encode and decode alike are one encoding: the remaining field is
+a proof. -/
+theorem encodable_ext {α : Type u} {e₁ e₂ : Encodable α}
+    (henc : ∀ a, e₁.encode a = e₂.encode a) (hdec : ∀ n, e₁.decode n = e₂.decode n) : e₁ = e₂ := by
+  cases e₁ with
+  | mk f₁ g₁ _ =>
+    cases e₂ with
+    | mk f₂ g₂ _ =>
+      have hf : f₁ = f₂ := funext henc
+      have hg : g₁ = g₂ := funext hdec
+      subst hf
+      subst hg
+      rfl
+
 /-- The identity function is a morphism between any two presentations of one carrier: a
 ranking-derived object and an object of a pre-existing encoding have the same carrier, and this map
 is what relates them — it is not a comparison of their selected orders. -/
