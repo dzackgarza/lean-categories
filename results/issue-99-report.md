@@ -259,7 +259,10 @@ guard) and the vacuity step's build is red on another session's uncommitted file
   instead (`shouldBeLinted`/`noBareNonempty.test`, transcribed from that file) reports **0 violations
   in 4024 declarations**, this unit's included. Extending the gate's filter is a change to the gate
   and is reported, not made.
-- The vacuity step's build currently fails outside this unit: a concurrent session's uncommitted
-  `#62` edit to `LeanCategories/Modules/ChainComplexModel.lean` does not elaborate (`:116:61` type
-  mismatch, `:120:6` `omega` unsolved). `just test` is therefore red on that working tree for a
-  reason unrelated to this issue, and the file is that session's to finish.
+- The vacuity step's build `LeanCategories.All` is blocked outside this unit: the concurrent `#62`
+  session keeps `LeanCategories/Modules/ChainComplexModel.lean` modified in the working tree, so its
+  olean is absent while it is mid-edit and the build stops at `[20127/20128]` with
+  `failed to open file …/Modules/ChainComplexModel.olean`. Their earlier defect there (`:116:61`,
+  `:120:6`) is fixed — the module builds on its own — so what remains is the race with that session,
+  not a defect of this issue. `just test` cannot be completed on this working tree until #62 is
+  between edits; 4.1 G free on `/` is the second reason.
