@@ -101,6 +101,18 @@ example : ¬ intKoszul.LengthLe 1 := intKoszul_not_lengthLe_one
 example : intKoszul.IsAcyclicFor (forget₂ (ModuleCat ℤ) AddCommGrpCat) :=
   intKoszul_isAcyclicFor_forget
 
+/-- 4. The realization of a selected augmented object under a functor: the chosen diagram is carried
+into the enhancement degreewise. -/
+example : AugmentedGradedObject (ModuleCat ℤ) := realize (𝟭 (ModuleCat ℤ)) intCover
+
+/-- 4. The realized augmentation is an object of the slice `E_{/j(X)}`, not a new augmented object:
+this is the correction recorded on the issue. -/
+example : Over (intCover.point) := realization (𝟭 (ModuleCat ℤ)) intCover
+
+/-- 4. A vanishing cofiber selects a full resolution after realization. -/
+example : intKoszul.IsAcyclicFor (forget₂ (ModuleCat ℤ) AddCommGrpCat) :=
+  isAcyclicFor_of_cofiberVanishes (forget₂ (ModuleCat ℤ) AddCommGrpCat) intKoszul_cofiberVanishes
+
 /-- 5. The module framing case: a one-term object is a framing exactly when its augmentation is an
 isomorphism. -/
 example (P M : ModuleCat ℤ) (ε : P ⟶ M) :

@@ -8,6 +8,7 @@ public import Mathlib.Algebra.Category.ModuleCat.Abelian
 public import Mathlib.Algebra.Category.ModuleCat.EpiMono
 public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 public import Mathlib.Algebra.Module.Projective
+public import Mathlib.CategoryTheory.Comma.Over.Basic
 public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
 public import Mathlib.Data.ZMod.Basic
 public import Mathlib.RingTheory.Flat.Basic
@@ -297,6 +298,44 @@ theorem truncationRefinement_mono {k k' : ℕ} (h : k ≤ k') :
 augmentation point. -/
 theorem refinementPoint_ιOfLE (P Q : ObjectProperty (AugmentedGradedObject C)) (h : P ≤ Q) :
     ObjectProperty.ιOfLE h ⋙ refinementPoint (C := C) Q = refinementPoint (C := C) P := rfl
+
+section Realization
+
+variable {E : Type w} [Category.{v} E] [Preadditive E]
+
+/-- The degreewise realization of a selected augmented object under a zero-morphism-preserving
+functor `j : C ⤳ E`, i.e. the issue's `R^•` carried into `E` together with its chosen terms,
+differentials and augmentation. -/
+def realize (j : C ⥤ E) [j.PreservesZeroMorphisms] (S : AugmentedGradedObject C) :
+    AugmentedGradedObject E where
+  term n := j.obj (S.term n)
+  diff n := j.map (S.diff n)
+  comp_diff n := by rw [← j.map_comp, S.comp_diff n, j.map_zero]
+  point := j.obj S.point
+  augment := j.map S.augment
+  comp_augment := by rw [← j.map_comp, S.comp_augment, j.map_zero]
+
+/-- The realized augmentation as an object of the slice `E_{/j(X)}` — the correction recorded on the
+issue, that `ε` is an object of the slice, equivalently an arrow of `E`. -/
+def realization (j : C ⥤ E) (S : AugmentedGradedObject C) : Over (j.obj S.point) :=
+  Over.mk (j.map S.augment)
+
+section Exact
+
+variable (j : C ⥤ E) [j.PreservesZeroMorphisms] [j.PreservesHomology]
+
+/-- **A vanishing cofiber selects a full resolution after realization**: if every degree of the
+selected object is exact, the realized complex is acyclic in `E`. This is the statement that
+`cofib(ε) ≃ 0` is an equivalence in the enhancement rather than a condition on the augmentation,
+and that an epimorphic augmentation does not supply it (`intCover_not_cofiberVanishes`). -/
+theorem isAcyclicFor_of_cofiberVanishes {S : AugmentedGradedObject C} (hS : S.CofiberVanishes) :
+    S.IsAcyclicFor j := by
+  intro k
+  exact (hS k).map j
+
+end Exact
+
+end Realization
 
 section Casts
 
