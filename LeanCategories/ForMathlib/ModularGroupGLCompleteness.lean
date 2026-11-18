@@ -66,4 +66,68 @@ theorem sl2zToGroup_eq_one_of_gl2zToGroup_sl2zInGl {a : PresentedGroup sl2zRelat
   refine SpecialLinearGroup.toGL_injective ?_
   rw [h', map_one]
 
+/-! ### Step 2, the inversion endomorphism
+
+The generator-inverting endomorphism of the `SL(2, ℤ)` presentation, which is what conjugating by
+`e` acts by. Its relator obligations are `conj_pow_presented` (conjugating a power conjugates the
+base), `sl2zS_pow_four` and `sl2zTS_relator`.
+
+Not yet here: the conjugation identity `e * sl2zInGl a * e⁻¹ = sl2zInGl (sl2zInv a)`. The attempt
+below-the-line reduces it to the two generator cases, where the relator gives
+`e S e⁻¹ = S⁻¹`, but rewriting `PresentedGroup.one_of_mem`'s `mk`-form into the `of`-form of the
+goal does not go through `simpa` (the term's simplified type is
+`mk (of 2 * of 0 * (of 2)⁻¹ * of 0) = 1`, not the product of `of`s); the fix is to transport through
+`PresentedGroup.mk` with `map_mul`/`map_inv` rather than to ask `simp` to cross that boundary.
+-/
+
+/-- Conjugating a power by `y` conjugates the base. -/
+theorem conj_pow_presented (n : ℕ) :
+    ((PresentedGroup.of (rels := sl2zRelators) 0 *
+      PresentedGroup.of (rels := sl2zRelators) 1) ^ n) =
+      PresentedGroup.of (rels := sl2zRelators) 0 *
+        ((PresentedGroup.of (rels := sl2zRelators) 1 *
+          PresentedGroup.of (rels := sl2zRelators) 0) ^ n) *
+        (PresentedGroup.of (rels := sl2zRelators) 0)⁻¹ := by
+  induction n with
+  | zero => simp
+  | succ n ih =>
+    rw [pow_succ, ih, pow_succ]
+    group
+
+/-- Inverting both generators of the `SL(2, ℤ)` presentation preserves the relators. -/
+theorem sl2zRelators_map_one_inv :
+    ∀ r ∈ sl2zRelators,
+      FreeGroup.lift (fun i : Fin 2 => (PresentedGroup.of (rels := sl2zRelators) i)⁻¹) r = 1 := by
+  intro r hr
+  simp only [sl2zRelators, Set.mem_insert_iff, Set.mem_singleton_iff] at hr
+  rcases hr with rfl | rfl
+  · rw [map_pow, FreeGroup.lift_apply_of, inv_pow, sl2zS_pow_four, inv_one]
+  · have hxy : ((PresentedGroup.of (rels := sl2zRelators) 1 *
+        PresentedGroup.of (rels := sl2zRelators) 0) ^ 3) =
+        (PresentedGroup.of (rels := sl2zRelators) 0) ^ 2 :=
+      eq_of_mul_inv_eq_one sl2zTS_relator
+    have hyx : ((PresentedGroup.of (rels := sl2zRelators) 0 *
+        PresentedGroup.of (rels := sl2zRelators) 1) ^ 3) =
+        (PresentedGroup.of (rels := sl2zRelators) 0) ^ 2 := by
+      rw [conj_pow_presented 3, hxy]
+      group
+    have e1 : (PresentedGroup.of (rels := sl2zRelators) 1)⁻¹ *
+          (PresentedGroup.of (rels := sl2zRelators) 0)⁻¹ =
+        ((PresentedGroup.of (rels := sl2zRelators) 0) *
+          PresentedGroup.of (rels := sl2zRelators) 1)⁻¹ := by group
+    have hz : (((PresentedGroup.of (rels := sl2zRelators) 0)⁻¹) ^ (-2 : ℤ)) =
+        (PresentedGroup.of (rels := sl2zRelators) 0) ^ 2 := by group
+    rw [map_mul, map_pow, map_mul, map_zpow, FreeGroup.lift_apply_of, FreeGroup.lift_apply_of]
+    rw [e1, inv_pow, hyx, hz, inv_mul_cancel]
+
+/-- The generator-inverting endomorphism of the `SL(2, ℤ)` presentation. -/
+def sl2zInv : PresentedGroup sl2zRelators →* PresentedGroup sl2zRelators :=
+  PresentedGroup.toGroup sl2zRelators_map_one_inv
+
+theorem sl2zInv_of (i : Fin 2) :
+    sl2zInv (PresentedGroup.of (rels := sl2zRelators) i) =
+      (PresentedGroup.of (rels := sl2zRelators) i)⁻¹ :=
+  PresentedGroup.toGroup.of (rels := sl2zRelators) (G := PresentedGroup sl2zRelators)
+    (f := fun j : Fin 2 => (PresentedGroup.of (rels := sl2zRelators) j)⁻¹)
+    sl2zRelators_map_one_inv
 end LeanCategories.ForMathlib
