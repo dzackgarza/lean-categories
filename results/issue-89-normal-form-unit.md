@@ -209,3 +209,17 @@ letter's move applied to that basis, through `cols_nxt`).
 
 Still open: the same statement one step *back* (`H_prev`, which needs the letter case analysis plus
 `cols_prv`), the maximum-vertex argument, and the parity split.
+
+## Progress: the walk's height without index proofs
+
+Case analysis on the letter at an index kept tripping over the index proof carried by `l[k]`; the
+module now isolates that (section "The walk's height without index proofs"): `L l k` is the letter at
+`k` as a total function, `Hk l k` the walk's height built from it, `L_eq`/`L_isS` relate them on the
+word. Also here `bool_eq_not` (two unequal booleans are mutual negations — how "the next letter is the
+other type" becomes an equation), `fdet_UV`, `HT_ne_EH`, the generic invariance lemmas
+`HT_act_of_false`/`EH_act_of_true` (by the letter's type, not six case splits), and `Hk_next` — the
+height one step on in the basis at `k`.
+
+Still open: `Hk_prev` (its direct proof exceeds the heartbeat limit because `simp` unfolds `Y` at the
+`prv` index; it needs the invariance facts restated in `U`/`V` form), the maximum-vertex argument, and
+the parity split.

@@ -3005,6 +3005,96 @@ lemma H_next {l : List Letter} (hprod : (l.map Letter.val).prod = 1) {k : ℕ}
     simp only [h1, h2, Bool.false_eq_true, Bool.true_eq_false, reduceIte] at hty ⊢
   all_goals first | rfl | exact absurd rfl hty
 
+/-!
+### The walk's height without index proofs
+
+Case analysis on the letter at an index kept tripping over the index proof carried by `l[k]`, so this
+section isolates that: `L l k` is the letter at `k` as a *total* function (junk off the word), `Hk l k`
+is the walk's height at `k` built from `L`, and `L_eq`/`L_isS` relate the two on the word. Also here:
+`bool_eq_not` (two unequal booleans are mutual negations, which is how "the next letter is the other
+type" becomes an equation), `fdet_UV` (the prefix product's columns are a Farey basis), `HT_ne_EH`
+(`HT` and `EH` at one basis always differ), the two generic invariance lemmas `HT_act_of_false` and
+`EH_act_of_true` (an `⟨R⟩`-letter leaves triangle heights, an `⟨S⟩`-letter edge heights, decided by the
+letter's type rather than by six case splits), and `Hk_next` — the height one step on, in the basis at
+`k`.
+
+Still open: the same one step back (`Hk_prev`; its direct proof exceeds the heartbeat limit because
+`simp` unfolds `Y` at the `prv` index, so it needs the invariance facts restated in `U`/`V` form), the
+maximum-vertex argument, and the parity split.
+-/
+
+
+/-- The letter at an index, total (junk off the word), so case analysis never carries a proof. -/
+def L (l : List Letter) (k : ℕ) : Letter := l.getD k Letter.s1
+
+lemma L_eq {l : List Letter} {k : ℕ} (hk : k < l.length) : L l k = l[k] := by
+  simp only [L, List.getD, List.getElem?_eq_getElem hk]; rfl
+
+lemma L_isS {l : List Letter} {k : ℕ} (hk : k < l.length) : (L l k).isS = (l[k]).isS := by
+  rw [L_eq hk]
+
+/-- Two unequal booleans are mutual negations. -/
+lemma bool_eq_not {a b : Bool} (h : a ≠ b) : a = !b := by
+  cases a <;> cases b <;> simp_all
+
+/-- The walk's height at an index, total. -/
+noncomputable def Hk (l : List Letter) (k : ℕ) : ℤ :=
+  if (L l k).isS then EH (U l k) (V l k) else HT (U l k) (V l k)
+
+lemma Hk_eq {l : List Letter} {k : ℕ} (hk : k < l.length) :
+    Hk l k = if (l[k]).isS then EH (U l k) (V l k) else HT (U l k) (V l k) := by
+  simp only [Hk, L_isS hk]
+
+/-- The columns of a prefix product form a Farey basis. -/
+lemma fdet_UV (l : List Letter) (k : ℕ) : fdet (U l k) (V l k) = 1 := fdet_cols (Y l k)
+
+/-- `HT` and `EH` at the same Farey basis always differ. -/
+lemma HT_ne_EH {u v : ℤ × ℤ} (hd : fdet u v = 1) : HT u v ≠ EH u v := by
+  intro h
+  have hm := EH_mean u v
+  rw [h] at hm
+  have hne := HT_ne hd
+  exact hne (by linarith)
+
+/-- An `⟨R⟩`-letter does not change a triangle's height. -/
+lemma HT_act_of_false (b : Letter) (hb : b.isS = false) (u v : ℤ × ℤ) :
+    HT (b.act u v).1 (b.act u v).2 = HT u v := by
+  match b with
+  | .s1 => simp [Letter.isS] at hb
+  | .s3 => simp [Letter.isS] at hb
+  | .r1 => exact HT_act_r1 u v
+  | .r2 => exact HT_act_r2 u v
+  | .r4 => exact HT_act_r4 u v
+  | .r5 => exact HT_act_r5 u v
+
+/-- An `⟨S⟩`-letter does not change an edge's height. -/
+lemma EH_act_of_true (b : Letter) (hb : b.isS = true) (u v : ℤ × ℤ) :
+    EH (b.act u v).1 (b.act u v).2 = EH u v := by
+  match b with
+  | .s1 => exact EH_act_s1' u v
+  | .s3 => exact EH_act_s3' u v
+  | .r1 => simp [Letter.isS] at hb
+  | .r2 => simp [Letter.isS] at hb
+  | .r4 => simp [Letter.isS] at hb
+  | .r5 => simp [Letter.isS] at hb
+
+set_option maxHeartbeats 1000000 in
+/-- The height one step on, in the basis at `k`. -/
+lemma Hk_next {l : List Letter} (hprod : (l.map Letter.val).prod = 1) {k : ℕ}
+    (hk : k < l.length) (hnx : nxt l.length k < l.length)
+    (hty : (L l (nxt l.length k)).isS ≠ (L l k).isS) :
+    Hk l (nxt l.length k) =
+      (if (L l k).isS then
+          HT ((L l k).act (U l k) (V l k)).1 ((L l k).act (U l k) (V l k)).2
+        else EH ((L l k).act (U l k) (V l k)).1 ((L l k).act (U l k) (V l k)).2) := by
+  simp only [Hk]
+  rw [bool_eq_not hty]
+  obtain ⟨c1, c2⟩ := cols_nxt hprod hk
+  rw [← L_eq hk] at c1 c2
+  cases hb : (L l k).isS <;>
+    simp only [hb, Bool.not_false, Bool.not_true, Bool.false_eq_true, reduceIte] at ⊢ <;>
+    (simp only [U, V] at c1 c2 ⊢) <;> rw [c1, c2]
+
 end ModularGroup
 
 namespace LeanCategories.ForMathlib
