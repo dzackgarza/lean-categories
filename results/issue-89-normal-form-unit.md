@@ -248,3 +248,10 @@ numbers. (The first step of the walk goes strictly up at that end — `16` when 
 Still open: the mirror statement at the last index (the columns of the inverse of the last letter), the
 odd-length maximum-vertex argument built on the two ends, and then the bridge from
 `PresentedGroup sl2zRelators`.
+
+## Progress: one step into the walk
+
+`Hk_one` writes the height at index `1` of the walk in terms of the first letter's matrix, i.e. the
+mirror of `Hk_zero` at the near seam the odd-length case needs. The remaining half there is the
+six-value arithmetic comparison `Hk l 0 < Hk l 1` (15 against 16 for an `⟨S⟩`-letter, 14 against 19 or
+23 for an `⟨R⟩`-letter), and then the far end and the odd-length maximum-vertex argument.
