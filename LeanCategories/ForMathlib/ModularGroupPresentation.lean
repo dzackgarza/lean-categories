@@ -1082,7 +1082,9 @@ only bases. The missing tiebreak also exists and is measured: lowering the funda
 count at zero violations (raising it to five works as well). So the pair of hypotheses for
 `no_closed_reduced_walk` — symmetric adjacency, no ties, at most one smaller neighbour — is
 attainable on the triangle graph, and the last piece of the unit is the dictionary that turns a
-reduced word into a closed reduced walk if it dies.
+reduced word into a closed reduced walk if it dies. Its finite core is
+`eight_products_avoid_zpowersR` below: the product of an `⟨S⟩`-letter with an `⟨R⟩`-letter is never
+in `⟨R⟩`, which is exactly what makes the walk of a *reduced* word non-backtracking.
 -/
 
 theorem S_sq_ne_one : (S : SL(2, ℤ)) ^ 2 ≠ 1 := by
@@ -1526,6 +1528,51 @@ theorem no_closed_reduced_walk {V : Type} (r : V → V → Prop) (h : V → ℤ)
   have hlt2 : h (v (i₀ - 1)) < h (v i₀) :=
     lt_of_le_of_ne (hmax' _) (Ne.symm (htie _ _ h2))
   exact hone _ _ _ h1 h2 hne.symm ⟨hlt1, hlt2⟩
+
+/-- The six elements of `⟨T * S⟩`, as a finite set. -/
+def zpowersRSet : Finset (SL(2, ℤ)) := {1, -(1 : SL(2, ℤ)), T * S, -(T * S),
+  (T * S) ^ 2, -((T * S) ^ 2)}
+
+lemma mul_mem_zpowersRSet : ∀ a ∈ zpowersRSet, ∀ b ∈ zpowersRSet, a * b ∈ zpowersRSet := by
+  decide
+
+lemma inv_mem_zpowersRSet : ∀ a ∈ zpowersRSet, a⁻¹ ∈ zpowersRSet := by decide
+
+lemma gen_mem_zpowersRSet : (T * S : SL(2, ℤ)) ∈ zpowersRSet := by decide
+
+lemma one_mem_zpowersRSet : (1 : SL(2, ℤ)) ∈ zpowersRSet := by decide
+
+/-- The six listed elements form a subgroup. -/
+def zpowersRSubgroup : Subgroup (SL(2, ℤ)) where
+  carrier := ↑zpowersRSet
+  mul_mem' := by
+    intro a b ha hb
+    exact mul_mem_zpowersRSet a ha b hb
+  one_mem' := one_mem_zpowersRSet
+  inv_mem' := by
+    intro a ha
+    exact inv_mem_zpowersRSet a ha
+
+/-- `⟨T * S⟩` is contained in its six listed elements. -/
+theorem zpowers_le_zpowersRSet : Subgroup.zpowers (T * S) ≤ zpowersRSubgroup := by
+  rw [Subgroup.zpowers_le]
+  change (T * S : SL(2, ℤ)) ∈ zpowersRSet
+  exact gen_mem_zpowersRSet
+
+theorem mem_zpowersRSet {Y : SL(2, ℤ)} (h : Y ∈ Subgroup.zpowers (T * S)) :
+    Y ∈ zpowersRSet := zpowers_le_zpowersRSet h
+
+/-- **Reducedness gives no backtracking.** A product of an `⟨S⟩`-letter (`S` or `S³`) with a
+`⟨T * S⟩`-letter (`R`, `R²`, `R⁴`, `R⁵` for `R = T * S`) is never an element of `⟨R⟩`. -/
+theorem eight_products_avoid_zpowersR : ∀ a b : SL(2, ℤ),
+    (a = S ∨ a = S ^ 3) →
+    (b = T * S ∨ b = (T * S) ^ 2 ∨ b = (T * S) ^ 4 ∨ b = (T * S) ^ 5) →
+    a * b ∉ Subgroup.zpowers (T * S) := by
+  intro a b ha hb hmem
+  have hset : a * b ∈ zpowersRSet := mem_zpowersRSet hmem
+  rcases ha with rfl | rfl <;> rcases hb with rfl | rfl | rfl | rfl <;>
+    simp only [zpowersRSet, Finset.mem_insert, Finset.mem_singleton] at hset <;>
+      revert hset <;> decide
 
 end ModularGroup
 
