@@ -97,4 +97,41 @@ theorem one_mem_stabilizer_of_subgroup (S : Subgroup (Equiv.Perm (Fin 1))) :
   intro _
   simp [v]
 
+/-- The one-colour colouring of the index set: `Sym_C(I)` is then all of `Equiv.Perm I`. -/
+def trivialColouring : Fin 1 → Bool :=
+  fun _ => true
+
+/-- Item 5 in the issue's literal form: the stabilizer under `O(L) × Sym_C(I)` is the general
+stabilizer at `S := Sym_C(I)`, and hence the full stabilizer restricted. -/
+theorem stabilizer_symC :
+    colouredFamilyStabilizer trivialColouring L v
+      = (familyStabilizer L v).comap
+          (subgroupInclusion (colourPreservingPerms trivialColouring) L) :=
+  colouredFamilyStabilizer_eq_comap trivialColouring L v
+
+/-- At the one-colour colouring every permutation preserves the colouring. -/
+theorem symC_trivial (σ : Equiv.Perm (Fin 1)) :
+    σ ∈ colourPreservingPerms trivialColouring :=
+  mem_colourPreservingPerms trivialColouring |>.mpr fun _ => rfl
+
+/-- The identity pair lies in the issue's stabilizer, so the construction is not vacuous. -/
+theorem one_mem_symC :
+    (1 : OrthogonalGroup L × colourPreservingPerms trivialColouring) ∈
+      colouredFamilyStabilizer trivialColouring L v := by
+  rw [mem_colouredFamilyStabilizer]
+  intro _
+  simp [v]
+
+/-- A colouring with two colours on two indices, to see that `Sym_C(I)` can be proper. -/
+def twoColour : Fin 2 → Bool :=
+  fun i => i == 0
+
+/-- The transposition does not preserve the two-colour colouring, so `Sym_C(I)` is a proper
+subgroup of `Equiv.Perm I` in general. -/
+theorem swap_not_mem_twoColour :
+    Equiv.swap (0 : Fin 2) 1 ∉ colourPreservingPerms twoColour := by
+  intro h
+  have h0 := h 0
+  simp [twoColour, Equiv.swap_apply_left] at h0
+
 end LeanCategories.Lattices.Valued

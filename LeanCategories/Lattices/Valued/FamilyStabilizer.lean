@@ -193,4 +193,70 @@ theorem familyStabilizerOfSubgroup_eq_comap (L : IntegralLatticeCat R)
 
 end Subgroup
 
+/-! ## `Sym_C(I)`: the colour-preserving permutations
+
+A family of lattice vectors enters the research preamble as a set map `v : I → U(L)` together with a
+colouring `c : I → C`, and the questions are asked "up to colour-preserving reindexing": the group
+acting is `O(L) × Sym_C(I)`, where `Sym_C(I)` is the group of colour-preserving bijections of `I`,
+and it acts on families by `g ∘ v ∘ σ⁻¹`. Source, read at `main` on 2026-11-18:
+`dzackgarza/sage-extensions`, `src/sage_extensions/categories/coloured_vector_families.py:1-25` —
+"A colouring is a set map `c: I -> C`; a coloured family is the family of pairs `(v_i, c_i)` … the
+questions asked are up to colour-preserving reindexing (`CAT-30`) … the images under `(g, sigma) |->
+g` of the stabilizer … of `v` under `O(L) x Sym_C(I)` acting on `L^I` by `g o v o sigma^-1`. The
+kernel of that projection on the stabilizer is `K_v = {sigma in Sym_C(I) : v o sigma = v}` …
+The product of the infinite group `O(L)` with `Sym_C(I)` is not represented, so pairs `(g, sigma)`
+are not built and `K_v` is stated, not constructed." (Lines 4-8, 16-25.)
+
+So `Sym_C(I)` is a subgroup of `Equiv.Perm I` after all — the one indexed by a colouring — and the
+issue's stabilizer is `familyStabilizerOfSubgroup` at that subgroup.
+-/
+
+section Colouring
+
+variable {C : Type*} (c : I → C)
+
+/-- `Sym_C(I)`: the permutations of the index set that preserve the colouring `c`. -/
+def colourPreservingPerms : Subgroup (Equiv.Perm I) where
+  carrier := {σ | ∀ i, c (σ i) = c i}
+  one_mem' := by
+    intro i
+    rfl
+  mul_mem' := by
+    intro σ τ hσ hτ i
+    show c ((σ * τ) i) = c i
+    rw [Equiv.Perm.mul_apply, hσ, hτ]
+  inv_mem' := by
+    intro σ hσ i
+    have h := hσ (σ.symm i)
+    simpa using h.symm
+
+/-- Membership in `Sym_C(I)`: preserving the colour of every index. -/
+theorem mem_colourPreservingPerms {σ : Equiv.Perm I} :
+    σ ∈ colourPreservingPerms c ↔ ∀ i, c (σ i) = c i :=
+  Iff.rfl
+
+/-- **The issue's stabilizer**: the stabilizer of a family of lattice vectors under
+`O(L) × Sym_C(I)`, with `Sym_C(I)` the colour-preserving permutations of the index set. -/
+def colouredFamilyStabilizer (L : IntegralLatticeCat R) (v : I → L.obj.carrier) :
+    Subgroup (OrthogonalGroup L × colourPreservingPerms c) :=
+  familyStabilizerOfSubgroup (colourPreservingPerms c) L v
+
+/-- The stabilizer under `O(L) × Sym_C(I)` is the stabilizer under `O(L) × Equiv.Perm I` restricted:
+the general `familyStabilizerOfSubgroup_eq_comap` at `S := Sym_C(I)`. -/
+theorem colouredFamilyStabilizer_eq_comap (L : IntegralLatticeCat R)
+    (v : I → L.obj.carrier) :
+    colouredFamilyStabilizer c L v
+      = (familyStabilizer L v).comap (subgroupInclusion (colourPreservingPerms c) L) :=
+  familyStabilizerOfSubgroup_eq_comap (colourPreservingPerms c) L v
+
+/-- The membership criterion for the issue's stabilizer: the pair fixes the family up to
+colour-preserving reindexing. -/
+theorem mem_colouredFamilyStabilizer (L : IntegralLatticeCat R) (v : I → L.obj.carrier)
+    (p : OrthogonalGroup L × colourPreservingPerms c) :
+    p ∈ colouredFamilyStabilizer c L v ↔
+      ∀ i, p.1.1 (v (((p.2 : colourPreservingPerms c) : Equiv.Perm I).symm i)) = v i :=
+  mem_familyStabilizerOfSubgroup (colourPreservingPerms c) L v p
+
+end Colouring
+
 end LeanCategories.Lattices.Valued
