@@ -287,6 +287,7 @@ public import LeanCategories.Homological.SimplexChains
 public import LeanCategories.Homological.ChainLevelSteps
 public import LeanCategories.Homological.SkeletonHomology
 public import LeanCategories.Homological.DeltaSimplexChains
+public import LeanCategories.Homological.BarycentricChains
 public import LeanCategories.Homological.DeltaFunctor
 public import LeanCategories.Homological.DeltaFunctorMorphisms
 public import LeanCategories.Homological.SatelliteFunctors
