@@ -17,6 +17,7 @@ public import LeanCategories.ForMathlib.ModularCuspsFiniteIndex
 public import LeanCategories.ForMathlib.ModularCuspsGL2
 public import LeanCategories.ForMathlib.ModularGroupPresentation
 public import LeanCategories.ForMathlib.ModularGroupPresentationTests
+public import LeanCategories.ForMathlib.ModularGroupCuspStratum
 public import LeanCategories.ForMathlib.SchreierStabilizer
 public import LeanCategories.AlgebraicGeometry.RelativeProjHypothesis
 public import LeanCategories.AlgebraicGeometry.ValuationCurveData
