@@ -49,3 +49,31 @@ theorem, not more integer arithmetic.
 The consumer named in the issue — Todd–Coxeter enumeration of cosets of finite-index subgroups of
 `GL(2, ℤ)` — needs (1) and (2): with only the relations already verified, an enumeration returns a
 quotient of `SL(2, ℤ)`, not `SL(2, ℤ)`.
+
+## Progress: the tiebreak in the Farey height is now a theorem (not a measurement)
+
+The acyclicity criterion `no_closed_reduced_walk` needs a height on the Farey triangle graph with
+(a) adjacent vertices of different height and (b) at most one neighbour below each vertex. (b) was
+already `no_two_flips_decrease`. (a) was recorded in the module docstring as *measured* on the finite
+truncation (78 triangles, 117 edges, `|entries| ≤ 5`): the only tie is the edge between the two
+triangles of height four, `{0, 1, ∞}` and `{0, -1, ∞}`, and lowering `{0, 1, ∞}` to three removes it.
+
+Both halves of that are now proved in `ModularGroupPresentation.lean` (section "The Farey height has
+no ties"), for *every* Farey basis and not only the truncation:
+
+* `core_nonneg`: two integer vectors `(P, Q)` and `(R, S)` with equal `ℓ¹`-lengths, determinant `±2`
+  and coordinates congruent mod `2` have all four coordinates `±1`. Without the congruence there are
+  such pairs of every size; a Farey basis supplies it because `u + v` and `u - v` differ by twice
+  `v` and twice `u`.
+* `triH_eq_imp_std`, `triH_flip_left`, `triH_flip_right`: an `ℓ¹` tie between the two triangles on a
+  Farey side forces that side to be the standard edge `{0, ∞}` — one lemma per side of a triangle,
+  the second and third by applying the first to the bases `(u, u + v)` and `(-v, u + v)`. So there is
+  no tie anywhere else, and the height `4 ♣ - 2·[{0,1,∞}]` (in the tree's doubled normalization) has
+  none at all.
+* `stdTri_triH`: the exceptional pair is computed — both triangles have height four and each has
+  neighbours of heights four, six and six — so the O(1) tiebreak separates exactly the tied pair and
+  changes no other comparison.
+
+Still open, and unchanged by this: the dictionary from a reduced word to a closed reduced walk in the
+incidence graph, and the bridge from `PresentedGroup sl2zRelators` (via `amalgamPushoutEquiv`) to the
+matrices these heights are read off.

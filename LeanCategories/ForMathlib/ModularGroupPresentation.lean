@@ -1074,17 +1074,27 @@ triangle height the sum of `|p| + |q|` over the three cusps:
   whose maximum is attained on a path of two or more vertices survives it.
 
 So the criterion to prove is "at most one smaller neighbour **and no ties**", and this height needs
-exactly one tiebreak, at the height-four pair. Six of those seven numbers are the reason the naive
-attempt would stall only at the last step. The "at most one smaller neighbour" half is now a
-theorem — `no_two_flips_decrease` below — and it holds for *every* pair of integer vectors, not
-only bases. The missing tiebreak also exists and is measured: lowering the fundamental triangle
-`{0, 1, ∞}` from height four to three removes the only tie and leaves the "at most one smaller"
-count at zero violations (raising it to five works as well). So the pair of hypotheses for
-`no_closed_reduced_walk` — symmetric adjacency, no ties, at most one smaller neighbour — is
-attainable on the triangle graph, and the last piece of the unit is the dictionary that turns a
-reduced word into a closed reduced walk if it dies. Its finite core is
-`eight_products_avoid_zpowersR` below: the product of an `⟨S⟩`-letter with an `⟨R⟩`-letter is never
-in `⟨R⟩`, which is exactly what makes the walk of a *reduced* word non-backtracking.
+exactly one tiebreak, at the height-four pair.
+
+Both halves are now theorems, and they are the reason the naive attempt stalls only at the last step:
+
+* the "at most one smaller neighbour" half is `no_two_flips_decrease` below, for *every* pair of
+  integer vectors and not only bases;
+* the "no ties" half is the classification `triH_eq_imp_std` below, in the section "The Farey height
+  has no ties": an `ℓ¹` tie between the two triangles on a Farey side forces that side to be the
+  standard edge `{0, ∞}`, and `stdTri_triH` computes that the tied pair is `{0, 1, ∞}`, `{0, -1, ∞}`
+  with every other neighbour of height six. So the tiebreak — lowering `{0, 1, ∞}` from four to three
+  — separates exactly the tied pair and disturbs nothing else: it is a theorem, not a measurement.
+  The integer reason no other tie exists is that a Farey basis makes the coordinates of `u + v` and
+  `u - v` congruent mod `2`, and equal `ℓ¹`-lengths with determinant `±2` and that congruence force
+  every coordinate to be `±1` (`core_nonneg`).
+
+So the pair of hypotheses for `no_closed_reduced_walk` — symmetric adjacency, no ties, at most one
+smaller neighbour — holds on the triangle graph. What is still missing is the dictionary that turns a
+reduced word into a closed reduced walk if it dies, and the bridge from the presented group to these
+matrices; its finite core is `eight_products_avoid_zpowersR` below: the product of an `⟨S⟩`-letter
+with an `⟨R⟩`-letter is never in `⟨R⟩`, which is exactly what makes the walk of a *reduced* word
+non-backtracking.
 -/
 
 theorem S_sq_ne_one : (S : SL(2, ℤ)) ^ 2 ≠ 1 := by
@@ -1573,6 +1583,440 @@ theorem eight_products_avoid_zpowersR : ∀ a b : SL(2, ℤ),
   rcases ha with rfl | rfl <;> rcases hb with rfl | rfl | rfl | rfl <;>
     simp only [zpowersRSet, Finset.mem_insert, Finset.mem_singleton] at hset <;>
       revert hset <;> decide
+
+/-!
+### The Farey height has no ties: the tiebreak, proved
+
+The acyclicity criterion proved above (`no_closed_reduced_walk`) needs two things of the height on the
+Farey triangle graph: adjacent vertices of different height, and at most one neighbour below each
+vertex. The second is `no_two_flips_decrease`. The first is the delicate one, and the module docstring
+above records it as measured rather than proved: with the `ℓ¹` height `(|p| + |q|)` summed over the
+three cusps of a triangle, the *only* tie in the whole graph is the edge between the two triangles of
+height four, `{0, 1, ∞}` and `{0, -1, ∞}`, and lowering `{0, 1, ∞}` to three removes it.
+
+This section proves both halves of that measurement.
+
+* `triH_eq_imp_std` is the classification: **an `ℓ¹` tie forces the shared side to be the standard
+  edge `{0, ∞}`**. Its integer core is `core_nonneg`: two integer vectors with equal `ℓ¹`-length,
+  determinant `±2` and congruent coordinates mod `2` have all coordinates `±1`. The congruence is what
+  makes this rigid — without it there are equal-length, determinant-`±2` pairs of every size — and it
+  is exactly what a Farey basis supplies, the coordinates of `u + v` and `u - v` differing by twice
+  those of `u` and `v`. The same statement for the other two sides of a triangle is
+  `triH_flip_left` and `triH_flip_right`, the first by applying the side form to the basis
+  `(u, u + v)` and the second to `(-v, u + v)`.
+* `stdTri_triH` computes the exception: the two triangles of the tied edge both have height four, and
+  the three neighbours of each have heights four, six and six. So the tie is exactly there, exactly
+  once, and the tiebreak changes nothing else — the O(1) correction `{0, 1, ∞} : 4 ↦ 3` of the module
+  docstring separates the tied pair without disturbing any other comparison.
+
+What is still not here is what carries the theorem: the walk built from a reduced word's prefixes, and
+the bridge from `PresentedGroup sl2zRelators` through `amalgamPushoutEquiv` to these matrices. This
+section is the height half of that unit, in the form the criterion consumes it.
+-/
+
+/-- The standard vector `(1, 0)`. -/
+abbrev E1 : ℤ × ℤ := (1, 0)
+
+/-- The standard vector `(0, 1)`. -/
+abbrev E2 : ℤ × ℤ := (0, 1)
+
+/-- The two lines spanned by a Farey basis: the vertex of the tree of `⟨S⟩`-type. -/
+def edgeF (u v : ℤ × ℤ) : Finset (ℤ × ℤ) := {u, -u, v, -v}
+
+/-- The three lines spanned by a Farey basis and their sum: the vertex of the tree of `⟨R⟩`-type. -/
+def triF (u v : ℤ × ℤ) : Finset (ℤ × ℤ) := {u, -u, v, -v, u + v, -(u + v)}
+
+/-- The standard edge `{0, ∞}`. -/
+def stdEdge : Finset (ℤ × ℤ) := edgeF E1 E2
+
+/-- The standard triangle `{0, 1, ∞}`. -/
+def stdTri0 : Finset (ℤ × ℤ) := triF E1 E2
+
+/-- The other standard triangle `{0, -1, ∞}`: the second triangle of the standard edge. -/
+def stdTri1 : Finset (ℤ × ℤ) := triF E1 (-E2)
+
+/-- The `ℓ¹` height of the triangle with basis `(u, v)`. -/
+def triH (u v : ℤ × ℤ) : ℤ := hℓ u + hℓ v + hℓ (u + v)
+
+lemma hl_neg (x : ℤ × ℤ) : hℓ (-x) = hℓ x := by
+  obtain ⟨p, q⟩ := x
+  simp only [hℓ, Prod.fst_neg, Prod.snd_neg, abs_neg]
+
+lemma hl_eq_zero {x : ℤ × ℤ} : hℓ x = 0 ↔ x = 0 := by
+  obtain ⟨p, q⟩ := x
+  simp only [hℓ, Prod.mk_eq_zero]
+  constructor
+  · intro h
+    have h1 : |p| = 0 := by linarith [abs_nonneg p, abs_nonneg q]
+    have h2 : |q| = 0 := by linarith [abs_nonneg p, abs_nonneg q]
+    exact ⟨abs_eq_zero.mp h1, abs_eq_zero.mp h2⟩
+  · rintro ⟨rfl, rfl⟩
+    simp
+
+lemma hl_nonneg (x : ℤ × ℤ) : 0 ≤ hℓ x := by
+  obtain ⟨p, q⟩ := x
+  simp only [hℓ]; positivity
+
+lemma hl_pos {x : ℤ × ℤ} (h : x ≠ 0) : 0 < hℓ x := by
+  rcases Int.lt_or_eq_of_le (hl_nonneg x) with h' | h'
+  · exact h'
+  · exact absurd (hl_eq_zero.mp h'.symm) h
+
+lemma triH_comm (u v : ℤ × ℤ) : triH v u = triH u v := by
+  simp only [triH, add_comm u v]; ring
+
+/-- The height of the triangle with basis `(u, v)` is at least three. -/
+lemma triH_ge_three {u v : ℤ × ℤ} (h : fdet u v = 1) : 3 ≤ triH u v := by
+  have hu : u ≠ 0 := by rintro rfl; simp [fdet] at h
+  have hv : v ≠ 0 := by rintro rfl; simp [fdet] at h
+  have huv : u + v ≠ 0 := by
+    rintro h0
+    have h1 : u = -v := by
+      rw [eq_neg_iff_add_eq_zero]
+      simpa using h0
+    rw [h1] at h
+    simp only [fdet, Prod.fst_neg, Prod.snd_neg] at h
+    nlinarith [mul_self_nonneg (-v.1), mul_self_nonneg v.1, mul_self_nonneg v.2]
+  have h1 := hl_pos hu; have h2 := hl_pos hv; have h3 := hl_pos huv
+  simp only [triH]; linarith
+
+
+/-! ### The tie classification: an ℓ¹ equality forces the standard edge -/
+
+/-- `x * y = 2` with `0 ≤ x`, `0 ≤ y`. -/
+lemma zp_mul_eq_two {x y : ℤ} (h : x * y = 2) (hx : 0 ≤ x) (hy : 0 ≤ y) :
+    (x = 1 ∧ y = 2) ∨ (x = 2 ∧ y = 1) := by
+  have hyne : y ≠ 0 := by rintro rfl; norm_num at h
+  have hxne : x ≠ 0 := by rintro rfl; norm_num at h
+  have hy1 : 1 ≤ y := by omega
+  have hx1 : 1 ≤ x := by omega
+  have hx2 : x ≤ 2 := by nlinarith
+  have hy2 : y ≤ 2 := by nlinarith
+  interval_cases x <;> interval_cases y <;> omega
+
+/-- `x * y = 1` with `0 ≤ x`, `0 ≤ y`. -/
+lemma zp_mul_eq_one {x y : ℤ} (h : x * y = 1) (hx : 0 ≤ x) (hy : 0 ≤ y) : x = 1 ∧ y = 1 := by
+  have hyne : y ≠ 0 := by rintro rfl; norm_num at h
+  have hxne : x ≠ 0 := by rintro rfl; norm_num at h
+  have hy1 : 1 ≤ y := by omega
+  have hx1 : 1 ≤ x := by omega
+  have hx2 : x ≤ 1 := by nlinarith
+  have hy2 : y ≤ 1 := by nlinarith
+  interval_cases x <;> interval_cases y <;> omega
+
+/-- `x + y = 2` with `0 ≤ x`, `0 ≤ y`. -/
+lemma zp_add_eq_two {x y : ℤ} (h : x + y = 2) (hx : 0 ≤ x) (hy : 0 ≤ y) :
+    (x = 0 ∧ y = 2) ∨ (x = 1 ∧ y = 1) ∨ (x = 2 ∧ y = 0) := by
+  have hx2 : x ≤ 2 := by omega
+  interval_cases x <;> omega
+
+/-- **The integer core of the tie classification**, in the two positive signs: if two integer vectors
+`(P, Q)` and `(R, S)` have equal `ℓ¹`-lengths and determinant `±2`, and are congruent mod `2`, then all
+four coordinates are `±1`. (Congruence mod `2` is what makes the equal-length condition rigid: without
+it there are solutions of every size.) -/
+theorem core_nonneg (P Q R S : ℤ) (h1 : |P| + |Q| = |R| + |S|)
+    (h2 : P * S - Q * R = 2 ∨ P * S - Q * R = -2)
+    (hp : Even (P - R)) (hq : Even (Q - S)) (hP : 0 ≤ P) (hR : 0 ≤ R) :
+    |P| = 1 ∧ |Q| = 1 ∧ |R| = 1 ∧ |S| = 1 := by
+  obtain ⟨kp, hkp⟩ := hp
+  obtain ⟨kq, hkq⟩ := hq
+  rcases or_comm.mp (lt_or_ge Q 0) with hQ | hQ
+  · rcases or_comm.mp (lt_or_ge S 0) with hS | hS
+    · -- `0 ≤ Q`, `0 ≤ S`: no solutions, by `(P - R) * (P + Q) = ±2` and parity.
+      rw [abs_of_nonneg hP, abs_of_nonneg hQ, abs_of_nonneg hR, abs_of_nonneg hS] at h1
+      have hkey : (kp + kp) * (P + Q) = 2 ∨ (kp + kp) * (P + Q) = -2 := by
+        rcases h2 with h | h
+        · left; nlinarith
+        · right; nlinarith
+      have hM1 : 1 ≤ P + Q := by rcases hkey with h | h <;> nlinarith
+      have hkb : -1 ≤ kp ∧ kp ≤ 1 := by
+        have h5 : |(kp + kp) * (P + Q)| = 2 := by
+          rcases hkey with h | h
+          · rw [h]; norm_num
+          · rw [h]; norm_num
+        rw [abs_mul, show kp + kp = 2 * kp by ring, abs_mul] at h5
+        rw [show |(2 : ℤ)| = 2 by norm_num,
+          abs_of_nonneg (by linarith : (0 : ℤ) ≤ P + Q)] at h5
+        exact abs_le.mp (by nlinarith [abs_nonneg (kp : ℤ)])
+      obtain ⟨hk1, hk2⟩ := hkb
+      interval_cases kp <;> rcases hkey with h | h <;> omega
+    · -- `0 ≤ Q`, `S < 0`: only `P = Q = R = 1`, `S = -1`.
+      rw [abs_of_nonneg hP, abs_of_nonneg hQ, abs_of_nonneg hR, abs_of_neg hS] at h1
+      have hSn : (0 : ℤ) ≤ -S := by omega
+      have hsum : P * (-S) + Q * R = 2 := by
+        rcases h2 with h | h
+        · exfalso; nlinarith
+        · nlinarith
+      have hx0 : (0 : ℤ) ≤ P * (-S) := mul_nonneg hP hSn
+      have hy0 : (0 : ℤ) ≤ Q * R := mul_nonneg hQ hR
+      rcases zp_add_eq_two hsum hx0 hy0 with ⟨ha, hb⟩ | ⟨ha, hb⟩ | ⟨ha, hb⟩
+      · rcases mul_eq_zero.mp ha with hP0 | hS0
+        · rcases zp_mul_eq_two hb hQ hR with ⟨hQ1, hR2⟩ | ⟨hQ2, hR1⟩
+          · omega
+          · omega
+        · omega
+      · obtain ⟨hP1, hS1⟩ := zp_mul_eq_one ha hP hSn
+        obtain ⟨hQ1, hR1⟩ := zp_mul_eq_one hb hQ hR
+        refine ⟨?_, ?_, ?_, ?_⟩
+        · rw [hP1]; norm_num
+        · rw [hQ1]; norm_num
+        · rw [hR1]; norm_num
+        · rw [← abs_neg S, hS1]; norm_num
+      · rcases mul_eq_zero.mp hb with hQ0 | hR0
+        · rcases zp_mul_eq_two ha hP hSn with ⟨hP1, hS1⟩ | ⟨hP2, hS2⟩
+          · omega
+          · omega
+        · rcases zp_mul_eq_two ha hP hSn with ⟨hP1, hS1⟩ | ⟨hP2, hS2⟩
+          · omega
+          · omega
+  · rcases or_comm.mp (lt_or_ge S 0) with hS | hS
+    · -- `Q < 0`, `0 ≤ S`: only `P = R = S = 1`, `Q = -1`.
+      rw [abs_of_nonneg hP, abs_of_neg hQ, abs_of_nonneg hR, abs_of_nonneg hS] at h1
+      have hQn : (0 : ℤ) ≤ -Q := by omega
+      have hsum : P * S + (-Q) * R = 2 := by
+        rcases h2 with h | h
+        · nlinarith
+        · exfalso; nlinarith
+      have hx0 : (0 : ℤ) ≤ P * S := mul_nonneg hP hS
+      have hy0 : (0 : ℤ) ≤ (-Q) * R := mul_nonneg hQn hR
+      rcases zp_add_eq_two hsum hx0 hy0 with ⟨ha, hb⟩ | ⟨ha, hb⟩ | ⟨ha, hb⟩
+      · rcases mul_eq_zero.mp ha with hP0 | hS0
+        · rcases zp_mul_eq_two hb hQn hR with ⟨hQ1, hR2⟩ | ⟨hQ2, hR1⟩
+          · omega
+          · omega
+        · rcases zp_mul_eq_two hb hQn hR with ⟨hQ1, hR2⟩ | ⟨hQ2, hR1⟩
+          · omega
+          · omega
+      · obtain ⟨hP1, hS1⟩ := zp_mul_eq_one ha hP hS
+        obtain ⟨hQ1, hR1⟩ := zp_mul_eq_one hb hQn hR
+        refine ⟨?_, ?_, ?_, ?_⟩
+        · rw [hP1]; norm_num
+        · rw [← abs_neg Q, hQ1]; norm_num
+        · rw [hR1]; norm_num
+        · rw [hS1]; norm_num
+      · rcases mul_eq_zero.mp hb with hQ0 | hR0
+        · rcases zp_mul_eq_two ha hP hS with ⟨hP1, hS1⟩ | ⟨hP2, hS2⟩
+          · omega
+          · omega
+        · rcases zp_mul_eq_two ha hP hS with ⟨hP1, hS1⟩ | ⟨hP2, hS2⟩
+          · omega
+          · omega
+    · -- `Q < 0`, `S < 0`
+      -- no solutions, by `(R - P) * (P + q) = ±2` and parity
+      rw [abs_of_nonneg hP, abs_of_neg hQ, abs_of_nonneg hR, abs_of_neg hS] at h1
+      have hkey : (kp + kp) * (P + (-Q)) = 2 ∨ (kp + kp) * (P + (-Q)) = -2 := by
+        rcases h2 with h | h
+        · right; nlinarith
+        · left; nlinarith
+      have hM1 : 1 ≤ P + (-Q) := by rcases hkey with h | h <;> nlinarith
+      have hkb : -1 ≤ kp ∧ kp ≤ 1 := by
+        have h5 : |(kp + kp) * (P + (-Q))| = 2 := by
+          rcases hkey with h | h
+          · rw [h]; norm_num
+          · rw [h]; norm_num
+        rw [abs_mul, show kp + kp = 2 * kp by ring, abs_mul] at h5
+        rw [show |(2 : ℤ)| = 2 by norm_num,
+          abs_of_nonneg (by linarith : (0 : ℤ) ≤ P + (-Q))] at h5
+        exact abs_le.mp (by nlinarith [abs_nonneg (kp : ℤ)])
+      obtain ⟨hk1, hk2⟩ := hkb
+      interval_cases kp <;> rcases hkey with h | h <;> omega
+
+/-- If a vector has `ℓ¹`-length one, it is one of the four unit coordinate vectors. -/
+lemma eq_pm_of_hl_one {x : ℤ × ℤ} (h : hℓ x = 1) :
+    x = E1 ∨ x = -E1 ∨ x = E2 ∨ x = -E2 := by
+  obtain ⟨p, q⟩ := x
+  simp only [hℓ] at h
+  have hp : |p| ≤ 1 := by linarith [abs_nonneg q]
+  have hq : |q| ≤ 1 := by linarith [abs_nonneg p]
+  obtain ⟨hp1, hp2⟩ := abs_le.mp hp
+  obtain ⟨hq1, hq2⟩ := abs_le.mp hq
+  interval_cases p <;> interval_cases q <;> simp_all [E1, E2]
+
+/-- Two distinct lines of `ℓ¹`-length one are the two coordinate axes: the standard edge. -/
+lemma edgeF_eq_std_of {u v : ℤ × ℤ} (hu : hℓ u = 1) (hv : hℓ v = 1) (hd : fdet u v ≠ 0) :
+    edgeF u v = stdEdge := by
+  obtain ⟨p, q⟩ := u
+  obtain ⟨r, s⟩ := v
+  simp only [hℓ] at hu hv
+  simp only [fdet] at hd
+  have hp : |p| ≤ 1 := by linarith [abs_nonneg q]
+  have hq : |q| ≤ 1 := by linarith [abs_nonneg p]
+  have hr : |r| ≤ 1 := by linarith [abs_nonneg s]
+  have hs : |s| ≤ 1 := by linarith [abs_nonneg r]
+  obtain ⟨hp1, hp2⟩ := abs_le.mp hp
+  obtain ⟨hq1, hq2⟩ := abs_le.mp hq
+  obtain ⟨hr1, hr2⟩ := abs_le.mp hr
+  obtain ⟨hs1, hs2⟩ := abs_le.mp hs
+  interval_cases p <;> interval_cases q <;> interval_cases r <;> interval_cases s <;>
+    (simp_all [edgeF, stdEdge, E1, E2] <;> decide)
+
+/-- An integer of absolute value one is `±1`. -/
+lemma int_eq_pm_of_abs_eq_one {x : ℤ} (h : |x| = 1) : x = 1 ∨ x = -1 := by
+  have h' : |x| ≤ 1 := le_of_eq h
+  obtain ⟨h1, h2⟩ := abs_le.mp h'
+  interval_cases x <;> simp_all
+
+/-- **The tie classification.** If the two triangles on the side `{u, v}` of a Farey basis `(u, v)`
+have equal `ℓ¹`-height, then that side is the standard edge `{0, ∞}`. -/
+theorem triH_eq_imp_std {u v : ℤ × ℤ} (hd : fdet u v = 1) (ht : triH u v = triH v (-u)) :
+    edgeF u v = stdEdge := by
+  obtain ⟨a, b⟩ := u
+  obtain ⟨c, d⟩ := v
+  simp only [fdet] at hd
+  have htab : |a + c| + |b + d| = |c + -a| + |d + -b| := by
+    have h := ht
+    simp only [triH, hℓ, Prod.fst_add, Prod.snd_add, Prod.fst_neg, Prod.snd_neg, abs_neg] at h
+    linarith
+  have ht'' : |a + c| + |b + d| = |a - c| + |b - d| := by
+    rw [htab, show c + -a = -(a - c) by ring, show d + -b = -(b - d) by ring, abs_neg, abs_neg]
+  -- the four linear functionals of the basis
+  set P : ℤ := a + c with hP
+  set Q : ℤ := b + d with hQ
+  set R : ℤ := a - c with hR
+  set S : ℤ := b - d with hS
+  have h1 : |P| + |Q| = |R| + |S| := by simpa [hP, hQ, hR, hS] using ht''
+  have h2 : P * S - Q * R = 2 ∨ P * S - Q * R = -2 := by
+    have h : P * S - Q * R = -(2 * (a * d - b * c)) := by
+      rw [hP, hQ, hR, hS]; ring
+    rw [h, hd]; norm_num
+  have hp : Even (P - R) := by rw [hP, hR]; exact ⟨c, by ring⟩
+  have hq : Even (Q - S) := by rw [hQ, hS]; exact ⟨d, by ring⟩
+  -- normalize the signs of `P` and `R` by negating the two vectors
+  have hneg2 : P * -S - Q * -R = 2 ∨ P * -S - Q * -R = -2 := by
+    rcases h2 with h | h
+    · right; nlinarith
+    · left; nlinarith
+  have hnegP : -P * S - -Q * R = 2 ∨ -P * S - -Q * R = -2 := by
+    rcases h2 with h | h
+    · right; nlinarith
+    · left; nlinarith
+  have hnegAll : -P * -S - -Q * -R = 2 ∨ -P * -S - -Q * -R = -2 := by
+    rcases h2 with h | h
+    · left; nlinarith
+    · right; nlinarith
+  have key : |P| = 1 ∧ |Q| = 1 ∧ |R| = 1 ∧ |S| = 1 := by
+    rcases lt_or_ge P 0 with hPn | hPn
+    · rcases lt_or_ge R 0 with hRn | hRn
+      · have hp' : Even (-P - -R) := by obtain ⟨k, hk⟩ := hp; exact ⟨-k, by omega⟩
+        have hq' : Even (-Q - -S) := by obtain ⟨k, hk⟩ := hq; exact ⟨-k, by omega⟩
+        have := core_nonneg (-P) (-Q) (-R) (-S) (by simpa using h1) hnegAll hp' hq'
+          (by linarith) (by linarith)
+        simpa using this
+      · have hp' : Even (-P - R) := by obtain ⟨k, hk⟩ := hp; exact ⟨-k - R, by omega⟩
+        have hq' : Even (-Q - S) := by obtain ⟨k, hk⟩ := hq; exact ⟨-k - S, by omega⟩
+        have := core_nonneg (-P) (-Q) R S (by simpa using h1) hnegP hp' hq' (by linarith) hRn
+        simpa using this
+    · rcases lt_or_ge R 0 with hRn | hRn
+      · have hp' : Even (P - -R) := by obtain ⟨k, hk⟩ := hp; exact ⟨k + R, by omega⟩
+        have hq' : Even (Q - -S) := by obtain ⟨k, hk⟩ := hq; exact ⟨k + S, by omega⟩
+        have := core_nonneg P Q (-R) (-S) (by simpa using h1) hneg2 hp' hq' hPn (by linarith)
+        simpa using this
+      · exact core_nonneg P Q R S h1 h2 hp hq hPn hRn
+  -- now read off the two triangles
+  have hP' : P = 1 ∨ P = -1 := int_eq_pm_of_abs_eq_one key.1
+  have hQ' : Q = 1 ∨ Q = -1 := int_eq_pm_of_abs_eq_one key.2.1
+  have hR' : R = 1 ∨ R = -1 := int_eq_pm_of_abs_eq_one key.2.2.1
+  have hS' : S = 1 ∨ S = -1 := int_eq_pm_of_abs_eq_one key.2.2.2
+  have hcross : P * R + Q * S = 0 := by
+    rcases hP' with h | h <;> rcases hQ' with h' | h' <;> rcases hR' with h'' | h'' <;>
+      rcases hS' with h3 | h3 <;>
+      rw [h, h', h'', h3] at h2 ⊢ <;> (norm_num at h2) <;> norm_num
+  have h2a : 2 * a = P + R := by rw [hP, hR]; ring
+  have h2b : 2 * b = Q + S := by rw [hQ, hS]; ring
+  have h2c : 2 * c = P - R := by rw [hP, hR]; ring
+  have h2d : 2 * d = Q - S := by rw [hQ, hS]; ring
+  have habs1 : |P + R| = 1 + P * R := by
+    rcases hP' with h | h <;> rcases hR' with h' | h' <;> rw [h, h'] <;> norm_num
+  have habs2 : |Q + S| = 1 + Q * S := by
+    rcases hQ' with h | h <;> rcases hS' with h' | h' <;> rw [h, h'] <;> norm_num
+  have hsum_u : |P + R| + |Q + S| = 2 := by
+    rw [habs1, habs2]; linarith
+  have hsum_v : |P - R| + |Q - S| = 2 := by
+    have h1' : |P - R| = 1 - P * R := by
+      rcases hP' with h | h <;> rcases hR' with h' | h' <;> rw [h, h'] <;> norm_num
+    have h2' : |Q - S| = 1 - Q * S := by
+      rcases hQ' with h | h <;> rcases hS' with h' | h' <;> rw [h, h'] <;> norm_num
+    rw [h1', h2']; linarith
+  have hu : hℓ ((a, b) : ℤ × ℤ) = 1 := by
+    simp only [hℓ]
+    have e1 : |2 * a| = 2 * |a| := by rw [abs_mul]; norm_num
+    have e2 : |2 * b| = 2 * |b| := by rw [abs_mul]; norm_num
+    have hk : 2 * |a| + 2 * |b| = 2 := by rw [← e1, ← e2, h2a, h2b]; exact hsum_u
+    linarith
+  have hv : hℓ ((c, d) : ℤ × ℤ) = 1 := by
+    simp only [hℓ]
+    have e1 : |2 * c| = 2 * |c| := by rw [abs_mul]; norm_num
+    have e2 : |2 * d| = 2 * |d| := by rw [abs_mul]; norm_num
+    have hk : 2 * |c| + 2 * |d| = 2 := by rw [← e1, ← e2, h2c, h2d]; exact hsum_v
+    linarith
+  exact edgeF_eq_std_of hu hv (by simp only [fdet]; omega)
+
+lemma edgeF_neg_left (u v : ℤ × ℤ) : edgeF (-u) v = edgeF u v := by
+  ext x
+  simp only [edgeF, Finset.mem_insert, Finset.mem_singleton, neg_neg]
+  tauto
+
+lemma edgeF_neg_right (u v : ℤ × ℤ) : edgeF u (-v) = edgeF u v := by
+  ext x
+  simp only [edgeF, Finset.mem_insert, Finset.mem_singleton, neg_neg]
+  tauto
+
+/-- **The tie classification at the other two sides of a triangle.** The flip across the side
+`{u, u + v}` never ties the height unless that side is the standard edge. It is
+`triH_eq_imp_std` applied to the basis `(u, u + v)`, whose tie condition is `hℓ (2u + v) = hℓ v`. -/
+theorem triH_flip_left {u v : ℤ × ℤ} (hd : fdet u v = 1) (ht : triH u v = triH (u + v) u) :
+    edgeF u (u + v) = stdEdge := by
+  have hd' : fdet u (u + v) = 1 := by
+    simp only [fdet, Prod.fst_add, Prod.snd_add] at hd ⊢; nlinarith
+  refine triH_eq_imp_std hd' ?_
+  simp only [triH] at ht ⊢
+  have e1 : u + (u + v) = (u + v) + u := by abel
+  have e2 : (u + v) + -u = v := by abel
+  rw [e1, e2, hl_neg]
+  linarith [ht]
+
+/-- The flip across the side `{v, u + v}` never ties the height unless that side is the standard
+edge. It is `triH_eq_imp_std` applied to the basis `(-v, u + v)`. -/
+theorem triH_flip_right {u v : ℤ × ℤ} (hd : fdet u v = 1) (ht : triH u v = triH (u + v) v) :
+    edgeF v (u + v) = stdEdge := by
+  have hd' : fdet (-v) (u + v) = 1 := by
+    simp only [fdet, Prod.fst_add, Prod.snd_add, Prod.fst_neg, Prod.snd_neg] at hd ⊢; nlinarith
+  have key : triH (-v) (u + v) = triH (u + v) (- -v) := by
+    simp only [triH] at ht ⊢
+    have e1 : -v + (u + v) = u := by abel
+    have e2 : (u + v) + - -v = (u + v) + v := by abel
+    simp only [e1, e2, hl_neg]
+    linarith [ht]
+  have := triH_eq_imp_std hd' key
+  rw [edgeF_neg_left] at this
+  exact this
+
+/-- **The neighbourhood of the two standard triangles.** The triangle `{0, 1, ∞}` (`stdTri0`) and its
+mirror `{0, -1, ∞}` (`stdTri1`) both have height four, and each of their three neighbours has height
+four and six and six: exactly one neighbour is as low as the triangle itself, and none is lower. This
+is the one place where the `ℓ¹` height of the Farey triangle graph has a tie, and it is the reason the
+maximum-vertex criterion needs the tiebreak measured in the module docstring. -/
+theorem stdTri_triH {u v : ℤ × ℤ} (hd : fdet u v = 1)
+    (hT : triF u v = stdTri0 ∨ triF u v = stdTri1) :
+    triH u v = 4 ∧
+      ((triH v (-u) = 4 ∧ triH (u + v) u = 6 ∧ triH (u + v) v = 6) ∨
+       (triH v (-u) = 6 ∧ triH (u + v) u = 4 ∧ triH (u + v) v = 6) ∨
+       (triH v (-u) = 6 ∧ triH (u + v) u = 6 ∧ triH (u + v) v = 4)) := by
+  rcases hT with hT | hT
+  · have hu : u ∈ stdTri0 := by rw [← hT]; simp [triF]
+    have hv : v ∈ stdTri0 := by rw [← hT]; simp [triF]
+    simp only [stdTri0, triF, E1, E2, Finset.mem_insert, Finset.mem_singleton] at hu hv
+    rcases hu with rfl | rfl | rfl | rfl | rfl | rfl <;>
+      rcases hv with rfl | rfl | rfl | rfl | rfl | rfl <;>
+      simp only [fdet, triH, hℓ, Prod.fst_add, Prod.snd_add, Prod.fst_neg, Prod.snd_neg] at hd ⊢ <;>
+      solve | omega | norm_num | (exfalso; exact absurd hT (by decide))
+  · have hu : u ∈ stdTri1 := by rw [← hT]; simp [triF]
+    have hv : v ∈ stdTri1 := by rw [← hT]; simp [triF]
+    simp only [stdTri1, triF, E1, E2, Finset.mem_insert, Finset.mem_singleton] at hu hv
+    rcases hu with rfl | rfl | rfl | rfl | rfl | rfl <;>
+      rcases hv with rfl | rfl | rfl | rfl | rfl | rfl <;>
+      simp only [fdet, triH, hℓ, Prod.fst_add, Prod.snd_add, Prod.fst_neg, Prod.snd_neg] at hd ⊢ <;>
+      solve | omega | norm_num | (exfalso; exact absurd hT (by decide))
 
 end ModularGroup
 
