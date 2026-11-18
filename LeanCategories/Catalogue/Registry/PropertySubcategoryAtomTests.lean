@@ -26,10 +26,13 @@ open CategoryTheory
 
 namespace CasCatalogue
 
-/-- An ambient category no registry row names: the one-object category on `Unit`. -/
+/-- An ambient category no registry row names, used only as the ambient of the admission control
+below. Its carrier is `Bool` rather than a subsingleton so that its generated injectivity lemma is
+not simp-provable (the `simpNF` linter refuses such a lemma), and it carries its own `Category`
+instance rather than reusing one of a registered category. -/
 structure ProbeAmbient where
-  /-- The single object. -/
-  unit : Unit
+  /-- Which of the two objects. -/
+  object : Bool
 
 instance : Category ProbeAmbient where
   Hom _ _ := Unit
