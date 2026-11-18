@@ -1059,6 +1059,15 @@ there. `Monoid.PushoutI`'s normal forms (`NormalWord`, `equiv`, `prod_injective`
 `inf_of_range_eq_base_range`) are about the pushout, not about a map out of it, and there is no
 Farey graph and no Bass–Serre theory at this pin. Closing it is a unit of its own, not a probe or a
 repair of this file.
+
+One measured warning for whoever builds it. The obvious height on Farey triangles — the sum
+of `|p| + |q|` over the three cusps — does *not* satisfy the acyclicity criterion as it stands:
+checked over the 180 bases with `|entries| ≤ 4` and `det = 1`, no triangle ever has two flips
+that decrease it and none has three, but the fundamental triangle `{0, 1, ∞}` has a neighbour of
+*equal* height, so "no edge joins equal heights" fails and the maximum-vertex argument does not
+close. Either the height needs a tiebreak at the fundamental level, or the criterion must be
+weakened to "the subgraph induced on each level is acyclic", which the same data does support.
+Taking the sum at face value and expecting `omega` to finish would fail at exactly this point.
 -/
 
 theorem S_sq_ne_one : (S : SL(2, ℤ)) ^ 2 ≠ 1 := by
