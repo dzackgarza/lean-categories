@@ -39,6 +39,14 @@ example : Function.Surjective sl2zToGroup := sl2zToGroup_surjective
 
 example : Group.Generators (SL(2, ℤ)) (Fin 2) := sl2zGenerators
 
+example : (T * S : SL(2, ℤ)) ^ 6 = 1 := T_mul_S_pow_six
+
+example : (PresentedGroup.of (rels := sl2zRelators) (0 : Fin 2)) ^ 2 ≠ 1 := of_zero_sq_ne_one
+
+example : (PresentedGroup.of (rels := sl2zRelators) (1 : Fin 2) *
+    PresentedGroup.of (rels := sl2zRelators) (0 : Fin 2)) ^ 6 = 1 :=
+  of_one_mul_of_zero_pow_six
+
 example : PresentedGroup sl2zRelators ≃* PresentedGroup sl2zAmalgamRelators := sl2zAmalgamEquiv
 
 example : (PresentedGroup.of (rels := sl2zAmalgamRelators) (1 : Fin 2)) ^ 3 =
