@@ -223,3 +223,17 @@ height one step on in the basis at `k`.
 Still open: `Hk_prev` (its direct proof exceeds the heartbeat limit because `simp` unfolds `Y` at the
 `prv` index; it needs the invariance facts restated in `U`/`V` form), the maximum-vertex argument, and
 the parity split.
+
+## Progress: the walk closes
+
+The dictionary is now proved in the form the walk decides it (section "The walk closes"):
+`Hk_prev` is the height one step back in the basis at `k`; `step_Hk` and `turn_Hk` are the two
+comparisons; `no_cycle` is the maximum-vertex argument (on the highest vertex both neighbours are
+lower, which the turn forbids); and `no_reduced_word_dies` states it:
+
+> a nonempty cyclically alternating word of the six letters has product one only if it is empty.
+
+So the "no nonempty reduced word dies" half of the tree unit is done for cyclically alternating
+words, i.e. for even length. What remains is the parity split — an odd-length word is only linearly
+alternating, `hcyc` fails, and the walk has one degenerate step at the seam — and then the bridge from
+`PresentedGroup sl2zRelators` to these letters.

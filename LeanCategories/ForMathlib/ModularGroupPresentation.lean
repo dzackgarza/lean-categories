@@ -3095,6 +3095,140 @@ lemma Hk_next {l : List Letter} (hprod : (l.map Letter.val).prod = 1) {k : ℕ}
     simp only [hb, Bool.not_false, Bool.not_true, Bool.false_eq_true, reduceIte] at ⊢ <;>
     (simp only [U, V] at c1 c2 ⊢) <;> rw [c1, c2]
 
+/-!
+### The walk closes: no cyclically alternating reduced word has product one
+
+This is the dictionary the module docstring calls the surviving unit of lean-categories#89, in the form
+the walk decides it. `Hk_prev` is the height one step back in the basis at `k` (the case analysis of
+the previous letter, with the invariance facts of the previous section applied by the letter's type),
+`step_Hk` and `turn_Hk` are the two comparisons of the walk, `no_cycle` is the maximum-vertex argument
+(on the highest vertex both neighbours are lower, which the turn forbids), and `no_reduced_word_dies`
+is the statement itself: **a nonempty cyclically alternating word of the six letters cannot have
+product one.**
+
+What that does *not* yet cover is a cyclically alternating hypothesis on a word that is only linearly
+alternating — i.e. an odd-length word, where the hypothesis `hcyc` above fails and the walk has one
+degenerate step at the seam. That parity split, and the bridge from `PresentedGroup sl2zRelators` to
+these letters, are what remain before `Sl2zPresentationComplete` follows.
+-/
+
+
+set_option maxHeartbeats 1000000 in
+/-- The height one step back, in the basis at `k`. -/
+lemma Hk_prev {l : List Letter} (hprod : (l.map Letter.val).prod = 1) {k : ℕ}
+    (hk : k < l.length) (hpv : prv l.length k < l.length)
+    (hty : (L l (prv l.length k)).isS ≠ (L l k).isS) :
+    Hk l (prv l.length k) =
+      (if (L l k).isS then HT (U l k) (V l k) else EH (U l k) (V l k)) := by
+  have hL : Hk l (prv l.length k) =
+      if (L l (prv l.length k)).isS then EH (U l (prv l.length k)) (V l (prv l.length k))
+      else HT (U l (prv l.length k)) (V l (prv l.length k)) := rfl
+  rw [hL, bool_eq_not hty]
+  obtain ⟨c1, c2⟩ := cols_prv hprod hk hpv
+  rw [← L_eq hpv] at c1 c2
+  have hc1 : U l k = ((L l (prv l.length k)).act (U l (prv l.length k)) (V l (prv l.length k))).1 :=
+    c1
+  have hc2 : V l k = ((L l (prv l.length k)).act (U l (prv l.length k)) (V l (prv l.length k))).2 :=
+    c2
+  cases hb : (L l k).isS
+  · have hb' : (L l (prv l.length k)).isS = true := by rw [bool_eq_not hty, hb]; rfl
+    simp only [hb, hb', Bool.not_true, Bool.false_eq_true, reduceIte] at ⊢
+    rw [hc1, hc2]
+    exact (EH_act_of_true _ hb' _ _).symm
+  · have hb' : (L l (prv l.length k)).isS = false := by rw [bool_eq_not hty, hb]; rfl
+    simp only [hb, hb', Bool.not_false, Bool.false_eq_true, reduceIte] at ⊢
+    rw [hc1, hc2]
+    exact (HT_act_of_false _ hb' _ _).symm
+
+set_option maxHeartbeats 1000000 in
+/-- The step, for the walk's height. -/
+lemma step_Hk {l : List Letter} (hprod : (l.map Letter.val).prod = 1) {k : ℕ}
+    (hk : k < l.length) (hnx : nxt l.length k < l.length)
+    (hty : (L l (nxt l.length k)).isS ≠ (L l k).isS) :
+    Hk l (nxt l.length k) ≠ Hk l k := by
+  rw [Hk_next hprod hk hnx hty]
+  have hk' : Hk l k = (if (L l k).isS then EH (U l k) (V l k) else HT (U l k) (V l k)) := rfl
+  rw [hk']
+  exact (step_ne (fdet_UV l k) (L l k)).symm
+
+set_option maxHeartbeats 1000000 in
+/-- The turn, for the walk's height. -/
+lemma turn_Hk {l : List Letter} (hprod : (l.map Letter.val).prod = 1) {k : ℕ}
+    (hk : k < l.length) (hnx : nxt l.length k < l.length) (hpv : prv l.length k < l.length)
+    (htyn : (L l (nxt l.length k)).isS ≠ (L l k).isS)
+    (htyp : (L l (prv l.length k)).isS ≠ (L l k).isS) :
+    ¬ (Hk l (prv l.length k) < Hk l k ∧ Hk l (nxt l.length k) < Hk l k) := by
+  rw [Hk_prev hprod hk hpv htyp, Hk_next hprod hk hnx htyn]
+  have hk' : Hk l k = (if (L l k).isS then EH (U l k) (V l k) else HT (U l k) (V l k)) := rfl
+  rw [hk']
+  exact turn_not_both (fdet_UV l k) (L l k)
+
+
+set_option maxHeartbeats 1000000 in
+/-- **The walk.** A cyclically alternating word of letters with product one cannot exist: on the
+highest vertex of the walk the two neighbours are lower, which is what the turn forbids. -/
+theorem no_cycle {l : List Letter} (hne : l ≠ [])
+    (hprod : (l.map Letter.val).prod = 1)
+    (htyn : ∀ (k : ℕ) (_ : k < l.length), (L l (nxt l.length k)).isS ≠ (L l k).isS)
+    (htyp : ∀ (k : ℕ) (_ : k < l.length), (L l (prv l.length k)).isS ≠ (L l k).isS) : False := by
+  have hn : 0 < l.length := List.length_pos_iff.mpr hne
+  obtain ⟨k₀, hk₀mem, hmax⟩ :=
+    Finset.exists_max_image (Finset.range l.length) (Hk l) ⟨0, Finset.mem_range.mpr hn⟩
+  have hk₀ : k₀ < l.length := Finset.mem_range.mp hk₀mem
+  have hnx : nxt l.length k₀ < l.length := by
+    simp only [nxt]; exact Nat.mod_lt _ hn
+  have hpv : prv l.length k₀ < l.length := by
+    simp only [prv]; exact Nat.mod_lt _ (by omega)
+  have h1 : Hk l (nxt l.length k₀) ≤ Hk l k₀ := hmax _ (Finset.mem_range.mpr hnx)
+  have h2 : Hk l (prv l.length k₀) ≤ Hk l k₀ := hmax _ (Finset.mem_range.mpr hpv)
+  have e1 : Hk l (nxt l.length k₀) ≠ Hk l k₀ := step_Hk hprod hk₀ hnx (htyn k₀ hk₀)
+  have e2 : Hk l (prv l.length k₀) ≠ Hk l k₀ := by
+    rw [Hk_prev hprod hk₀ hpv (htyp k₀ hk₀)]
+    have hk' : Hk l k₀ =
+        (if (L l k₀).isS then EH (U l k₀) (V l k₀) else HT (U l k₀) (V l k₀)) := rfl
+    rw [hk']
+    cases hb : (L l k₀).isS <;> simp only [Bool.false_eq_true, reduceIte]
+    · exact fun hh => HT_ne_EH (fdet_UV l k₀) hh.symm
+    · exact fun hh => HT_ne_EH (fdet_UV l k₀) hh
+  exact turn_Hk hprod hk₀ hnx hpv (htyn k₀ hk₀) (htyp k₀ hk₀)
+    ⟨lt_of_le_of_ne h2 e2, lt_of_le_of_ne h1 e1⟩
+
+set_option maxHeartbeats 1000000 in
+/-- **The dictionary.** No nonempty cyclically alternating word of the six letters has product one:
+the walk of its prefixes is a closed reduced walk in the incidence graph of Farey edges and triangles,
+whose height has no local maximum. -/
+theorem no_reduced_word_dies (l : List Letter) (hne : l ≠ [])
+    (hprod : (l.map Letter.val).prod = 1)
+    (halt : ∀ (i : ℕ), 0 < i → (L l i).isS ≠ (L l (i - 1)).isS)
+    (hcyc : (L l 0).isS ≠ (L l (l.length - 1)).isS) : False := by
+  have hn : 0 < l.length := List.length_pos_iff.mpr hne
+  have htyn : ∀ (k : ℕ) (hk : k < l.length), (L l (nxt l.length k)).isS ≠ (L l k).isS := by
+    intro k hk
+    rcases Nat.lt_or_ge (k + 1) l.length with h | h
+    · rw [nxt, Nat.mod_eq_of_lt h]
+      simpa using halt (k + 1) (by omega)
+    · have hkn : k + 1 = l.length := by omega
+      rw [nxt, hkn, Nat.mod_self]
+      have hk' : k = l.length - 1 := by omega
+      rw [hk']
+      exact hcyc
+  have htyp : ∀ (k : ℕ) (hk : k < l.length), (L l (prv l.length k)).isS ≠ (L l k).isS := by
+    intro k hk
+    rcases Nat.eq_zero_or_pos k with hk0 | hkpos
+    · subst hk0
+      have e : prv l.length 0 = l.length - 1 := by
+        simp only [prv]
+        rw [Nat.zero_add, Nat.mod_eq_of_lt (by omega)]
+      rw [e]
+      exact hcyc.symm
+    · have e : prv l.length k = k - 1 := by
+        simp only [prv]
+        rw [show k + l.length - 1 = k - 1 + l.length by omega, Nat.add_mod_right,
+          Nat.mod_eq_of_lt (by omega)]
+      rw [e]
+      exact (halt k hkpos).symm
+  exact no_cycle hne hprod htyn htyp
+
 end ModularGroup
 
 namespace LeanCategories.ForMathlib
