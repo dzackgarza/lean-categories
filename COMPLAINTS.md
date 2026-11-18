@@ -3982,4 +3982,9 @@ downstream assertions, computational observations, or downstream diagnostics.
   book preview that does not display the theorem or its number; strong approximation presupposes
   infiniteness rather than stating it, so it is not cited here. Recorded as unverified: an infinitude
   statement for `O(L)` of an indefinite lattice of rank at least three is expected to be classical but
-  is **not** sourced, and nothing in this repository relies on it.
+  is **not** sourced, and nothing in this repository relies on it. A second query,
+  `automorphism group of an integral quadratic form is finite if and only if the form is definite;
+  infinite for indefinite forms of rank at least three`, returned only encyclopaedia summaries of
+  *binary* quadratic forms (Wikipedia, WIKI2, Grokipedia) whose "definite ⟹ finite, indefinite ⟹
+  infinite" claim is about rank two alone, and MathOverflow threads about generators of `O_q(ℤ)`; none
+  ranges over rank at least three, so none can carry that clause.
