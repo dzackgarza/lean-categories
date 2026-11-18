@@ -123,4 +123,74 @@ theorem mem_familyStabilizerImage (L : IntegralLatticeCat R) (v : I → L.obj.ca
   · rintro ⟨σ, hσ⟩
     exact ⟨(g, σ), (mem_familyStabilizer L v (g, σ)).mpr hσ, rfl⟩
 
+/-! ## The stabilizer under `O(L) × S` for a subgroup `S` of the permutations
+
+The issue writes `O(L) × Sym_C(I)`. `Sym_C(I)` is a subgroup of `Equiv.Perm I`, and nothing in this
+repository names its carrier (see the module docstring above), so the stabilizer is delivered for an
+arbitrary `S ≤ Equiv.Perm I` and proved to be the restriction of `familyStabilizer` along the
+inclusion `O(L) × S → O(L) × Equiv.Perm I`. Instantiating `S := Sym_C(I)` is then the issue's
+statement, with no further work: the one input still missing is that subgroup's carrier.
+-/
+
+section Subgroup
+
+variable (S : Subgroup (Equiv.Perm I))
+
+/-- The action of `O(L) × S` on families of vectors of `L`, for a subgroup `S` of the permutations
+of the index set. -/
+instance instSMulFamilyOfSubgroup (L : IntegralLatticeCat R) :
+    SMul (OrthogonalGroup L × S) (I → L.obj.carrier) where
+  smul p x := fun i => p.1.1 (x (((p.2 : S) : Equiv.Perm I).symm i))
+
+/-- The action of `O(L) × S` on families of vectors of `L` is a group action. -/
+instance instMulActionFamilyOfSubgroup (L : IntegralLatticeCat R) :
+    MulAction (OrthogonalGroup L × S) (I → L.obj.carrier) where
+  one_smul x := by
+    funext i
+    rfl
+  mul_smul p q x := by
+    funext i
+    rfl
+
+/-- The stabilizer of the family `v` under `O(L) × S`. -/
+def familyStabilizerOfSubgroup (L : IntegralLatticeCat R) (v : I → L.obj.carrier) :
+    Subgroup (OrthogonalGroup L × S) :=
+  MulAction.stabilizer _ v
+
+/-- Membership in the stabilizer under `O(L) × S`. -/
+theorem mem_familyStabilizerOfSubgroup (L : IntegralLatticeCat R) (v : I → L.obj.carrier)
+    (p : OrthogonalGroup L × S) :
+    p ∈ familyStabilizerOfSubgroup S L v ↔
+      ∀ i, p.1.1 (v (((p.2 : S) : Equiv.Perm I).symm i)) = v i := by
+  rw [familyStabilizerOfSubgroup, MulAction.mem_stabilizer_iff]
+  constructor
+  · intro h i
+    exact congrFun h i
+  · intro h
+    funext i
+    exact h i
+
+/-- The inclusion `O(L) × S → O(L) × Equiv.Perm I`. -/
+def subgroupInclusion (L : IntegralLatticeCat R) :
+    OrthogonalGroup L × S →* OrthogonalGroup L × Equiv.Perm I :=
+  MonoidHom.prodMap (MonoidHom.id _) S.subtype
+
+/-- **The stabilizer under `O(L) × S` is the stabilizer under `O(L) × Equiv.Perm I`, restricted**:
+it is the preimage of `familyStabilizer L v` along `O(L) × S → O(L) × Equiv.Perm I`. At
+`S := Sym_C(I)` this is the issue's stabilizer; only that subgroup's carrier is missing. -/
+theorem familyStabilizerOfSubgroup_eq_comap (L : IntegralLatticeCat R)
+    (v : I → L.obj.carrier) :
+    familyStabilizerOfSubgroup S L v
+      = (familyStabilizer L v).comap (subgroupInclusion S L) := by
+  ext p
+  simp only [familyStabilizerOfSubgroup, familyStabilizer, subgroupInclusion,
+    Subgroup.mem_comap, MulAction.mem_stabilizer_iff]
+  constructor
+  · intro h
+    exact h
+  · intro h
+    exact h
+
+end Subgroup
+
 end LeanCategories.Lattices.Valued

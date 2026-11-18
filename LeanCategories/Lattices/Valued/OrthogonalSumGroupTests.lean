@@ -75,4 +75,26 @@ theorem one_mem_image : (1 : OrthogonalGroup L) ∈ familyStabilizerImage L v :=
 theorem range_fixed : (1 : OrthogonalGroup L).1.1 '' Set.range v = Set.range v :=
   image_range_of_mem_familyStabilizer L v one_mem
 
+/-- Item 5, the issue's `Sym_C(I)` form: for **any** subgroup `S` of the permutations of the index
+set — in particular any `Sym_C(I)` — the stabilizer of the family under `O(L) × S` is the
+stabilizer under `O(L) × Equiv.Perm I` restricted along the inclusion. -/
+theorem stabilizer_of_subgroup (S : Subgroup (Equiv.Perm (Fin 1))) :
+    familyStabilizerOfSubgroup S L v
+      = (familyStabilizer L v).comap (subgroupInclusion S L) :=
+  familyStabilizerOfSubgroup_eq_comap S L v
+
+/-- The full permutation group is the case `S = ⊤`. -/
+theorem stabilizer_top :
+    familyStabilizerOfSubgroup (⊤ : Subgroup (Equiv.Perm (Fin 1))) L v
+      = (familyStabilizer L v).comap (subgroupInclusion ⊤ L) :=
+  familyStabilizerOfSubgroup_eq_comap ⊤ L v
+
+/-- The identity pair lies in the stabilizer under any `S`, so the restricted stabilizer is not
+empty and the construction is not vacuous. -/
+theorem one_mem_stabilizer_of_subgroup (S : Subgroup (Equiv.Perm (Fin 1))) :
+    (1 : OrthogonalGroup L × S) ∈ familyStabilizerOfSubgroup S L v := by
+  rw [mem_familyStabilizerOfSubgroup]
+  intro _
+  simp [v]
+
 end LeanCategories.Lattices.Valued
