@@ -3828,3 +3828,50 @@ downstream assertions, computational observations, or downstream diagnostics.
   subcategory only when it can name it (`.`atom`-carried endpoints of the same ambient), or run the
   comparison `withTransparency .all` and `withoutModifyingState` over the metavariable context. The
   property-subcategory row is then a classifier on the ambient row, as the error message asks.
+
+### #95 — two catalogue test modules in `Foundation/` are outside the build
+
+- **Need:** every `*Tests` module under `LeanCategories/Catalogue/Semantics/Foundation/` should be
+  elaborated by `just test`, so that the refusals it asserts are evidence rather than dead code.
+- **Evidence:** `PowerSetsTests.lean` (rejecting the global-image operation and a source-specialized
+  direct image as the whole `𝒫` action) and `FiniteOrdersTests.lean` (rejecting a carrier
+  presentation specialized at one size, an omitted structural route, and an order isomorphism
+  substituted for a set carrier comparison) both exist, but nothing imports either:
+  `rg -n "PowerSetsTests|FiniteOrdersTests"` finds only their own namespaces. The default build
+  target reaches tests through `LeanCategories.lean → LeanCategories.Catalogue → Catalogue.lean`,
+  which names neither module.
+- **Gap and impact:** the two modules are elaborated only when a worker runs them by hand, so a
+  regression in the rows they cover leaves the gate green. `FiniteSubsetsTests.lean` (#95) is
+  therefore imported from `Catalogue.lean` in the commit that adds it.
+- **Coverage:** inspected `LeanCategories.lean`, `LeanCategories/All.lean` and
+  `LeanCategories/Catalogue.lean` at `72a79b19`; the two modules' contents beyond their `run_meta`
+  probes were not audited, and neither was run.
+- **Repair link:** add both imports to `Catalogue.lean` in one commit that also repairs whatever the
+  two modules then report. Filed here because this unit added their sibling and found the gap; it is
+  not this issue's obligation.
+
+### #95 — a completed unit's commits were force-rewritten off `main`
+
+- **Need:** a push that completes a unit should stay on `main`; another session's later push should
+  not remove it.
+- **Evidence:** `main` was at `c0a34f1c`; this unit pushed `87090736` and `0573b7e5` (confirmed by
+  `git ls-remote omm main` right after each push). Thirteen minutes later `main` was `242c3d3d`,
+  whose parent is `c0a34f1c`, and `git merge-base --is-ancestor` reports all three #95 commits
+  missing. `git diff 0573b7e5 242c3d3d` shows the unit's own lines deleted: 34 lines of
+  `FiniteSubsets.lean`, 35 of `PowerSets.lean`, the whole 141-line `FiniteSubsetsTests.lean`, the
+  `Catalogue.lean` import at line 71, and the `COMPLAINTS.md` `#95` entry. The #95 work was
+  re-applied as `54a12b80`, `c72e9da2`, `b1cadda9` on `242c3d3d`, with both `COMPLAINTS.md` entries
+  kept.
+- **Gap and impact:** a session that commits a whole file from a tree predating another session's
+  push reverts that session's lines in the file and, if its push is leased or forced against the
+  older tip, drops the other commits entirely. Neither `git ls-remote` before the push nor the
+  connector's `pushed` answer protects the earlier unit; only a re-read of `main` after the fact did.
+  `Catalogue.lean` and `COMPLAINTS.md` are the two files every unit appends to, so they are where
+  the next loss will happen.
+- **Coverage:** inspected `git log 0573b7e5..omm/main`, the two pushes' `ls-remote` answers, and
+  `git diff 0573b7e5 242c3d3d --stat`. The other session's working state and push call were not
+  inspected; the cause named above is inferred from the tree contents, not observed.
+- **Repair link:** whole-file commits of `Catalogue.lean`/`COMPLAINTS.md` should be made from a tree
+  that has fetched `main` (`Catalogue.lean` staged by path or via `hash-object`/`update-index`, as
+  this unit does), and a push should be repeated against the tip a fetch has just returned rather
+  than the tip read earlier.
