@@ -244,5 +244,22 @@ Checks of this sweep: `lake build` of `RouteDiscovery`, `ComparisonProbes`, `Pre
 `PresentationProbes`, `EnumerationCompleteness`, `AcceptanceProbes` — 4961 jobs, success; gate linter
 flags on the new files, no long lines, no unused-variable warnings; `#print axioms` on
 `boundedWalks_complete`, `boundedWalks_complete_of_enclosure` and the three acceptance probes:
-`[propext, Classical.choice, Quot.sound]` or less. `just test` still not run (7.1 G free on `/`, and
-another session is mid-edit in this shared checkout).
+`[propext, Classical.choice, Quot.sound]` or less. `just test` is not green here: the machine has 4.7 G free on `/` (below the repository's
+guard) and the vacuity step's build is red on another session's uncommitted file — measured in
+"Gate status measured" below, with this unit's own part of that step decided positively.
+
+## Gate status measured
+
+- `lake build LeanCategories.Catalogue`: `Build completed successfully (7807 jobs)` — the six
+  catalogue import lines of this unit elaborate in the umbrella, which was previously only a
+  literal copy.
+- **The vacuity audit does not cover the catalogue.** `Tools/VacuityAudit.lean:28` filters the
+  environment on the `LeanCategories` prefix, so none of the 4024 `CasCatalogue` declarations is
+  examined by `just test`'s vacuity step. Driving the gate's own linter with the catalogue prefix
+  instead (`shouldBeLinted`/`noBareNonempty.test`, transcribed from that file) reports **0 violations
+  in 4024 declarations**, this unit's included. Extending the gate's filter is a change to the gate
+  and is reported, not made.
+- The vacuity step's build currently fails outside this unit: a concurrent session's uncommitted
+  `#62` edit to `LeanCategories/Modules/ChainComplexModel.lean` does not elaborate (`:116:61` type
+  mismatch, `:120:6` `omega` unsolved). `just test` is therefore red on that working tree for a
+  reason unrelated to this issue, and the file is that session's to finish.
