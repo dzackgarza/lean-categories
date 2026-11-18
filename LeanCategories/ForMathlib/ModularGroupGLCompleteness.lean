@@ -211,4 +211,146 @@ theorem e_conj_sl2z (a : PresentedGroup sl2zRelators) :
   have := congrArg (fun f => f a) conjByE_comp_sl2zInGl
   rw [MonoidHom.comp_apply, MonoidHom.comp_apply, conjByE_apply] at this
   exact this
+/-! ### Steps 3 and 4: the normal form, and the reduction of the clause to item 1
+
+Every element of the `GL(2, ℤ)` presentation is an `SL(2, ℤ)` element times `1` or `e`
+(`gl2z_normalForm`), built from `e_mul_sl2z` (moving `e` past the `SL` part, from `e_conj_sl2z`) and
+`gl2z_e_sq` (`e² = 1`, from the relator `e²`). The determinant then separates the two factors, so
+injectivity of `gl2zToGroup` follows from injectivity of `sl2zToGroup` —
+`gl2zToGroup_injective_of_sl2z`, whose only hypothesis is #179's theorem.
+
+That is the whole of `Gl2zPresentationComplete` modulo item 1: `gl2zToGroup_injective_of_sl2z` with
+`ModularGroup.Sl2zPresentationComplete` plugged in gives `Gl2zPresentationComplete`.
+-/
+
+theorem gl2z_e_sq : (PresentedGroup.of (rels := gl2zRelators) 2) ^ 2 = 1 := by
+  have h := PresentedGroup.one_of_mem (rels := gl2zRelators)
+    (x := FreeGroup.of 2 ^ 2) (by simp [gl2zRelators])
+  simpa [PresentedGroup.of, ← map_mul, ← map_pow] using h
+
+theorem e_inv : (PresentedGroup.of (rels := gl2zRelators) 2)⁻¹ =
+    PresentedGroup.of (rels := gl2zRelators) 2 := by
+  have h : PresentedGroup.of (rels := gl2zRelators) 2 *
+      PresentedGroup.of (rels := gl2zRelators) 2 = 1 := by
+    simpa [pow_two] using gl2z_e_sq
+  exact inv_eq_of_mul_eq_one_right h
+
+theorem e_mul_sl2z (b : PresentedGroup sl2zRelators) :
+    PresentedGroup.of (rels := gl2zRelators) 2 * sl2zInGl b =
+      sl2zInGl (sl2zInv b) * PresentedGroup.of (rels := gl2zRelators) 2 := by
+  have h := e_conj_sl2z b
+  calc PresentedGroup.of (rels := gl2zRelators) 2 * sl2zInGl b
+      = (PresentedGroup.of (rels := gl2zRelators) 2 * sl2zInGl b *
+          (PresentedGroup.of (rels := gl2zRelators) 2)⁻¹) *
+          PresentedGroup.of (rels := gl2zRelators) 2 := by group
+    _ = sl2zInGl (sl2zInv b) * PresentedGroup.of (rels := gl2zRelators) 2 := by rw [h]
+
+/-- Every element of the `GL(2, ℤ)` presentation is an `SL(2, ℤ)` element times `1` or `e`. -/
+theorem gl2z_normalForm (q : PresentedGroup gl2zRelators) :
+    ∃ (a : PresentedGroup sl2zRelators) (ε : ℕ), ε ≤ 1 ∧
+      sl2zInGl a * (PresentedGroup.of (rels := gl2zRelators) 2) ^ ε = q := by
+  let H : Subgroup (PresentedGroup gl2zRelators) :=
+    { carrier := {q | ∃ (a : PresentedGroup sl2zRelators) (ε : ℕ), ε ≤ 1 ∧
+        sl2zInGl a * (PresentedGroup.of (rels := gl2zRelators) 2) ^ ε = q}
+      one_mem' := ⟨1, 0, by norm_num, by simp⟩
+      mul_mem' := by
+        rintro p q ⟨a, ε, hε, rfl⟩ ⟨b, δ, hδ, rfl⟩
+        interval_cases ε <;> interval_cases δ
+        · exact ⟨a * b, 0, by norm_num, by rw [pow_zero, mul_one, map_mul]; group⟩
+        · exact ⟨a * b, 1, by norm_num, by rw [pow_zero, pow_one, mul_one, map_mul]; group⟩
+        · refine ⟨a * sl2zInv b, 1, by norm_num, ?_⟩
+          rw [pow_zero, pow_one, mul_one, map_mul]
+          calc sl2zInGl a * sl2zInGl (sl2zInv b) * PresentedGroup.of (rels := gl2zRelators) 2
+              = sl2zInGl a * (sl2zInGl (sl2zInv b) *
+                  PresentedGroup.of (rels := gl2zRelators) 2) := by group
+            _ = sl2zInGl a * (PresentedGroup.of (rels := gl2zRelators) 2 *
+                  sl2zInGl b) := by rw [(e_mul_sl2z b).symm]
+            _ = sl2zInGl a * PresentedGroup.of (rels := gl2zRelators) 2 *
+                  sl2zInGl b := by group
+        · refine ⟨a * sl2zInv b, 0, by norm_num, ?_⟩
+          rw [pow_one, pow_zero, mul_one, map_mul]
+          have hsq : PresentedGroup.of (rels := gl2zRelators) 2 *
+              PresentedGroup.of (rels := gl2zRelators) 2 = 1 := by
+            simpa [pow_two] using gl2z_e_sq
+          symm
+          calc sl2zInGl a * PresentedGroup.of (rels := gl2zRelators) 2 *
+                (sl2zInGl b * PresentedGroup.of (rels := gl2zRelators) 2)
+              = sl2zInGl a * (PresentedGroup.of (rels := gl2zRelators) 2 * sl2zInGl b) *
+                  PresentedGroup.of (rels := gl2zRelators) 2 := by group
+            _ = sl2zInGl a * (sl2zInGl (sl2zInv b) *
+                  PresentedGroup.of (rels := gl2zRelators) 2) *
+                  PresentedGroup.of (rels := gl2zRelators) 2 := by rw [e_mul_sl2z b]
+            _ = sl2zInGl a * sl2zInGl (sl2zInv b) *
+                  (PresentedGroup.of (rels := gl2zRelators) 2 *
+                    PresentedGroup.of (rels := gl2zRelators) 2) := by group
+            _ = sl2zInGl a * sl2zInGl (sl2zInv b) := by rw [hsq, mul_one]
+      inv_mem' := by
+        rintro p ⟨a, ε, hε, rfl⟩
+        interval_cases ε
+        · exact ⟨a⁻¹, 0, by norm_num, by rw [pow_zero, mul_one, map_inv]; group⟩
+        · refine ⟨sl2zInv a⁻¹, 1, by norm_num, ?_⟩
+          rw [pow_one]
+          calc sl2zInGl (sl2zInv a⁻¹) * PresentedGroup.of (rels := gl2zRelators) 2
+              = PresentedGroup.of (rels := gl2zRelators) 2 * sl2zInGl a⁻¹ :=
+                (e_mul_sl2z a⁻¹).symm
+            _ = PresentedGroup.of (rels := gl2zRelators) 2 * (sl2zInGl a)⁻¹ := by rw [map_inv]
+            _ = (sl2zInGl a * PresentedGroup.of (rels := gl2zRelators) 2)⁻¹ := by
+                rw [_root_.mul_inv_rev, e_inv] }
+  have hgen : ∀ j : Fin 3, PresentedGroup.of j ∈ H := by
+    intro j
+    have h : j = 0 ∨ j = 1 ∨ j = 2 := by
+      fin_cases j <;> simp
+    rcases h with rfl | rfl | rfl
+    · refine ⟨PresentedGroup.of (rels := sl2zRelators) 0, 0, by norm_num, ?_⟩
+      rw [pow_zero, mul_one, sl2zInGl_of, sl2zGenValInGl_zero]
+    · refine ⟨PresentedGroup.of (rels := sl2zRelators) 1, 0, by norm_num, ?_⟩
+      rw [pow_zero, mul_one, sl2zInGl_of, sl2zGenValInGl_one]
+    · refine ⟨1, 1, by norm_num, ?_⟩
+      rw [pow_one, map_one, one_mul]
+  exact PresentedGroup.generated_by gl2zRelators H hgen q
+
+end LeanCategories.ForMathlib
+
+namespace LeanCategories.ForMathlib
+
+open ModularGroup
+
+/-- The two factors of the `GL(2, ℤ)` presentation, after mapping to `GL(2, ℤ)`: `sl2zToGroup` on
+the `SL` part and `eGL` on the other. -/
+theorem gl2zToGroup_normalForm (a : PresentedGroup sl2zRelators) (ε : ℕ) :
+    gl2zToGroup (sl2zInGl a * (PresentedGroup.of (rels := gl2zRelators) 2) ^ ε) =
+      SpecialLinearGroup.toGL (sl2zToGroup a) * eGL ^ ε := by
+  rw [map_mul, map_pow, gl2zToGroup_of, gl2zGenVal_two]
+  congr 1
+  have h := congrArg (fun f => f a) gl2zToGroup_comp_sl2zInGl
+  simpa using h
+
+/-- Injectivity of `gl2zToGroup` follows from injectivity of `sl2zToGroup`: the presentation's
+elements are `SL`-parts times `1` or `e`, and the two factors are separated by the determinant. -/
+theorem gl2zToGroup_injective_of_sl2z (h : Function.Injective sl2zToGroup) :
+    Function.Injective gl2zToGroup := by
+  intro p q hpq
+  obtain ⟨a, ε, hε, rfl⟩ := gl2z_normalForm p
+  obtain ⟨b, δ, hδ, rfl⟩ := gl2z_normalForm q
+  have hAB : SpecialLinearGroup.toGL (sl2zToGroup a) * eGL ^ ε =
+      SpecialLinearGroup.toGL (sl2zToGroup b) * eGL ^ δ := by
+    rw [← gl2zToGroup_normalForm a ε, ← gl2zToGroup_normalForm b δ]
+    exact hpq
+  interval_cases ε <;> interval_cases δ
+  · simp only [pow_zero, mul_one] at hAB
+    have hab : sl2zToGroup a = sl2zToGroup b := SpecialLinearGroup.toGL_injective hAB
+    rw [h hab, pow_zero]
+  · simp only [pow_zero, pow_one, mul_one] at hAB
+    have hdet := congrArg (fun g => GeneralLinearGroup.det g) hAB
+    simp only [map_mul, SpecialLinearGroup.coeToGL_det, det_eGL, one_mul] at hdet
+    exact absurd hdet (by decide)
+  · simp only [pow_zero, pow_one, mul_one] at hAB
+    have hdet := congrArg (fun g => GeneralLinearGroup.det g) hAB
+    simp only [map_mul, SpecialLinearGroup.coeToGL_det, det_eGL, one_mul] at hdet
+    exact absurd hdet.symm (by decide)
+  · simp only [pow_one] at hAB
+    have hab : sl2zToGroup a = sl2zToGroup b := by
+      refine SpecialLinearGroup.toGL_injective ?_
+      exact mul_right_cancel hAB
+    rw [h hab, pow_one]
 end LeanCategories.ForMathlib
