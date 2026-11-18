@@ -84,4 +84,32 @@ example [Module.Projective ℤ (involutionFixedSubmodule (L := tdpFiniteLattice)
 #print axioms isChamberWithWalls_invariant
 #print axioms chamberOf_invariant_folded
 
+/-- **The joining theorem**: from the ambient chamber, the involution law and the preservation of the
+chamber cone, plus the two arithmetic inputs, one gets both the maximal-dimension statement (the
+fixed part of the chamber is nonempty) and the predicate for the invariant lattice. -/
+example [Module.Projective ℤ (involutionFixedSubmodule (L := tdpFiniteLattice) tdpIsometry)]
+    (t : (realForm tdpFiniteLattice).obj.carrier)
+    (hpos : (integralSignature tdpFiniteLattice).1 = 1)
+    (ht : 0 < realFormQuadratic tdpFiniteLattice t) (R : Set tdpFiniteLattice.obj.obj.carrier)
+    (hR : IsChamberWithWalls tdpFiniteLattice t R)
+    (hstab : ∀ z ∈ rootInteriorCone tdpFiniteLattice t R,
+      realFormOrthogonalHom tdpFiniteLattice tdpIsometry z ∈
+        rootInteriorCone tdpFiniteLattice t R)
+    (w : involutionFixedSubmodule (L := tdpFiniteLattice) tdpIsometry)
+    (hw : 0 < (invariantFixedLattice (L := tdpFiniteLattice) tdpIsometry).obj.obj.pairing w w)
+    (hwv : ∀ v ∈ foldedRootSet (L := tdpFiniteLattice) tdpIsometry R,
+      0 < (invariantFixedLattice (L := tdpFiniteLattice) tdpIsometry).obj.obj.pairing w v)
+    (hcomplete : ∀ ρ ∈ negativeReflectiveRoots
+        (invariantFixedLattice (L := tdpFiniteLattice) tdpIsometry),
+      ∃ v ∈ foldedRootSet (L := tdpFiniteLattice) tdpIsometry R, ∃ k : ℤ, k ≠ 0 ∧ ρ = k • v) :
+    (∃ v ∈ realFormFixedPart tdpIsometry,
+        v ∈ rootInteriorCone tdpFiniteLattice t (foldedRootImage tdpIsometry R)) ∧
+      IsChamberWithWalls (invariantFixedLattice (L := tdpFiniteLattice) tdpIsometry)
+        (toRealForm _ w) (foldedRootSet (L := tdpFiniteLattice) tdpIsometry R) :=
+  isChamberWithWalls_invariant_of_chamber tdpIsometry tdpIsometry_mul_self t hpos ht R hR hstab
+    w hw hwv hcomplete
+
+#print axioms exists_mem_fixedPart_interior
+#print axioms isChamberWithWalls_invariant_of_chamber
+
 end LeanCategories.Lattices.Valued

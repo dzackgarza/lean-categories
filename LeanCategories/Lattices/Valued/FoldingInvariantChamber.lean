@@ -234,7 +234,20 @@ The `roots_mem` field is **derived** (`foldedRootSet_subset_negativeReflectiveRo
 `foldedRootSet` keeps only the folds that are reflective of negative square in `M^σ`, so membership
 in it *is* the root condition. The two remaining hypotheses are the arithmetic inputs of AEGS §3.7
 that folding does not supply (see the module docstring): an interior lattice vector, and the
-completeness of the wall set (Lemma 3.4's converse). -/
+completeness of the wall set.
+
+`hcomplete` is *not* Lemma 3.4's converse, and it is not proved anywhere: it asks that every
+negative reflective root of `M^σ` be a nonzero integer multiple of a *wall* root of the folded set.
+AEGS Lemma 3.4's converse says something different — every root of `T_En` is the fold of an ambient
+root of `T_dP` ("vice versa, all roots of `T_En` are of these three types", printed p. 12) — and it
+does not make roots multiples of wall roots. The condition here is strictly stronger than the
+source's, and it is *false* for a general chamber: in `E₁₀(2)` with its simple roots as the wall set
+(`VinbergE10Chamber.e10_isChamberWithWalls`) the reflection `w_{α₀}` carries the simple root `α₁` to
+`α₁ + α₀`, which is again a negative reflective root (the reflection of a root is a root) and is not
+an integer multiple of any simple root. (Hand computation, not formalized.) What the predicate
+actually needs is the reflection-group statement that every root of `M^σ` is a `W(M^σ)`-translate of
+a wall root — then the walls' mirrors miss the open chamber — and that is the residual this
+hypothesis stands in for. It is recorded as a *sufficient* condition, not as the cited converse. -/
 theorem isChamberWithWalls_invariant (g : OrthogonalGroup L.obj)
     [Module.Projective ℤ (involutionFixedSubmodule g)]
     (R : Set L.obj.obj.carrier)
@@ -313,5 +326,60 @@ theorem chamberOf_invariant_folded (g : OrthogonalGroup L.obj)
   exact IsChamberWithWalls.chamberOf_eq (L := invariantFixedLattice (L := L) g)
     (t := toRealForm _ w) hpos hQ
     (isChamberWithWalls_invariant g R w hw hwv hcomplete) hz
+
+/-! ## Joining the ambient chamber to the invariant one -/
+
+/-- **The source's maximal-dimension hypothesis, derived.** AEGS Lemma 3.8 assumes a chamber `C` of
+`W(M)` "whose intersection with `T_En` has maximal dimension". If the involution preserves the
+chamber cone of `R`, that is not an extra assumption: the average of an interior point with its
+image is a point of `M^σ ⊗ ℝ` (`realFormFixedPart`) that is still an interior point of `C`, and by
+the folded-interior identity it is an interior point of the folded chamber. -/
+theorem exists_mem_fixedPart_interior (g : OrthogonalGroup L.obj) (hg : g * g = 1)
+    (t : (realForm L).obj.carrier) (hpos : (integralSignature L).1 = 1)
+    (ht : 0 < realFormQuadratic L t) (R : Set L.obj.obj.carrier)
+    (hR : IsChamberWithWalls L t R)
+    (hstab : ∀ z ∈ rootInteriorCone L t R, realFormOrthogonalHom L g z ∈ rootInteriorCone L t R) :
+    ∃ w ∈ realFormFixedPart g, w ∈ rootInteriorCone L t (foldedRootImage g R) := by
+  obtain ⟨z, hz⟩ := hR.interior_nonempty
+  have hzσ : realFormOrthogonalHom L g z ∈ rootInteriorCone L t R := hstab z hz
+  set w : (realForm L).obj.carrier :=
+    (1 / 2 : ℝ) • z + (1 / 2 : ℝ) • realFormOrthogonalHom L g z with hwdef
+  have hconv : w ∈ rootInteriorCone L t R :=
+    convex_rootInteriorCone (L := L) (t := t) hpos ht R hz hzσ (by norm_num) (by norm_num)
+      (by norm_num)
+  have hfix : w ∈ realFormFixedPart g := by
+    have h2 : realFormOrthogonalHom L g * realFormOrthogonalHom L g = 1 := by
+      rw [← map_mul, hg, map_one]
+    rw [mem_realFormFixedPart_iff, hwdef, map_add, map_smul, map_smul]
+    have hzz : realFormOrthogonalHom L g (realFormOrthogonalHom L g z) = z := by
+      calc realFormOrthogonalHom L g (realFormOrthogonalHom L g z)
+          = (realFormOrthogonalHom L g * realFormOrthogonalHom L g) z := rfl
+        _ = (1 : (realFormQuadratic L).IsometryEquiv (realFormQuadratic L)) z := by rw [h2]
+        _ = z := rfl
+    rw [hzz, add_comm]
+  exact ⟨w, hfix, (mem_rootInteriorCone_folded_iff (L := L) g t hfix R).mpr hconv⟩
+
+/-- **The invariant chamber, joined to the ambient chamber.** From the ambient chamber `hR`, the
+involution law `hg`, the preservation of its cone, and the two arithmetic inputs of AEGS §3.7, this
+produces both the maximal-dimension statement (`exists_mem_fixedPart_interior`) and
+`IsChamberWithWalls` for the invariant lattice with Definition 3.7's folded root set as its wall
+set. The inputs themselves are not derivable here; see the module docstring. -/
+theorem isChamberWithWalls_invariant_of_chamber (g : OrthogonalGroup L.obj) (hg : g * g = 1)
+    [Module.Projective ℤ (involutionFixedSubmodule g)]
+    (t : (realForm L).obj.carrier) (hpos : (integralSignature L).1 = 1)
+    (ht : 0 < realFormQuadratic L t) (R : Set L.obj.obj.carrier)
+    (hR : IsChamberWithWalls L t R)
+    (hstab : ∀ z ∈ rootInteriorCone L t R, realFormOrthogonalHom L g z ∈ rootInteriorCone L t R)
+    (w : involutionFixedSubmodule g)
+    (hw : 0 < (invariantFixedLattice (L := L) g).obj.obj.pairing w w)
+    (hwv : ∀ v ∈ foldedRootSet (L := L) g R,
+      0 < (invariantFixedLattice (L := L) g).obj.obj.pairing w v)
+    (hcomplete : ∀ ρ ∈ negativeReflectiveRoots (invariantFixedLattice (L := L) g),
+      ∃ v ∈ foldedRootSet (L := L) g R, ∃ k : ℤ, k ≠ 0 ∧ ρ = k • v) :
+    (∃ v ∈ realFormFixedPart g, v ∈ rootInteriorCone L t (foldedRootImage g R)) ∧
+      IsChamberWithWalls (invariantFixedLattice (L := L) g) (toRealForm _ w)
+        (foldedRootSet (L := L) g R) :=
+  ⟨exists_mem_fixedPart_interior g hg t hpos ht R hR hstab,
+    isChamberWithWalls_invariant g R w hw hwv hcomplete⟩
 
 end LeanCategories.Lattices.Valued
