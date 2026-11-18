@@ -1,0 +1,30 @@
+diff --git a/corpus/collections/SRC-TEXT-HAT02/3-a/E-HAT-3.A-6.md b/corpus/collections/SRC-TEXT-HAT02/3-a/E-HAT-3.A-6.md
+--- a/corpus/collections/SRC-TEXT-HAT02/3-a/E-HAT-3.A-6.md
++++ b/corpus/collections/SRC-TEXT-HAT02/3-a/E-HAT-3.A-6.md
+@@ -178,6 +178,26 @@
+     `6d97e8ad`, axioms `propext`, `Classical.choice`, `Quot.sound`, no `sorryAx` --- is the one
+     section 1's row records. The page's own direct-limit argument stays the displayed proof; the
+     certificate settles the corrected claims without following it.
++- event: solution-reviewed
++  by: claude
++  date: 2026-11-18
++  note: >-
++    The finitely generated stage this page's first argument passes through has its own certificate
++    on `lean-categories` main, and the declaration to cite is
++    `LeanCategories.Homological.TorFiniteStage.isAddTorsion_torOne_of_finiteStage` in
++    <https://github.com/dzackgarza/lean-categories/blob/9b7b06781f2aec8ab6d19790e03d7af8ddb96986/LeanCategories/Homological/TorFiniteStage.lean>:
++    for a finitely generated abelian group $A$ and an arbitrary abelian group $B$,
++    $\operatorname{Tor}_1^\ZZ(A,B)$ is a torsion group. It rests on `isAddTorsion_ker_stage` in the
++    same file, the torsion statement at a finitely generated stage --- the kernel of
++    $(R\sqcap F')\otimes B\to F\otimes B$ for finitely generated $F'\le F$ --- whose killing
++    integer is the Smith-normal-form product of `TorExercise3A6.exists_nsmul_eq_zero_of_stage`, and
++    on `exists_fin_free_presentation`, which gives a finitely generated $A$ a finite free
++    presentation with finitely generated syzygy, the two-term resolution at which `Tor` is computed
++    there. No filtered colimit is used: the passage to a stage that this page takes by Exercise 4 is
++    certified by descent instead, and Exercise 4 itself remains uncertified at the pin. Axioms
++    `propext`, `Classical.choice`, `Quot.sound`; no `sorryAx`;
++    `lake build LeanCategories.Homological.TorFiniteStage` succeeds at that commit. Not claimed: the
++    filtered-colimit statement, and nothing here alters the proof displayed above.
+ ---
+ 
+ ::: {.problem}

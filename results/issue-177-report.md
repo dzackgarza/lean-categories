@@ -71,21 +71,31 @@ same three axioms: `TorExercise3A6.isAddTorsion_torOne`, `torOne_prime_pow_iff`,
 
 ### 3. The card linking the declaration by name
 
-**Not done in this session.**  The GitHub connector available here is scoped to
-`dzackgarza/lean-categories` (one connected repository), so `new-qual-site` card
-`E-HAT-3.A-6` could not be edited.  The link the card needs, by declaration name:
+**Blocked, with the fix ready and tested.**  The edit belongs in `dzackgarza/new-qual-site`
+(`corpus/collections/SRC-TEXT-HAT02/3-a/E-HAT-3.A-6.md`, whose `audit` events are where the card
+links lean-categories declarations).  This session has no write path to that repository: the GitHub
+connector is scoped to `dzackgarza/lean-categories` (`platform_request` lists no site for it, and
+`platform_site` has none), and a push from the shell fails:
 
 ```
-Tor₁(A,B) is a torsion group for finitely generated A:
-lean-categories `LeanCategories/Homological/TorFiniteStage.lean:130`
-`LeanCategories.Homological.TorFiniteStage.isAddTorsion_torOne_of_finiteStage`
-(TorExercise3A6.isAddTorsion_torOne restricted to `Module.Finite ℤ A`; axioms
-[propext, Classical.choice, Quot.sound], no sorryAx)
-
-the stage computation it rests on:
-`LeanCategories.Homological.TorFiniteStage.isAddTorsion_ker_stage` (`:102`)
-`LeanCategories.Homological.TorExercise3A6.exists_nsmul_eq_zero_of_stage`
+$ GIT_TERMINAL_PROMPT=0 git -C <new-qual-site checkout> push --dry-run omm HEAD:refs/heads/probe
+fatal: could not read Username for 'https://github.com': terminal prompts disabled   (exit 128)
 ```
+
+The missing input: **a connector or credential scoped to `dzackgarza/new-qual-site`.**
+
+The fix is prepared as `results/issue-177-card-link.patch` (new `audit` event, keyed `event`/`by`/
+`date`/`note` like the existing ones, naming
+`LeanCategories.Homological.TorFiniteStage.isAddTorsion_torOne_of_finiteStage` and linking the file at
+commit `9b7b06781f2aec8ab6d19790e03d7af8ddb96986`).  Three tests were run against it:
+
+* `git apply --check` against the `new-qual-site` checkout at `2d5ef3118d`: exit 0, the patch applies.
+* the card's validator, with the patch applied and then reversed:
+  `python -m qualc.authoring check E-HAT-3.A-6` → `E-HAT-3.A-6: schema and Markdown parsing OK
+  (single card)`, exit 0; the checkout was restored exactly (the card returns to its committed state,
+  the other session's two modified files untouched).
+* the link target: `9b7b06781f2aec8ab6d19790e03d7af8ddb96986:LeanCategories/Homological/TorFiniteStage.lean:130`
+  defines the named declaration, and that commit is an ancestor of `omm/main`.
 
 ## Notes on the checkout
 
