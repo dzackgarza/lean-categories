@@ -74,4 +74,46 @@ example : sl2zInGl (PresentedGroup.of (0 : Fin 2)) = PresentedGroup.of (0 : Fin 
 
 example : gl2zToGroup ((PresentedGroup.of (2 : Fin 3)) ^ 2) = 1 := gl2zToGroup_of_two_sq
 
+/-! ### Component 1 of item 1's completeness: the descent, on the smallest inputs
+
+`colHeight` is instantiated on the two generators and on `T ^ 2 * S` — the smallest matrix here of
+height two, its first column being `(2, 1)` — and `colHeight_step` on `T ^ 2 * S` and on
+`S⁻¹ * (T ^ 2 * S)`, whose first column `(1, -2)` forces the other branch (`|a| < |c|`). -/
+
+example : colHeight (S : SL(2, ℤ)).1 = 1 := by decide
+
+example : colHeight (T : SL(2, ℤ)).1 = 1 := by decide
+
+example : colHeight ((T ^ 2 * S : SL(2, ℤ))).1 = 2 := by decide
+
+example : 0 < colHeight (S⁻¹ : SL(2, ℤ)).1 := colHeight_pos _
+
+example (A : SL(2, ℤ)) : A.1 0 0 * A.1 1 1 - A.1 0 1 * A.1 1 0 = 1 := det_entries A
+
+example : (S⁻¹ : SL(2, ℤ)).1 = !![0, 1; -1, 0] := coe_S_inv_matrix
+
+example (A : SL(2, ℤ)) (q : ℤ) :
+    (T ^ q * A).1 0 0 = A.1 0 0 + q * A.1 1 0 := T_zpow_mul_zero_zero A q
+
+example : |(S : SL(2, ℤ)).1 0 0| = |(S : SL(2, ℤ)).1 1 0| →
+    |(S : SL(2, ℤ)).1 1 0| = 1 := abs_eq_one_of_abs_eq S
+
+example : ∃ (ε : Fin 2) (q : ℤ) (A' : SL(2, ℤ)),
+    (T ^ 2 * S : SL(2, ℤ)) = S ^ (ε : ℕ) * T ^ q * A' ∧
+      colHeight A'.1 < colHeight ((T ^ 2 * S : SL(2, ℤ))).1 :=
+  colHeight_step _ (by decide)
+
+example : ∃ (ε : Fin 2) (q : ℤ) (A' : SL(2, ℤ)),
+    (S⁻¹ * (T ^ 2 * S) : SL(2, ℤ)) = S ^ (ε : ℕ) * T ^ q * A' ∧
+      colHeight A'.1 < colHeight ((S⁻¹ * (T ^ 2 * S) : SL(2, ℤ))).1 :=
+  colHeight_step _ (by decide)
+
+example : ∃ (u : FreeGroup (Fin 2)) (A₀ : SL(2, ℤ)),
+    colHeight A₀.1 ≤ 1 ∧ (T ^ 2 * S : SL(2, ℤ)) = FreeGroup.lift sl2zGenVal u * A₀ :=
+  exists_word_mul_colHeight_le_one 2 _ (by decide)
+
+example (B : SL(2, ℤ)) :
+    ∃ u : FreeGroup (Fin 2), colHeight (FreeGroup.lift sl2zGenVal u * B).1 ≤ 1 :=
+  exists_lift_mul_colHeight_le_one B
+
 end LeanCategories.ForMathlib

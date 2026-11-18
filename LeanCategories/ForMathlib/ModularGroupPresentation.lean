@@ -47,6 +47,14 @@ elements generate `GL(2, ℤ)` (`gl2zGenerators`), each relator of the adjoined 
 
 ## What is not here, and exactly what would close the issue
 
+**Component 1 of item 1's completeness is proved here**: the Euclidean descent on the first column
+(`colHeight_step`, `exists_word_mul_colHeight_le_one`, section "Component 1 of the completeness
+proof" below). Every `A : SL(2, ℤ)` is a word in `S` and `T` times a matrix whose first column has
+height at most one, and each step of the descent is `A = S ^ ε * T ^ q * A'` with
+`colHeight A' < colHeight A`. **Component 2 — the stratum `colHeight = 1` — is not**, and it carries
+the whole of the remaining difficulty; the last two paragraphs of this section say why no version of
+the descent reaches it.
+
 *Completeness* of both presentations — that the relators generate the whole kernel, equivalently
 that `sl2zToGroup` and `gl2zToGroup` are injective — is **not** proved. That is the load-bearing
 half of item 1: a coset enumeration on a presentation with too few relators returns a quotient, not
@@ -78,10 +86,27 @@ with the *categorical* `Monoid.PushoutI` of `ℤ/4 ← ℤ/2 → ℤ/6`; the sec
 `sl2zAmalgamRelators` records why (`PushoutI`'s universal property needs a homomorphism out of a
 cyclic factor into a nonabelian group, which Mathlib does not have at this pin).
 
-Two proofs of item 1's completeness are known, and neither is in the library at this pin: unique
-reduced words for the amalgam (`ℤ/4 *_{ℤ/2} ℤ/6` acting on its Bass-Serre tree, which would go
-through `Monoid.PushoutI`'s normal form, `Mathlib/GroupTheory/PushoutI.lean:197`), and Serre's
-tree action of `SL(2, ℤ)` with the Farey tessellation as the tree.
+Two proofs of item 1's completeness are known, and what each still costs here is different.
+
+*Normal forms for the amalgam.* Mathlib at this pin **does** have them: `Monoid.PushoutI`'s
+`NormalWord` with its `equiv : PushoutI φ ≃ NormalWord d` (`Mathlib/GroupTheory/PushoutI.lean:553`),
+`prod_injective` (`:560`), `of_injective` (`:583`), `Reduced.eq_empty_of_mem_range` (`:628`) and the
+amalgam intersection `inf_of_range_eq_base_range` (`:647`), together with `Monoid.CoprodI.Word`'s
+unique reduced words for the free product. So the "unique reduced words for
+`ℤ/4 *_{ℤ/2} ℤ/6`" half is in the library. What is missing is at the two ends of it: (a) the
+identification of `PresentedGroup sl2zAmalgamRelators` with a `PushoutI` of a diagram of cyclic
+groups — which needs a homomorphism *out of* a cyclic group into a nonabelian one, and the library
+has no such constructor at this pin (`ZMod.lift` is additive, so its targets are abelian; the
+multiplicative homs in the library go into `Mˣ` or come out of a presentation's own `lift`), so this
+half has to be built by a `ZMod` recursion first; and (b) injectivity of the induced map
+`PushoutI →* SL(2, ℤ)`, which does not follow from the normal form and is the tree statement below.
+
+*Serre's tree action of `SL(2, ℤ)`.* The tree is the barycentric subdivision of the dual of the
+Farey tessellation: its vertices of `Z/4`-type are the midpoints of Farey edges (fixed by `S`) and
+those of `Z/6`-type the centroids of Farey triangles (fixed by `TS`), its edges have stabilizer
+`⟨S²⟩ = {±1}`, and the vertex-stabilizer statement is component 2. Mathlib has no Farey graph and no
+Bass–Serre theory, and acyclicity of that graph — which is what "no nonempty reduced word
+dies" comes to — is the missing lemma.
 
 ## Sources
 
@@ -111,6 +136,19 @@ presentation). Formalization corpus, 2026-11-04: `SL2Z_generators` (23 files, 32
 `GL2Z semidirect presentation` (1 file, 46 matches). No hit is a `PresentedGroup → SL(2, ℤ)`
 isomorphism or any presentation of `GL(2, ℤ)`; the closest hits are TauCeti's `PSL(2, ℤ)`
 relations and CBirkbeck's `LeanBridge` groups, neither of which contains the isomorphism asked for.
+
+Searched again for this unit (2026-11, the amalgam normal form) on the formalization corpus and in
+the repository, under `sl2zToGroup_injective`, `Sl2zPresentationComplete`, `SL2Z presentation`,
+`ModularGroup Presentation`, `IsPushout ModularGroup` (0 matches), `BassSerre`, `reducedWord`,
+`amalgam normal form`, `farey`, `PushoutI normal form`, `PushoutI SL2Z` (0),
+`amalgam SL2Z ZMod` (0), `f:GraphOfGroups`, and locally
+`rg -l "PresentedGroup|SL2Z|SpecialLinearGroup"` in `LeanCategories` (8 files, none stating a
+presentation of `SL(2, ℤ)`). No corpus repository states the completeness of
+`⟨S, T | S⁴, (TS)³S⁻²⟩`, or any presentation of `SL(2, ℤ)`. The infrastructure hits are TauCeti's
+`TauCeti/GroupTheory/PushoutI/{Reduced,Map}.lean` and
+`TauCeti/GroupTheory/GraphOfGroups/{NormalForm,OneEdge}.lean` — Mathlib's `PushoutI` normal form
+extended to reduced words, and the graph-of-groups normal-form theorem. TauCeti is not a dependency
+of this repository, so these are recorded as a port target and not imported.
 -/
 
 @[expose] public section
@@ -193,6 +231,249 @@ theorem sl2zToGroup_surjective : Function.Surjective sl2zToGroup := by
       (Subgroup.closure_le (K := sl2zToGroup.range)).mpr hle
   intro g
   exact MonoidHom.mem_range.mp (htop (Subgroup.mem_top g))
+
+/-!
+### Component 1 of the completeness proof: the Euclid descent on the first column
+
+The completeness of item 1 splits into two statements, and this section is the first of them: the
+*descent*. Writing `colHeight A` for the height `max |A 0 0| |A 1 0|` of the first column of an
+integer `2 × 2` matrix, `colHeight_step` says that every `A : SL(2, ℤ)` with `2 ≤ colHeight A` is
+`S ^ ε * T ^ q` times a matrix whose first column is strictly shorter, with `ε : Fin 2` and `q : ℤ`;
+`exists_word_mul_colHeight_le_one` iterates it, so that every element of `SL(2, ℤ)` is a word in
+`S`, `T` (as a `FreeGroup (Fin 2)` element, evaluated by `sl2zGenVal`) times a matrix of
+first-column height at most one.
+
+Both degenerate cases the descent has to dodge are dodged by the determinant: `c = 0` forces
+`|a| = 1` and `a = 0` forces `|c| = 1`, so under `2 ≤ colHeight` both entries of the first column
+are nonzero and the Euclidean division `a % c` resp. `c % a` is available. `|a| = |c|` likewise
+forces `|c| = 1` (`abs_eq_one_of_abs_eq`), which is what makes the case split exhaustive rather than
+three-way.
+
+This is the whole of what an elementary descent can give, and it is not the completeness of the
+presentation. The residual stratum `colHeight A ≤ 1` is where the theorem actually lives: the
+descent's induction is on the height of the *product* of a word, so its base case quantifies over
+*all* words whose product has first-column height at most one — and that base case already contains
+`ker sl2zToGroup` (take the product `1`). No iteration of `colHeight_step` therefore reduces
+`Sl2zPresentationComplete` to a finite check; what it does is exhibit the word that conjugates any
+given matrix into the stratum where the amalgam normal form has to be consulted. See the section
+"Item 1: the two cyclic factors" below for what that consultation costs, and note that the descent
+is needed even for the *statement*: `colHeight` is what makes "the cusp stratum" a set of matrices
+rather than a slogan.
+-/
+
+/-- The height of the first column of an integer `2 × 2` matrix: the largest of the absolute values
+of its two entries. For `A : SL(2, ℤ)`, `colHeight A.1` is the height the Euclid descent of
+lean-categories#89 measures, and `colHeight A.1 = 1` is its residual stratum. -/
+def colHeight (A : Matrix (Fin 2) (Fin 2) ℤ) : ℤ := max |A 0 0| |A 1 0|
+
+@[simp]
+lemma colHeight_apply (A : Matrix (Fin 2) (Fin 2) ℤ) : colHeight A = max |A 0 0| |A 1 0| := rfl
+
+lemma colHeight_nonneg (A : Matrix (Fin 2) (Fin 2) ℤ) : 0 ≤ colHeight A :=
+  le_trans (abs_nonneg _) (le_max_left _ _)
+
+/-- The entries of an `SL(2, ℤ)` matrix satisfy `a * d - b * c = 1`. -/
+lemma det_entries (A : SL(2, ℤ)) : A.1 0 0 * A.1 1 1 - A.1 0 1 * A.1 1 0 = 1 := by
+  have h := A.2
+  rwa [Matrix.det_fin_two] at h
+
+/-- The first column of an `SL(2, ℤ)` matrix is nonzero: its height is positive. -/
+lemma colHeight_pos (A : SL(2, ℤ)) : 0 < colHeight A.1 := by
+  rcases lt_or_ge 0 (colHeight A.1) with h | h
+  · exact h
+  have h0 : colHeight A.1 = 0 := le_antisymm h (colHeight_nonneg _)
+  have hz : A.1 0 0 = 0 := by
+    have hle : |A.1 0 0| ≤ 0 := by rw [← h0]; exact le_max_left _ _
+    exact abs_eq_zero.mp (le_antisymm hle (abs_nonneg _))
+  have hz2 : A.1 1 0 = 0 := by
+    have hle : |A.1 1 0| ≤ 0 := by rw [← h0]; exact le_max_right _ _
+    exact abs_eq_zero.mp (le_antisymm hle (abs_nonneg _))
+  have hdet := det_entries A
+  rw [hz, hz2, mul_zero, sub_zero] at hdet
+  exact absurd hdet (by norm_num)
+
+/-- The first column of `T ^ q * A`, top entry. -/
+lemma T_zpow_mul_zero_zero (A : SL(2, ℤ)) (q : ℤ) :
+    (T ^ q * A).1 0 0 = A.1 0 0 + q * A.1 1 0 := by
+  rw [show (T ^ q * A).1 = (T ^ q).1 * A.1 from rfl, coe_T_zpow, Matrix.mul_apply,
+    Fin.sum_univ_two]
+  simp
+
+/-- The first column of `T ^ q * A`, bottom entry: a power of `T` leaves it alone. -/
+lemma T_zpow_mul_one_zero (A : SL(2, ℤ)) (q : ℤ) : (T ^ q * A).1 1 0 = A.1 1 0 := by
+  rw [show (T ^ q * A).1 = (T ^ q).1 * A.1 from rfl, coe_T_zpow, Matrix.mul_apply,
+    Fin.sum_univ_two]
+  simp
+
+lemma coe_S_inv_matrix : (S⁻¹ : SL(2, ℤ)).1 = !![0, 1; -1, 0] := by
+  rw [S_inv]
+  ext i j
+  fin_cases i <;> fin_cases j <;> decide
+
+lemma S_inv_mul_zero_zero (A : SL(2, ℤ)) : (S⁻¹ * A).1 0 0 = A.1 1 0 := by
+  rw [show (S⁻¹ * A).1 = (S⁻¹).1 * A.1 from rfl, coe_S_inv_matrix, Matrix.mul_apply,
+    Fin.sum_univ_two]
+  simp
+
+lemma S_inv_mul_one_zero (A : SL(2, ℤ)) : (S⁻¹ * A).1 1 0 = -A.1 0 0 := by
+  rw [show (S⁻¹ * A).1 = (S⁻¹).1 * A.1 from rfl, coe_S_inv_matrix, Matrix.mul_apply,
+    Fin.sum_univ_two]
+  simp
+
+lemma colHeight_T_zpow_mul (A : SL(2, ℤ)) (q : ℤ) :
+    colHeight (T ^ q * A).1 = max |A.1 0 0 + q * A.1 1 0| |A.1 1 0| := by
+  rw [colHeight_apply, T_zpow_mul_zero_zero, T_zpow_mul_one_zero]
+
+/-- In `SL(2, ℤ)` with first-column height at least two, both entries of the first column are
+nonzero: the two degenerate cases of the descent are excluded by the determinant. -/
+lemma ne_zero_of_colHeight (A : SL(2, ℤ)) (hA : 2 ≤ colHeight A.1) :
+    A.1 0 0 ≠ 0 ∧ A.1 1 0 ≠ 0 := by
+  have hdet := det_entries A
+  have hc : A.1 1 0 ≠ 0 := by
+    intro h0
+    rw [h0, mul_zero, sub_zero] at hdet
+    rcases Int.eq_one_or_neg_one_of_mul_eq_one hdet with h | h
+    · rw [colHeight_apply] at hA
+      rw [h, h0] at hA
+      norm_num at hA
+    · rw [colHeight_apply] at hA
+      rw [h, h0] at hA
+      norm_num at hA
+  refine ⟨?_, hc⟩
+  intro h0
+  rw [h0, zero_mul, zero_sub] at hdet
+  have hb : A.1 1 0 * (-A.1 0 1) = 1 := by nlinarith [hdet]
+  rcases Int.eq_one_or_neg_one_of_mul_eq_one hb with h | h
+  · rw [colHeight_apply] at hA
+    rw [h0, h] at hA
+    norm_num at hA
+  · rw [colHeight_apply] at hA
+    rw [h0, h] at hA
+    norm_num at hA
+
+/-- `|a| = |c|` forces `|c| = 1` for an `SL(2, ℤ)` matrix: the determinant is one. This is the
+third case the descent has to exclude, `a = c` and `a = -c` both giving `c * (±1) = 1`. -/
+lemma abs_eq_one_of_abs_eq (A : SL(2, ℤ)) (h : |A.1 0 0| = |A.1 1 0|) : |A.1 1 0| = 1 := by
+  have hdet := det_entries A
+  rcases abs_eq_abs.mp h with h' | h'
+  · rw [h'] at hdet
+    have hc : A.1 1 0 * (A.1 1 1 - A.1 0 1) = 1 := by
+      ring_nf at hdet ⊢
+      linarith
+    rcases Int.eq_one_or_neg_one_of_mul_eq_one hc with h1 | h1 <;> rw [h1] <;> norm_num
+  · rw [h'] at hdet
+    have hc : (-A.1 1 0) * (A.1 1 1 + A.1 0 1) = 1 := by
+      ring_nf at hdet ⊢
+      linarith
+    rcases Int.eq_one_or_neg_one_of_mul_eq_one hc with h1 | h1
+    · rw [show A.1 1 0 = -1 by linarith]
+      norm_num
+    · rw [show A.1 1 0 = 1 by linarith]
+      norm_num
+
+/-- **Component 1 of lean-categories#89 item 1.** If the first column of `A : SL(2, ℤ)` has height
+at least two, then for some `ε : Fin 2`, `q : ℤ` and `A' : SL(2, ℤ)`,
+
+  `A = S ^ ε * T ^ q * A'`  and  `colHeight A' < colHeight A`,
+
+so the Euclidean algorithm on the pair `(|A 0 0|, |A 1 0|)` is a strictly decreasing rewriting
+process on `SL(2, ℤ)` that lands in the stratum `colHeight = 1`. The two multipliers are the two
+branches of one Euclidean step: `T ^ q` alone when `|c| < |a|` (with `q = a / c`), and `S` followed
+by `T ^ q` when `|a| < |c|` (with `q = c / a`). -/
+theorem colHeight_step (A : SL(2, ℤ)) (hA : 2 ≤ colHeight A.1) :
+    ∃ (ε : Fin 2) (q : ℤ) (A' : SL(2, ℤ)),
+      A = S ^ (ε : ℕ) * T ^ q * A' ∧ colHeight A'.1 < colHeight A.1 := by
+  obtain ⟨ha, hc⟩ := ne_zero_of_colHeight A hA
+  have hne : |A.1 1 0| ≠ |A.1 0 0| := by
+    intro heq
+    have h1 : |A.1 1 0| = 1 := abs_eq_one_of_abs_eq A heq.symm
+    have ha1 : |A.1 0 0| = 1 := heq.symm.trans h1
+    have h2 : colHeight A.1 = 1 := by
+      rw [colHeight_apply, ha1, h1, max_self]
+    rw [h2] at hA
+    norm_num at hA
+  rcases lt_or_gt_of_ne hne with hlt | hlt
+  · -- `|c| < |a|`: multiply by `T ^ (a / c)` on the left
+    have hcolA : colHeight A.1 = |A.1 0 0| := by
+      rw [colHeight_apply, max_eq_left (le_of_lt hlt)]
+    have key : A.1 0 0 + (-(A.1 0 0 / A.1 1 0)) * A.1 1 0 = A.1 0 0 % A.1 1 0 := by
+      have h := Int.emod_add_mul_ediv (A.1 0 0) (A.1 1 0)
+      nlinarith [h]
+    refine ⟨0, A.1 0 0 / A.1 1 0, T ^ (-(A.1 0 0 / A.1 1 0)) * A, ?_, ?_⟩
+    · rw [show ((0 : Fin 2) : ℕ) = 0 from rfl, pow_zero, one_mul, ← mul_assoc, ← zpow_add,
+        add_neg_cancel, zpow_zero, one_mul]
+    · rw [colHeight_T_zpow_mul, key, max_eq_right (le_of_lt ?_)]
+      · rw [hcolA]
+        exact hlt
+      · have h1 := Int.emod_lt_abs (A.1 0 0) hc
+        have h2 := Int.emod_nonneg (A.1 0 0) hc
+        rwa [abs_of_nonneg h2]
+  · -- `|a| < |c|`: multiply by `T ^ (c / a)` and `S⁻¹` on the left
+    have hcolA : colHeight A.1 = |A.1 1 0| := by
+      rw [colHeight_apply, max_eq_right (le_of_lt hlt)]
+    have key : A.1 1 0 + (A.1 1 0 / A.1 0 0) * (-A.1 0 0) = A.1 1 0 % A.1 0 0 := by
+      have h := Int.emod_add_mul_ediv (A.1 1 0) (A.1 0 0)
+      have hc' : A.1 1 0 = A.1 1 0 % A.1 0 0 + (A.1 1 0 / A.1 0 0) * A.1 0 0 := by
+        conv_lhs => rw [← h]
+        ring
+      nth_rewrite 1 [hc']
+      ring
+    refine ⟨1, -(A.1 1 0 / A.1 0 0), T ^ (A.1 1 0 / A.1 0 0) * (S⁻¹ * A), ?_, ?_⟩
+    · rw [show ((1 : Fin 2) : ℕ) = 1 from rfl, pow_one]
+      group
+    · rw [colHeight_T_zpow_mul, S_inv_mul_zero_zero, S_inv_mul_one_zero, key,
+        max_eq_right (le_of_lt ?_)]
+      · rw [hcolA, abs_neg]
+        exact hlt
+      · have h1 := Int.emod_lt_abs (A.1 1 0) ha
+        have h2 := Int.emod_nonneg (A.1 1 0) ha
+        rw [abs_of_nonneg h2, abs_neg]
+        exact h1
+
+/-- **Component 1, iterated.** Every `A : SL(2, ℤ)` is a word in the two generators — an element
+`u` of the free group on `Fin 2`, evaluated through `sl2zGenVal` — times a matrix whose first column
+has height at most one. The proof is the strong induction on `colHeight` that `colHeight_step`
+drives; it terminates because the height drops by at least one at each step and is positive on
+`SL(2, ℤ)`. -/
+theorem exists_word_mul_colHeight_le_one :
+    ∀ (n : ℕ) (A : SL(2, ℤ)), (colHeight A.1).toNat ≤ n →
+      ∃ (u : FreeGroup (Fin 2)) (A₀ : SL(2, ℤ)),
+        colHeight A₀.1 ≤ 1 ∧ A = FreeGroup.lift sl2zGenVal u * A₀ := by
+  intro n
+  induction n with
+  | zero =>
+    intro A hA
+    have hpos := colHeight_pos A
+    have hle : (colHeight A.1).toNat = 0 := Nat.le_zero.mp hA
+    rw [Int.toNat_eq_zero] at hle
+    omega
+  | succ n ih =>
+    intro A hA
+    by_cases h : colHeight A.1 ≤ 1
+    · exact ⟨1, A, h, by rw [map_one, one_mul]⟩
+    · have h2 : 2 ≤ colHeight A.1 := by omega
+      obtain ⟨ε, q, A', hEq, hlt⟩ := colHeight_step A h2
+      have hA' : (colHeight A'.1).toNat ≤ n := by
+        have hlt' : (colHeight A'.1).toNat < (colHeight A.1).toNat := by
+          rw [Int.toNat_lt_toNat (colHeight_pos A)]
+          exact hlt
+        omega
+      obtain ⟨u, A₀, hA₀, hEq₀⟩ := ih A' hA'
+      exact ⟨FreeGroup.of (0 : Fin 2) ^ (ε : ℕ) * FreeGroup.of (1 : Fin 2) ^ q * u, A₀, hA₀, by
+        rw [hEq, hEq₀, map_mul, map_mul, map_pow, map_zpow, FreeGroup.lift_apply_of,
+          FreeGroup.lift_apply_of, sl2zGenVal_zero, sl2zGenVal_one]
+        group⟩
+
+/-- **Component 1, iterated, in the direction the presentation uses.** For every `A : SL(2, ℤ)`
+there is a word `u` in the free group on the two generators whose product with `A` has first-column
+height at most one. This is the form in which the descent meets the cusp stratum: the cusp stratum
+has to say what the words with `colHeight ≤ 1` product are, and nothing here does. -/
+theorem exists_lift_mul_colHeight_le_one (A : SL(2, ℤ)) :
+    ∃ u : FreeGroup (Fin 2), colHeight (FreeGroup.lift sl2zGenVal u * A).1 ≤ 1 := by
+  obtain ⟨u, A₀, hA₀, hEq⟩ := exists_word_mul_colHeight_le_one _ A le_rfl
+  refine ⟨u⁻¹, ?_⟩
+  rw [map_inv, hEq, ← mul_assoc, inv_mul_cancel, one_mul]
+  exact hA₀
 
 /-- Lean-categories#89 item 1 in the form the theorem would take: the presentation
 `⟨S, T | S⁴, (TS)³ = S²⟩` is *complete*, i.e. the relators generate the whole kernel of the free
@@ -363,12 +644,15 @@ first in `SL(2, ℤ)` (`S_sq_ne_one`, `S_ne_one`, `T_mul_S_sq_ne_one`, `T_mul_S_
 So the presented group contains `ℤ/4` and `ℤ/6`, generated by `S` and by `T S`, glued along
 `S² = (TS)³` (`sl2zTS_relator`), and maps onto `SL(2, ℤ)`. What `Sl2zPresentationComplete` still
 asks is the one remaining amalgam datum: that `⟨S⟩` and `⟨T S⟩` meet in exactly `⟨S²⟩` inside the
-presented group — equivalently, that no reduced word in the two factors is trivial. Mathlib at this
-pin has nothing that yields it: `Monoid.PushoutI` (`Mathlib/GroupTheory/PushoutI.lean`) proves
-normal forms and injectivity for a pushout *one maps into*, but the library constructs no pushout
-instance for `SL(2, ℤ)` (`PushoutI` does not occur outside that file except in unrelated biproduct
-lemmas), has no Farey graph, and has no Bass–Serre theory. Closing it is a unit of its own, not a
-probe or a repair of this file.
+presented group — equivalently, that no nonempty reduced word in the two factors is trivial. The
+descent above does not reach it (see the section "Component 1 of the completeness proof": the base
+case of the descent's induction quantifies over all words whose product has `colHeight ≤ 1`, which
+already includes `ker sl2zToGroup`). Mathlib's `Monoid.PushoutI`
+(`Mathlib/GroupTheory/PushoutI.lean`) does supply the amalgam normal forms — `NormalWord`, `equiv`,
+`prod_injective`, `inf_of_range_eq_base_range` — but the library constructs no pushout instance for
+`SL(2, ℤ)`, the normal form does not by itself make a map *out of* the pushout injective, and there
+is no Farey graph and no Bass–Serre theory. Closing it is a unit of its own, not a probe or a repair
+of this file.
 -/
 
 theorem S_sq_ne_one : (S : SL(2, ℤ)) ^ 2 ≠ 1 := by
