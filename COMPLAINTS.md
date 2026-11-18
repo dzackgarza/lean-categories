@@ -3987,4 +3987,12 @@ downstream assertions, computational observations, or downstream diagnostics.
   infinite for indefinite forms of rank at least three`, returned only encyclopaedia summaries of
   *binary* quadratic forms (Wikipedia, WIKI2, Grokipedia) whose "definite ⟹ finite, indefinite ⟹
   infinite" claim is about rank two alone, and MathOverflow threads about generators of `O_q(ℤ)`; none
-  ranges over rank at least three, so none can carry that clause.
+  ranges over rank at least three, so none can carry that clause. The formalization corpus
+  (`scripts/formalization_corpus.py`, whole index, 2026-11-18) was then searched — `orthogonal group
+  infinite indefinite lattice`, `Aut(q) infinite indefinite binary quadratic form Pell`,
+  `automorphism group quadratic form finite definite infinite indefinite`, `orthogonal group finite
+  iff definite lattice`, `orthogonalGroup_infinite`, `orthogonalGroup infinite`, `indefinite
+  orthogonalGroup` — and it has no statement of the converse either: the nearest hits are TauCeti
+  `NumberTheory/IntegralLattice/Mass.lean` and `LinearAlgebra/BilinearForm/Isometry.lean` (mass of a
+  genus; isometry API), both about definite lattices. So the clause is unsourced in every surface
+  available here, and a source must be supplied before it is stated.
