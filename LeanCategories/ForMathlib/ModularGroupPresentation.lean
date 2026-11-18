@@ -1077,7 +1077,12 @@ So the criterion to prove is "at most one smaller neighbour **and no ties**", an
 exactly one tiebreak, at the height-four pair. Six of those seven numbers are the reason the naive
 attempt would stall only at the last step. The "at most one smaller neighbour" half is now a
 theorem — `no_two_flips_decrease` below — and it holds for *every* pair of integer vectors, not
-only bases.
+only bases. The missing tiebreak also exists and is measured: lowering the fundamental triangle
+`{0, 1, ∞}` from height four to three removes the only tie and leaves the "at most one smaller"
+count at zero violations (raising it to five works as well). So the pair of hypotheses for
+`no_closed_reduced_walk` — symmetric adjacency, no ties, at most one smaller neighbour — is
+attainable on the triangle graph, and the last piece of the unit is the dictionary that turns a
+reduced word into a closed reduced walk if it dies.
 -/
 
 theorem S_sq_ne_one : (S : SL(2, ℤ)) ^ 2 ≠ 1 := by
@@ -1497,6 +1502,30 @@ theorem no_two_flips_decrease (u v : ℤ × ℤ) :
     linarith [ha_u h1, hc_u h2]
   · rintro ⟨h1, h2⟩
     linarith [hb_u h1, hc_v h2]
+
+/-- **The maximum-vertex lemma.** Let `r` be a symmetric adjacency relation on a finite type, `h` a
+height that is never equal along an edge and such that every vertex has at most one neighbour of
+strictly smaller height. Then there is no closed reduced walk: no cyclic sequence of vertices, each
+consecutive pair adjacent and no immediate backtracking. -/
+theorem no_closed_reduced_walk {V : Type} (r : V → V → Prop) (h : V → ℤ)
+    (hsym : ∀ a b, r a b → r b a)
+    (htie : ∀ a b, r a b → h a ≠ h b)
+    (hone : ∀ a b c, r a b → r a c → b ≠ c → ¬ (h b < h a ∧ h c < h a)) :
+    ¬ ∃ (n : ℕ) (_ : NeZero n) (v : ZMod n → V),
+      (∀ i, r (v i) (v (i + 1))) ∧ (∀ i, v (i - 1) ≠ v (i + 1)) := by
+  rintro ⟨n, hn, v, hadj, hred⟩
+  classical
+  obtain ⟨i₀, -, hmax⟩ := Finset.exists_max_image (Finset.univ : Finset (ZMod n)) (fun i => h (v i))
+    Finset.univ_nonempty
+  have hmax' : ∀ i, h (v i) ≤ h (v i₀) := fun i => hmax i (Finset.mem_univ i)
+  have h1 : r (v i₀) (v (i₀ + 1)) := hadj i₀
+  have h2 : r (v i₀) (v (i₀ - 1)) := hsym _ _ (by simpa using hadj (i₀ - 1))
+  have hne : v (i₀ - 1) ≠ v (i₀ + 1) := hred i₀
+  have hlt1 : h (v (i₀ + 1)) < h (v i₀) :=
+    lt_of_le_of_ne (hmax' _) (Ne.symm (htie _ _ h1))
+  have hlt2 : h (v (i₀ - 1)) < h (v i₀) :=
+    lt_of_le_of_ne (hmax' _) (Ne.symm (htie _ _ h2))
+  exact hone _ _ _ h1 h2 hne.symm ⟨hlt1, hlt2⟩
 
 end ModularGroup
 

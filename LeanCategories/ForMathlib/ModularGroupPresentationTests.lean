@@ -267,4 +267,12 @@ example : ¬ (hℓ (twoUaddV ((1 : ℤ), 1) ((2 : ℤ), 1)) < hℓ ((2 : ℤ), 1
     hℓ (UaddTwoV ((1 : ℤ), 1) ((2 : ℤ), 1)) < hℓ ((1 : ℤ), 1)) :=
   (no_two_flips_decrease ((1 : ℤ), 1) ((2 : ℤ), 1)).2.2
 
+-- the maximum-vertex lemma on a two-point graph, with the height `false < true`
+example : ¬ ∃ (n : ℕ) (_ : NeZero n) (v : ZMod n → Bool),
+    (∀ i, v i ≠ v (i + 1)) ∧ (∀ i, v (i - 1) ≠ v (i + 1)) :=
+  no_closed_reduced_walk (fun a b : Bool => a ≠ b) (fun b => if b then (1 : ℤ) else 0)
+    (fun _ _ hab => hab.symm)
+    (fun a b hab => by cases a <;> cases b <;> simp_all)
+    (fun a b c hab hac hbc => by cases a <;> cases b <;> cases c <;> simp_all)
+
 end LeanCategories.ForMathlib
