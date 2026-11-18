@@ -796,4 +796,57 @@ theorem isometry_eq_id_or_neg_of_split (L : FiniteProjectiveLatticeCat ℤ ℤ)
     rw [h, show (LinearMap.toMatrix b b)
       (-(LinearMap.id : L.obj.obj.carrier →ₗ[ℤ] L.obj.obj.carrier)) = -1 from by simp]
 
+/-- The determinant of the Gram matrix of a lattice does not depend on the basis: changing the basis
+multiplies it by the square of a unit. -/
+theorem gramMatrix_det_basis_independent (L : FiniteProjectiveLatticeCat ℤ ℤ)
+    (b b' : Module.Basis (Fin 2) ℤ L.obj.obj.carrier) :
+    (gramMatrix L.obj b).det = (gramMatrix L.obj b').det := by
+  have hP := LinearMap.BilinForm.toMatrix_mul_basis_toMatrix (b := b) (c := b')
+    (B := L.obj.obj.bilinMap)
+  have hunit : IsUnit (b.toMatrix b').det :=
+    Matrix.isUnit_det_of_right_inverse (Module.Basis.toMatrix_mul_toMatrix_flip b b')
+  have hsq : (b.toMatrix b').det * (b.toMatrix b').det = 1 := by
+    rcases Int.isUnit_iff.mp hunit with h | h <;> rw [h] <;> norm_num
+  have h := congrArg Matrix.det hP
+  rw [Matrix.det_mul, Matrix.det_mul, Matrix.det_transpose] at h
+  change (LinearMap.BilinForm.toMatrix b L.obj.obj.bilinMap).det =
+    (LinearMap.BilinForm.toMatrix b' L.obj.obj.bilinMap).det
+  have hd : (LinearMap.BilinForm.toMatrix b L.obj.obj.bilinMap).det *
+      ((b.toMatrix ⇑b').det * (b.toMatrix ⇑b').det) =
+      (LinearMap.BilinForm.toMatrix b L.obj.obj.bilinMap).det := by
+    rw [hsq, mul_one]
+  rw [← h]
+  linear_combination -hd
+
+/-- Being split is a property of the lattice, not of a basis: the square condition on the Gram
+determinant holds for one basis exactly when it holds for any other. -/
+theorem splitCondition_iff (L : FiniteProjectiveLatticeCat ℤ ℤ)
+    (b b' : Module.Basis (Fin 2) ℤ L.obj.obj.carrier) :
+    (∃ σ : ℚ, σ ≠ 0 ∧ ((gramMatrix L.obj b).det : ℚ) = -σ ^ 2) ↔
+      ∃ σ : ℚ, σ ≠ 0 ∧ ((gramMatrix L.obj b').det : ℚ) = -σ ^ 2 := by
+  rw [gramMatrix_det_basis_independent L b b']
+
+/-- **The orthogonal group of a split binary lattice is finite of order at most four**, with no
+basis chosen: it suffices that some basis exhibit the form as split. -/
+theorem finite_and_natCard_orthogonalGroup_of_exists_split (L : FiniteProjectiveLatticeCat ℤ ℤ)
+    (h : ∃ b : Module.Basis (Fin 2) ℤ L.obj.obj.carrier,
+      ∃ σ : ℚ, σ ≠ 0 ∧ ((gramMatrix L.obj b).det : ℚ) = -σ ^ 2) :
+    Finite (OrthogonalGroup L.obj) ∧ Nat.card (OrthogonalGroup L.obj) ≤ 4 := by
+  obtain ⟨b, σ, hσ, hsq⟩ := h
+  exact ⟨finite_orthogonalGroup_of_split L b ⟨σ, hσ, hsq⟩,
+    natCard_orthogonalGroup_le_four_of_split L b ⟨σ, hσ, hsq⟩⟩
+
+/-- **`SO(L) = {±1}` for a split binary lattice**, with the split condition named on any one basis:
+the determinant-one hypothesis is read in the basis that is used. -/
+theorem isometry_eq_id_or_neg_of_exists_split (L : FiniteProjectiveLatticeCat ℤ ℤ)
+    (h : ∃ b : Module.Basis (Fin 2) ℤ L.obj.obj.carrier,
+      ∃ σ : ℚ, σ ≠ 0 ∧ ((gramMatrix L.obj b).det : ℚ) = -σ ^ 2)
+    {b : Module.Basis (Fin 2) ℤ L.obj.obj.carrier} (g : OrthogonalGroup L.obj)
+    (hdetg : (isometryMatrix L b g).det = 1) :
+    (g.1 : L.obj.obj.carrier →ₗ[ℤ] L.obj.obj.carrier) = LinearMap.id ∨
+      (g.1 : L.obj.obj.carrier →ₗ[ℤ] L.obj.obj.carrier) = -LinearMap.id := by
+  obtain ⟨b₀, σ, hσ, hsq⟩ := h
+  exact isometry_eq_id_or_neg_of_split L b
+    ((splitCondition_iff L b₀ b).mp ⟨σ, hσ, hsq⟩) g hdetg
+
 end LeanCategories.Lattices.Valued
