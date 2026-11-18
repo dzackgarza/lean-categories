@@ -1257,9 +1257,14 @@ third.
 That lemma is the basis-expansion `w = fdet w v • u - fdet w u • v` (`fdet_repr`), with the two
 coefficients forced to `±1` by the two adjacency conditions.
 
+Coordinates in a Farey basis are unique (`fdet_repr_unique`), which is what makes distinct lines
+provably distinct: `fdet_self`, `fdet_skew` and the two pairings of a combination give that a vector
+written as `α • u + β • v` has `α = fdet w v` and `β = -fdet w u`, so the description of a vertex by
+its two coordinates is unambiguous.
+
 What is *not* here: acyclicity of the incidence graph, and the bridge from acyclicity to "no
 nonempty reduced word dies". Those are the rest of the tree unit; the column formulas, the two line
-sets and the two-sides lemma are what it reads the vertices and edges with.
+sets, the two-sides lemma and coordinate uniqueness are what it reads the vertices and edges with.
 -/
 
 /-- The `j`-th column of an `SL(2, ℤ)` matrix, as a pair of integers. -/
@@ -1344,6 +1349,38 @@ theorem eq_pm_of_adjacent (u v w : ℤ × ℤ) (h : fdet u v = 1)
   · have hu' : |-fdet w u| = 1 := by rwa [abs_neg]
     exact abs_eq_one_of_abs_eq_one _ hu'
   · exact fdet_repr u v w h
+
+lemma fdet_self (a : ℤ × ℤ) : fdet a a = 0 := by
+  simp only [fdet]
+  ring
+
+lemma fdet_skew (a b : ℤ × ℤ) : fdet a b = -fdet b a := by
+  simp only [fdet]
+  ring
+
+/-- Pairing a combination `α • u + β • v` against `v`. -/
+lemma fdet_combo_right (u v : ℤ × ℤ) (α β : ℤ) :
+    fdet (α * u.1 + β * v.1, α * u.2 + β * v.2) v = α * fdet u v := by
+  simp only [fdet]
+  ring
+
+/-- Pairing a combination `α • u + β • v` against `u`. -/
+lemma fdet_combo_left (u v : ℤ × ℤ) (α β : ℤ) :
+    fdet (α * u.1 + β * v.1, α * u.2 + β * v.2) u = β * fdet v u := by
+  simp only [fdet]
+  ring
+
+/-- Coordinates in a Farey basis are unique, and they are the two determinant pairings. -/
+lemma fdet_repr_unique (u v w : ℤ × ℤ) (h : fdet u v = 1) {α β : ℤ}
+    (hw : w = (α * u.1 + β * v.1, α * u.2 + β * v.2)) :
+    α = fdet w v ∧ β = -fdet w u := by
+  have hvu : fdet v u = -1 := by rw [fdet_skew, h]
+  constructor
+  · have : fdet w v = fdet (α * u.1 + β * v.1, α * u.2 + β * v.2) v := by rw [hw]
+    rw [this, fdet_combo_right, h, mul_one]
+  · have : fdet w u = fdet (α * u.1 + β * v.1, α * u.2 + β * v.2) u := by rw [hw]
+    rw [this, fdet_combo_left, hvu]
+    ring
 
 end ModularGroup
 
