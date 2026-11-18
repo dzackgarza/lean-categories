@@ -15,6 +15,8 @@ public import LeanCategories.Catalogue.Registry.Entry
 public import LeanCategories.Catalogue.Registry.Semantic
 public import LeanCategories.Catalogue.Registry.RouteDiscovery
 public import LeanCategories.Catalogue.Registry.ComparisonProbes
+public import LeanCategories.Catalogue.Registry.Presentation
+public import LeanCategories.Catalogue.Registry.PresentationProbes
 public import LeanCategories.Catalogue.Registry.Snapshot
 public import LeanCategories.Catalogue.Registry.Computation
 public import LeanCategories.Catalogue.Registry.Typed
