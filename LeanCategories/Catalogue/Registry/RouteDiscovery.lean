@@ -25,12 +25,13 @@ presented by generators and relations is the word problem). What the issue does 
   as `competing`, never resolved by precedence (`selectComparison_eq_competing_of_two`). Selection
   reads the finite array of registered rows: it decides nothing about routes that no registered
   cell relates, which is why `ComparisonSelection.unrelated` is not a claim of inequality.
-* `Reaches`, `finite_reach_of_finite_sublevels`, `finite_reach_of_enclosure`: reachability of
-  categories along the search's own steps, proved from a *named* finiteness hypothesis -- finite
-  sublevel sets of a strictly decreasing measure, or an independently checked finite enclosure.
-  `counterStep_reach_infinite` and `counterStep_not_finite_sublevels` show the measure hypothesis
-  is not redundant: a strictly decreasing measure whose sublevel sets are infinite reaches an
-  infinite set.
+* `Reaches`, `finite_reach_of_finite_sublevels`, `finite_reach_of_enclosure`,
+  `finite_reach_of_finite_edges`: reachability of categories along the search's own steps, proved
+  from a *named* finiteness hypothesis -- finite sublevel sets of a strictly decreasing measure, an
+  independently checked finite enclosure, or an edge presentation by finitely many edges, in which
+  case the enclosure is checked by the presentation itself. `counterStep_reach_infinite` and
+  `counterStep_not_finite_sublevels` show the measure hypothesis is not redundant: a strictly
+  decreasing measure whose sublevel sets are infinite reaches an infinite set.
 * `walk_length_le_card`: under a checked enclosure every simple walk is no longer than the
   enclosure, which is what turns a fuel bound from a resource safeguard into a consequence of a
   stated hypothesis. Without that hypothesis the safeguard stays: `SemanticState.routes` runs on
