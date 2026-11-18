@@ -2463,6 +2463,136 @@ noncomputable def hgt (l : List Letter) (k : ℕ) (hk : k < l.length) : ℤ :=
   if (l[k]).isS then EH (col (Y l k) 0) (col (Y l k) 1)
   else HT (col (Y l k) 0) (col (Y l k) 1)
 
+/-!
+### The columns of a matrix are a basis, the flipped bases of a triangle, and height four
+
+The walk's turn comparison at a triangle vertex asks whether one of the two neighbouring edges is
+*lower*, and an edge's height is the mean of its two incident triangles — so the question becomes
+whether the triangle opposite it across that side has strictly smaller height `HT`. Off the tied pair
+that is exactly a strict decrease of the `ℓ¹` height, which `no_two_flips_decrease` controls; on the
+tied pair the O(1) tiebreak can make `HT` smaller while `triH` is not. This section supplies the last
+pieces of that bookkeeping:
+
+* `fdet_cols` — the columns of a matrix in `SL(2, ℤ)` are a Farey basis;
+* `triF_comm'`, `triF_u_negv`, `triF_r2`, `triF_r4` — the changes of basis a letter performs on a
+  triangle, so that `HT` can be read off in whichever basis is convenient;
+* `HT_act_r1/2/4/5` — an `⟨R⟩`-letter does not change the height of a triangle vertex, and `HT_negv` —
+  the two bases of the flip across a side give the same height;
+* `triH_ge_four` — every Farey triangle has `ℓ¹` height at least four (height three would need three
+  cusps of `ℓ¹`-length one, and only two lines have length one), which is what rules out the second
+  "tiebreak-lowered" side in that turn comparison.
+-/
+
+
+/-! ## The three flips turned by a letter, and the `ℓ¹` bounds at height four -/
+
+section FlipLemmas
+
+/-- The columns of a matrix in `SL(2, ℤ)` are a Farey basis. -/
+lemma fdet_cols (X : SL(2, ℤ)) : fdet (col X 0) (col X 1) = 1 := by
+  have h := det_entries X
+  simp only [fdet, col] at *
+  rw [mul_comm (X.1 1 0) (X.1 0 1)]
+  exact h
+
+variable (u v : ℤ × ℤ)
+
+lemma triF_u_negv : triF u (-v) = triF v (-u) := by
+  simp only [triF, neg_neg]
+  rw [show v + -u = -(u + -v) by abel]
+  simp only [neg_neg]
+  ext x
+  simp only [Finset.mem_insert, Finset.mem_singleton]
+  tauto
+
+lemma triF_comm' : triF u v = triF v u := by
+  simp only [triF]
+  have e : v + u = u + v := by abel
+  rw [e]
+  ext x
+  simp only [Finset.mem_insert, Finset.mem_singleton]
+  tauto
+
+lemma triF_r2 : triF v (-(u + v)) = triF u v := by
+  have e : v + -(u + v) = -u := by abel
+  simp only [triF, e, neg_neg]
+  ext x
+  simp only [Finset.mem_insert, Finset.mem_singleton]
+  tauto
+
+lemma triF_r4 : triF (-(u + v)) u = triF u v := by
+  have e : -(u + v) + u = -v := by abel
+  simp only [triF, e, neg_neg]
+  ext x
+  simp only [Finset.mem_insert, Finset.mem_singleton]
+  tauto
+
+end FlipLemmas
+
+section Invariance
+
+variable (u v : ℤ × ℤ)
+
+lemma HT_act_r1 : HT (Letter.act Letter.r1 u v).1 (Letter.act Letter.r1 u v).2 = HT u v := by
+  refine HT_congr (triF_uv u v) ?_
+  have hh : (u + v) + -u = v := by abel
+  simp only [Letter.act, triH, hl_neg, hh]; ring
+
+lemma HT_act_r2 : HT (Letter.act Letter.r2 u v).1 (Letter.act Letter.r2 u v).2 = HT u v := by
+  refine HT_congr (triF_r2 u v) ?_
+  have hh : v + -(u + v) = -u := by abel
+  simp only [Letter.act, triH, hl_neg, hh]; ring
+
+lemma HT_act_r4 : HT (Letter.act Letter.r4 u v).1 (Letter.act Letter.r4 u v).2 = HT u v := by
+  refine HT_congr (triF_r4 u v) ?_
+  have hh : -(u + v) + u = -v := by abel
+  simp only [Letter.act, triH, hl_neg, hh]; ring
+
+lemma HT_act_r5 : HT (Letter.act Letter.r5 u v).1 (Letter.act Letter.r5 u v).2 = HT u v := by
+  refine HT_congr (triF_vu u v) ?_
+  have hh : -v + (u + v) = u := by abel
+  simp only [Letter.act, triH, hl_neg, hh]; ring
+
+/-- `HT (-v) u = HT v (-u)`: the two bases of the same triangle. -/
+lemma HT_negv (u v : ℤ × ℤ) : HT (-v) u = HT v (-u) := by
+  refine HT_congr ?_ ?_
+  · rw [triF_comm' (-v) u, triF_u_negv u v]
+  · have hh : -v + u = -(v + -u) := by abel
+    simp only [triH, hl_neg, hh]
+
+end Invariance
+
+section Bounds
+
+/-- Every Farey triangle has `ℓ¹` height at least four: height three would need all three cusps of
+`ℓ¹`-length one, and there are only two lines of length one. -/
+theorem triH_ge_four {u v : ℤ × ℤ} (hd : fdet u v = 1) : 4 ≤ triH u v := by
+  have hu0 : u ≠ 0 := by rintro rfl; simp [fdet] at hd
+  have hv0 : v ≠ 0 := by rintro rfl; simp [fdet] at hd
+  have huv0 : u + v ≠ 0 := by
+    rintro h0
+    have e : u = -v := by rw [eq_neg_iff_add_eq_zero]; simpa using h0
+    rw [e] at hd
+    simp only [fdet, Prod.fst_neg, Prod.snd_neg] at hd
+    ring_nf at hd
+    omega
+  have h1 := hl_pos hu0
+  have h2 := hl_pos hv0
+  have h3 := hl_pos huv0
+  rcases lt_or_ge (triH u v) 4 with h | h
+  · exfalso
+    simp only [triH] at h
+    have hA : hℓ u = 1 := by omega
+    have hB : hℓ v = 1 := by omega
+    have hC : hℓ (u + v) = 1 := by omega
+    rcases eq_pm_of_hl_one hA with rfl | rfl | rfl | rfl <;>
+      rcases eq_pm_of_hl_one hB with rfl | rfl | rfl | rfl <;>
+      simp only [fdet, E1, E2, hℓ, Prod.fst_add, Prod.snd_add, Prod.fst_neg, Prod.snd_neg] at hd hC <;>
+      ((norm_num at hd) <;> (norm_num at hC))
+  · exact h
+
+end Bounds
+
 end ModularGroup
 
 namespace LeanCategories.ForMathlib

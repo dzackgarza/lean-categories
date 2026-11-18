@@ -142,3 +142,23 @@ The walk is read off the columns of a word's prefix products, and that data is n
 Remaining for the dictionary: the two comparisons at each index (step: `HT_ne`, `HT_ne_flipB`,
 `HT_ne_flipC`; turn: `EH_mean`, `at_most_one_down`), the maximum-vertex argument, and the parity
 split with its two seam computations.
+
+## Progress: the basis facts and the height-four bound
+
+The walk's turn comparison at a triangle asks whether one of the two neighbouring edges is lower; since
+an edge's height is the mean of its two incident triangles, that becomes "is the opposite triangle
+lower in `HT`". Off the tied pair this is a strict `triH` decrease (controlled by
+`no_two_flips_decrease`); on the tied pair the O(1) tiebreak can make `HT` lower while `triH` is not,
+which is the one case that needs care. In the module (section "The columns of a matrix are a basis,
+the flipped bases of a triangle, and height four"):
+
+* `fdet_cols` — the columns of a matrix in `SL(2, ℤ)` are a Farey basis (from `det_entries`);
+* `triF_comm'`, `triF_u_negv`, `triF_r2`, `triF_r4` — the changes of basis the letters perform on a
+  triangle, so `HT` can be read off in whichever basis is convenient;
+* `HT_act_r1/2/4/5` — an `⟨R⟩`-letter does not change a triangle vertex's height; `HT_negv` — the two
+  bases of the flip across a side give the same height;
+* `triH_ge_four` — every Farey triangle has `ℓ¹` height at least four, which rules out the second
+  "tiebreak-lowered" side in that turn comparison.
+
+Still open for the dictionary: the two per-index comparisons themselves, the maximum-vertex argument,
+and the parity split.
