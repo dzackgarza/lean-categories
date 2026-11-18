@@ -1246,9 +1246,14 @@ read off a matrix's columns, which is what this section starts making explicit:
 * `⟨S²⟩ = ⟨R³⟩ = {±1}` acts trivially, which is why the edge and the triangle are the right
   coarse invariants and the amalgamated subgroup is the kernel of both readings.
 
-What is *not* here: the set-level invariance (`triangleLines (X * R) = triangleLines X`), the
-acyclicity of the incidence graph, and the bridge from acyclicity to "no nonempty reduced word
-dies". Those are the tree unit; the column formulas are what it reads the vertices with.
+The set-level form of the same two statements is `edgeLines_mul_S` and `triangleLines_mul_R`: the
+Farey edge `{±u, ±v}` is fixed by right multiplication by `S` and the Farey triangle
+`{±u, ±v, ±(u + v)}` by right multiplication by `R`, so the two orbit types of the tree *are* these
+two sets of lines.
+
+What is *not* here: acyclicity of the incidence graph, and the bridge from acyclicity to "no
+nonempty reduced word dies". Those are the rest of the tree unit; the column formulas and the two
+line sets are what it reads the vertices with.
 -/
 
 /-- The `j`-th column of an `SL(2, ℤ)` matrix, as a pair of integers. -/
@@ -1277,6 +1282,33 @@ lemma col_mul_R (X : SL(2, ℤ)) :
     col (X * (T * S)) 0 = col X 0 + col X 1 ∧ col (X * (T * S)) 1 = -col X 0 := by
   constructor <;>
     · ext <;> simp [col, coe_mul, coe_T, coe_S, Matrix.mul_apply, Fin.sum_univ_two]
+
+/-- The two lines spanned by the columns of a matrix: the Farey edge that the `⟨S⟩`-coset of the
+matrix fixes. -/
+def edgeLines (X : SL(2, ℤ)) : Set (ℤ × ℤ) :=
+  {u | u = col X 0 ∨ u = -col X 0 ∨ u = col X 1 ∨ u = -col X 1}
+
+lemma edgeLines_mul_S (X : SL(2, ℤ)) : edgeLines (X * S) = edgeLines X := by
+  have h0 := (col_mul_S X).1
+  have h1 := (col_mul_S X).2
+  have h2 : - -col X 0 = col X 0 := by abel
+  simp only [edgeLines, h0, h1, h2]
+  simp only [or_comm, or_left_comm, or_assoc]
+
+/-- The three lines spanned by the two columns of a matrix and their sum: the Farey triangle that
+the `⟨R⟩`-coset of the matrix fixes. -/
+def triangleLines (X : SL(2, ℤ)) : Set (ℤ × ℤ) :=
+  {u | u = col X 0 ∨ u = -col X 0 ∨ u = col X 1 ∨ u = -col X 1 ∨
+    u = col X 0 + col X 1 ∨ u = -(col X 0 + col X 1)}
+
+lemma triangleLines_mul_R (X : SL(2, ℤ)) :
+    triangleLines (X * (T * S)) = triangleLines X := by
+  have h0 := (col_mul_R X).1
+  have h1 := (col_mul_R X).2
+  have h2 : (col X 0 + col X 1) + -col X 0 = col X 1 := by abel
+  have h3 : -(-col X 0) = col X 0 := by abel
+  simp only [triangleLines, h0, h1, h2, h3]
+  simp only [or_comm, or_left_comm, or_assoc]
 
 end ModularGroup
 
