@@ -203,4 +203,8 @@ example : ∃ b : ℤ, (-1 : SL(2, ℤ)) = T ^ b ∨ (-1 : SL(2, ℤ)) = -(T ^ b
 
 example : (S : SL(2, ℤ)).1 1 0 = 1 := by decide
 
+example : colHeight (S : SL(2, ℤ)).1 = 1 := colHeight_letters.1
+
+example : colHeight ((T * S : SL(2, ℤ)) ^ 5).1 = 1 := colHeight_letters.2.2.2.2.2
+
 end LeanCategories.ForMathlib
