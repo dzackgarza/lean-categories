@@ -250,6 +250,14 @@ theorem wellOrderedSet_orderType_fin {n : ℕ} (r : RankingData X (Fin n)) :
     @Ordinal.type_fintype X (fun a b : X => a < b) (r.wellOrderedSet).property hX
   exact h.trans (by rw [Fintype.card_congr r.rank, Fintype.card_fin])
 
+/-- A ranking by `ℕ` gives order type `ω`. Stated for a carrier in the standard universe, where its
+index `ℕ` lives: for a carrier in a higher universe the same computation gives the lift of `ω`, and
+`Ordinal.lift_type_eq` compares the two order types through the ranking's order isomorphism. -/
+theorem wellOrderedSet_orderType_nat {X : Type} (r : RankingData X ℕ) :
+    (r.wellOrderedSet).orderType = Ordinal.omega0 := by
+  rw [r.wellOrderedSet_orderType (I := ℕ)]
+  exact Ordinal.type_nat_lt
+
 end RankingData
 
 /-- The well-ordered sets as the property subcategory of the linear orders: the classifier whose
