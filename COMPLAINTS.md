@@ -3946,3 +3946,31 @@ downstream assertions, computational observations, or downstream diagnostics.
 - **Repair link:** express `orthogonalSubgroup` of a scaled lattice as the image of the identity
   linear equivalence, or give `scaleLattice` the same carrier object by construction; then the sign
   twist replaces the direct proof.
+
+### The Pell converse for a split binary lattice is not formalized
+
+- **Need:** `O(L)` infinite for an indefinite rank-two `ℤ`-lattice `L` with `-det G` not a square, and
+  `O(L)` infinite for an indefinite `L` of rank at least three. These are the two converses `#87`
+  names and then excludes ("whose sources are still to be opened and which are not part of this
+  request yet"). What `#87` does ask for — `SO(L) = {±1}`, `O(L)` finite, `|O(L)| ≤ 4` — is proved
+  (`LeanCategories/Lattices/Valued/SplitBinaryLattice.lean`), so nothing in the formalization depends
+  on the entries below.
+- **Source, now opened:** C. O'Sullivan, *Topographs for binary quadratic forms and class numbers*,
+  arXiv:2408.14405v3, §8.1 (read as the HTML rendering of v3, 24 Jul 2025). Prop. 8.1 (citing
+  [Lan58, Thm. 202] and [Bue89, Thm. 3.9]): for a primitive form `q` of non-square discriminant `D`,
+  `Aut(q) = Stab(z_q) = {G_q(t,u) : t,u ∈ ℤ, t² − Du² = 4}`. Prop. 8.4: for non-square `D > 0` the
+  smallest positive solution of `t² − Du² = 4` exists (it is read off a river period). Cor. 8.6: for
+  primitive `q` with non-square `D > 0`, `Aut(q) = {±G_qⁿ : n ∈ ℤ}` with `G_q` hyperbolic, so `Aut(q)`
+  is infinite and `Aut(q)/{±I} ≅ ℤ`. With `D = -4 det G`, "`-det G` not a square" is "`D` a non-square",
+  and indefiniteness of a rank-two lattice is `det G < 0`, i.e. `D > 0`, so §8.1 gives the rank-two
+  converse in the form the issue names it.
+- **Gap:** no source for the rank-at-least-three converse in this paper — the strings `rank`, `O(L)`,
+  `orthogonal group` do not occur in the text (grep of the fetched HTML), and the paper is about binary
+  forms throughout. That clause needs its own source before it can be stated, let alone proved.
+- **Coverage:** the §8.1 statements above were read in full, including the clause list of Cor. 8.2
+  (`D` a nonzero square, `D < -4`, and `D = 0, -3, -4`). Not audited: the numbering and page of Props.
+  8.1/8.4 and Cor. 8.6 in the published version, and whether [Lan58]/[Bue89] state Prop. 8.1 in the
+  same normalization (`q|M = q` versus `Mᵀ G M = G`).
+- **Repair link:** formalizing the converse needs the Pell existence statement (units of norm one in
+  `ℚ(√D)`, unbounded powers of the fundamental solution) — a unit of its own, in a new issue, since
+  `#87` excludes it. The rank-at-least-three clause needs a source chosen first.
