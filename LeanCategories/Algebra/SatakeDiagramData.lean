@@ -356,6 +356,23 @@ theorem cartanReflection_simpleRoot_self [Fintype ι] [DecidableEq ι] (A : Matr
   rw [cartanReflection_simpleRoot, h, two_smul]
   abel
 
+/-- On a pair of unjoined nodes the product of the two simple reflections negates each of the two
+simple roots; this is the longest element of `W_X` for `X = {i, j}` with `a_{ij} = a_{ji} = 0`, the
+diagram being `A₁ ⊕ A₁`. -/
+theorem cartanReflection_mul_simpleRoot_of_disjoint [Fintype ι] [DecidableEq ι]
+    (A : Matrix ι ι ℤ) {i j : ι} (hii : A i i = 2) (hjj : A j j = 2) (hij : A i j = 0)
+    (hji : A j i = 0) :
+    (cartanReflectionEquiv A i hii * cartanReflectionEquiv A j hjj) (cartanSimpleRoot i) =
+        -cartanSimpleRoot i ∧
+      (cartanReflectionEquiv A i hii * cartanReflectionEquiv A j hjj) (cartanSimpleRoot j) =
+        -cartanSimpleRoot j := by
+  constructor
+  · rw [mul_apply_eq_comp, cartanReflectionEquiv_apply, cartanReflectionEquiv_apply,
+      cartanReflection_simpleRoot, hij, zero_smul, sub_zero, cartanReflection_simpleRoot_self _ hii]
+  · rw [mul_apply_eq_comp, cartanReflectionEquiv_apply, cartanReflectionEquiv_apply,
+      cartanReflection_simpleRoot_self _ hjj, map_neg, cartanReflection_simpleRoot, hji, zero_smul,
+      sub_zero]
+
 /-- A sum supported in a single coordinate is the value at that coordinate. -/
 theorem sum_eq_of_support_singleton [Fintype ι] {f : ι → ℚ} {i : ι}
     (h : ∀ k, k ∉ ({i} : Finset ι) → f k = 0) : ∑ k, f k = f i := by
@@ -467,6 +484,14 @@ theorem isFiniteTypeSubdiagram_pair [Fintype ι] [DecidableEq ι] (A : Matrix ι
     rcases hvne with h | h
     · nlinarith [mul_self_pos.mpr h, mul_self_nonneg (v j)]
     · nlinarith [mul_self_pos.mpr h, mul_self_nonneg (v i)]
+
+/-- A sum over the subtype of a pair, of a summand which factors through the projection, is the sum
+of the two terms. -/
+theorem sum_pair_subtype {M : Type*} [AddCommMonoid M] {ι : Type u} [DecidableEq ι] {i j : ι}
+    (hij : i ≠ j) (f : ι → M) :
+    ∑ l : ↥({i, j} : Finset ι), f ↑l = f i + f j := by
+  rw [Finset.sum_coe_sort]
+  exact Finset.sum_pair hij
 
 /-- A sum over the subtype of a singleton `Finset` is its single term. -/
 theorem sum_singleton_subtype {M : Type*} [AddCommMonoid M] {ι : Type u} (i : ι)
@@ -580,6 +605,69 @@ theorem satakeA3_blackMiddle_swapped_admissible :
       · simp at hfix
       · exact hj (by simp)
       · simp at hfix
+
+/-- **Kolb's Example 2.4, first case**: for `sl₄` the pair `({1,3}, id)` *is* admissible.  The black
+nodes span `A₁ ⊕ A₁`, whose longest element is the product of the two commuting reflections
+(`cartanReflection_mul_simpleRoot_of_disjoint`), so `-w_X` is the identity on `X`.  With
+`ρ^∨_X = (h₁ + h₃)/2` the source's Example 2.4 computes `α₁(ρ^∨_X) = α₃(ρ^∨_X) = 1` and
+`α₂(ρ^∨_X) = -1`; the second value is the one condition (3) needs, at the `τ`-fixed white node. -/
+theorem satakeA3_blackEnds_admissible :
+    IsAdmissiblePair (CartanMatrix.A 3) ({0, 2} : Finset (Fin 3)) 1 where
+  finiteType :=
+    isFiniteTypeSubdiagram_pair _ (by decide) (by decide) (by decide) (by decide) (by decide)
+  preservesCartan := fun i j => by simp
+  preservesSubdiagram := fun i => by simp
+  involutive := by simp
+  agreesWithLongestElement := by
+    have hw := cartanReflection_mul_simpleRoot_of_disjoint (CartanMatrix.A 3) (i := 0) (j := 2)
+      (by decide) (by decide) (by decide) (by decide)
+    refine ⟨cartanReflectionEquiv (CartanMatrix.A 3) 0 (by decide) *
+      cartanReflectionEquiv (CartanMatrix.A 3) 2 (by decide), ⟨?_, ?_⟩, ?_⟩
+    · exact Subgroup.mul_mem _
+        (cartanReflectionEquiv_mem_subdiagramWeylGroup _ (i := 0) (by simp))
+        (cartanReflectionEquiv_mem_subdiagramWeylGroup _ (i := 2) (by simp))
+    · intro i hi k
+      have hi' : i = 0 ∨ i = 2 := by
+        rcases Finset.mem_insert.mp hi with h | h
+        · exact Or.inl h
+        · exact Or.inr (Finset.mem_singleton.mp h)
+      rcases hi' with rfl | rfl
+      · rw [hw.1]; by_cases hk : k = 0 <;> simp [hk]
+      · rw [hw.2]; by_cases hk : k = 2 <;> simp [hk]
+    · intro i hi
+      have hi' : i = 0 ∨ i = 2 := by
+        rcases Finset.mem_insert.mp hi with h | h
+        · exact Or.inl h
+        · exact Or.inr (Finset.mem_singleton.mp h)
+      rcases hi' with rfl | rfl
+      · rw [hw.1]; simp
+      · rw [hw.2]; simp
+  integralZeroWeight := by
+    refine ⟨fun _ => 1 / 2, ?_, ?_⟩
+    · intro k
+      have hk' : k = ⟨0, by simp⟩ ∨ k = ⟨2, by simp⟩ := by
+        rcases Finset.mem_insert.mp k.2 with h | h
+        · exact Or.inl (Subtype.ext h)
+        · exact Or.inr (Subtype.ext (Finset.mem_singleton.mp h))
+      rcases hk' with rfl | rfl <;>
+        rw [sum_pair_subtype (i := (0 : Fin 3)) (j := 2) (by decide)
+          (f := fun x => ((CartanMatrix.A 3 _ x : ℤ) : ℚ) * (1 / 2))] <;>
+        norm_num [CartanMatrix.A, Matrix.of_apply]
+    · intro j hj _
+      have hj' : j = 0 ∨ j = 1 ∨ j = 2 := by
+        fin_cases j <;> simp
+      rcases hj' with rfl | rfl | rfl
+      · exact absurd (by simp) hj
+      · refine ⟨-1, ?_⟩
+        rw [show (∑ k : ↥({0, 2} : Finset (Fin 3)), (fun _ => 1 / 2) k *
+            ((CartanMatrix.A 3 1 k.1 : ℤ) : ℚ)) =
+            ∑ k : ↥({0, 2} : Finset (Fin 3)),
+              ((CartanMatrix.A 3 1 k.1 : ℤ) : ℚ) * (1 / 2) from
+          Finset.sum_congr rfl fun k _ => by ring]
+        rw [sum_pair_subtype (i := (0 : Fin 3)) (j := 2) (by decide)
+          (f := fun x => ((CartanMatrix.A 3 1 x : ℤ) : ℚ) * (1 / 2))]
+        norm_num [CartanMatrix.A, Matrix.of_apply]
+      · exact absurd (by simp) hj
 
 /-- **Kolb's Example 2.4, second case**: for `sl₄` the pair `({1}, id)` is *not* admissible:
 `ρ^∨_{X} = h₁/2` gives `α₂(ρ^∨_{X}) = -1/2 ∉ ℤ`, so condition (3) fails at the `τ`-fixed white

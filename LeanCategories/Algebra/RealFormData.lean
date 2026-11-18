@@ -116,12 +116,10 @@ def ofScalarExtension (V : Type u) [LieRing V] [LieAlgebra ℝ V] :
   carrier := V
   extension := LieEquiv.refl
 
-/-- The tautological real form is isomorphic to itself, so `RealForm.Class` is not empty where the
-definition applies. -/
-theorem class_ofScalarExtension (V : Type u) [LieRing V] [LieAlgebra ℝ V] :
-    (Quotient.mk (isoSetoid (ℂ ⊗[ℝ] V)) (ofScalarExtension V) : Class (ℂ ⊗[ℝ] V)) =
-      Quotient.mk (isoSetoid (ℂ ⊗[ℝ] V)) (ofScalarExtension V) :=
-  rfl
+/-- The isomorphism class of the tautological real form: an inhabitant of `RealForm.Class`, so that
+the type of isomorphism classes of real forms of a complexified real Lie algebra is not empty. -/
+def classOfScalarExtension (V : Type u) [LieRing V] [LieAlgebra ℝ V] : Class (ℂ ⊗[ℝ] V) :=
+  Quotient.mk (isoSetoid (ℂ ⊗[ℝ] V)) (ofScalarExtension V)
 
 /-- The copy `1 ⊗ v` of the tautological real form, computed: this is the smallest check that
 `RealForm.copy` computes what it is meant to. -/

@@ -7,7 +7,9 @@ Two new modules, both imported from `LeanCategories/All.lean`:
 * `LeanCategories/Algebra/RealFormData.lean` — item 2 (real forms) and the *statement* of item 3.
 
 Item 3 (Araki's classification) is **not** proved; it is stated, and its two open halves are filed
-in `COMPLAINTS.md` under `#86` (LC-11). Details in §3.
+in `COMPLAINTS.md` under `#86` (LC-11). Details in §3. The whole-library gate
+(`lake build LeanCategories.All`, then `just test`) is green on this tree; job counts and each
+audit's result are in "The whole-library gate" at the end.
 
 ## 1. Item 1 — admissible pairs, and the category of Satake diagrams: LANDED
 
@@ -76,11 +78,23 @@ Run as `lake env lean` on the module; each is a closed theorem whose proof has n
 | line | theorem | what it decides |
 | --- | --- | --- |
 | 317 | `isAdmissiblePair_empty (A) : IsAdmissiblePair A ∅ 1` | the split diagram: conditions (2), (3) vacuous, (i) `isFiniteTypeSubdiagram_empty` — proved for **every** `A : Matrix ι ι ℤ` |
-| 504 | `satakeA1_compact_admissible : IsAdmissiblePair (CartanMatrix.A 1) Finset.univ 1` | the compact `su(2)` diagram: one black node, `-w_X = id` (the reflection `s_0` negates `α_0`) |
-| 545 | `satakeA3_blackMiddle_swapped_admissible : IsAdmissiblePair (CartanMatrix.A 3) {1} (Equiv.swap 0 2)` | Kolb's Example 2.4, fourth case: a **non-trivial `τ`**; condition (3) empty because `τ` moves both white nodes |
-| 587 | `satakeA3_blackFirst_not_admissible : ¬ IsAdmissiblePair (CartanMatrix.A 3) {0} 1` | Kolb's Example 2.4, second case: `α_1(ρ^∨_X) = -1/2 ∉ ℤ` |
-| 601 | `satakeB2_blackShort_admissible : IsAdmissiblePair (CartanMatrix.B 2) {1} 1` | the only probe with a **non-zero** value of condition (3): `α_0(ρ^∨_X) = a_{01}/2 = -1 ∈ ℤ` |
-| 634 | `satakeB2_blackLong_not_admissible : ¬ IsAdmissiblePair (CartanMatrix.B 2) {0} 1` | the long node of `B₂`: `α_1(ρ^∨_X) = a_{10}/2 = -1/2 ∉ ℤ` |
+| 529 | `satakeA1_compact_admissible : IsAdmissiblePair (CartanMatrix.A 1) Finset.univ 1` | the compact `su(2)` diagram: one black node, `-w_X = id` (the reflection `s_0` negates `α_0`) |
+| 570 | `satakeA3_blackMiddle_swapped_admissible : IsAdmissiblePair (CartanMatrix.A 3) {1} (Equiv.swap 0 2)` | Kolb's Example 2.4, fourth case: a **non-trivial `τ`**; condition (3) empty because `τ` moves both white nodes |
+| 614 | `satakeA3_blackEnds_admissible : IsAdmissiblePair (CartanMatrix.A 3) {0, 2} 1` | Kolb's Example 2.4, **first case**: `X = A₁ ⊕ A₁` with longest element `s_0 s_2`, `-w_X = id`; `α₂(ρ^∨_X) = -1 ∈ ℤ` at the white node |
+| 675 | `satakeA3_blackFirst_not_admissible : ¬ IsAdmissiblePair (CartanMatrix.A 3) {0} 1` | Kolb's Example 2.4, second case: `α_1(ρ^∨_X) = -1/2 ∉ ℤ` |
+| 689 | `satakeB2_blackShort_admissible : IsAdmissiblePair (CartanMatrix.B 2) {1} 1` | `B₂` with the **short** node black: `α_0(ρ^∨_X) = a_{01}/2 = -1 ∈ ℤ` |
+| 722 | `satakeB2_blackLong_not_admissible : ¬ IsAdmissiblePair (CartanMatrix.B 2) {0} 1` | `B₂` with the **long** node black: `α_1(ρ^∨_X) = a_{10}/2 = -1/2 ∉ ℤ` |
+
+Searched before the two declarations this case needed (LC-09):
+`python3 scripts/formalization_corpus.py search "longest element parabolic"` gives TauCeti's
+`TauCeti/GroupTheory/Coxeter/LongestElement.lean` (`CoxeterSystem.IsLongest`, the length identity
+`ℓ (u * w₀) + ℓ u = ℓ w₀`) — **not used**: its carrier is a `CoxeterSystem M W`, and this file has
+no Coxeter presentation of `W_X`, only its action on the root lattice, so building one to obtain
+`s_0 s_2` would cost far more than the two rewrites; `… search "w0 simple root negative"` gives only
+TauCeti `F4/ShortRoot` files and nothing reusable. Mathlib searched at the pinned revision for
+`Finset.sum_pair`, `Finset.sum_coe_sort`, `map_neg` (all present and used) and for the product
+action on linear automorphisms, where `LinearEquiv.mul_apply` is deprecated in favour of
+`mul_apply_eq_comp`.
 
 The two negative probes go through `exists_int_eq_half_mul_of_singleton` (`:493`), which reduces
 condition (3) at a single black node to `a_{ji}/2 ∈ ℤ`; `parabolicWeylVectorCoefficient_singleton`
@@ -88,11 +102,30 @@ condition (3) at a single black node to `a_{ji}/2 ∈ ℤ`; `parabolicWeylVector
 hypothesis on the small black-node sets is `isFiniteTypeSubdiagram_singleton` (`:371`) and
 `isFiniteTypeSubdiagram_pair` (`:401`), both proved from the positive-definiteness criterion.
 
-Not landed inside item 1: Kolb's Example 2.4 first case `({1,3}, id)`, the only listed case with
-`|X| = 2` and a non-vacuous condition (3). It needs a two-term sum over `↥X` (a `sum_pair_subtype`
-companion to `sum_singleton_subtype`, `:472`) and the product `s_0 s_2` as the longest element of
-the disconnected `A₁ ⊕ A₁`; the mathematics is routine and the obstruction is only cost. The
-`B₂` pair (`:601`, `:634`) covers the same condition with a non-zero value.
+Kolb's Example 2.4 **first case** `({1,3}, id)` also landed (`SatakeDiagramData.lean:614`,
+`satakeA3_blackEnds_admissible : IsAdmissiblePair (CartanMatrix.A 3) ({0, 2} : Finset (Fin 3)) 1`,
+nodes `0,2` being the source's `1,3`). It needed the two declarations the previous turn named:
+
+* `sum_pair_subtype` (`:490`), `∑ l : ↥{i, j}, f ↑l = f i + f j` for `i ≠ j`, from
+  `Finset.sum_coe_sort` and `Finset.sum_pair` — the summands in both conditions of
+  `IsAdmissiblePair` factor through the projection when the Weyl-vector coefficients are the
+  constant `1/2`, which is what makes the factored form enough (a version for an arbitrary
+  subtype summand is not needed);
+* `cartanReflection_mul_simpleRoot_of_disjoint` (`:362`), `(s_i * s_j) α_i = -α_i ∧
+  (s_i * s_j) α_j = -α_j` for `a_{ii} = a_{jj} = 2` and `a_{ij} = a_{ji} = 0` — the product of two
+  commuting reflections as the longest element of the `A₁ ⊕ A₁` spanned by the black nodes. The
+  product did *not* resist: `mul_apply_eq_comp` to evaluate the product, `cartanReflection_simpleRoot`
+  for `s_j α_i = α_i - a_{ij} α_j`, then `cartanReflection_simpleRoot_self`. (Upstream note:
+  `LinearEquiv.mul_apply` is deprecated in favour of `mul_apply_eq_comp` at this pin, which is what
+  the proof uses.)
+
+In the probe the longest element is the product of the two reflection *equivalences*
+(`cartanReflectionEquiv A 0 * cartanReflectionEquiv A 2`), which is in `W_X` by
+`Subgroup.mul_mem`; condition (2) then holds with `-w_X = id` on `X` and `τ = id`. Condition (3) is
+the one the source computes: with `ρ^∨_X = (h₁ + h₃)/2`, `α₁(ρ^∨_X) = α₃(ρ^∨_X) = 1` (no white
+`τ`-fixed node there) and `α₂(ρ^∨_X) = -1 ∈ ℤ` at the `τ`-fixed white node `2`, witnessed by
+`z = -1` in the `HasIntegralParabolicWeylPairing` field. The finite-type field is
+`isFiniteTypeSubdiagram_pair` (`:418`) with `a_{11} = a_{33} = 2` and `a_{13} = a_{31} = 0`.
 
 ## 2. Item 2 — real forms: LANDED
 
@@ -201,23 +234,63 @@ Before each definition:
   (`Algebra/Lie/BaseChange.lean`), `LieAlgebra.IsSemisimple`
   (`Algebra/Lie/Semisimple/Defs.lean:105`).
 
-## What was run, and what was not
+## The whole-library gate
+
+Run on HEAD `f8ab14d1` plus this turn's three files (`SatakeDiagramData.lean`,
+`RealFormData.lean`, this report); `git status` showed no other tracked modification and no other
+chat's `lake`/`lean` process was running when it started. Nothing was decompressed: `cache-get`
+reported "every entry is named by some worktree's manifest" and every package tree already linked.
 
 ```
-lake build LeanCategories.Algebra.SatakeDiagramData LeanCategories.Algebra.RealFormData
-  → Build completed successfully (4769 jobs)
-lake env lean -DrelaxedAutoImplicit=false -Dweak.linter.mathlibStandardSet=true <each module>
-  → no output (no errors, no warnings)
-#print axioms on the ten headline declarations
-  → [propext, Classical.choice, Quot.sound] for every one
+lake build LeanCategories.All
+  → Build completed successfully (20072 jobs)
+
+just test                     (exit 0, 13 min 11 s)
+  build                       → cache-get: all trees linked, nothing fetched
+                                Build completed successfully (8342 jobs)
+                                build-timing: 0 timed module jobs
+                                  -> build-timings/f8ab14d1077d-20261118T013141Z.tsv
+  lean-no-sorry               → "No sorry declarations in tracked Lean sources."
+  _lean-vacuity-audit         → LeanCategories.Tools.VacuityAudit built (27 s);
+                                Build completed successfully (20074 jobs);
+                                no `noBareNonempty` finding
+  _lean-mathlib-lint-audit    → 13 `#lint only` lines (checkType, defsWithUnderscore,
+                                deprecatedNoSince, impossibleInstance, noBareNonempty,
+                                nonClassInstance, simpComm, simpNF, structureInType,
+                                subsetDotNotationLinter, synTaut, tacticDocs,
+                                unusedHavesSuffices): each
+                                "Found 0 errors in 18026 declarations (plus 11753
+                                automatically generated ones)", "All linting checks
+                                passed!"
+  _lean-unused-variables      → passed (no `linter.unusedVariables` finding)
+  _lean-axiom-audit           → LeanCategories.Tools.AxiomAudit (359 s) and
+                                AxiomAuditMain built; no declaration outside
+                                [propext, Classical.choice, Quot.sound]
+df after: 9.6 G free on /
 ```
 
-Not run: `just test` (the repository gate) and `lake build LeanCategories.All`. The issue names no
-gate and the instruction was to build only what is touched; the two modules are built and the
-`All.lean` import lines are added, but the whole-library elaboration and the
-`lean-no-sorry`/vacuity/lint/unused-variable/axiom-audit jobs have not been run on this tree.
+The **first** run of `just test` was red, on this issue's own file, and the fix is part of this
+turn's diff: the `synTaut` linter reported
+`LeanCategories.Algebra.RealForm.class_ofScalarExtension /- LHS equals RHS syntactically -/` — a
+theorem stated as `q = q`, so worthless. It is replaced by an inhabitant of the class type,
 
-One environment fact worth recording: `lean` on `PATH` resolves to the `elan` toolchain pinned by
-`lean-toolchain` (v4.36.0), while `/opt/mathlib` is a v4.33.1 build, so a bare `lean` fails with
-`Init.olean ... incompatible header`; `lake env lean` in this worktree works and is what every check
-above used.
+```lean
+def classOfScalarExtension (V : Type u) [LieRing V] [LieAlgebra ℝ V] : Class (ℂ ⊗[ℝ] V) :=
+  Quotient.mk (isoSetoid (ℂ ⊗[ℝ] V)) (ofScalarExtension V)
+```
+
+(`RealFormData.lean:121`). In that first run the build, `lean-no-sorry` and the vacuity audit had
+already passed; the lint audit aborted the recipe, so `_lean-unused-variables` and
+`_lean-axiom-audit` were not reached until the second run above.
+
+Pre-existing gate noise seen in the log and not touched, since it is not this issue's: the
+`Tools/AxiomAudit.lean:15` long line, the ambiguous-namespace warnings in
+`ForMathlib/GrothendieckCocartesian.lean`, `Topology/Cards/*` and
+`Lattices/Valued/PadicMixedSymbol.lean`, and the unscoped `maxHeartbeats` warning in
+`ForMathlib/CategoricalPullback.lean:30`.
+
+## Environment note
+
+`lean` on `PATH` resolves to the `elan` toolchain pinned by `lean-toolchain` (v4.36.0), while
+`/opt/mathlib` is a v4.33.1 build, so a bare `lean` fails with `Init.olean ... incompatible header`;
+`lake env lean` in this worktree works and is what every check above used.
