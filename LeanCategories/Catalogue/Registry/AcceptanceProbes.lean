@@ -58,4 +58,42 @@ theorem id99.walkEnumerated :
     ([1, 0] : List (Fin 2)) ∈ RouteDiscovery.boundedWalks (fun _ : Fin 2 => [0, 1]) 2 0 := by
   decide
 
+/-! ### The enumeration finds a chain, and respects its fuel -/
+
+/-- Two structural edges `a → b → c`: the smallest state with a two-edge route. -/
+def chainSpecimen : SemanticState where
+  categories := #[]
+  functors := #[
+    { id := ⟨"fun.ab"⟩, source := .atom ⟨"cat.a"⟩, target := .atom ⟨"cat.b"⟩
+      declaration := ``sameEndpoint, realization := ``sameEndpoint
+      expression := .atomic ⟨"fun.ab"⟩, structural := true },
+    { id := ⟨"fun.bc"⟩, source := .atom ⟨"cat.b"⟩, target := .atom ⟨"cat.c"⟩
+      declaration := ``sameEndpoint, realization := ``sameEndpoint
+      expression := .atomic ⟨"fun.bc"⟩, structural := true }]
+
+/-- `SemanticState.routes` is a plain `def` built on the structurally recursive `routeSteps`, and at
+fuel `2` it returns the two-edge route `a → b → c`: the completeness theorem's conclusion on the
+smallest instance. -/
+def id99.searchFindsChainCheck : Bool :=
+  (chainSpecimen.routes (.atom ⟨"cat.a"⟩) (.atom ⟨"cat.c"⟩) 2).any fun route =>
+    route.steps.size == 2
+
+/-- At fuel `1` the same pair yields no route of length two: the fuel is a real bound, and
+`routes_steps_le` says nothing longer can appear whatever the fuel. -/
+def id99.searchRespectsFuelCheck : Bool :=
+  !((chainSpecimen.routes (.atom ⟨"cat.a"⟩) (.atom ⟨"cat.c"⟩) 1).any fun route =>
+    route.steps.size == 2)
+
+open Lean Elab Command in
+run_cmd
+  liftTermElabM do
+    let checks : List (Name × String) :=
+      [(``id99.searchFindsChainCheck, "the search did not return the two-edge route a → b → c"),
+       (``id99.searchRespectsFuelCheck, "the search returned a two-edge route within fuel 1")]
+    for (name, message) in checks do
+      let e ← Lean.Elab.Term.elabTerm (← `($(mkIdent name))) (some (mkConst ``Bool))
+      let value ← unsafe Lean.Meta.evalExpr Bool (mkConst ``Bool) e
+      unless value do
+        throwError "issue #99 probe {name}: {message}"
+
 end CasCatalogue.AcceptanceProbes
