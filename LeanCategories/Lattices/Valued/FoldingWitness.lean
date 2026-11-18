@@ -25,11 +25,22 @@ those hypotheses on a concrete lattice**, so the theorem is not vacuous:
   reflection that swaps `e` and `f` carries the wall to its negative and exchanges the two sides of
   the chamber, so it does not preserve the cone.
 
-Everything the joining theorem asks for is then a theorem of this file, not a hypothesis
-(`u_witnessed`). A *non-trivial* involution instance needs a Lorentzian lattice with more than one
-chamber wall; the repository has exactly one such chamber (`E₁₀(2)`,
-`VinbergE10Chamber.e10_isChamberWithWalls`) and the diagram reversal `αᵢ ↦ α_{9-i}` as the
-candidate, whose isometry and fixed-lattice root classification are a separate unit.
+Everything the joining theorem asks for is then a theorem of this file, not a hypothesis:
+`u_witnessed` instantiates `isChamberWithWalls_invariant_of_chamber` at `g = 1` and discharges
+
+* the ambient chamber — `hyperbolicPlane_isChamberWithWalls`,
+* the involution law and the preservation of the chamber cone (the identity fixes every point),
+* the interior lattice vector `w = e + 2f` of the invariant lattice (`hw`, `hwv`), and
+* the completeness of the wall set (`hcomplete`) — from `u_root_classification_fixed`, the
+  classification read in the invariant lattice,
+
+and concludes both the maximal-dimension statement and `IsChamberWithWalls (M^σ)` with the folded
+wall set. The involution is the identity, which is the only chamber-preserving involution of `U` (the
+swap of `e` and `f` sends the wall to its negative and exchanges the two sides of the chamber). A
+*non-trivial* involution instance needs a Lorentzian lattice with more than one chamber wall; the
+repository has exactly one such chamber (`E₁₀(2)`, `VinbergE10Chamber.e10_isChamberWithWalls`) and
+the diagram reversal `αᵢ ↦ α_{9-i}` as the candidate, whose isometry and fixed-lattice root
+classification are a separate unit.
 
 ## LC-09 record
 
@@ -227,5 +238,144 @@ theorem hyperbolicPlane_isChamberWithWalls :
               rw [smul_eq_mul]; norm_num
       rw [hneg]
       exact ne_of_lt (by linarith)
+
+/-! ## The invariant lattice of the identity involution -/
+
+/-- The fixed sublattice of the identity involution is the whole lattice. -/
+theorem involutionFixedSubmodule_one :
+    involutionFixedSubmodule (L := hyperbolicPlaneFiniteLattice)
+      (1 : OrthogonalGroup hyperbolicPlaneFiniteLattice.obj) = ⊤ := by
+  rw [involutionFixedSubmodule]
+  have h : isometryLinearMap (L := hyperbolicPlaneFiniteLattice)
+      (1 : OrthogonalGroup hyperbolicPlaneFiniteLattice.obj) = 1 := rfl
+  rw [h, sub_self, LinearMap.ker_zero]
+
+/-- The root `e - f` as a vector of the invariant lattice of the identity involution. -/
+def uRootFixed : involutionFixedSubmodule (L := hyperbolicPlaneFiniteLattice)
+    (1 : OrthogonalGroup hyperbolicPlaneFiniteLattice.obj) :=
+  ⟨uRoot, by rw [involutionFixedSubmodule_one]; trivial⟩
+
+/-- The interior vector `e + 2f` as a vector of the invariant lattice of the identity involution. -/
+def uInteriorFixed : involutionFixedSubmodule (L := hyperbolicPlaneFiniteLattice)
+    (1 : OrthogonalGroup hyperbolicPlaneFiniteLattice.obj) :=
+  ⟨uInterior, by rw [involutionFixedSubmodule_one]; trivial⟩
+
+/-- The folded root set of the identity involution with the single wall `e - f` is the single
+vector `e - f` of the invariant lattice. -/
+theorem u_foldedRootSet_one :
+    foldedRootSet (L := hyperbolicPlaneFiniteLattice)
+      (1 : OrthogonalGroup hyperbolicPlaneFiniteLattice.obj) {uRoot} = {uRootFixed} := by
+  ext v
+  rw [mem_foldedRootSet_iff, Set.mem_singleton_iff]
+  constructor
+  · rintro ⟨⟨r, hr, hfold⟩, -, -⟩
+    rw [Set.mem_singleton_iff] at hr
+    subst hr
+    rw [show foldedVector (1 : OrthogonalGroup hyperbolicPlaneFiniteLattice.obj) uRoot
+        = uRoot from foldedVector_of_fixed _ rfl] at hfold
+    exact Subtype.ext hfold.symm
+  · rintro rfl
+    refine ⟨⟨uRoot, rfl, ?_⟩, ?_, ?_⟩
+    · rw [show foldedVector (1 : OrthogonalGroup hyperbolicPlaneFiniteLattice.obj) uRoot
+        = uRoot from foldedVector_of_fixed _ rfl]
+      rfl
+    · change hyperbolicPlaneFiniteLattice.obj.obj.pairing uRoot uRoot < 0
+      rw [uRoot_square]; norm_num
+    · intro x
+      change hyperbolicPlaneFiniteLattice.obj.obj.pairing uRoot uRoot ∣
+        2 * hyperbolicPlaneFiniteLattice.obj.obj.pairing uRoot x.1
+      rw [uRoot_square, u_pairing_eq']
+      refine ⟨x.1 0 - x.1 1, ?_⟩
+      simp [uRoot]
+      ring
+
+/-- The classification, read in the invariant lattice of the identity involution. -/
+theorem u_root_classification_fixed (ρ : involutionFixedSubmodule
+      (L := hyperbolicPlaneFiniteLattice) (1 : OrthogonalGroup hyperbolicPlaneFiniteLattice.obj))
+    (hρ : ρ ∈ negativeReflectiveRoots
+      (invariantFixedLattice (L := hyperbolicPlaneFiniteLattice)
+        (1 : OrthogonalGroup hyperbolicPlaneFiniteLattice.obj))) :
+    ρ = uRootFixed ∨ ρ = -uRootFixed := by
+  obtain ⟨hrefl, hneg⟩ := hρ
+  have hreflU : IsReflectiveRoot hyperbolicPlaneFiniteLattice.obj (ρ.1 : Fin 2 → ℤ) := by
+    refine ⟨?_, ?_⟩
+    · change IsRegular (hyperbolicPlaneFiniteLattice.obj.obj.pairing ρ.1 ρ.1)
+      rw [← invariantFixedLattice_pairing (L := hyperbolicPlaneFiniteLattice) (g :=
+        (1 : OrthogonalGroup hyperbolicPlaneFiniteLattice.obj)) ρ ρ]
+      exact hrefl.regular
+    · intro y
+      change hyperbolicPlaneFiniteLattice.obj.obj.pairing ρ.1 ρ.1 ∣
+        2 * hyperbolicPlaneFiniteLattice.obj.obj.pairing ρ.1 y
+      have h := hrefl.dvd_two_mul
+        (⟨y, by rw [involutionFixedSubmodule_one]; trivial⟩ : involutionFixedSubmodule
+          (L := hyperbolicPlaneFiniteLattice)
+            (1 : OrthogonalGroup hyperbolicPlaneFiniteLattice.obj))
+      exact h
+  have hnegU : hyperbolicPlaneFiniteLattice.obj.obj.pairing ρ.1 ρ.1 < 0 := by
+    rw [← invariantFixedLattice_pairing (L := hyperbolicPlaneFiniteLattice) (g :=
+      (1 : OrthogonalGroup hyperbolicPlaneFiniteLattice.obj)) ρ ρ]
+    exact hneg
+  rcases u_reflective_neg_classification ρ.1 hreflU hnegU with h | h
+  · left; exact Subtype.ext h
+  · right; exact Subtype.ext h
+
+/-- **The joining theorem, fully instantiated.** On the hyperbolic plane with the identity
+involution — the only chamber-preserving involution of `U` — every hypothesis of
+`isChamberWithWalls_invariant_of_chamber` is a theorem of this file: the ambient chamber
+(`hyperbolicPlane_isChamberWithWalls`), the involution law, the preservation of the cone, the
+interior lattice vector `e + 2f`, and the completeness of the wall set (from the classification
+`u_root_classification_fixed`). The conclusion is the maximal-dimension statement together with
+`IsChamberWithWalls` for the invariant lattice with the folded wall set. -/
+theorem u_witnessed :
+    (∃ v ∈ realFormFixedPart (1 : OrthogonalGroup hyperbolicPlaneFiniteLattice.obj),
+        v ∈ rootInteriorCone hyperbolicPlaneFiniteLattice
+          (toRealForm hyperbolicPlaneFiniteLattice uInterior)
+          (foldedRootImage (1 : OrthogonalGroup hyperbolicPlaneFiniteLattice.obj) {uRoot})) ∧
+      IsChamberWithWalls
+        (invariantFixedLattice (L := hyperbolicPlaneFiniteLattice)
+          (1 : OrthogonalGroup hyperbolicPlaneFiniteLattice.obj))
+        (toRealForm _ uInteriorFixed) {uRootFixed} := by
+  have hw : 0 < (invariantFixedLattice (L := hyperbolicPlaneFiniteLattice)
+      (1 : OrthogonalGroup hyperbolicPlaneFiniteLattice.obj)).obj.obj.pairing
+        uInteriorFixed uInteriorFixed := by
+    rw [invariantFixedLattice_pairing]
+    change 0 < hyperbolicPlaneFiniteLattice.obj.obj.pairing uInterior uInterior
+    rw [uInterior_square]; norm_num
+  have hwv : ∀ v ∈ foldedRootSet (L := hyperbolicPlaneFiniteLattice)
+      (1 : OrthogonalGroup hyperbolicPlaneFiniteLattice.obj) {uRoot},
+      0 < (invariantFixedLattice (L := hyperbolicPlaneFiniteLattice)
+        (1 : OrthogonalGroup hyperbolicPlaneFiniteLattice.obj)).obj.obj.pairing
+          uInteriorFixed v := by
+    intro v hv
+    rw [u_foldedRootSet_one, Set.mem_singleton_iff] at hv
+    subst hv
+    rw [invariantFixedLattice_pairing]
+    change 0 < hyperbolicPlaneFiniteLattice.obj.obj.pairing uInterior uRoot
+    rw [uInterior_pairing_root]; norm_num
+  have hcomplete : ∀ ρ ∈ negativeReflectiveRoots (invariantFixedLattice
+      (L := hyperbolicPlaneFiniteLattice) (1 : OrthogonalGroup hyperbolicPlaneFiniteLattice.obj)),
+      ∃ v ∈ foldedRootSet (L := hyperbolicPlaneFiniteLattice)
+        (1 : OrthogonalGroup hyperbolicPlaneFiniteLattice.obj) {uRoot},
+        ∃ k : ℤ, k ≠ 0 ∧ ρ = k • v := by
+    intro ρ hρ
+    rcases u_root_classification_fixed ρ hρ with h | h
+    · refine ⟨uRootFixed, by rw [u_foldedRootSet_one]; rfl, 1, one_ne_zero, ?_⟩
+      rw [h, one_zsmul]
+    · refine ⟨uRootFixed, by rw [u_foldedRootSet_one]; rfl, -1, by norm_num, ?_⟩
+      rw [h, neg_one_zsmul]
+  obtain ⟨hmax, hch⟩ := isChamberWithWalls_invariant_of_chamber
+    (g := (1 : OrthogonalGroup hyperbolicPlaneFiniteLattice.obj))
+    (L := hyperbolicPlaneFiniteLattice)
+    (one_mul 1) (toRealForm hyperbolicPlaneFiniteLattice uInterior)
+    (by rw [hyperbolicPlane_integralSignature])
+    (by rw [realFormQuadratic_apply, realFormPairing_toRealForm, uInterior_square]; norm_num)
+    {uRoot} hyperbolicPlane_isChamberWithWalls (by
+      intro z hz
+      have h1 : realFormOrthogonalHom hyperbolicPlaneFiniteLattice
+          (1 : OrthogonalGroup hyperbolicPlaneFiniteLattice.obj) z = z := by
+        rw [map_one]; rfl
+      rwa [h1])
+    uInteriorFixed hw hwv hcomplete
+  exact ⟨hmax, by rwa [u_foldedRootSet_one] at hch⟩
 
 end LeanCategories.Lattices.Valued
