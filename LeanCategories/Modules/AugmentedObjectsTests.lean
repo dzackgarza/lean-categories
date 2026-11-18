@@ -113,6 +113,17 @@ example : Over (intCover.point) := realization (𝟭 (ModuleCat ℤ)) intCover
 example : intKoszul.IsAcyclicFor (forget₂ (ModuleCat ℤ) AddCommGrpCat) :=
   isAcyclicFor_of_cofiberVanishes (forget₂ (ModuleCat ℤ) AddCommGrpCat) intKoszul_cofiberVanishes
 
+/-- 4. The cofiber sequence of an arrow, abelian form: `X ⟶ Y ⟶ cofib(f)` is exact at `Y`. -/
+example (f : intCover.term 0 ⟶ intCover.point) : (cofiberSequence f).Exact :=
+  cofiberSequence_exact f
+
+/-- 4. Its suspension term is the fiber, and the fiber sequence `ker f ⟶ X ⟶ Y` is exact. -/
+example (f : intCover.term 0 ⟶ intCover.point) : (fiberSequence f).Exact :=
+  fiberSequence_exact f
+
+/-- 4. The obstruction to `cofib(ε) ≃ 0` for `ℤ ↠ ℤ/2` is its nonzero fiber `2ℤ`. -/
+example : ¬ IsZero (kernel intToZModTwo) := intCover_fiber_not_isZero
+
 /-- 5. The module framing case: a one-term object is a framing exactly when its augmentation is an
 isomorphism. -/
 example (P M : ModuleCat ℤ) (ε : P ⟶ M) :

@@ -437,6 +437,31 @@ end Truncate
 end AugmentedGradedObject
 
 end General
+
+section CofiberSequence
+
+variable {C : Type u} [Category.{v} C] [Abelian C]
+
+/-- The cofiber sequence of an arrow, in abelian form: `X --f--> Y --> cofib(f)`, exact at `Y`. In
+`R^• → j(X) → cofib(ε) → Σ R^•` this is the degree-`0` part. -/
+noncomputable abbrev cofiberSequence {X Y : C} (f : X ⟶ Y) : ShortComplex C :=
+  ShortComplex.cokernelSequence f
+
+/-- The suspension term of the cofiber sequence, in abelian form: the fiber `ker f` of the arrow,
+the class in degree `-1` (FOUNDATIONS, governing construction: "kernel class `H^{-1} ≅ 2ℤ`"). -/
+noncomputable abbrev fiberSequence {X Y : C} (f : X ⟶ Y) : ShortComplex C :=
+  ShortComplex.kernelSequence f
+
+/-- The cofiber sequence `X ⟶ Y ⟶ cofib(f)` is exact at `Y`. -/
+theorem cofiberSequence_exact {X Y : C} (f : X ⟶ Y) : (cofiberSequence f).Exact :=
+  ShortComplex.cokernelSequence_exact f
+
+/-- The fiber sequence `ker f ⟶ X ⟶ Y` is exact at `X`. -/
+theorem fiberSequence_exact {X Y : C} (f : X ⟶ Y) : (fiberSequence f).Exact :=
+  ShortComplex.kernelSequence_exact f
+
+end CofiberSequence
+
 /-- The zero module, the chosen term above the truncation of the examples below. -/
 abbrev zeroModule (R : Type u) [CommRing R] : ModuleCat.{v} R := ModuleCat.of R (ULift.{v} PUnit)
 
@@ -668,6 +693,20 @@ theorem intCover_not_cofiberVanishes : ¬ intCover.CofiberVanishes := by
   intro h
   have hm : Mono intCover.augment := (exactAt_zero_iff_mono (S := intCover) rfl).mp (h 0)
   exact intToZModTwo_not_injective ((ModuleCat.mono_iff_injective intCover.augment).mp hm)
+
+/-- The cofiber of the free cover's augmentation is the zero object — the augmentation is an
+epimorphism — while its fiber is the nonzero `2ℤ`. The cofiber sequence of `ℤ ↠ ℤ/2` therefore ends
+in the nonzero class `2ℤ`, which is why `cofib(ε) ≃ 0` is exactness (`CofiberVanishes`) and not the
+vanishing of the abelian cofiber. -/
+theorem intCover_fiber_not_isZero : ¬ IsZero (kernel intToZModTwo) := by
+  intro h
+  have h' : IsZero (ModuleCat.of ℤ (LinearMap.ker (ModuleCat.Hom.hom intToZModTwo))) :=
+    h.of_iso (ModuleCat.kernelIsoKer intToZModTwo).symm
+  have hsub : Subsingleton ↥(LinearMap.ker (ModuleCat.Hom.hom intToZModTwo)) :=
+    ModuleCat.isZero_iff_subsingleton.mp h'
+  have h2 : (⟨2, two_mem_ker_intToZModTwo⟩ : ↥(LinearMap.ker (ModuleCat.Hom.hom intToZModTwo)))
+      = ⟨0, by simp⟩ := hsub.allEq _ _
+  exact absurd (congrArg Subtype.val h2) (by norm_num)
 
 /-- Multiplication by two on `ℤ`, as an endomorphism of the standard free module. -/
 noncomputable def twoMul : (ModuleCat.of ℤ ℤ) ⟶ (ModuleCat.of ℤ ℤ) :=
