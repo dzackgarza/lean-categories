@@ -1163,6 +1163,41 @@ theorem colHeight_le_one_iff_existsUnique (A : SL(2, ℤ)) :
   · rintro ⟨⟨i, b⟩, h, _⟩
     exact ⟨i, b, h⟩
 
+lemma cuspLift_zero_eq : cuspLift 0 = (1 : SL(2, ℤ)) := Subtype.ext (by decide)
+
+lemma cuspLift_one_eq : cuspLift 1 = (-1 : SL(2, ℤ)) := Subtype.ext (by decide)
+
+/-- Of the eight lifts, only `1` and `-1` have second first-column entry zero. -/
+lemma cuspLift_snd_firstColumn_eq_zero (i : Fin 8) (h : (firstColumn (cuspLift i)).2 = 0) :
+    i = 0 ∨ i = 1 := by
+  fin_cases i
+  · exact Or.inl rfl
+  · exact Or.inr rfl
+  all_goals simp [firstColumn, cuspLift_two, cuspLift_three, cuspLift_four, cuspLift_five,
+    cuspLift_six, cuspLift_seven] at h
+
+/-- **The stabilizer of the cusp `∞`.** A matrix whose first column is `(±1, 0)` — i.e. one that
+fixes `∞ = 1/0` — is `±T ^ b`. This is the cusp-level vertex stabilizer that the Farey model of the
+Bass–Serre tree of `⟨S⟩ *_{⟨S²⟩} ⟨TS⟩` needs: it identifies the stabilizer of `∞` with `⟨T⟩` up to
+the central sign, and it is proved from the stratum classification rather than by any group theory
+(`cuspLift_snd_firstColumn_eq_zero` is the finite part: of the eight lifts only `1` and `-1` have
+second first-column entry zero). -/
+theorem eq_T_zpow_or_neg_of_cusp_fixed (A : SL(2, ℤ)) (h : A.1 1 0 = 0) :
+    ∃ b : ℤ, A = T ^ b ∨ A = -(T ^ b) := by
+  have hdet := det_entries A
+  rw [h, mul_zero, sub_zero] at hdet
+  have hcol : colHeight A.1 ≤ 1 := by
+    rw [colHeight_apply, h, abs_zero, max_le_iff]
+    rcases Int.eq_one_or_neg_one_of_mul_eq_one hdet with ha | ha
+    · exact ⟨by rw [ha]; norm_num, by norm_num⟩
+    · exact ⟨by rw [ha]; norm_num, by norm_num⟩
+  obtain ⟨i, b, hA⟩ := (colHeight_le_one_iff A).mp hcol
+  have hfirst : (firstColumn (cuspLift i)).2 = 0 := by
+    rw [← firstColumn_mul_T_zpow, ← hA, firstColumn, h]
+  rcases cuspLift_snd_firstColumn_eq_zero i hfirst with rfl | rfl
+  · exact ⟨b, Or.inl (by rw [hA, cuspLift_zero_eq, one_mul])⟩
+  · exact ⟨b, Or.inr (by rw [hA, cuspLift_one_eq, neg_one_mul])⟩
+
 end ModularGroup
 
 namespace LeanCategories.ForMathlib

@@ -190,4 +190,17 @@ example : pushoutToAmalgam (Monoid.PushoutI.of (φ := amalgamMap) false (cyclicG
   simp only [pushoutToAmalgam, Monoid.PushoutI.lift_of]
   exact cyclicFourToAmalgam_gen
 
+/-! ### The stabilizer of the cusp `∞`: `T` fixes it, `S` does not -/
+
+example : (T : SL(2, ℤ)).1 1 0 = 0 := by decide
+
+example : ∃ b : ℤ, (T ^ (5 : ℤ) : SL(2, ℤ)) = T ^ b ∨
+    (T ^ (5 : ℤ) : SL(2, ℤ)) = -(T ^ b) :=
+  eq_T_zpow_or_neg_of_cusp_fixed _ (by decide)
+
+example : ∃ b : ℤ, (-1 : SL(2, ℤ)) = T ^ b ∨ (-1 : SL(2, ℤ)) = -(T ^ b) :=
+  eq_T_zpow_or_neg_of_cusp_fixed _ (by decide)
+
+example : (S : SL(2, ℤ)).1 1 0 = 1 := by decide
+
 end LeanCategories.ForMathlib
