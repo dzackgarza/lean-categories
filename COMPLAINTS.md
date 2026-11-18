@@ -3822,3 +3822,29 @@ downstream assertions, computational observations, or downstream diagnostics.
 - **Repair link:** add both imports to `Catalogue.lean` in one commit that also repairs whatever the
   two modules then report. Filed here because this unit added their sibling and found the gap; it is
   not this issue's obligation.
+
+### #95 — a completed unit's commits were force-rewritten off `main`
+
+- **Need:** a push that completes a unit should stay on `main`; another session's later push should
+  not remove it.
+- **Evidence:** `main` was at `c0a34f1c`; this unit pushed `87090736` and `0573b7e5` (confirmed by
+  `git ls-remote omm main` right after each push). Thirteen minutes later `main` was `242c3d3d`,
+  whose parent is `c0a34f1c`, and `git merge-base --is-ancestor` reports all three #95 commits
+  missing. `git diff 0573b7e5 242c3d3d` shows the unit's own lines deleted: 34 lines of
+  `FiniteSubsets.lean`, 35 of `PowerSets.lean`, the whole 141-line `FiniteSubsetsTests.lean`, the
+  `Catalogue.lean` import at line 71, and the `COMPLAINTS.md` `#95` entry. The #95 work was
+  re-applied as `54a12b80`, `c72e9da2`, `b1cadda9` on `242c3d3d`, with both `COMPLAINTS.md` entries
+  kept.
+- **Gap and impact:** a session that commits a whole file from a tree predating another session's
+  push reverts that session's lines in the file and, if its push is leased or forced against the
+  older tip, drops the other commits entirely. Neither `git ls-remote` before the push nor the
+  connector's `pushed` answer protects the earlier unit; only a re-read of `main` after the fact did.
+  `Catalogue.lean` and `COMPLAINTS.md` are the two files every unit appends to, so they are where
+  the next loss will happen.
+- **Coverage:** inspected `git log 0573b7e5..omm/main`, the two pushes' `ls-remote` answers, and
+  `git diff 0573b7e5 242c3d3d --stat`. The other session's working state and push call were not
+  inspected; the cause named above is inferred from the tree contents, not observed.
+- **Repair link:** whole-file commits of `Catalogue.lean`/`COMPLAINTS.md` should be made from a tree
+  that has fetched `main` (`Catalogue.lean` staged by path or via `hash-object`/`update-index`, as
+  this unit does), and a push should be repeated against the tip a fetch has just returned rather
+  than the tip read earlier.
