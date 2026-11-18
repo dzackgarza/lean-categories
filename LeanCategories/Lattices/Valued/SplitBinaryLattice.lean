@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 -/
 module
 
+public import LeanCategories.Lattices.Valued.OrthogonalGroup
 public import LeanCategories.Modules.Bilinear.Valued.TopologicalOrthogonalGroup
 public import Mathlib.LinearAlgebra.Matrix.Trace
 public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
@@ -580,4 +581,219 @@ theorem natCard_matrixOrthogonalGroup_hyperbolicPair :
     natCard_matrixOrthogonalGroup_le_four hyperbolicPairMatrix_det_ne_zero hyperbolicPairMatrix_sq
   omega
 
+
+/-! ## The matrix theorem for an arbitrary symmetric binary Gram matrix -/
+
+theorem matrix_eq_of_transpose_eq {G : Matrix (Fin 2) (Fin 2) ℤ} (hsymm : Gᵀ = G) :
+    G = !![G 0 0, G 0 1; G 0 1, G 1 1] := by
+  have h10 : G 1 0 = G 0 1 := by
+    have h := congrFun (congrFun hsymm 1) 0
+    simpa using h.symm
+  ext i j
+  fin_cases i <;> fin_cases j <;> simp [h10]
+
+theorem isometry_eq_pm_one_of_neg_det_isSquare_of_symm {G : Matrix (Fin 2) (Fin 2) ℤ}
+    (hsymm : Gᵀ = G) (hdet : G.det ≠ 0)
+    (hsq : ∃ σ : ℚ, σ ≠ 0 ∧ (G.det : ℚ) = -σ ^ 2)
+    {M : Matrix (Fin 2) (Fin 2) ℤ} (hiso : Mᵀ * G * M = G) (hdetM : M.det = 1) :
+    M = 1 ∨ M = -1 := by
+  have hG := matrix_eq_of_transpose_eq hsymm
+  rw [hG] at hdet hsq hiso
+  rw [Matrix.det_fin_two] at hdet
+  obtain ⟨σ, hσ, hsqσ⟩ := hsq
+  have hsq' : (G 0 0 : ℚ) * (G 1 1) - (G 0 1 : ℚ) * (G 0 1) = -σ ^ 2 := by
+    rw [Matrix.det_fin_two] at hsqσ
+    simpa using hsqσ
+  exact isometry_eq_pm_one_of_neg_det_isSquare (a := G 0 0) (b := G 0 1) (c := G 1 1)
+    hdet ⟨σ, hσ, hsq'⟩ M hiso hdetM
+
+theorem finite_matrixOrthogonalGroup_of_symm {G : Matrix (Fin 2) (Fin 2) ℤ}
+    (hsymm : Gᵀ = G) (hdet : G.det ≠ 0)
+    (hsq : ∃ σ : ℚ, σ ≠ 0 ∧ (G.det : ℚ) = -σ ^ 2) :
+    Finite (MatrixOrthogonalGroup G) := by
+  have hG := matrix_eq_of_transpose_eq hsymm
+  rw [hG] at hdet hsq ⊢
+  rw [Matrix.det_fin_two] at hdet
+  obtain ⟨σ, hσ, hsqσ⟩ := hsq
+  have hsq' : (G 0 0 : ℚ) * (G 1 1) - (G 0 1 : ℚ) * (G 0 1) = -σ ^ 2 := by
+    rw [Matrix.det_fin_two] at hsqσ
+    simpa using hsqσ
+  exact finite_matrixOrthogonalGroup (a := G 0 0) (b := G 0 1) (c := G 1 1) hdet
+    ⟨σ, hσ, hsq'⟩
+
+theorem natCard_matrixOrthogonalGroup_le_four_of_symm {G : Matrix (Fin 2) (Fin 2) ℤ}
+    (hsymm : Gᵀ = G) (hdet : G.det ≠ 0)
+    (hsq : ∃ σ : ℚ, σ ≠ 0 ∧ (G.det : ℚ) = -σ ^ 2) :
+    Nat.card (MatrixOrthogonalGroup G) ≤ 4 := by
+  have hG := matrix_eq_of_transpose_eq hsymm
+  rw [hG] at hdet hsq ⊢
+  rw [Matrix.det_fin_two] at hdet
+  obtain ⟨σ, hσ, hsqσ⟩ := hsq
+  have hsq' : (G 0 0 : ℚ) * (G 1 1) - (G 0 1 : ℚ) * (G 0 1) = -σ ^ 2 := by
+    rw [Matrix.det_fin_two] at hsqσ
+    simpa using hsqσ
+  exact natCard_matrixOrthogonalGroup_le_four (a := G 0 0) (b := G 0 1) (c := G 1 1) hdet
+    ⟨σ, hσ, hsq'⟩
+
 end LeanCategories.Modules.Bilinear.Valued
+
+namespace LeanCategories.Lattices.Valued
+
+open Matrix
+open LeanCategories.Modules.Bilinear.Valued
+
+/-! ## The split binary lattice -/
+
+/-- The matrix of an isometry of a lattice in a basis. -/
+noncomputable def isometryMatrix (L : FiniteProjectiveLatticeCat ℤ ℤ)
+    (b : Module.Basis (Fin 2) ℤ L.obj.obj.carrier) (g : OrthogonalGroup L.obj) :
+    Matrix (Fin 2) (Fin 2) ℤ :=
+  LinearMap.toMatrix b b (g.1 : L.obj.obj.carrier →ₗ[ℤ] L.obj.obj.carrier)
+
+theorem linearMap_eq_of_toMatrix_eq {M : Type*} [AddCommGroup M] [Module ℤ M]
+    (b : Module.Basis (Fin 2) ℤ M) {f h : M →ₗ[ℤ] M}
+    (hfh : LinearMap.toMatrix b b f = LinearMap.toMatrix b b h) : f = h := by
+  refine b.ext fun j => b.equivFun.injective ?_
+  funext i
+  have h := congrFun (congrFun hfh i) j
+  simpa [LinearMap.toMatrix_apply, Module.Basis.equivFun_apply] using h
+
+theorem isometryMatrix_injective (L : FiniteProjectiveLatticeCat ℤ ℤ)
+    (b : Module.Basis (Fin 2) ℤ L.obj.obj.carrier) :
+    Function.Injective (isometryMatrix L b) := by
+  intro g h hgh
+  refine Subtype.ext (LinearEquiv.toLinearMap_injective ?_)
+  exact linearMap_eq_of_toMatrix_eq b hgh
+
+/-- The Gram matrix of a lattice basis is symmetric. -/
+theorem gramMatrix_transpose (L : FiniteProjectiveLatticeCat ℤ ℤ)
+    (b : Module.Basis (Fin 2) ℤ L.obj.obj.carrier) :
+    (gramMatrix L.obj b)ᵀ = gramMatrix L.obj b := by
+  ext i j
+  simp only [Matrix.transpose_apply, gramMatrix, LinearMap.BilinForm.toMatrix_apply,
+    BilinModuleCat.bilinMap_apply]
+  exact L.obj.property.2 (b j) (b i)
+
+/-- An isometry of a lattice is an isometry of its Gram matrix in any basis. -/
+theorem isometryMatrix_gram (L : FiniteProjectiveLatticeCat ℤ ℤ)
+    (b : Module.Basis (Fin 2) ℤ L.obj.obj.carrier) (g : OrthogonalGroup L.obj) :
+    (isometryMatrix L b g)ᵀ * gramMatrix L.obj b * isometryMatrix L b g =
+      gramMatrix L.obj b := by
+  have hcomp : LinearMap.BilinForm.comp L.obj.obj.bilinMap g.1.toLinearMap g.1.toLinearMap =
+      L.obj.obj.bilinMap := by
+    refine LinearMap.ext fun x => LinearMap.ext fun y => ?_
+    simpa using g.2 x y
+  have h := LinearMap.BilinForm.toMatrix_comp (b := b) (c := b) (B := L.obj.obj.bilinMap)
+    (l := g.1.toLinearMap) (r := g.1.toLinearMap)
+  rw [hcomp] at h
+  exact h.symm
+
+theorem isometryMatrix_det_mul_self (L : FiniteProjectiveLatticeCat ℤ ℤ)
+    (b : Module.Basis (Fin 2) ℤ L.obj.obj.carrier) (g : OrthogonalGroup L.obj)
+    (hdet : (gramMatrix L.obj b).det ≠ 0) :
+    (isometryMatrix L b g).det * (isometryMatrix L b g).det = 1 := by
+  have h := congrArg Matrix.det (isometryMatrix_gram L b g)
+  rw [Matrix.det_mul, Matrix.det_mul, Matrix.det_transpose] at h
+  refine mul_right_cancel₀ hdet ?_
+  linear_combination h
+
+theorem isometryMatrix_isUnit_det (L : FiniteProjectiveLatticeCat ℤ ℤ)
+    (b : Module.Basis (Fin 2) ℤ L.obj.obj.carrier) (g : OrthogonalGroup L.obj)
+    (hdet : (gramMatrix L.obj b).det ≠ 0) :
+    IsUnit (isometryMatrix L b g).det := by
+  have h := isometryMatrix_det_mul_self L b g hdet
+  exact ⟨⟨_, _, h, h⟩, rfl⟩
+
+theorem mk''_coe (A : Matrix (Fin 2) (Fin 2) ℤ) (h : IsUnit A.det) :
+    ((Matrix.GeneralLinearGroup.mk'' A h : Matrix.GeneralLinearGroup (Fin 2) ℤ) :
+      Matrix (Fin 2) (Fin 2) ℤ) = A :=
+  rfl
+
+/-- The matrix of an isometry as an element of the orthogonal group of the Gram matrix. -/
+noncomputable def isometryMatrixIn (L : FiniteProjectiveLatticeCat ℤ ℤ)
+    (b : Module.Basis (Fin 2) ℤ L.obj.obj.carrier)
+    (hdet : (gramMatrix L.obj b).det ≠ 0) (g : OrthogonalGroup L.obj) :
+    MatrixOrthogonalGroup (gramMatrix L.obj b) := by
+  classical
+  refine ⟨Matrix.GeneralLinearGroup.mk'' (isometryMatrix L b g)
+    (isometryMatrix_isUnit_det L b g hdet), ?_⟩
+  show ((Matrix.GeneralLinearGroup.mk'' (isometryMatrix L b g)
+      (isometryMatrix_isUnit_det L b g hdet) : Matrix.GeneralLinearGroup (Fin 2) ℤ) :
+      Matrix (Fin 2) (Fin 2) ℤ).transpose * gramMatrix L.obj b *
+    ((Matrix.GeneralLinearGroup.mk'' (isometryMatrix L b g)
+      (isometryMatrix_isUnit_det L b g hdet) : Matrix.GeneralLinearGroup (Fin 2) ℤ) :
+      Matrix (Fin 2) (Fin 2) ℤ) = gramMatrix L.obj b
+  exact isometryMatrix_gram L b g
+
+theorem isometryMatrixIn_injective (L : FiniteProjectiveLatticeCat ℤ ℤ)
+    (b : Module.Basis (Fin 2) ℤ L.obj.obj.carrier)
+    (hdet : (gramMatrix L.obj b).det ≠ 0) :
+    Function.Injective (isometryMatrixIn L b hdet) := by
+  intro g h hgh
+  have h1 : ((isometryMatrixIn L b hdet g : MatrixOrthogonalGroup (gramMatrix L.obj b)) :
+      Matrix.GeneralLinearGroup (Fin 2) ℤ) = (isometryMatrixIn L b hdet h).1 :=
+    congrArg Subtype.val hgh
+  have h2 : ((isometryMatrixIn L b hdet g).1 : Matrix (Fin 2) (Fin 2) ℤ) =
+      ((isometryMatrixIn L b hdet h).1 : Matrix (Fin 2) (Fin 2) ℤ) := congrArg Units.val h1
+  refine isometryMatrix_injective L b ?_
+  simpa [isometryMatrixIn, mk''_coe] using h2
+
+/-- A Gram matrix whose determinant is a nonzero square up to sign is nondegenerate. -/
+theorem gramMatrix_det_ne_zero (L : FiniteProjectiveLatticeCat ℤ ℤ)
+    (b : Module.Basis (Fin 2) ℤ L.obj.obj.carrier)
+    (hsq : ∃ σ : ℚ, σ ≠ 0 ∧ ((gramMatrix L.obj b).det : ℚ) = -σ ^ 2) :
+    (gramMatrix L.obj b).det ≠ 0 := by
+  intro h
+  obtain ⟨σ, hσ, hsqσ⟩ := hsq
+  rw [h, Int.cast_zero] at hsqσ
+  exact hσ (pow_eq_zero_iff two_ne_zero |>.mp (by linarith))
+
+/-- **The orthogonal group of a split binary lattice is finite.** -/
+theorem finite_orthogonalGroup_of_split (L : FiniteProjectiveLatticeCat ℤ ℤ)
+    (b : Module.Basis (Fin 2) ℤ L.obj.obj.carrier)
+    (hsq : ∃ σ : ℚ, σ ≠ 0 ∧ ((gramMatrix L.obj b).det : ℚ) = -σ ^ 2) :
+    Finite (OrthogonalGroup L.obj) := by
+  have hdet := gramMatrix_det_ne_zero L b hsq
+  haveI : Finite (MatrixOrthogonalGroup (gramMatrix L.obj b)) :=
+    finite_matrixOrthogonalGroup_of_symm (gramMatrix_transpose L b) hdet hsq
+  exact Finite.of_injective _ (isometryMatrixIn_injective L b hdet)
+
+/-- **The orthogonal group of a split binary lattice has at most four elements.** -/
+theorem natCard_orthogonalGroup_le_four_of_split (L : FiniteProjectiveLatticeCat ℤ ℤ)
+    (b : Module.Basis (Fin 2) ℤ L.obj.obj.carrier)
+    (hsq : ∃ σ : ℚ, σ ≠ 0 ∧ ((gramMatrix L.obj b).det : ℚ) = -σ ^ 2) :
+    Nat.card (OrthogonalGroup L.obj) ≤ 4 := by
+  have hdet := gramMatrix_det_ne_zero L b hsq
+  haveI : Finite (MatrixOrthogonalGroup (gramMatrix L.obj b)) :=
+    finite_matrixOrthogonalGroup_of_symm (gramMatrix_transpose L b) hdet hsq
+  calc Nat.card (OrthogonalGroup L.obj)
+      ≤ Nat.card (MatrixOrthogonalGroup (gramMatrix L.obj b)) :=
+        Nat.card_le_card_of_injective _ (isometryMatrixIn_injective L b hdet)
+    _ ≤ 4 := natCard_matrixOrthogonalGroup_le_four_of_symm (gramMatrix_transpose L b) hdet hsq
+
+/-- **`SO(L) = {±1}`**: an isometry of a split binary lattice whose matrix in a basis has
+determinant one is the identity or the negation map. -/
+theorem isometry_eq_id_or_neg_of_split (L : FiniteProjectiveLatticeCat ℤ ℤ)
+    (b : Module.Basis (Fin 2) ℤ L.obj.obj.carrier)
+    (hsq : ∃ σ : ℚ, σ ≠ 0 ∧ ((gramMatrix L.obj b).det : ℚ) = -σ ^ 2)
+    (g : OrthogonalGroup L.obj) (hdetg : (isometryMatrix L b g).det = 1) :
+    (g.1 : L.obj.obj.carrier →ₗ[ℤ] L.obj.obj.carrier) = LinearMap.id ∨
+      (g.1 : L.obj.obj.carrier →ₗ[ℤ] L.obj.obj.carrier) = -LinearMap.id := by
+  have hdet := gramMatrix_det_ne_zero L b hsq
+  have hmat : (LinearMap.toMatrix b b)
+      (g.1 : L.obj.obj.carrier →ₗ[ℤ] L.obj.obj.carrier) = 1 ∨
+      (LinearMap.toMatrix b b)
+        (g.1 : L.obj.obj.carrier →ₗ[ℤ] L.obj.obj.carrier) = -1 :=
+    isometry_eq_pm_one_of_neg_det_isSquare_of_symm (gramMatrix_transpose L b) hdet hsq
+      (isometryMatrix_gram L b g) hdetg
+  rcases hmat with h | h
+  · left
+    refine linearMap_eq_of_toMatrix_eq b ?_
+    rw [h, show (LinearMap.toMatrix b b)
+      (LinearMap.id : L.obj.obj.carrier →ₗ[ℤ] L.obj.obj.carrier) = 1 from by simp]
+  · right
+    refine linearMap_eq_of_toMatrix_eq b ?_
+    rw [h, show (LinearMap.toMatrix b b)
+      (-(LinearMap.id : L.obj.obj.carrier →ₗ[ℤ] L.obj.obj.carrier)) = -1 from by simp]
+
+end LeanCategories.Lattices.Valued
