@@ -370,6 +370,7 @@ public import LeanCategories.Lattices.Valued.CuspPlaneLineCorrespondence
 public import LeanCategories.Lattices.Valued.CuspPlaneOrbitCount
 public import LeanCategories.Lattices.Valued.CuspFlagFiniteness
 public import LeanCategories.Lattices.Valued.CuspPlaneImageIndex
+public import LeanCategories.Lattices.Valued.SplitBinaryLattice
 public import LeanCategories.Lattices.Valued.DiscriminantCharacteristic
 public import LeanCategories.Lattices.Valued.CobleLattice
 public import LeanCategories.Lattices.Valued.CobleCharacteristic
