@@ -223,4 +223,15 @@ example : col ((T * S ^ 2 : SL(2, ℤ))) 0 = -col (T : SL(2, ℤ)) 0 :=
 example : col ((T * S : SL(2, ℤ))) 0 = col (1 : SL(2, ℤ)) 0 + col (1 : SL(2, ℤ)) 1 :=
   (col_mul_R 1).1
 
+example : edgeLines ((T : SL(2, ℤ)) * S) = edgeLines (T : SL(2, ℤ)) := edgeLines_mul_S T
+
+example : triangleLines ((1 : SL(2, ℤ)) * (T * S)) = triangleLines (1 : SL(2, ℤ)) :=
+  triangleLines_mul_R 1
+
+example : (col (1 : SL(2, ℤ)) 0 + col (1 : SL(2, ℤ)) 1) ∈ triangleLines (1 : SL(2, ℤ)) := by
+  simp [triangleLines]
+
+example : (col (1 : SL(2, ℤ)) 0) ∈ edgeLines (1 : SL(2, ℤ)) := by
+  simp [edgeLines]
+
 end LeanCategories.ForMathlib
