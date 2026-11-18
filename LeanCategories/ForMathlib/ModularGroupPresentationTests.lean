@@ -116,4 +116,33 @@ example (B : SL(2, ℤ)) :
     ∃ u : FreeGroup (Fin 2), colHeight (FreeGroup.lift sl2zGenVal u * B).1 ≤ 1 :=
   exists_lift_mul_colHeight_le_one B
 
+/-! ### Component 2's arithmetic half, on the smallest inputs
+
+The eight lifts are checked on their first columns — `cuspLift_five` is the one whose first column
+is `(-1, -1)` — right multiplication by `T` is checked to leave `colHeight` alone, and the
+classification is checked in both directions: `S` (height one) must be one of the eight cosets, and
+each of the eight times a power of `T` must have height one. -/
+
+example : (cuspLift 2).1 = !![0, -1; 1, 0] := cuspLift_two
+
+example : (cuspLift 5).1 = !![-1, 0; -1, -1] := cuspLift_five
+
+example : colHeight (cuspLift 4).1 = 1 := colHeight_cuspLift 4
+
+example : colHeight ((cuspLift 6).1) = 1 := colHeight_cuspLift 6
+
+example : colHeight ((S * T ^ (3 : ℤ) : SL(2, ℤ))).1 = colHeight (S : SL(2, ℤ)).1 :=
+  colHeight_mul_T_zpow S 3
+
+example : ((cuspLift 4 * T ^ (3 : ℤ) : SL(2, ℤ))).1 = !![1, 3; 1, 4] := by decide
+
+example : ∃ (i : Fin 8) (b : ℤ), (S : SL(2, ℤ)) = cuspLift i * T ^ b :=
+  (colHeight_le_one_iff S).mp (by decide)
+
+example : ∃ (i : Fin 8) (b : ℤ), ((-S * T ^ (5 : ℤ) : SL(2, ℤ))) = cuspLift i * T ^ b :=
+  (colHeight_le_one_iff _).mp (by decide)
+
+example : colHeight ((cuspLift 5 * T ^ (2 : ℤ) : SL(2, ℤ))).1 ≤ 1 :=
+  (colHeight_le_one_iff _).mpr ⟨5, 2, rfl⟩
+
 end LeanCategories.ForMathlib

@@ -51,9 +51,14 @@ elements generate `GL(2, ℤ)` (`gl2zGenerators`), each relator of the adjoined 
 (`colHeight_step`, `exists_word_mul_colHeight_le_one`, section "Component 1 of the completeness
 proof" below). Every `A : SL(2, ℤ)` is a word in `S` and `T` times a matrix whose first column has
 height at most one, and each step of the descent is `A = S ^ ε * T ^ q * A'` with
-`colHeight A' < colHeight A`. **Component 2 — the stratum `colHeight = 1` — is not**, and it carries
-the whole of the remaining difficulty; the last two paragraphs of this section say why no version of
-the descent reaches it.
+`colHeight A' < colHeight A`. The stratum itself is now classified as well
+(`colHeight_le_one_iff`: `colHeight A ≤ 1` exactly when `A = cuspLift i * T ^ b` for one of eight
+explicit `cuspLift i`, i.e. the stratum is eight cosets of `⟨T⟩`). **What is not proved is
+component 2's word-level statement** —
+that those eight cosets are a transversal for the words of the presentation, i.e. that no word of
+`PresentedGroup sl2zRelators` is normal-closure equivalent to two of them — and it carries the whole
+of the remaining difficulty; the last two paragraphs of this section say why no version of the
+descent reaches it.
 
 *Completeness* of both presentations — that the relators generate the whole kernel, equivalently
 that `sl2zToGroup` and `gl2zToGroup` are injective — is **not** proved. That is the load-bearing
@@ -474,6 +479,149 @@ theorem exists_lift_mul_colHeight_le_one (A : SL(2, ℤ)) :
   refine ⟨u⁻¹, ?_⟩
   rw [map_inv, hEq, ← mul_assoc, inv_mul_cancel, one_mul]
   exact hA₀
+
+/-!
+### Component 2, its arithmetic half: the cusp stratum is eight cosets of `⟨T⟩`
+
+The descent above lands in `colHeight ≤ 1`; this section says what that stratum is. Right
+multiplication by `T ^ b` fixes the first column (`colHeight_mul_T_zpow`), so the stratum is a union
+of `⟨T⟩`-cosets, and the first column `(a, c)` has `|a|, |c| ≤ 1` with `det = 1`: that leaves the
+eight pairs `(±1, 0)`, `(0, ±1)`, `(±1, ±1)`, each one coset. `cuspLift : Fin 8 → SL(2, ℤ)` lists
+the eight representatives (`1`, `-1`, `S`, `-S`, `S T⁻¹ S⁻¹` and the sign-and-inverse variants), and
+`colHeight_le_one_iff` is the exact statement
+
+  `colHeight A ≤ 1 ↔ ∃ i b, A = cuspLift i * T ^ b`.
+
+This is the vertex-stabilizer arithmetic of the tree action: the eight are the eight `⟨T⟩`-cosets
+the stratum meets. It is all of component 2 that is arithmetic, and what it does *not* give is the
+word-level statement — that no word of `PresentedGroup sl2zRelators` is normal-closure equivalent to
+two different `cuspLift i`, equivalently that the stratum's words form a transversal. That is the
+Bass–Serre/Farey statement recorded in the module docstring, and it is why
+`Sl2zPresentationComplete` stays open below.
+-/
+
+/-- The eight lifts of the cusp stratum `colHeight ≤ 1`: one representative of each of the eight
+cosets of `⟨T⟩` that the stratum meets: the first column can only be one of the eight pairs
+`(±1, 0)`, `(0, ±1)`, `(±1, ±1)`, and each is a single coset. -/
+def cuspLift : Fin 8 → SL(2, ℤ) :=
+  ![1, -1, S, -S, S * T⁻¹ * S⁻¹, -(S * T⁻¹ * S⁻¹), S * T * S⁻¹, -(S * T * S⁻¹)]
+
+lemma cuspLift_zero : (cuspLift 0).1 = !![1, 0; 0, 1] := by decide
+
+lemma cuspLift_one : (cuspLift 1).1 = !![-1, 0; 0, -1] := by decide
+
+lemma cuspLift_two : (cuspLift 2).1 = !![0, -1; 1, 0] := by decide
+
+lemma cuspLift_three : (cuspLift 3).1 = !![0, 1; -1, 0] := by decide
+
+lemma cuspLift_four : (cuspLift 4).1 = !![1, 0; 1, 1] := by decide
+
+lemma cuspLift_five : (cuspLift 5).1 = !![-1, 0; -1, -1] := by decide
+
+lemma cuspLift_six : (cuspLift 6).1 = !![1, 0; -1, 1] := by decide
+
+lemma cuspLift_seven : (cuspLift 7).1 = !![-1, 0; 1, -1] := by decide
+
+/-- Right multiplication by a power of `T` fixes the first column, so it fixes `colHeight`. -/
+lemma colHeight_mul_T_zpow (X : SL(2, ℤ)) (b : ℤ) :
+    colHeight (X * T ^ b).1 = colHeight X.1 := by
+  have h00 : (X * T ^ b).1 0 0 = X.1 0 0 := by
+    rw [show (X * T ^ b).1 = X.1 * (T ^ b).1 from rfl, coe_T_zpow, Matrix.mul_apply,
+      Fin.sum_univ_two]
+    simp
+  have h10 : (X * T ^ b).1 1 0 = X.1 1 0 := by
+    rw [show (X * T ^ b).1 = X.1 * (T ^ b).1 from rfl, coe_T_zpow, Matrix.mul_apply,
+      Fin.sum_univ_two]
+    simp
+  rw [colHeight_apply, colHeight_apply, h00, h10]
+
+lemma colHeight_cuspLift (i : Fin 8) : colHeight (cuspLift i).1 = 1 := by
+  fin_cases i <;> decide
+
+/-- **The cusp stratum is eight cosets of `⟨T⟩`.** `A : SL(2, ℤ)` has first-column height at most
+one exactly when it is one of the eight matrices `cuspLift i` times a power of `T`; the eight are
+the eight possible first columns `(±1, 0)`, `(0, ±1)`, `(±1, ±1)` with `det = 1`. This is the
+arithmetic
+content of the vertex-stabilizer statement of lean-categories#89 item 1's component 2: it reduces
+"the stratum `colHeight ≤ 1`" to a finite list of cosets; what it does not prove is the word-level
+statement that no word in the presentation is normal-closure equivalent to two of them. -/
+theorem colHeight_le_one_iff (A : SL(2, ℤ)) :
+    colHeight A.1 ≤ 1 ↔ ∃ (i : Fin 8) (b : ℤ), A = cuspLift i * T ^ b := by
+  constructor
+  · intro hA
+    have hdet := det_entries A
+    rw [colHeight_apply] at hA
+    have h1 : |A.1 0 0| ≤ 1 := le_trans (le_max_left _ _) hA
+    have h2 : |A.1 1 0| ≤ 1 := le_trans (le_max_right _ _) hA
+    have h1' := abs_le.mp h1
+    have h2' := abs_le.mp h2
+    have ha : A.1 0 0 = -1 ∨ A.1 0 0 = 0 ∨ A.1 0 0 = 1 := by omega
+    have hc : A.1 1 0 = -1 ∨ A.1 1 0 = 0 ∨ A.1 1 0 = 1 := by omega
+    rcases ha with ha | ha | ha <;> rcases hc with hc | hc | hc
+    · -- (a, c) = (-1, -1)
+      refine ⟨5, -(A.1 0 1), ?_⟩
+      have hd : A.1 1 1 = A.1 0 1 - 1 := by rw [ha, hc] at hdet; linarith
+      refine Subtype.ext ?_
+      rw [coe_mul, cuspLift_five, coe_T_zpow, Matrix.mul_fin_two]
+      ext i j
+      fin_cases i <;> fin_cases j <;> simp [ha, hc, hd]
+      omega
+    · -- (a, c) = (-1, 0)
+      refine ⟨1, -(A.1 0 1), ?_⟩
+      have hd : A.1 1 1 = -1 := by rw [ha, hc] at hdet; linarith
+      refine Subtype.ext ?_
+      rw [coe_mul, cuspLift_one, coe_T_zpow, Matrix.mul_fin_two]
+      ext i j
+      fin_cases i <;> fin_cases j <;> simp [ha, hc, hd]
+    · -- (a, c) = (-1, 1)
+      refine ⟨7, -(A.1 0 1), ?_⟩
+      have hd : A.1 1 1 = -1 - A.1 0 1 := by rw [ha, hc] at hdet; linarith
+      refine Subtype.ext ?_
+      rw [coe_mul, cuspLift_seven, coe_T_zpow, Matrix.mul_fin_two]
+      ext i j
+      fin_cases i <;> fin_cases j <;> simp [ha, hc, hd]
+      omega
+    · -- (a, c) = (0, -1)
+      refine ⟨3, -(A.1 1 1), ?_⟩
+      have hb : A.1 0 1 = 1 := by rw [ha, hc] at hdet; linarith
+      refine Subtype.ext ?_
+      rw [coe_mul, cuspLift_three, coe_T_zpow, Matrix.mul_fin_two]
+      ext i j
+      fin_cases i <;> fin_cases j <;> simp [ha, hc, hb]
+    · -- (a, c) = (0, 0) is impossible: the determinant is one
+      rw [ha, hc] at hdet
+      norm_num at hdet
+    · -- (a, c) = (0, 1)
+      refine ⟨2, A.1 1 1, ?_⟩
+      have hb : A.1 0 1 = -1 := by rw [ha, hc] at hdet; linarith
+      refine Subtype.ext ?_
+      rw [coe_mul, cuspLift_two, coe_T_zpow, Matrix.mul_fin_two]
+      ext i j
+      fin_cases i <;> fin_cases j <;> simp [ha, hc, hb]
+    · -- (a, c) = (1, -1)
+      refine ⟨6, A.1 0 1, ?_⟩
+      have hd : A.1 1 1 = 1 - A.1 0 1 := by rw [ha, hc] at hdet; linarith
+      refine Subtype.ext ?_
+      rw [coe_mul, cuspLift_six, coe_T_zpow, Matrix.mul_fin_two]
+      ext i j
+      fin_cases i <;> fin_cases j <;> simp [ha, hc, hd]
+      omega
+    · -- (a, c) = (1, 0)
+      refine ⟨0, A.1 0 1, ?_⟩
+      have hd : A.1 1 1 = 1 := by rw [ha, hc] at hdet; linarith
+      refine Subtype.ext ?_
+      rw [coe_mul, cuspLift_zero, coe_T_zpow, Matrix.mul_fin_two]
+      ext i j
+      fin_cases i <;> fin_cases j <;> simp [ha, hc, hd]
+    · -- (a, c) = (1, 1)
+      refine ⟨4, A.1 0 1, ?_⟩
+      have hd : A.1 1 1 = A.1 0 1 + 1 := by rw [ha, hc] at hdet; linarith
+      refine Subtype.ext ?_
+      rw [coe_mul, cuspLift_four, coe_T_zpow, Matrix.mul_fin_two]
+      ext i j
+      fin_cases i <;> fin_cases j <;> simp [ha, hc, hd]
+  · rintro ⟨i, b, rfl⟩
+    rw [colHeight_mul_T_zpow, colHeight_cuspLift]
 
 /-- Lean-categories#89 item 1 in the form the theorem would take: the presentation
 `⟨S, T | S⁴, (TS)³ = S²⟩` is *complete*, i.e. the relators generate the whole kernel of the free
