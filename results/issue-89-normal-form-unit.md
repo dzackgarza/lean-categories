@@ -103,3 +103,22 @@ What the dictionary still needs, and nothing else: the prefix products along a w
 comparisons between consecutive vertices (short now, from `HT_ne`, `at_most_one_down` and
 `EH_mean`), the maximum-vertex argument, and the parity split — for an odd-length word the cyclic walk
 has one degenerate step, and its two seam comparisons are the only finite work left.
+
+## Progress: the three flips of a basis
+
+The walk's comparisons are always between a triangle and the triangle opposite it across one of its
+three sides. That vocabulary is now in the module (section "The three flips of a basis"):
+
+* `flA`, `flB`, `flC` — the three flips of a Farey basis `(u, v)`, i.e. the triangles on the sides
+  `{u, v}`, `{u, u + v}`, `{v, u + v}`;
+* `triH_flipA/B/C` and `downA_flip/B/C` — each flip's `ℓ¹` height and the condition "this flip is
+  lower", which is one of the three mutually exclusive alternatives of `no_two_flips_decrease`;
+* `HT_congr`, `triF_uv`, `triF_vu`, `triF_negneg` — `HT` depends only on the triangle and its `ℓ¹`
+  height, plus the three changes of basis that say so;
+* `HT_ne_flipB`, `HT_ne_flipC` — the other two sides have no tie either, both from `HT_ne` by
+  re-reading the triangle in the bases `(u, u + v)` and `(-v, u + v)`.
+
+So all three sides of every Farey triangle now have strictly unequal height from their opposite
+triangle. What the dictionary still needs: the prefix products along a word, the two comparisons
+between consecutive vertices of the walk (now short: `HT_ne`/`HT_ne_flipB`/`HT_ne_flipC` for the step,
+`EH_mean` and `at_most_one_down` for the turn), the maximum-vertex argument, and the parity split.

@@ -2224,6 +2224,129 @@ theorem at_most_one_down (u v : ℤ × ℤ) :
   · rintro ⟨h1, h2⟩
     exact h.2.2 ⟨eB.mp h1, eC.mp h2⟩
 
+/-!
+### The three flips of a basis: their heights, and no ties at any side
+
+The walk's comparisons are always between a triangle vertex and one of the three triangles adjacent to
+it across a side — the *flips* `flA`, `flB`, `flC` of a Farey basis `(u, v)`, being the triangles on
+the sides `{u, v}`, `{u, u + v}`, `{v, u + v}`. This section is that vocabulary:
+
+* `triH_flipA/B/C` — the `ℓ¹` height of each flip, in terms of `hℓ` of `u`, `v` and `u ± v`;
+* `downA_flip/B/C` — the condition "this flip is lower", which is `downA/downB/downC`, i.e. one of the
+  three mutually exclusive alternatives of `no_two_flips_decrease`;
+* `HT_flipA/B/C` and `HT_congr` — `HT` of a flip, with `HT` depending only on the triangle and its
+  `ℓ¹` height, not on the basis it is read in;
+* `HT_ne_flipB`, `HT_ne_flipC` — the other two sides have no tie either, both obtained from `HT_ne` by
+  reading the same triangle in the basis `(u, u + v)` resp. `(-v, u + v)` (`triF_uv`, `triF_vu`,
+  `triF_negneg` are those changes of basis).
+
+With `HT_ne` for the side `{u, v}` itself, all three sides of every Farey triangle are now known to
+have strictly unequal height from their opposite triangle, which is what the walk's step comparison
+needs.
+-/
+
+
+/-! ## The three flips of a basis and the invariance of the heights -/
+
+/-- The flip across the side `{u, v}`. -/
+def flA (u v : ℤ × ℤ) : (ℤ × ℤ) × (ℤ × ℤ) := (v, -u)
+
+/-- The flip across the side `{u, u + v}`. -/
+def flB (u v : ℤ × ℤ) : (ℤ × ℤ) × (ℤ × ℤ) := (u, u + v)
+
+/-- The flip across the side `{v, u + v}`. -/
+def flC (u v : ℤ × ℤ) : (ℤ × ℤ) × (ℤ × ℤ) := (u + v, v)
+
+lemma triH_flipA (u v) : triH (flA u v).1 (flA u v).2 = hℓ u + hℓ v + hℓ (v - u) := by
+  simp only [flA, triH, hl_neg, sub_eq_add_neg]; ring
+
+lemma triH_flipB (u v) : triH (flB u v).1 (flB u v).2 = hℓ u + hℓ (u + v) + hℓ (u + u + v) := by
+  have e : u + (u + v) = u + u + v := by abel
+  simp only [flB, triH, e]
+
+lemma triH_flipC (u v) : triH (flC u v).1 (flC u v).2 = hℓ (u + v) + hℓ v + hℓ (u + v + v) := by
+  have e : (u + v) + v = u + v + v := by abel
+  simp only [flC, triH, e]
+
+lemma downA_flip (u v) : downA u v ↔ triH (flA u v).1 (flA u v).2 < triH u v := by
+  rw [downA, triH_flipA]
+  simp only [triH, hl_neg, sub_eq_add_neg]
+  constructor <;> intro h <;> linarith
+
+lemma downB_flip (u v) : downB u v ↔ triH (flB u v).1 (flB u v).2 < triH u v := by
+  have e1 : triH (flB u v).1 (flB u v).2 = triH u (u + v) := by simp only [flB]
+  have h2 : triH u v = hℓ (u + v) + hℓ u + hℓ v := by simp only [triH]; ring
+  have h3 : triH u (u + v) = hℓ u + hℓ (u + v) + hℓ (u + u + v) := triH_flipB u v
+  rw [e1, downB, triH_comm u (u + v), h3, h2]
+
+lemma downC_flip (u v) : downC u v ↔ triH (flC u v).1 (flC u v).2 < triH u v := by
+  have e1 : triH (flC u v).1 (flC u v).2 = triH (u + v) v := by simp only [flC]
+  have h2 : triH u v = hℓ (u + v) + hℓ v + hℓ u := by simp only [triH]; ring
+  have h3 : triH (u + v) v = hℓ (u + v) + hℓ v + hℓ (u + v + v) := triH_flipC u v
+  rw [e1, downC, h3, h2]
+
+/-- `HT` of the `A`-flip is `HT v (-u)`. -/
+lemma HT_flipA (u v) : HT (flA u v).1 (flA u v).2 = HT v (-u) := rfl
+
+/-- `HT` of the `B`-flip, in the form `HT u (u + v)`. -/
+lemma HT_flipB (u v) : HT (flB u v).1 (flB u v).2 = HT u (u + v) := by
+  simp only [flB]
+
+/-- `HT` of the `C`-flip. -/
+lemma HT_flipC (u v) : HT (flC u v).1 (flC u v).2 = HT (u + v) v := by
+  simp only [flC]
+
+/-- `HT` depends only on the triangle and its `ℓ¹` height, not on the basis it is read in. -/
+lemma HT_congr {x y x' y' : ℤ × ℤ} (h1 : triF x y = triF x' y') (h2 : triH x y = triH x' y') :
+    HT x y = HT x' y' := by
+  have : eps x y = eps x' y' := by simp only [eps, h1]
+  simp only [HT, h1, h2, this]
+
+lemma triF_uv (u v : ℤ × ℤ) : triF (u + v) (-u) = triF u v := by
+  have e : u + v + -u = v := by abel
+  simp only [triF, e, neg_neg]
+  ext x
+  simp only [Finset.mem_insert, Finset.mem_singleton]
+  tauto
+
+lemma triF_vu (u v : ℤ × ℤ) : triF (-v) (u + v) = triF u v := by
+  have e : -v + (u + v) = u := by abel
+  simp only [triF, e, neg_neg]
+  ext x
+  simp only [Finset.mem_insert, Finset.mem_singleton]
+  tauto
+
+lemma triF_negneg (u v : ℤ × ℤ) : triF (-u) (-v) = triF u v := by
+  have e : -u + -v = -(u + v) := by abel
+  simp only [triF, e, neg_neg]
+  ext x
+  simp only [Finset.mem_insert, Finset.mem_singleton]
+  tauto
+
+/-- The `B`-flip's height differs from the triangle's. -/
+theorem HT_ne_flipB {u v : ℤ × ℤ} (hd : fdet u v = 1) : HT u (u + v) ≠ HT u v := by
+  have hd' : fdet u (u + v) = 1 := by
+    simp only [fdet, Prod.fst_add, Prod.snd_add] at hd ⊢; nlinarith
+  have h := HT_ne hd'
+  have e : HT (u + v) (-u) = HT u v := by
+    refine HT_congr (triF_uv u v) ?_
+    have hh : (u + v) + -u = v := by abel
+    simp only [triH, hl_neg, hh]; ring
+  rwa [e] at h
+
+/-- The `C`-flip's height differs from the triangle's. -/
+theorem HT_ne_flipC {u v : ℤ × ℤ} (hd : fdet u v = 1) : HT (u + v) v ≠ HT u v := by
+  have hd' : fdet (-v) (u + v) = 1 := by
+    simp only [fdet, Prod.fst_add, Prod.snd_add, Prod.fst_neg, Prod.snd_neg] at hd ⊢; nlinarith
+  have h := HT_ne hd'
+  have e1 : HT (-v) (u + v) = HT u v := by
+    refine HT_congr (triF_vu u v) ?_
+    have hh : -v + (u + v) = u := by abel
+    simp only [triH, hl_neg, hh]; ring
+  have e2 : HT (u + v) (- -v) = HT (u + v) v := by simp
+  rw [e1, e2] at h
+  exact fun hh => h hh.symm
+
 end ModularGroup
 
 namespace LeanCategories.ForMathlib
