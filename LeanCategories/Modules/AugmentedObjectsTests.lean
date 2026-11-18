@@ -123,6 +123,18 @@ example : AffineLineTangent ℤ ≃ₗ[ℤ[X]] ℤ[X] := affineLineTangentEquiv 
 example : (oneTerm ℤ[X] (ModuleCat.of ℤ[X] ℤ[X]) (ModuleCat.of ℤ[X] (AffineLineTangent ℤ))
     (affineLineTangentIso ℤ).hom).IsFraming := affineLineTangent_isFraming (R := ℤ)
 
+/-- 5. The tangent sheaf of the affine line exists: it is `tilde` of the module of vector fields, a
+sheaf of `O_{Spec R[X]}`-modules. -/
+example : (AlgebraicGeometry.Spec (CommRingCat.of ℤ[X])).Modules := AffineLineTangentSheaf ℤ
+
+/-- 5. It carries a tangent framing: a chosen isomorphism of sheaves of modules
+`O_{𝔸¹}^{⊕1} ⟶ T_{𝔸¹}`. -/
+example : AffineLineFreeSheaf ℤ ≅ AffineLineTangentSheaf ℤ := affineLineTangentSheafFraming ℤ
+
+/-- 5. That framing is an isomorphism of sheaves of `O_{Spec R[X]}`-modules. -/
+example : IsIso (affineLineTangentSheafFraming ℤ).hom :=
+  affineLineTangentSheafFraming_isIso (R := ℤ)
+
 /-- 6. Forgetting a refinement and forgetting the selected diagram commute definitionally. -/
 example (P : ObjectProperty (AugmentedGradedObject (ModuleCat ℤ))) :
     refinementPoint (C := ModuleCat ℤ) P = P.ι ⋙ pointFunctor (C := ModuleCat ℤ) :=

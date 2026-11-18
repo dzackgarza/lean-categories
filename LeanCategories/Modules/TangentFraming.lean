@@ -6,6 +6,7 @@ module
 
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Free
 public import Mathlib.Algebra.Polynomial.Derivation
+public import Mathlib.AlgebraicGeometry.Modules.Tilde
 public import LeanCategories.Modules.AugmentedObjects
 
 /-!
@@ -116,5 +117,35 @@ theorem affineLineTangent_isFraming :
   (oneTerm_isFraming_iff (R := R[X]) _).mpr (affineLineTangentIso R).isIso_hom
 
 end AffineLine
+
+section AffineLineSheaf
+
+open Polynomial AlgebraicGeometry
+
+variable (R : Type u) [CommRing R]
+
+/-- The free sheaf of rank one on `Spec R[X]`, i.e. `O_{𝔸¹_R}^{⊕1}`: `tilde` of the free module of
+rank one. -/
+noncomputable abbrev AffineLineFreeSheaf : (Spec (CommRingCat.of R[X])).Modules :=
+  AlgebraicGeometry.tilde (R := CommRingCat.of R[X]) (ModuleCat.of R[X] R[X])
+
+/-- The tangent sheaf of the affine line `𝔸¹_R`: `tilde` of the module of vector fields
+`Derivation R R[X] R[X]`. -/
+noncomputable abbrev AffineLineTangentSheaf : (Spec (CommRingCat.of R[X])).Modules :=
+  AlgebraicGeometry.tilde (R := CommRingCat.of R[X]) (ModuleCat.of R[X] (AffineLineTangent R))
+
+/-- The tangent sheaf of the affine line carries a framing: a chosen isomorphism of sheaves of
+`O_{Spec R[X]}`-modules `O_{𝔸¹}^{⊕1} ⟶ T_{𝔸¹}` (FOUNDATIONS Remark 13.12), obtained by applying the
+tilde functor to the module framing `affineLineTangentIso`. -/
+noncomputable def affineLineTangentSheafFraming :
+    AffineLineFreeSheaf R ≅ AffineLineTangentSheaf R :=
+  (AlgebraicGeometry.tilde.functor (R := CommRingCat.of R[X])).mapIso (affineLineTangentIso R)
+
+/-- The affine line's tangent framing is an isomorphism of sheaves of `O_{Spec R[X]}`-modules. -/
+theorem affineLineTangentSheafFraming_isIso :
+    IsIso (affineLineTangentSheafFraming R).hom :=
+  (affineLineTangentSheafFraming R).isIso_hom
+
+end AffineLineSheaf
 
 end LeanCategories.Modules
