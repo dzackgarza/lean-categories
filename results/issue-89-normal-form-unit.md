@@ -255,3 +255,17 @@ odd-length maximum-vertex argument built on the two ends, and then the bridge fr
 mirror of `Hk_zero` at the near seam the odd-length case needs. The remaining half there is the
 six-value arithmetic comparison `Hk l 0 < Hk l 1` (15 against 16 for an `⟨S⟩`-letter, 14 against 19 or
 23 for an `⟨R⟩`-letter), and then the far end and the odd-length maximum-vertex argument.
+
+## Progress: the two seam comparisons at the near end
+
+For the odd-length case the walk's ends are now pinned (section "The two seam comparisons at the near
+end"):
+
+* `Hk_zero_lt_one` — the first step goes strictly up: `15` against `16` for the two `⟨S⟩`-letters, `14`
+  against `19, 19, 19, 23` for the four `⟨R⟩`-letters (six `decide`s);
+* `Hk_last` — the last step returns to the *same* height when both ends carry the same type (the
+  odd-length seam), because the columns at index `0` are the last letter's move applied to the columns
+  at `n - 1` and the invariance lemmas identify the heights.
+
+So neither end can be the highest vertex of an odd-length walk; what remains is the maximum-vertex
+argument at an interior index, and then the bridge to the presented group.

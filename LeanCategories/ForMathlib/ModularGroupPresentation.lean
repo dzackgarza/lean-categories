@@ -3252,6 +3252,81 @@ lemma Hk_zero (l : List Letter) : Hk l 0 = if (L l 0).isS then EH E1 E2 else HT 
 lemma EH_std : EH E1 E2 = 15 := by decide
 lemma HT_std : HT E1 E2 = 14 := by decide
 
+/-!
+### The two seam comparisons at the near end of the walk
+
+For the odd-length case of the parity split the walk's ends must be pinned down. At index `0` the
+basis is the identity (`Hk_zero`, `EH_std = 15`, `HT_std = 14`); this section adds index `1`:
+
+* `Hk_one` — the height at index `1`, in terms of the first letter's matrix;
+* `Hk_zero_lt_one` — **the first step goes strictly up**: `15` against `16` for the two `⟨S⟩`-letters,
+  and `14` against `19`, `19`, `19`, `23` for the four `⟨R⟩`-letters (six `decide`s);
+* `Hk_last` — the last step comes back to the *same* height when both ends carry the same type, which
+  is the odd-length seam: the columns at index `0` are the last letter's move applied to the columns at
+  `n - 1`, so the invariance lemmas identify the two heights.
+
+So neither end can be the highest vertex of an odd-length walk, and the maximum-vertex argument applies
+at an interior index — which is the remaining step.
+-/
+
+
+/-- The height at index `1` of the walk, in terms of the first letter's matrix. -/
+lemma Hk_one {l : List Letter} (hne : l ≠ []) (hty : (L l 1).isS ≠ (L l 0).isS) :
+    Hk l 1 = (if (L l 0).isS then HT (col ((L l 0).val) 0) (col ((L l 0).val) 1)
+      else EH (col ((L l 0).val) 0) (col ((L l 0).val) 1)) := by
+  have hY1 : Y l 1 = (L l 0).val := by
+    rw [Y_succ (by have := List.length_pos_iff.mpr hne; omega : 0 < l.length), Y_zero, one_mul]
+    congr 1
+    exact (L_eq (by have := List.length_pos_iff.mpr hne; omega : 0 < l.length)).symm
+  have hH1 : Hk l 1 = if (L l 1).isS then EH (U l 1) (V l 1) else HT (U l 1) (V l 1) := rfl
+  rw [hH1, bool_eq_not hty]
+  have hU : U l 1 = col ((L l 0).val) 0 := by simp only [U, hY1]
+  have hV : V l 1 = col ((L l 0).val) 1 := by simp only [V, hY1]
+  rw [hU, hV]
+  cases hb : (L l 0).isS <;>
+    simp only [hb, Bool.not_true, Bool.not_false, Bool.false_eq_true, reduceIte]
+
+set_option maxHeartbeats 1000000 in
+/-- The first step of the walk goes strictly up: `15` against `16` for the two `⟨S⟩`-letters, and `14`
+against `19`, `19`, `19`, `23` for the four `⟨R⟩`-letters. -/
+theorem Hk_zero_lt_one {l : List Letter} (hne : l ≠ []) (hty : (L l 1).isS ≠ (L l 0).isS) :
+    Hk l 0 < Hk l 1 := by
+  rw [Hk_zero, Hk_one hne hty]
+  rcases hc : (L l 0) with a1 | a2 | a3 | a4 | a5 | a6 <;>
+    simp only [hc, Letter.isS, Letter.val, reduceIte, EH_std, HT_std] <;>
+    decide
+
+set_option maxHeartbeats 1000000 in
+/-- The last step comes back to the same height when both ends carry the same type — the odd-length
+case of the parity split. -/
+theorem Hk_last {l : List Letter} (hprod : (l.map Letter.val).prod = 1) (hne : l ≠ [])
+    (hty : (L l 0).isS = (L l (l.length - 1)).isS) :
+    Hk l (l.length - 1) = Hk l 0 := by
+  have hn : 0 < l.length := List.length_pos_iff.mpr hne
+  have hk : l.length - 1 < l.length := by omega
+  have hz : nxt l.length (l.length - 1) = 0 := by
+    simp only [nxt]; rw [Nat.sub_add_cancel hn, Nat.mod_self]
+  have hLk : Hk l (l.length - 1) =
+      (if (L l (l.length - 1)).isS then EH (U l (l.length - 1)) (V l (l.length - 1))
+        else HT (U l (l.length - 1)) (V l (l.length - 1))) := rfl
+  rw [hLk, Hk_zero, hty]
+  obtain ⟨c1, c2⟩ := cols_nxt hprod hk
+  rw [← L_eq hk] at c1 c2
+  rw [hz] at c1 c2
+  have hc1 : U l 0 = ((L l (l.length - 1)).act (U l (l.length - 1)) (V l (l.length - 1))).1 := c1
+  have hc2 : V l 0 = ((L l (l.length - 1)).act (U l (l.length - 1)) (V l (l.length - 1))).2 := c2
+  have hU0 : U l 0 = E1 := by simp [U, Y_zero, col, E1]
+  have hV0 : V l 0 = E2 := by simp [V, Y_zero, col, E2]
+  rw [hU0] at hc1
+  rw [hV0] at hc2
+  cases hb : (L l (l.length - 1)).isS
+  · simp only [hb, Bool.false_eq_true, reduceIte]
+    rw [hc1, hc2]
+    exact (HT_act_of_false _ hb _ _).symm
+  · simp only [hb, reduceIte]
+    rw [hc1, hc2]
+    exact (EH_act_of_true _ hb _ _).symm
+
 end ModularGroup
 
 namespace LeanCategories.ForMathlib
