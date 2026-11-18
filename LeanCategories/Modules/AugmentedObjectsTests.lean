@@ -5,6 +5,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import LeanCategories.Modules.AugmentedObjects
+public import LeanCategories.Modules.StableEnhancement
 public import LeanCategories.Modules.TangentFraming
 
 /-!
@@ -19,7 +20,7 @@ asserts the *statements*: each example fails to elaborate if the named statement
 
 noncomputable section
 
-open CategoryTheory CategoryTheory.Limits Polynomial
+open CategoryTheory CategoryTheory.Limits CategoryTheory.Pretriangulated Polynomial
 open LeanCategories.Modules LeanCategories.Modules.AugmentedGradedObject
 
 namespace LeanCategories.Modules
@@ -123,6 +124,22 @@ example (f : intCover.term 0 ⟶ intCover.point) : (fiberSequence f).Exact :=
 
 /-- 4. The obstruction to `cofib(ε) ≃ 0` for `ℤ ↠ ℤ/2` is its nonzero fiber `2ℤ`. -/
 example : ¬ IsZero (kernel intToZModTwo) := intCover_fiber_not_isZero
+
+/-- 4. The stable enhancement has a genuine suspension: the shift of cochain complexes. -/
+example {C : Type} [Category C] [Abelian C] (K : CochainComplex C ℤ) :
+    CochainComplex C ℤ := suspension K
+
+/-- 4. The cofiber sequence of an arrow of cochain complexes is a distinguished triangle, so its
+fourth term is the suspension and not an abelian fiber. -/
+example {C : Type} [Category C] [Abelian C] {K L : CochainComplex C ℤ} (φ : K ⟶ L) :
+    cofiberTriangle φ ∈ distTriang (HomotopyCategory C (ComplexShape.up ℤ)) :=
+  cofiberTriangle_distinguished φ
+
+/-- 4. The suspension of a cofiber is the cofiber of the suspension. -/
+example {C : Type} [Category C] [Abelian C] {K L : CochainComplex C ℤ} (φ : K ⟶ L) :
+    suspension (CochainComplex.mappingCone φ) ≅
+      CochainComplex.mappingCone (φ⟦(1 : ℤ)⟧') :=
+  cofiberSuspension φ
 
 /-- 5. The module framing case: a one-term object is a framing exactly when its augmentation is an
 isomorphism. -/
