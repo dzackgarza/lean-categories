@@ -4,7 +4,9 @@ Unit delivered: the two obligations the issue still owes after its own correctio
 the issue asks for on what is *not* claimed. Code is in
 `LeanCategories/Catalogue/Registry/RouteDiscovery.lean` (module) and
 `LeanCategories/Catalogue/Registry/ComparisonProbes.lean` (executable probes), both registered in
-`LeanCategories/Catalogue.lean` (imports at lines 16–17).
+`LeanCategories/Catalogue.lean` (imports at lines 16–17); a second pair,
+`Registry/Presentation.lean` and `Registry/PresentationProbes.lean`, carries the acceptance bullets
+treated in the section "The remaining revised-acceptance bullets" below (imports at lines 18–19).
 
 ## Not restated (withdrawn by the issue itself)
 
@@ -111,11 +113,15 @@ of base registrations does not prove finite closure under constructor-generated 
 
 - `lake build LeanCategories.Catalogue.Registry.RouteDiscovery LeanCategories.Catalogue.Registry.ComparisonProbes`
   — `Build completed successfully (3101 jobs)`.
-- Both files elaborated with the gate's flag set
+- All four new files elaborated with the gate's flag set
   (`-DrelaxedAutoImplicit=false -Dweak.linter.mathlibStandardSet=true`): no errors, no long lines
-  (character count), no unused-variable warnings. Two `linter.style.native` warnings remain on the
-  two `native_decide` probes (`routes` and `routeEdges?` both go through the `partial` `edgesFrom`,
-  so kernel `decide` cannot reduce them); the repo already carries that warning class elsewhere.
+  (character count), no unused-variable warnings, and no `native_decide` in
+  `Presentation.lean`/`PresentationProbes.lean` (their checks are elaboration-time evaluations, the
+  same idiom a concurrent session introduced into `ComparisonProbes.lean`). Committed
+  `ComparisonProbes.lean` still carries two `native_decide` theorems (`:114`, `:120`: `routes` and
+  `routeEdges?` both go through the `partial` `edgesFrom`, so kernel `decide` cannot reduce them),
+  and those two carry `Lean.ofReduceBool`; that is the failure class recorded on main in #91's
+  follow-up commit.
 - `#print axioms` on all twelve new theorems: `[propext, Classical.choice, Quot.sound]` or less.
 - `just ... lean-no-sorry` over tracked sources: "No sorry declarations in tracked Lean sources."
 
@@ -130,3 +136,83 @@ of base registrations does not prove finite closure under constructor-generated 
 - `validateCell` acceptance is not exercised: no cell row is registered in this repository, so the
   probe rows are selection specimens only, naming real declarations but not registry rows. Whatever
   registers the first real comparison row (the kernel's #69/#79 trial) must pass `validateCell`.
+
+## The remaining revised-acceptance bullets
+
+`LeanCategories/Catalogue/Registry/Presentation.lean` and `…/PresentationProbes.lean`, registered at
+`LeanCategories/Catalogue.lean:18-19`.
+
+### The registry as a 2-computad
+
+- `EdgeRef.exists_kind` (`Presentation.lean:77`) — every generating 1-cell is exactly one of a
+  registered structural functor row, a classifier's forgetful functor, or a functorial-constructor
+  image of one of those; there is no fourth kind of edge. `EdgeRef.kind` `:70`, `OneCellKind` `:60`.
+- `ComputadPresentation` (`:89`) with `SemanticState.presentation` (`:99`) — the three levels
+  extracted from a state: registered category expressions, generating 1-cells (`structuralEdges`),
+  generating 2-cells (`cells`). `presentation_oneCells` `:105`, `presentation_twoCells` `:108`.
+  Constructor-induced edges are *derived* at each construct node (`Semantic.lean:1698-1713`), not
+  registered, and the docstring says so.
+- `Route.steps_are_oneCells` (`:113`) — a route's steps are those 1-cells; the composite is
+  `Route.refs`. A `CellEntry` is the generating 2-cell and `ComparisonWitness`
+  (`RouteDiscovery.lean:81`) keeps it as data.
+- Probes: `id99.oneCellPresentationCheck` (`PresentationProbes.lean:54`, evaluated at
+  elaboration by the `run_cmd` at `:75`) — the two-row specimen's presentation has exactly one
+  generating 1-cell and no 2-cell.
+
+**Finite-product sources — the exact failure.** A two-input constructor *is* expressible
+(`ConstructorEntry.signature` can be `#[.category, .category]`; the registry's only such row is
+`ConstructorId.functorCategory`, `ConstructorRegistration.lean:113`), but `SemanticState.edgesFrom`
+derives `c(U) : c(A) → c(B)` only for the pattern `#[.category inner]`
+(`Semantic.lean:1701-1712`). Measured on the smallest state that decides it (`constructorSpecimen`,
+`PresentationProbes.lean:35`, one unary and one two-input constructor row plus one structural edge):
+`id99.unaryEdgeDerivedCheck` (`PresentationProbes.lean:59`) = 1 derived edge;
+`id99.twoInputEdgeNotDerivedCheck` (`:65`) = 0. A
+generating 1-cell out of a finite-product source therefore carries no constructor-induced edge in
+the structural graph. `ConstructorEntry.hasMultipleCategoryArguments` (`Presentation.lean:120`) and
+`SemanticState.productSourceConstructors` (`:124`) record the rows affected; on the real registry the
+`run_meta` check at `PresentationProbes.lean:89-104` confirms there is exactly one
+(`functorCategory`).
+
+### Pullbacks: strict or iso-comma
+
+- `PullbackKind` (`Presentation.lean:132`): `strict | isoComma`, with
+  `pullbackKind_strict_ne_isoComma` (`:162`) as data — a row cannot be read as either by default.
+- `ReindexingPullback` (`:140`), `SemanticState.reindexingPullbacks` (`:149`), and
+  `reindexingPullbacks_isoComma` (`:156`): **every registered classifier's reindexing is an
+  iso-comma, not a strict pullback.** The construction is `LeanCategories.Classifier.reindex`
+  (`CategoryTheory/OneCat/CategoricalPullback.lean:47-55`), built on Mathlib's `CategoricalPullback`,
+  whose objects are triples `(c, a, F c ≅ A.forget a)`
+  (`Mathlib/CategoryTheory/Limits/Shapes/Pullback/Categorical/Basic.lean:74-88`) — an isomorphism in
+  the data, so a pseudo-pullback. This is the classification the issue asks for, and the answer for
+  the registry's only pullback-shaped row is the one that is *not* the strict pullback.
+- No isofibration evidence is carried, and none is a prerequisite (issue comment 6476290045); an
+  isofibration leg is only sufficient for the two to agree. That agreement is not proved here, and
+  cannot be stated at this pin: `rg 'IsoFibration|IsIsoFibration' Mathlib` and `rg 'IsoComma'
+  Mathlib` return no hits, and the repository has no strict `Cat` pullback (`rg 'IsStrictPullback'`,
+  no hits). The composite/composition remark is likewise respected: `reindexingPullbacks` classifies
+  each row directly rather than closing a classification under composition.
+
+### `CohereProbes`
+
+There is no `CohereProbes` in this repository (`rg -l 'CohereProbes'`, no hits): that file and its
+outcomes live in `lean-cas-dsl`, which this session cannot read. What is checkable here is that the
+repository's own route/comparison outcomes are unchanged: `Registry/OperationBindingTests.lean` and
+`Semantics/Algebra/AdditiveOperationsTests.lean:65-86` are untouched by this unit, and every new
+declaration is additive.
+
+### Axiom status of the new probes
+
+`PresentationProbes.lean` and the six selection probes of `ComparisonProbes.lean` use no
+`native_decide`: the selection probes are kernel `decide`, and the four presentation probes are
+`Bool` checks evaluated at elaboration by a `run_cmd` (`PresentationProbes.lean:75-86`), which fails
+the build on a wrong value and adds no axiom. The two enumeration probes committed in
+`ComparisonProbes.lean:114,120` are `native_decide` and therefore depend on its compiler-trust axiom;
+a concurrent session has already replaced them in the working tree by the same elaboration-time
+check (`id99.simpleRoutesOnlyCheck`, `id99.explicitRevisitingCheck`, uncommitted).
+
+Every theorem added by this unit outside those probes — `EdgeRef.exists_kind`,
+`reindexingPullbacks_isoComma`, `pullbackKind_strict_ne_isoComma`, `presentation_oneCells`,
+`Route.steps_are_oneCells`, `mem_comparisonCandidates_iff`, `comparisonCandidates_pair_retained`,
+`selectComparison_eq_competing_of_two`, `reaches_measure_le`, `finite_reach_of_finite_sublevels`,
+`finite_reach_of_finite_edges`, `walk_length_le_card`, and the rest — depends only on
+`[propext, Classical.choice, Quot.sound]` or on nothing, checked with `#print axioms`.
