@@ -3482,6 +3482,73 @@ theorem no_die {l : List Letter} (hne : l ≠ [])
       rw [hm]
       omega
 
+/-!
+### The bridge, I: words over the two factors
+
+The last step to `Sl2zPresentationComplete` is the glue from the presented group. Working in the
+amalgam presentation `⟨S, R | S⁴, R³S⁻²⟩` (`sl2zAmalgamRelators`, reached from the issue's presentation
+by `sl2zAmalgamEquiv`), this section sets up the dictionary:
+
+* `sGen`, `rGen` — the two generators, with `sGen_pow_four`, `rGen_cube` and `rGen_pow_six` (the third
+  from the first two: `(R³)² = (S²)² = S⁴`);
+* `WP` — the element of the presented group read off a word over `(factor, exponent)` pairs (`false` is
+  the `⟨S⟩` factor, `true` the `⟨R⟩` one), and `WS` the same word read in `SL(2, ℤ)`;
+* `phiSL` — the map `S ↦ S`, `R ↦ T * S` (the composite of the issue's `sl2zToGroup` with
+  `sl2zOfAmalgam`), and `phiSL_WP` — **the dictionary**: `phiSL (WP w) = WS w`, so a word's two readings
+  agree. With `phiSL_s`/`phiSL_r` giving `phiSL` on the powers of each generator.
+
+What remains: every element of the presented group is `WP w` for some word (surjectivity, from the two
+generators), a word of minimal length for a given element is alternating with no base entries (the two
+reductions `S⁴ = 1`, `R⁶ = 1`, merging equal factors, and `S² = R³` for base entries), and then `no_die`
+turns such a word into the contradiction.
+-/
+
+
+/-- The two generators of the amalgam presentation: `S` and `R = T * S`. -/
+abbrev sGen : PresentedGroup sl2zAmalgamRelators := PresentedGroup.of (0 : Fin 2)
+
+abbrev rGen : PresentedGroup sl2zAmalgamRelators := PresentedGroup.of (1 : Fin 2)
+
+lemma sGen_pow_four : (sGen : PresentedGroup sl2zAmalgamRelators) ^ 4 = 1 := amalgamS_pow_four
+
+lemma rGen_cube : (rGen : PresentedGroup sl2zAmalgamRelators) ^ 3 = sGen ^ 2 := amalgamR_cube
+
+lemma rGen_pow_six : (rGen : PresentedGroup sl2zAmalgamRelators) ^ 6 = 1 := by
+  rw [show (6 : ℕ) = 3 * 2 from rfl, pow_mul, rGen_cube, ← pow_mul,
+    show (2 : ℕ) * 2 = 4 from rfl, sGen_pow_four]
+
+/-- The element of the amalgam presentation read off a word over `(factor, exponent)`: `false` is the
+`⟨S⟩` factor, `true` the `⟨R⟩` one. -/
+def WP (w : List (Bool × ℤ)) : PresentedGroup sl2zAmalgamRelators :=
+  (w.map (fun p => (if p.1 then rGen else sGen) ^ p.2)).prod
+
+/-- The same word read in `SL(2, ℤ)`. -/
+def WS (w : List (Bool × ℤ)) : SL(2, ℤ) :=
+  (w.map (fun p => (if p.1 then (T * S : SL(2, ℤ)) ^ p.2 else (S : SL(2, ℤ)) ^ p.2))).prod
+
+/-- The map from the amalgam presentation to `SL(2, ℤ)`: `S ↦ S`, `R ↦ T * S`. -/
+def phiSL : PresentedGroup sl2zAmalgamRelators →* SL(2, ℤ) :=
+  sl2zToGroup.comp sl2zOfAmalgam
+
+lemma phiSL_s (n : ℤ) : phiSL (sGen ^ n) = (S : SL(2, ℤ)) ^ n := by
+  have h : phiSL sGen = (S : SL(2, ℤ)) := by
+    simp [phiSL, sGen, sl2zOfAmalgam_of, sl2zGenValOrig_zero, sl2zToGroup_of, sl2zGenVal]
+  rw [← h, map_zpow]
+
+lemma phiSL_r (n : ℤ) : phiSL (rGen ^ n) = (T * S : SL(2, ℤ)) ^ n := by
+  have h : phiSL rGen = (T * S : SL(2, ℤ)) := by
+    simp [phiSL, rGen, sl2zOfAmalgam_of, sl2zGenValOrig_one, sl2zToGroup_of, sl2zGenVal, map_mul]
+  rw [← h, map_zpow]
+
+/-- The dictionary between the two readings of a word. -/
+lemma phiSL_WP (w : List (Bool × ℤ)) : phiSL (WP w) = WS w := by
+  simp only [WP, WS, List.map_map]
+  rw [map_list_prod, List.map_map]
+  congr 1
+  apply List.map_congr_left
+  intro p _
+  by_cases hp : p.1 <;> simp [hp, phiSL_r, phiSL_s]
+
 end ModularGroup
 
 namespace LeanCategories.ForMathlib

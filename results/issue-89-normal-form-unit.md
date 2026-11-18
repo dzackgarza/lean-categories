@@ -287,3 +287,19 @@ That is the statement the module docstring names as the surviving half of the is
 
 Remaining before `Sl2zPresentationComplete`: the glue from `PresentedGroup sl2zRelators` — every
 element of the presented group must be shown to be a base element times such a word.
+
+## The bridge, I: words over the two factors
+
+Working in the amalgam presentation `⟨S, R | S⁴, R³S⁻²⟩` (reached from the issue's presentation by
+`sl2zAmalgamEquiv`), the dictionary for the last step is now in the module (section "The bridge, I"):
+
+* `sGen`, `rGen` — the two generators, with `sGen_pow_four`, `rGen_cube` and `rGen_pow_six`;
+* `WP` — the element of the presented group read off a word over `(factor, exponent)` pairs, `WS` the
+  same word read in `SL(2, ℤ)`;
+* `phiSL` — the map `S ↦ S`, `R ↦ T * S`, with `phiSL_WP`: **`phiSL (WP w) = WS w`**, the two readings
+  of a word agree (`phiSL_s`, `phiSL_r` on the powers of each generator).
+
+What remains: surjectivity of `WP` onto the presented group, minimal-length words being alternating and
+base-free (the reductions `S⁴ = 1`, `R⁶ = 1`, merging equal factors, and `S² = R³`), and then `no_die`.
+
+`just test` is green on the tree as of this commit (including the axiom audit) with the module touched.
