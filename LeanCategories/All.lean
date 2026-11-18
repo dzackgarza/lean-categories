@@ -72,6 +72,7 @@ public import LeanCategories.Algebra.Concrete.RingCarrierComparison
 public import LeanCategories.Algebra.GroupProduct
 public import LeanCategories.Algebra.GroupPullback
 public import LeanCategories.Algebra.GroupProductTests
+public import LeanCategories.Lattices.Valued.OrthogonalSumGroupTests
 public import LeanCategories.Algebra.CoxeterGraphData
 public import LeanCategories.Algebra.FractionalIdeals
 public import LeanCategories.Algebra.GlobalArtinData
