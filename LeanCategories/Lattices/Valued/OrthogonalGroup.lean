@@ -139,4 +139,44 @@ theorem isPrimitiveSubmodule_smul_iff [IsDomain R]
     simpa only [inv_smul_smul] using h'
   · exact congrArg (fun Q ↦ g • Q)
 
+/-! ## The orthogonal-sum map of orthogonal groups
+
+For lattices `L₁`, `L₂`, the orthogonal sum of isometries is a group morphism
+`O(L₁) × O(L₂) →* O(L₁ ⊕ L₂)`, injective because the two components are recovered by evaluating
+on the two summands. The general statement — for a pairing that is the sum of two coordinate
+pairings, with no nondegeneracy, symmetry or finiteness hypothesis — is
+`BilinModuleCat.prodCongrHom` in `Modules/Bilinear/Valued/OrthogonalSum.lean`; the declarations
+here are its instantiation at `orthogonalSumBilinMap`, whose pairing is
+`orthogonalSum_pairing` (`Lattices/Valued/Constructions.lean`).
+-/
+
+section OrthogonalSum
+
+variable {W : Type u} [AddCommGroup W] [Module R W]
+
+/-- The orthogonal-sum map `O(L₁) × O(L₂) →* O(L₁ ⊕ L₂)` of lattices over `R`: the
+block-diagonal isometry built from the two factors. -/
+noncomputable def orthogonalSumGroupHom (L₁ L₂ : LatticeCat R W) :
+    BilinModuleCat.OrthogonalGroup L₁.obj × BilinModuleCat.OrthogonalGroup L₂.obj →*
+      BilinModuleCat.OrthogonalGroup (orthogonalSum L₁ L₂).obj :=
+  BilinModuleCat.prodCongrHom (orthogonalSumBilinMap L₁.obj L₂.obj) (fun _ _ => rfl)
+
+/-- The orthogonal-sum map of lattices is injective. -/
+theorem orthogonalSumGroupHom_injective (L₁ L₂ : LatticeCat R W) :
+    Function.Injective (orthogonalSumGroupHom L₁ L₂) :=
+  BilinModuleCat.prodCongrHom_injective _ _
+
+end OrthogonalSum
+
+/-- The orthogonal-sum map `O(L₁) × O(L₂) →* O(L₁ ⊕ L₂)` of integral lattices. -/
+noncomputable def integralOrthogonalSumGroupHom (L₁ L₂ : IntegralLatticeCat R) :
+    OrthogonalGroup L₁ × OrthogonalGroup L₂ →* OrthogonalGroup (orthogonalSum L₁ L₂) :=
+  BilinModuleCat.prodCongrHom (orthogonalSumBilinMap L₁.obj L₂.obj) (fun _ _ => rfl)
+
+/-- The orthogonal-sum map of integral lattices is injective: an element of `O(L₁ ⊕ L₂)` that is
+block diagonal in the two summands is determined by its two blocks. -/
+theorem integralOrthogonalSumGroupHom_injective (L₁ L₂ : IntegralLatticeCat R) :
+    Function.Injective (integralOrthogonalSumGroupHom L₁ L₂) :=
+  BilinModuleCat.prodCongrHom_injective _ _
+
 end LeanCategories.Lattices.Valued

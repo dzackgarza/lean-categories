@@ -861,6 +861,32 @@ not a decidable quotient equality or a new mathematical comparison.
 - **Optimal:** `⊥` as a symmetric monoidal structure on `QuadModuleCat R W`; `IsometryClass R W`
   is then its skeleton monoid. TODO(LC-12) in the file.
 
+### Missing construction: no registered binary product in the category of groups
+
+- **Need:** lean-categories#91's consumer clause asks for products of subgroups of lattice
+  orthogonal groups through the catalogue. The limit presentations for groups
+  (`CategoryId.groups`, `Catalogue/Semantics/Algebra/Catalogue.lean:14`) cover the kernel only:
+  `lim.groups.kernel` (`Catalogue/Semantics/Limits/Registration.lean:419`) has no product row.
+- **Searches:** formalization-corpus API `MonoidHom.inl GrpCat product` (0 files), `binary product
+  GrpCat` (24 files, none a product cone in groups), `"MonoidHom.inl" "BinaryFan"` (0 files);
+  Mathlib `Mathlib/Algebra/Category/Grp/Limits.lean` (`GrpCat.hasLimits`, whose apex is a `Shrink`
+  of the sections of the forgetful functor, not `G × H`).
+- **Found:** this repository had `LeanCategories.Algebra.kernelFork` / `kernelLimitCone`
+  (`Algebra/GroupKernel.lean`) and nothing else presenting a `Grp` limit concretely.
+- **Proved here:** `LeanCategories.Algebra.groupProduct`, `groupProductFst`, `groupProductSnd`,
+  `groupProductFan`, `groupProductIsLimit`, the inclusions `groupProductInl`/`groupProductInr`
+  with their component lemmas and the universal-property characterisations
+  `eq_groupProductInl`/`eq_groupProductInr`, and `groupProductIsoProd`
+  (`Algebra/GroupProduct.lean`).
+- **Gap and impact:** no `normalized_registry .limit` row of shape `"product"` in `cat.groups`
+  names them, so the kernel cannot dispatch a product of groups and a consumer reaches the product
+  only as Lean, not through the catalogue. No mathematical hypothesis blocks the row: the cone and
+  its `IsLimit` are proved, so only the registration and its checks are missing.
+- **Optimal:** one row `lim.groups.product` with `declaration := groupsProduct` (a
+  `LimitCone (pair X Y)` built from `groupProductFan`/`groupProductIsLimit`),
+  `standardization := diagramIsoPair` and `dataConstructor := BinaryFan.mk`, plus the registration
+  checks that file runs at elaboration.
+
 ### Missing theorem: the Lorentzian negative cone, coordinate-free
 
 - **Need:** the negative cone of a real quadratic form of negative index one has two convex
