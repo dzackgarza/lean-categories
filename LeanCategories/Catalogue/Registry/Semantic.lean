@@ -1725,20 +1725,28 @@ def Route.functorIds (route : Route) : Array FunctorId := route.steps.filterMap 
 /-- The steps of a route. -/
 def Route.refs (route : Route) : Array EdgeRef := route.steps.map (·.ref)
 
+/-- The continuations of the simple-route enumeration from `current`, as edge chains. The recursion
+is structural in `fuel`, so the enumeration terminates by construction (no `partial`), and
+`routeSteps_steps_le` bounds every chain it returns by the fuel. -/
+def SemanticState.routeSteps (state : SemanticState) (target : CategoryExpr)
+    (current : CategoryExpr) (visited : List CategoryExpr) :
+    Nat → Array (Array StructuralEdge)
+  | 0 => if current.syntacticEq target then #[#[]] else #[]
+  | fuel + 1 =>
+      if current.syntacticEq target then #[#[]]
+      else
+        (state.edgesFrom current).flatMap fun edge =>
+          if visited.any (·.syntacticEq edge.target) then #[]
+          else
+            (state.routeSteps target edge.target (edge.target :: visited) fuel).map
+              fun steps => #[edge] ++ steps
+
 /-- All simple structural routes from `source` to `target`. A route never revisits a category,
-so the enumeration is finite; `fuel` bounds its length. -/
-partial def SemanticState.routes (state : SemanticState) (source target : CategoryExpr)
+so the enumeration is finite; `fuel` bounds its length, and no simple route is longer than that
+bound under a certified enclosure (`RouteDiscovery.walk_length_le_card`). -/
+def SemanticState.routes (state : SemanticState) (source target : CategoryExpr)
     (fuel : Nat := 32) : Array Route :=
-  let rec go (current : CategoryExpr) (visited : List CategoryExpr) (fuel : Nat) :
-      Array (Array StructuralEdge) :=
-    if current.syntacticEq target then #[#[]]
-    else if fuel = 0 then #[]
-    else
-      (state.edgesFrom current).foldl (init := #[]) fun acc edge =>
-        if !(visited.any (·.syntacticEq edge.target)) then
-          acc ++ (go edge.target (edge.target :: visited) (fuel - 1)).map (#[edge] ++ ·)
-        else acc
-  (go source [source] fuel).map fun steps => { source, target, steps }
+  (state.routeSteps target source [source] fuel).map fun steps => { source, target, steps }
 
 /-- The edges along `steps` if they form a structural route from `source` to `target`. -/
 def SemanticState.routeEdges? (state : SemanticState) (source target : CategoryExpr)
