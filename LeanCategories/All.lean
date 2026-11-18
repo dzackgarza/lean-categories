@@ -375,6 +375,7 @@ public import LeanCategories.Lattices.Valued.PrimitiveReduction
 public import LeanCategories.Lattices.Valued.RationalPolyhedralCone
 public import LeanCategories.Lattices.Valued.RationalConeDuality
 public import LeanCategories.Lattices.Valued.FanCoarsening
+public import LeanCategories.Lattices.Valued.FanCoarseningTests
 public import LeanCategories.Lattices.Valued.LocallyRationalDecomposition
 public import LeanCategories.Lattices.Valued.ConicalLocus
 public import LeanCategories.Lattices.Valued.FibreRefinement
@@ -415,8 +416,6 @@ public import LeanCategories.Lattices.Valued.WeylCone
 public import LeanCategories.Lattices.Valued.WeylChambers
 public import LeanCategories.Lattices.Valued.VinbergE10Roots
 public import LeanCategories.Lattices.Valued.VinbergE10Chamber
-public import LeanCategories.Lattices.Valued.Folding
-public import LeanCategories.Lattices.Valued.FoldingEnriques
 public import LeanCategories.Lattices.Valued.CobleCuspLattice
 -- lean-categories#22: the quasi-coherent O_X-algebra layer, the symmetric monoidal
 -- structure on `Scheme.Modules` it is an algebra for, and relative Spec with its
