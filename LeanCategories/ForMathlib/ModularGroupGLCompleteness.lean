@@ -72,12 +72,11 @@ The generator-inverting endomorphism of the `SL(2, ℤ)` presentation, which is 
 `e` acts by. Its relator obligations are `conj_pow_presented` (conjugating a power conjugates the
 base), `sl2zS_pow_four` and `sl2zTS_relator`.
 
-Not yet here: the conjugation identity `e * sl2zInGl a * e⁻¹ = sl2zInGl (sl2zInv a)`. The attempt
-below-the-line reduces it to the two generator cases, where the relator gives
-`e S e⁻¹ = S⁻¹`, but rewriting `PresentedGroup.one_of_mem`'s `mk`-form into the `of`-form of the
-goal does not go through `simpa` (the term's simplified type is
-`mk (of 2 * of 0 * (of 2)⁻¹ * of 0) = 1`, not the product of `of`s); the fix is to transport through
-`PresentedGroup.mk` with `map_mul`/`map_inv` rather than to ask `simp` to cross that boundary.
+The conjugation identity `e * sl2zInGl a * e⁻¹ = sl2zInGl (sl2zInv a)` is `e_conj_sl2z`, at the
+homomorphism level `conjByE_comp_sl2zInGl`. Its two generator cases are `e_conj_S` and `e_conj_T`,
+obtained from the relators `eSe⁻¹S` and `eTe⁻¹T` by transporting `PresentedGroup.one_of_mem`'s
+`mk`-form through `PresentedGroup.mk` with `map_mul`/`map_inv` (that transport, not `simp`, is what
+`e_conj_S` records).
 -/
 
 /-- Conjugating a power by `y` conjugates the base. -/
@@ -130,4 +129,86 @@ theorem sl2zInv_of (i : Fin 2) :
   PresentedGroup.toGroup.of (rels := sl2zRelators) (G := PresentedGroup sl2zRelators)
     (f := fun j : Fin 2 => (PresentedGroup.of (rels := sl2zRelators) j)⁻¹)
     sl2zRelators_map_one_inv
+theorem e_conj_S :
+    PresentedGroup.of (rels := gl2zRelators) 2 * PresentedGroup.of (rels := gl2zRelators) 0 *
+        (PresentedGroup.of (rels := gl2zRelators) 2)⁻¹ =
+      (PresentedGroup.of (rels := gl2zRelators) 0)⁻¹ := by
+  have hmem : PresentedGroup.mk gl2zRelators
+      (FreeGroup.of 2 * FreeGroup.of 0 * (FreeGroup.of 2)⁻¹ * FreeGroup.of 0) = 1 :=
+    PresentedGroup.one_of_mem (by simp [gl2zRelators])
+  have hform : PresentedGroup.mk gl2zRelators
+      (FreeGroup.of 2 * FreeGroup.of 0 * (FreeGroup.of 2)⁻¹ * FreeGroup.of 0) =
+      (PresentedGroup.of (rels := gl2zRelators) 2 * PresentedGroup.of (rels := gl2zRelators) 0 *
+        (PresentedGroup.of (rels := gl2zRelators) 2)⁻¹) *
+        PresentedGroup.of (rels := gl2zRelators) 0 := by
+    rw [map_mul, map_mul, map_mul, map_inv]
+    rfl
+  rw [hform] at hmem
+  calc PresentedGroup.of (rels := gl2zRelators) 2 * PresentedGroup.of (rels := gl2zRelators) 0 *
+        (PresentedGroup.of (rels := gl2zRelators) 2)⁻¹
+      = (PresentedGroup.of (rels := gl2zRelators) 2 * PresentedGroup.of (rels := gl2zRelators) 0 *
+          (PresentedGroup.of (rels := gl2zRelators) 2)⁻¹) *
+          (PresentedGroup.of (rels := gl2zRelators) 0 *
+            (PresentedGroup.of (rels := gl2zRelators) 0)⁻¹) := by group
+    _ = ((PresentedGroup.of (rels := gl2zRelators) 2 * PresentedGroup.of (rels := gl2zRelators) 0 *
+          (PresentedGroup.of (rels := gl2zRelators) 2)⁻¹) *
+          PresentedGroup.of (rels := gl2zRelators) 0) *
+          (PresentedGroup.of (rels := gl2zRelators) 0)⁻¹ := by group
+    _ = (PresentedGroup.of (rels := gl2zRelators) 0)⁻¹ := by rw [hmem, one_mul]
+
+theorem e_conj_T :
+    PresentedGroup.of (rels := gl2zRelators) 2 * PresentedGroup.of (rels := gl2zRelators) 1 *
+        (PresentedGroup.of (rels := gl2zRelators) 2)⁻¹ =
+      (PresentedGroup.of (rels := gl2zRelators) 1)⁻¹ := by
+  have hmem : PresentedGroup.mk gl2zRelators
+      (FreeGroup.of 2 * FreeGroup.of 1 * (FreeGroup.of 2)⁻¹ * FreeGroup.of 1) = 1 :=
+    PresentedGroup.one_of_mem (by simp [gl2zRelators])
+  have hform : PresentedGroup.mk gl2zRelators
+      (FreeGroup.of 2 * FreeGroup.of 1 * (FreeGroup.of 2)⁻¹ * FreeGroup.of 1) =
+      (PresentedGroup.of (rels := gl2zRelators) 2 * PresentedGroup.of (rels := gl2zRelators) 1 *
+        (PresentedGroup.of (rels := gl2zRelators) 2)⁻¹) *
+        PresentedGroup.of (rels := gl2zRelators) 1 := by
+    rw [map_mul, map_mul, map_mul, map_inv]
+    rfl
+  rw [hform] at hmem
+  calc PresentedGroup.of (rels := gl2zRelators) 2 * PresentedGroup.of (rels := gl2zRelators) 1 *
+        (PresentedGroup.of (rels := gl2zRelators) 2)⁻¹
+      = (PresentedGroup.of (rels := gl2zRelators) 2 * PresentedGroup.of (rels := gl2zRelators) 1 *
+          (PresentedGroup.of (rels := gl2zRelators) 2)⁻¹) *
+          (PresentedGroup.of (rels := gl2zRelators) 1 *
+            (PresentedGroup.of (rels := gl2zRelators) 1)⁻¹) := by group
+    _ = ((PresentedGroup.of (rels := gl2zRelators) 2 * PresentedGroup.of (rels := gl2zRelators) 1 *
+          (PresentedGroup.of (rels := gl2zRelators) 2)⁻¹) *
+          PresentedGroup.of (rels := gl2zRelators) 1) *
+          (PresentedGroup.of (rels := gl2zRelators) 1)⁻¹ := by group
+    _ = (PresentedGroup.of (rels := gl2zRelators) 1)⁻¹ := by rw [hmem, one_mul]
+
+/-- Conjugation by `e = of 2` in the `GL(2, ℤ)` presentation, as a homomorphism. -/
+def conjByE : PresentedGroup gl2zRelators →* PresentedGroup gl2zRelators where
+  toFun x := PresentedGroup.of (rels := gl2zRelators) 2 * x *
+    (PresentedGroup.of (rels := gl2zRelators) 2)⁻¹
+  map_one' := by group
+  map_mul' x y := by group
+
+theorem conjByE_apply (x : PresentedGroup gl2zRelators) :
+    conjByE x = PresentedGroup.of (rels := gl2zRelators) 2 * x *
+      (PresentedGroup.of (rels := gl2zRelators) 2)⁻¹ := rfl
+
+theorem conjByE_comp_sl2zInGl : conjByE.comp sl2zInGl = sl2zInGl.comp sl2zInv := by
+  refine PresentedGroup.ext fun i => ?_
+  have h : i = 0 ∨ i = 1 := by
+    fin_cases i <;> simp
+  rcases h with rfl | rfl
+  · simp only [MonoidHom.comp_apply, sl2zInGl_of, sl2zInv_of, sl2zGenValInGl_zero]
+    exact e_conj_S
+  · simp only [MonoidHom.comp_apply, sl2zInGl_of, sl2zInv_of, sl2zGenValInGl_one]
+    exact e_conj_T
+
+/-- Conjugation by `e` inverts the `SL(2, ℤ)` part of the `GL(2, ℤ)` presentation. -/
+theorem e_conj_sl2z (a : PresentedGroup sl2zRelators) :
+    PresentedGroup.of (rels := gl2zRelators) 2 * sl2zInGl a *
+        (PresentedGroup.of (rels := gl2zRelators) 2)⁻¹ = sl2zInGl (sl2zInv a) := by
+  have := congrArg (fun f => f a) conjByE_comp_sl2zInGl
+  rw [MonoidHom.comp_apply, MonoidHom.comp_apply, conjByE_apply] at this
+  exact this
 end LeanCategories.ForMathlib
