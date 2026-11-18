@@ -2593,6 +2593,238 @@ theorem triH_ge_four {u v : ℤ × ℤ} (hd : fdet u v = 1) : 4 ≤ triH u v := 
 
 end Bounds
 
+/-!
+### At most one side of a triangle is lower in the tiebroken height
+
+The walk's turn comparison at a triangle vertex asks whether both of the two edges adjacent to it are
+*lower*, and an edge's height is the mean of its two incident triangles — so the question is whether
+two of the triangle's flips are lower than the triangle itself. `no_two_flips_decrease` answers that
+for the `ℓ¹` height; the tiebreak can upset it, because on the tied pair `HT` is lower while `triH` is
+not. This section closes that gap:
+
+* `HT_lt_decrease` — if `HT` of another triangle is lower, then either its `ℓ¹` height is strictly
+  lower, or the two `ℓ¹` heights are equal and the tiebreak is what decided it (`eps u v = 0`,
+  `eps x y = 1`);
+* `triF_of_eps_one`, `triH_of_eps_one` — `eps = 1` means the triangle is `{0, 1, ∞}`, whose `ℓ¹`
+  height is four;
+* `fdet_flipA/B/C` — the three flips of a basis are bases;
+* `triF_flA_ne_flB`, `triF_flA_ne_flC` — the flips across two sides of a triangle are two *distinct*
+  triangles (so two of them cannot both be `{0, 1, ∞}`);
+* `not_both_AB`, `not_both_AC` — **at most one** of the flips across the side `{u, v}` and the side
+  `{u, u + v}` (resp. `{v, u + v}`) is lower in `HT`. The only way this can fail off the `ℓ¹` case is
+  the tiebreak lowering one flip, which pins the triangle's `ℓ¹` height at four and then
+  `triH_ge_four` rules out the second;
+* `HT_other_r1`, `HT_other_r2` and `HT_act_r1'/r2'/r4'/r5'` — the "other" triangle of an edge after an
+  `⟨R⟩`-move, in the unfolded form the per-letter comparison needs.
+-/
+
+
+section Compare
+
+variable (u v : ℤ × ℤ)
+
+/-- The tiebreak can only lower `HT` against a non-decrease of `ℓ¹` height by making the triangle the
+fundamental one and the other not. -/
+lemma HT_lt_decrease {x y : ℤ × ℤ} (h : HT x y < HT u v) :
+    triH x y < triH u v ∨
+      (triH x y = triH u v ∧ eps u v = 0 ∧ eps x y = 1) := by
+  by_cases hB : triH x y < triH u v
+  · exact Or.inl hB
+  · right
+    have h2 : 2 * (triH x y - triH u v) < eps x y - eps u v := by
+      simp only [HT] at h; linarith
+    have hge : triH u v ≤ triH x y := le_of_not_gt hB
+    have hpos : 0 < eps x y - eps u v := by nlinarith
+    have hx1 := eps_le_one x y
+    have hx0 := eps_nonneg x y
+    have hu1 := eps_le_one u v
+    have hu0 := eps_nonneg u v
+    have hex : eps x y = 1 := by omega
+    have heu : eps u v = 0 := by omega
+    have heq : triH x y = triH u v := by nlinarith
+    exact ⟨heq, heu, hex⟩
+
+/-- `eps = 1` means the triangle is the fundamental one. -/
+lemma triF_of_eps_one {x y : ℤ × ℤ} (h : eps x y = 1) : triF x y = stdTri0 := by
+  by_contra hc
+  have h0 : eps x y = 0 := by simp only [eps, if_neg hc]
+  omega
+
+/-- `eps = 1` pins the `ℓ¹` height at four: the triangle is the fundamental one. -/
+lemma triH_of_eps_one {x y : ℤ × ℤ} (hd : fdet x y = 1) (h : eps x y = 1) : triH x y = 4 := by
+  have hT : triF x y = stdTri0 := by
+    by_contra hc
+    have h0 : eps x y = 0 := by simp only [eps, if_neg hc]
+    omega
+  exact (stdTri_triH hd (Or.inl hT)).1
+
+lemma fdet_flipA (hd : fdet u v = 1) : fdet (flA u v).1 (flA u v).2 = 1 := by
+  simp only [fdet] at hd ⊢
+  simp only [flA, Prod.fst_neg, Prod.snd_neg]
+  nlinarith
+
+lemma fdet_flipB (hd : fdet u v = 1) : fdet (flB u v).1 (flB u v).2 = 1 := by
+  simp only [fdet] at hd ⊢
+  simp only [flB, Prod.fst_add, Prod.snd_add]
+  nlinarith
+
+lemma fdet_flipC (hd : fdet u v = 1) : fdet (flC u v).1 (flC u v).2 = 1 := by
+  simp only [fdet] at hd ⊢
+  simp only [flC, Prod.fst_add, Prod.snd_add]
+  nlinarith
+
+/-- The flips across two sides of a triangle are two distinct triangles. -/
+lemma triF_flA_ne_flB (hd : fdet u v = 1) :
+    triF (flA u v).1 (flA u v).2 ≠ triF (flB u v).1 (flB u v).2 := by
+  intro h
+  have hmem : (u + v) ∈ triF (flA u v).1 (flA u v).2 := by
+    rw [h]
+    simp only [flB, triF, Finset.mem_insert, Finset.mem_singleton]
+    tauto
+  simp only [flA, triF, Finset.mem_insert, Finset.mem_singleton] at hmem
+  have hd' : u.1 * v.2 - u.2 * v.1 = 1 := hd
+  rcases hmem with h1 | h1 | h1 | h1 | h1 | h1 <;>
+    (rw [Prod.ext_iff] at h1
+     obtain ⟨e1, e2⟩ := h1
+     simp only [Prod.fst_add, Prod.snd_add, Prod.fst_neg, Prod.snd_neg, Prod.fst_sub,
+       Prod.snd_sub] at e1 e2
+     solve
+       | (have k1 : u.1 = 0 := by omega
+          have k2 : u.2 = 0 := by omega
+          rw [k1, k2] at hd'
+          norm_num at hd')
+       | (have k1 : v.1 = 0 := by omega
+          have k2 : v.2 = 0 := by omega
+          rw [k1, k2] at hd'
+          norm_num at hd')
+       | (nlinarith [hd', e1, e2])
+       | (have k1 : u.1 = -2 * v.1 := by omega
+          have k2 : u.2 = -2 * v.2 := by omega
+          rw [k1, k2] at hd'
+          ring_nf at hd'
+          omega)
+       | (have k1 : v.1 = -2 * u.1 := by omega
+          have k2 : v.2 = -2 * u.2 := by omega
+          rw [k1, k2] at hd'
+          ring_nf at hd'
+          omega))
+
+lemma triF_flA_ne_flC (hd : fdet u v = 1) :
+    triF (flA u v).1 (flA u v).2 ≠ triF (flC u v).1 (flC u v).2 := by
+  intro h
+  have hmem : (u + v) ∈ triF (flA u v).1 (flA u v).2 := by
+    rw [h]
+    simp only [flC, triF, Finset.mem_insert, Finset.mem_singleton]
+    tauto
+  simp only [flA, triF, Finset.mem_insert, Finset.mem_singleton] at hmem
+  have hd' : u.1 * v.2 - u.2 * v.1 = 1 := hd
+  rcases hmem with h1 | h1 | h1 | h1 | h1 | h1 <;>
+    (rw [Prod.ext_iff] at h1
+     obtain ⟨e1, e2⟩ := h1
+     simp only [Prod.fst_add, Prod.snd_add, Prod.fst_neg, Prod.snd_neg, Prod.fst_sub,
+       Prod.snd_sub] at e1 e2
+     solve
+       | (have k1 : u.1 = 0 := by omega
+          have k2 : u.2 = 0 := by omega
+          rw [k1, k2] at hd'
+          norm_num at hd')
+       | (have k1 : v.1 = 0 := by omega
+          have k2 : v.2 = 0 := by omega
+          rw [k1, k2] at hd'
+          norm_num at hd')
+       | (nlinarith [hd', e1, e2])
+       | (have k1 : u.1 = -2 * v.1 := by omega
+          have k2 : u.2 = -2 * v.2 := by omega
+          rw [k1, k2] at hd'
+          ring_nf at hd'
+          omega)
+       | (have k1 : v.1 = -2 * u.1 := by omega
+          have k2 : v.2 = -2 * u.2 := by omega
+          rw [k1, k2] at hd'
+          ring_nf at hd'
+          omega))
+
+/-- At most one of the flips across the side `{u, v}` and the side `{u, u + v}` is lower. -/
+theorem not_both_AB (hd : fdet u v = 1)
+    (hA : HT (flA u v).1 (flA u v).2 < HT u v)
+    (hB : HT (flB u v).1 (flB u v).2 < HT u v) : False := by
+  have hA' := HT_lt_decrease u v hA
+  have hB' := HT_lt_decrease u v hB
+  rcases hA' with h1 | ⟨h1, -, he1⟩
+  · rcases hB' with h2 | ⟨h2, -, he2⟩
+    · exact absurd ⟨(downA_flip u v).mpr h1, (downB_flip u v).mpr h2⟩ (at_most_one_down u v).1
+    · -- `B` is tiebreak-lowered: its triangle is the fundamental one, so `triH = 4`,
+      -- and the `A` decrease would put `triH (flA) < 4`.
+      have h4 : triH u v = 4 := by
+        rw [← h2]; exact triH_of_eps_one (fdet_flipB u v hd) he2
+      have := triH_ge_four (fdet_flipA u v hd)
+      linarith
+  · -- `A` is tiebreak-lowered
+    rcases hB' with h2 | ⟨h2, -, he2⟩
+    · have h4 : triH u v = 4 := by
+        rw [← h1]; exact triH_of_eps_one (fdet_flipA u v hd) he1
+      have := triH_ge_four (fdet_flipB u v hd)
+      linarith
+    · exact absurd (by rw [triF_of_eps_one he1, triF_of_eps_one he2])
+        (triF_flA_ne_flB u v hd)
+
+/-- At most one of the flips across the side `{u, v}` and the side `{v, u + v}` is lower. -/
+theorem not_both_AC (hd : fdet u v = 1)
+    (hA : HT (flA u v).1 (flA u v).2 < HT u v)
+    (hC : HT (flC u v).1 (flC u v).2 < HT u v) : False := by
+  have hA' := HT_lt_decrease u v hA
+  have hC' := HT_lt_decrease u v hC
+  rcases hA' with h1 | ⟨h1, -, he1⟩
+  · rcases hC' with h2 | ⟨h2, -, he2⟩
+    · exact absurd ⟨(downA_flip u v).mpr h1, (downC_flip u v).mpr h2⟩ (at_most_one_down u v).2.1
+    · have h4 : triH u v = 4 := by
+        rw [← h2]; exact triH_of_eps_one (fdet_flipC u v hd) he2
+      have := triH_ge_four (fdet_flipA u v hd)
+      linarith
+  · rcases hC' with h2 | ⟨h2, -, he2⟩
+    · have h4 : triH u v = 4 := by
+        rw [← h1]; exact triH_of_eps_one (fdet_flipA u v hd) he1
+      have := triH_ge_four (fdet_flipC u v hd)
+      linarith
+    · exact absurd (by rw [triF_of_eps_one he1, triF_of_eps_one he2])
+        (triF_flA_ne_flC u v hd)
+
+end Compare
+
+
+section PerLetter
+
+variable (u v : ℤ × ℤ)
+
+/-- The "other" triangle of the edge after the move `r1` is the flip `B`. -/
+lemma HT_other_r1 : HT (-u) (-(u + v)) = HT u (u + v) := by
+  refine HT_congr (triF_negneg u (u + v)) ?_
+  have hh : -u + -(u + v) = -(u + u + v) := by abel
+  have e : u + (u + v) = u + u + v := by abel
+  simp only [triH, hl_neg, hh, e]
+
+/-- The "other" triangle of the edge after the move `r2` is the flip `C`. -/
+lemma HT_other_r2 : HT (-(u + v)) (-v) = HT (u + v) v := by
+  refine HT_congr (triF_negneg (u + v) v) ?_
+  have hh : -(u + v) + -v = -(u + v + v) := by abel
+  have e : (u + v) + v = u + v + v := by abel
+  simp only [triH, hl_neg, hh, e]
+
+/-- The height of the flip `A` is what an `⟨S⟩`-letter moves a triangle to. -/
+lemma HT_act_s1 : HT (Letter.act Letter.s1 u v).1 (Letter.act Letter.s1 u v).2 = HT v (-u) := rfl
+
+lemma HT_act_s3 : HT (Letter.act Letter.s3 u v).1 (Letter.act Letter.s3 u v).2 = HT v (-u) := by
+  simp only [Letter.act]
+  exact HT_negv u v
+
+lemma HT_act_r1' : HT (u + v) (-u) = HT u v := HT_act_r1 u v
+lemma HT_act_r2' : HT v (-(u + v)) = HT u v := HT_act_r2 u v
+lemma HT_act_r4' : HT (-(u + v)) u = HT u v := HT_act_r4 u v
+lemma HT_act_r5' : HT (-v) (u + v) = HT u v := HT_act_r5 u v
+
+
+end PerLetter
+
 end ModularGroup
 
 namespace LeanCategories.ForMathlib

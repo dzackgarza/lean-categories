@@ -162,3 +162,21 @@ the flipped bases of a triangle, and height four"):
 
 Still open for the dictionary: the two per-index comparisons themselves, the maximum-vertex argument,
 and the parity split.
+
+## Progress: at most one side of a triangle is lower in the tiebroken height
+
+The walk's turn comparison at a triangle becomes "are two of the triangle's flips lower?".
+`no_two_flips_decrease` answers that for the `ℓ¹` height; the tiebreak can upset it, and this is now
+closed in the module (section "At most one side of a triangle is lower in the tiebroken height"):
+
+* `HT_lt_decrease` — `HT` lower implies either a strict `triH` decrease or `triH` equal with the
+  tiebreak deciding it (`eps u v = 0`, `eps x y = 1`);
+* `triF_of_eps_one`, `triH_of_eps_one` — `eps = 1` means the triangle is `{0,1,∞}`, of `ℓ¹` height 4;
+* `fdet_flipA/B/C` and `triF_flA_ne_flB`, `triF_flA_ne_flC` — the flips of a basis are bases, and the
+  flips across two sides are distinct triangles;
+* `not_both_AB`, `not_both_AC` — at most one of two given flips is lower in `HT`; apart from the `ℓ¹`
+  case the only way to fail would be the tiebreak lowering one flip, which pins the triangle's `ℓ¹`
+  height at four and `triH_ge_four` then rules out the second.
+
+Still open: `EH`'s invariance under `⟨S⟩`-letters, the two per-letter comparison statements (a
+near-compiling draft exists), the maximum-vertex argument, and the parity split.
