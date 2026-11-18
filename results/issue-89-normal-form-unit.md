@@ -269,3 +269,21 @@ end"):
 
 So neither end can be the highest vertex of an odd-length walk; what remains is the maximum-vertex
 argument at an interior index, and then the bridge to the presented group.
+
+## The parity split is closed: no nonempty reduced word dies
+
+`no_die` is now a theorem in the module: **a nonempty word of the six letters `S`, `S³`, `R`, `R²`,
+`R⁴`, `R⁵`, whose consecutive letters lie in different factors, has product one only if it is empty.**
+That is the statement the module docstring names as the surviving half of the issue.
+
+* `isS_parity` — in a linearly alternating word a letter's type depends only on the parity of its
+  index;
+* `no_die_odd` — the odd-length case: by the two seam comparisons (`Hk_zero_lt_one`: the first step
+  strictly rises; `Hk_last`: the last step returns to the first height) neither end of the walk is its
+  highest vertex, so the highest vertex is interior, where both neighbours are lower and `turn_Hk`
+  forbids it;
+* `no_die` — both parities (even length is also cyclically alternating, so `no_reduced_word_dies`
+  applies).
+
+Remaining before `Sl2zPresentationComplete`: the glue from `PresentedGroup sl2zRelators` — every
+element of the presented group must be shown to be a base element times such a word.

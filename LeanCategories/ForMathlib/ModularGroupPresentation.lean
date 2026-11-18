@@ -3327,6 +3327,161 @@ theorem Hk_last {l : List Letter} (hprod : (l.map Letter.val).prod = 1) (hne : l
     rw [hc1, hc2]
     exact (EH_act_of_true _ hb _ _).symm
 
+/-!
+### No nonempty reduced word dies
+
+This closes the statement the module docstring names as the surviving half of lean-categories#89: **a
+nonempty word of the six letters `S`, `S³`, `R`, `R²`, `R⁴`, `R⁵` whose consecutive letters lie in
+different factors has product one only if it is empty.**
+
+* `isS_parity` — in a linearly alternating word the type of a letter depends only on the parity of its
+  index;
+* `no_die_odd` — the odd-length case: by the two seam comparisons (`Hk_zero_lt_one`, `Hk_last`) neither
+  end of the walk is its highest vertex, so the highest vertex is interior, where both neighbours are
+  lower — which `turn_Hk` forbids;
+* `no_die` — both parities: for even length the word is also cyclically alternating and the closed
+  reduced walk of `no_reduced_word_dies` applies.
+
+What remains before `Sl2zPresentationComplete` is the glue from `PresentedGroup sl2zRelators`: every
+element there must be shown to be (a base element times) such a word.
+-/
+
+
+/-- In a linearly alternating word the type of a letter depends only on the parity of its index. -/
+theorem isS_parity {l : List Letter} (halt : ∀ (i : ℕ), 0 < i → (L l i).isS ≠ (L l (i - 1)).isS)
+    (i : ℕ) :
+    (L l i).isS = if i % 2 = 0 then (L l 0).isS else !(L l 0).isS := by
+  induction i using Nat.strong_induction_on with
+  | _ i ih =>
+    match i with
+    | 0 => simp
+    | 1 =>
+      have h : (L l 1).isS = !(L l 0).isS := bool_eq_not (halt 1 (by omega))
+      rw [h]
+      simp
+    | i + 2 =>
+      have e1 : i + 2 - 1 = i + 1 := by omega
+      have hstep : (L l (i + 2)).isS = (L l i).isS := by
+        rw [bool_eq_not (halt (i + 2) (by omega)), e1,
+          bool_eq_not (halt (i + 1) (by omega)), show i + 1 - 1 = i from by omega,
+          Bool.not_not]
+      rw [hstep, ih i (by omega)]
+      congr 1
+      rw [Nat.add_mod]
+      norm_num
+
+set_option maxHeartbeats 1000000 in
+/-- **The odd-length case of the walk.** A nonempty linearly alternating word of odd length cannot have
+product one: by the two seam comparisons neither end of the walk is its highest vertex, so the highest
+vertex is interior, where both neighbours are lower — which the turn forbids. -/
+theorem no_die_odd {l : List Letter} (hne : l ≠ [])
+    (hodd : ∃ m, l.length = 2 * m + 1) (hbig : 1 < l.length)
+    (hprod : (l.map Letter.val).prod = 1)
+    (halt : ∀ (i : ℕ), 0 < i → (L l i).isS ≠ (L l (i - 1)).isS) : False := by
+  have hn : 0 < l.length := List.length_pos_iff.mpr hne
+  -- the two ends carry the same type
+  have hsame : (L l 0).isS = (L l (l.length - 1)).isS := by
+    obtain ⟨m, hm⟩ := hodd
+    have hel : l.length - 1 = 2 * m := by omega
+    have hl := isS_parity halt (l.length - 1)
+    rw [hel, Nat.mod_eq_zero_of_dvd ⟨m, by ring⟩] at hl
+    rw [hel]
+    exact hl.symm
+  obtain ⟨k₀, hk₀mem, hmax⟩ :=
+    Finset.exists_max_image (Finset.range l.length) (Hk l) ⟨0, Finset.mem_range.mpr hn⟩
+  have hk₀ : k₀ < l.length := Finset.mem_range.mp hk₀mem
+  -- the first step goes up, so `0` is not the highest index
+  have hstep1 : Hk l 0 < Hk l 1 := by
+    refine Hk_zero_lt_one hne ?_
+    have h1n : (L l 1).isS = !(L l 0).isS := bool_eq_not (halt 1 (by omega))
+    rw [h1n]
+    exact fun hh => absurd hh (by simp)
+  have hmax1 : Hk l 1 ≤ Hk l k₀ := hmax _ (Finset.mem_range.mpr hbig)
+  have hpos : 0 < k₀ := by
+    rcases Nat.eq_zero_or_pos k₀ with h | h
+    · subst h; omega
+    · exact h
+  -- the last step returns to the first height, so `l.length - 1` is not the highest index either
+  have hlast : Hk l (l.length - 1) = Hk l 0 := Hk_last hprod hne hsame
+  have hlt : k₀ + 1 < l.length := by
+    rcases Nat.lt_or_ge (k₀ + 1) l.length with h | h
+    · exact h
+    · exfalso
+      have hk₀l : k₀ + 1 = l.length := by omega
+      have he : Hk l k₀ = Hk l (l.length - 1) := by
+        rw [show l.length - 1 = k₀ from by omega]
+      rw [he, hlast] at hmax1
+      omega
+  -- so the highest index is interior, where the turn forbids both neighbours being lower
+  have hnx : nxt l.length k₀ < l.length := by
+    simp only [nxt]; rw [Nat.mod_eq_of_lt hlt]; omega
+  have hpv : prv l.length k₀ < l.length := by
+    simp only [prv]; exact Nat.mod_lt _ hn
+  have htyn : (L l (nxt l.length k₀)).isS ≠ (L l k₀).isS := by
+    rw [show nxt l.length k₀ = k₀ + 1 from by simp only [nxt]; exact Nat.mod_eq_of_lt hlt]
+    exact halt (k₀ + 1) (by omega)
+  have htyp : (L l (prv l.length k₀)).isS ≠ (L l k₀).isS := by
+    rw [show prv l.length k₀ = k₀ - 1 from by
+      simp only [prv]
+      rw [show k₀ + l.length - 1 = k₀ - 1 + l.length by omega, Nat.add_mod_right,
+        Nat.mod_eq_of_lt (by omega)]]
+    exact (halt k₀ hpos).symm
+  have h1 : Hk l (nxt l.length k₀) ≤ Hk l k₀ := hmax _ (Finset.mem_range.mpr hnx)
+  have h2 : Hk l (prv l.length k₀) ≤ Hk l k₀ := hmax _ (Finset.mem_range.mpr hpv)
+  have e1 : Hk l (nxt l.length k₀) ≠ Hk l k₀ := step_Hk hprod hk₀ hnx htyn
+  have e2 : Hk l (prv l.length k₀) ≠ Hk l k₀ := by
+    rw [Hk_prev hprod hk₀ hpv htyp]
+    have hk' : Hk l k₀ =
+        (if (L l k₀).isS then EH (U l k₀) (V l k₀) else HT (U l k₀) (V l k₀)) := rfl
+    rw [hk']
+    cases hb : (L l k₀).isS <;> simp only [Bool.false_eq_true, reduceIte]
+    · exact fun hh => HT_ne_EH (fdet_UV l k₀) hh.symm
+    · exact fun hh => HT_ne_EH (fdet_UV l k₀) hh
+  exact turn_Hk hprod hk₀ hnx hpv htyn htyp
+    ⟨lt_of_le_of_ne h2 e2, lt_of_le_of_ne h1 e1⟩
+
+
+/-- No letter is the identity. -/
+theorem val_ne_one (a : Letter) : a.val ≠ 1 := by
+  cases a <;> decide
+
+set_option maxHeartbeats 1000000 in
+/-- **No nonempty reduced word dies.** A nonempty word of the six letters `S`, `S³`, `R`, `R²`, `R⁴`,
+`R⁵` whose consecutive letters lie in different factors has product one only if it is empty. The
+even-length case is the closed reduced walk of `no_reduced_word_dies`; the odd-length case
+`no_die_odd` is the same walk with its two ends pinned down. -/
+theorem no_die {l : List Letter} (hne : l ≠ [])
+    (hprod : (l.map Letter.val).prod = 1)
+    (halt : ∀ (i : ℕ), 0 < i → (L l i).isS ≠ (L l (i - 1)).isS) : False := by
+  have hn : 0 < l.length := List.length_pos_iff.mpr hne
+  rcases Nat.even_or_odd l.length with ⟨m, hm⟩ | ⟨m, hm⟩
+  · -- even length: the word is also cyclically alternating
+    refine no_reduced_word_dies l hne hprod halt ?_
+    have hmpos : 0 < m := by omega
+    have hodd : l.length - 1 = 2 * (m - 1) + 1 := by omega
+    have hpar := isS_parity halt (l.length - 1)
+    rw [hodd] at hpar
+    have h1 : (2 * (m - 1)) % 2 = 0 := Nat.mod_eq_zero_of_dvd ⟨m - 1, by ring⟩
+    have h2 : (2 * (m - 1) + 1) % 2 = 1 := by
+      rw [Nat.add_mod, h1, Nat.zero_add]
+    rw [h2] at hpar
+    rw [ite_eq_right (by omega : ¬ ((1 : ℕ) = 0))] at hpar
+    rw [hodd, hpar]
+    cases (L l 0).isS <;> simp
+  · rcases Nat.eq_zero_or_pos m with hm0 | hmpos
+    · -- a single letter
+      have hl1 : l.length = 1 := by omega
+      obtain ⟨a, rfl⟩ : ∃ a, l = [a] := by
+        match l with
+        | [] => simp at hl1
+        | [b] => exact ⟨b, rfl⟩
+        | b :: c :: t => simp at hl1
+      simp only [List.map_cons, List.map_nil, List.prod_cons, List.prod_nil, mul_one] at hprod
+      exact val_ne_one a hprod
+    · refine no_die_odd hne ⟨m, hm⟩ ?_ hprod halt
+      rw [hm]
+      omega
+
 end ModularGroup
 
 namespace LeanCategories.ForMathlib
