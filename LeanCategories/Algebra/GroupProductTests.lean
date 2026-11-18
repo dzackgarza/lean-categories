@@ -100,11 +100,11 @@ theorem diagonal_mem :
   rfl
 
 /-- The intersection `P ⊓ Q` with its two inclusions is the pullback of the inclusions. -/
-def intersection_limit (P Q : Subgroup ↥G) : IsLimit (subgroupIntersectionCone P Q) :=
+def intersectionLimit (P Q : Subgroup ↥G) : IsLimit (subgroupIntersectionCone P Q) :=
   subgroupIntersectionIsLimit P Q
 
 /-- The chosen pullback of the two inclusions is the intersection itself. -/
-noncomputable def intersection_iso (P Q : Subgroup ↥G) :
+noncomputable def intersectionIso (P Q : Subgroup ↥G) :
     groupPullback (GrpCat.ofHom P.subtype) (GrpCat.ofHom Q.subtype) ≅ GrpCat.of ↥(P ⊓ Q) :=
   subgroupIntersectionIsoGroupPullback P Q
 
