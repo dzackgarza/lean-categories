@@ -74,4 +74,53 @@ noncomputable def augmentation (S : AugmentedGradedObject C) :
 
 end Augmentation
 
+section Cochain
+
+open ZeroObject
+
+variable [HasZeroObject C]
+
+/-- The reversed index: the `ℕ`-index of a non-positive integer, one degree up. -/
+lemma toNat_neg_succ {i : ℤ} (h : i ≤ -1) : (-i).toNat = (-(i + 1)).toNat + 1 := by
+  have h1 : (0 : ℤ) ≤ -i := by omega
+  have h2 : (0 : ℤ) ≤ -(i + 1) := by omega
+  have h3 : ((-i).toNat : ℤ) = ((-(i + 1)).toNat : ℤ) + 1 := by
+    rw [Int.toNat_of_nonneg h1, Int.toNat_of_nonneg h2]
+    ring
+  exact_mod_cast h3
+
+/-- The reversed terms of a selected augmented object: the chosen term `P_n` sits in degree `-n`, and
+every positive degree carries the zero object. -/
+noncomputable def cochainTerm (S : AugmentedGradedObject C) (i : ℤ) : C :=
+  if i ≤ 0 then S.term (-i).toNat else 0
+
+/-- The reversed chosen differentials, from degree `i` to degree `i + 1`. -/
+noncomputable def cochainDiff (S : AugmentedGradedObject C) (i : ℤ) :
+    cochainTerm S i ⟶ cochainTerm S (i + 1) :=
+  if h : i ≤ -1 then
+    eqToHom (by simp [cochainTerm, show i ≤ 0 by omega, toNat_neg_succ h]) ≫
+      S.diff (-(i + 1)).toNat ≫
+      eqToHom (by simp [cochainTerm, show i + 1 ≤ 0 by omega])
+  else 0
+
+/-! ### The open obligation
+
+`cochainTerm` and `cochainDiff` are the reversal's data: the chosen term `P_n` in degree `-n`, the
+zero object above, and the reversed chosen differentials. What is *not* here is the assembly
+`CochainComplex.of (cochainTerm S) (cochainDiff S) sq`: its obligation
+
+`sq : ∀ i, cochainDiff S i ≫ cochainDiff S (i + 1) = 0`
+
+reduces, for `i ≤ -2`, to
+
+`S.diff (-(i + 1)).toNat ≫ eqToHom ⋯ ≫ S.diff (-(i + 1 + 1)).toNat ≫ eqToHom ⋯ = 0`
+
+where the middle `eqToHom` is the cast between `cochainTerm S (i + 1)` and the `S.term` it unfolds
+to. Closing it needs the two index identities `(-(i+1)).toNat = (-(i+2)).toNat + 1` (proved as
+`toNat_neg_succ`) and `-(i+1+1) = -(i+2)` rewritten *inside the types of the morphisms* before
+`S.comp_diff (-(i+2)).toNat` can fire; `simp` rewrites the index in the term but not in the
+`eqToHom`'s endpoints, and the cast then does not cancel syntactically. -/
+
+end Cochain
+
 end LeanCategories.Modules

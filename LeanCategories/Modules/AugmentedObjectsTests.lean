@@ -155,6 +155,14 @@ diagram is an arrow of `Ch(C)`. -/
 example : chainComplex intCover ⟶ (ChainComplex.single₀ (ModuleCat ℤ)).obj intCover.point :=
   augmentation intCover
 
+/-- 4. The reversal data for the `ℤ`-indexed model: the chosen term `P_n` sits in degree `-n`. -/
+example (n : ℕ) : cochainTerm intKoszul (-(n : ℤ)) = intKoszul.term n := by
+  simp [cochainTerm]
+
+/-- 4. Its reversed differentials run from degree `i` to degree `i + 1`. -/
+example (i : ℤ) : cochainTerm intKoszul i ⟶ cochainTerm intKoszul (i + 1) :=
+  cochainDiff intKoszul i
+
 /-- 5. The module framing case: a one-term object is a framing exactly when its augmentation is an
 isomorphism. -/
 example (P M : ModuleCat ℤ) (ε : P ⟶ M) :
