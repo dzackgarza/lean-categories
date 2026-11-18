@@ -244,4 +244,15 @@ example : ∃ ε₁ ε₂ : ℤ, (ε₁ = 1 ∨ ε₁ = -1) ∧ (ε₂ = 1 ∨ �
     ((1 : ℤ), -1) = (ε₁ * (1 : ℤ) + ε₂ * 0, ε₁ * 0 + ε₂ * 1) :=
   eq_pm_of_adjacent (1, 0) (0, 1) (1, -1) (by decide) (by decide) (by decide)
 
+example : fdet ((3 : ℤ), 5) ((3 : ℤ), 5) = 0 := fdet_self _
+
+example : fdet ((1 : ℤ), 2) ((3 : ℤ), 5) = -fdet ((3 : ℤ), 5) ((1 : ℤ), 2) := fdet_skew _ _
+
+example : ∃ ε₁ ε₂ : ℤ, (ε₁ = 1 ∨ ε₁ = -1) ∧ (ε₂ = 1 ∨ ε₂ = -1) ∧
+    ((3 : ℤ), 2) = (ε₁ * (2 : ℤ) + ε₂ * 1, ε₁ * 1 + ε₂ * 1) :=
+  eq_pm_of_adjacent ((2 : ℤ), 1) ((1 : ℤ), 1) ((3 : ℤ), 2) (by decide) (by decide) (by decide)
+
+example {α β : ℤ} (h : ((2 : ℤ), 3) = (α * (1 : ℤ) + β * 0, α * 0 + β * 1)) : α = 2 :=
+  (fdet_repr_unique ((1 : ℤ), 0) ((0 : ℤ), 1) ((2 : ℤ), 3) (by decide) h).1
+
 end LeanCategories.ForMathlib
