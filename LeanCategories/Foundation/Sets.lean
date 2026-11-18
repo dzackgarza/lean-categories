@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 -/
 module
 
+public import Mathlib.Basic.Denumerable
 public import Mathlib.CategoryTheory.FintypeCat
 public import Mathlib.CategoryTheory.InducedCategory
 public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
@@ -355,6 +356,37 @@ theorem infinite_nat (r : RankingData X ℕ) : Infinite X :=
 size: the `ω` counterpart of `natCard_fin`, read through the same ranking. -/
 theorem natCard_nat (r : RankingData X ℕ) : Nat.card X = 0 :=
   @Nat.card_eq_zero_of_infinite X r.infinite_nat
+
+/-- The ranking an infinite encodable carrier derives from its encoding: Mathlib's
+`Denumerable.ofEncodableOfInfinite` read as selected ranking data. It is a *derived* ranking — its
+order is the encoding's, and it is no evidence that an independently supplied ranking of the same
+carrier was preserved (`toDenumerable` is the converse direction). -/
+noncomputable def derivedCountable (X : Type u) [Encodable X] [Infinite X] : CountableRanking X :=
+  letI := Denumerable.ofEncodableOfInfinite X
+  ⟨Denumerable.eqv X⟩
+
+/-- A supplied ranking by `ℕ` is a denumeration of its carrier, `Denumerable.mk'` of its own
+equivalence: supplied data is retained, not replaced by a derived ranking. -/
+def toDenumerable (r : CountableRanking X) : Denumerable X :=
+  Denumerable.mk' r.rank
+
+/-- The denumeration built from a supplied ranking has that ranking's equivalence, not one derived
+from an encoding: `Denumerable.mk'` keeps what it is given. -/
+@[simp] theorem eqv_toDenumerable (r : CountableRanking X) :
+    @Denumerable.eqv X r.toDenumerable = r.rank := by
+  refine Equiv.ext fun x => rfl
+
+/-- The derived ranking's carrier is infinite, read along the ranking. -/
+theorem natCard_derivedCountable (X : Type u) [Encodable X] [Infinite X] :
+    Nat.card X = 0 :=
+  natCard_nat (derivedCountable X)
+
+/-- An infinite encodable carrier's derived ranking has order type `ω`: a chosen `Encodable` does
+determine a ranking, which is what the 2026-10-29 audit recorded, and reading it as `RankingData` is
+what makes its order available to the rest of the ranking interface. -/
+theorem orderType_derivedCountable (X : Type u) [Encodable X] [Infinite X] :
+    (derivedCountable X).orderType = .omega :=
+  orderType_nat (derivedCountable X)
 
 /-- `rank` as a plain function on carriers, the underlying map of the ranking morphism. -/
 def rankFun (r : RankingData X I) : X → I := r.rank

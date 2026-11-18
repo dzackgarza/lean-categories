@@ -213,4 +213,25 @@ carrier: `NN.counting_well_order()` is `NN`, not a finite set of some size. -/
 theorem natIdentityRanking_natCard : Nat.card ℕ = 0 :=
   natIdentityRanking.natCard_nat
 
+/-! ### Derived rankings: `Denumerable.ofEncodableOfInfinite` and `Denumerable.mk'` (#96)
+
+A chosen `Encodable` does determine a ranking, and a supplied equivalence with `ℕ` is retained
+rather than re-derived. These are the two directions the issue's design note names, and neither is
+an identification of a derived ranking with an independently supplied one. -/
+
+/-- An infinite encodable carrier's derived ranking has order type `ω`. -/
+theorem derivedCountable_nat_orderType :
+    (RankingData.derivedCountable ℕ).orderType = .omega :=
+  RankingData.orderType_derivedCountable ℕ
+
+/-- The derived ranking's carrier counts as `0` under `Nat.card`: it is infinite, not finite. -/
+theorem derivedCountable_nat_card : Nat.card ℕ = 0 :=
+  RankingData.natCard_derivedCountable ℕ
+
+/-- A supplied ranking by `ℕ` reaches `Denumerable.mk'` with its own equivalence: the denumeration
+retains supplied data instead of deriving a ranking from an encoding. -/
+theorem eqv_toDenumerable_natIdentity :
+    @Denumerable.eqv ℕ natIdentityRanking.toDenumerable = natIdentityRanking.rank :=
+  RankingData.eqv_toDenumerable natIdentityRanking
+
 end LeanCategories.Foundation
