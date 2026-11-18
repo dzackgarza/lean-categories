@@ -340,6 +340,22 @@ carrier, and the count is read along the ranking rather than assumed
 theorem natCard_fin {n : ℕ} (r : RankingData X (Fin n)) : Nat.card X = n := by
   rw [Nat.card_congr r.rank, Nat.card_fin]
 
+/-- The carrier of a ranking by `Fin n` is a finite type, transported along the ranking instead of
+assumed: the finite half of the classification, stated on the same footing as `infinite_nat`. -/
+theorem finite_fin {n : ℕ} (r : RankingData X (Fin n)) : Finite X :=
+  letI := r.fintypeCarrier ⟨Fin.fintype n⟩
+  Finite.of_fintype X
+
+/-- The carrier of a ranking by `ℕ` is infinite: the inverse ranking injects `ℕ` into it, so the
+selected index counts a countably infinite carrier. -/
+theorem infinite_nat (r : RankingData X ℕ) : Infinite X :=
+  Infinite.of_injective r.unrank r.rank.symm.injective
+
+/-- A carrier ranked by `ℕ` counts as `0` under `Nat.card`, its convention for a set of no finite
+size: the `ω` counterpart of `natCard_fin`, read through the same ranking. -/
+theorem natCard_nat (r : RankingData X ℕ) : Nat.card X = 0 :=
+  @Nat.card_eq_zero_of_infinite X r.infinite_nat
+
 /-- `rank` as a plain function on carriers, the underlying map of the ranking morphism. -/
 def rankFun (r : RankingData X I) : X → I := r.rank
 

@@ -181,6 +181,11 @@ theorem finThreeIdentityRanking_orderType : finThreeIdentityRanking.orderType = 
 theorem finThreeIdentityRanking_natCard : Nat.card (Fin 3) = 3 :=
   finThreeIdentityRanking.natCard_fin
 
+/-- The finite half of the classification on the same carrier: the carrier is a finite type because
+a ranking by `Fin 3` says so, not because `Fin 3` happens to be one. -/
+theorem finThreeIdentityRanking_finite : Finite (Fin 3) :=
+  finThreeIdentityRanking.finite_fin
+
 /-- The standard countable index `ℕ` ranked by its own order: `NN.counting_well_order() is NN`. -/
 def natIdentityRanking : RankingData ℕ ℕ := ⟨Equiv.refl ℕ⟩
 
@@ -197,5 +202,15 @@ theorem natIdentityRanking_orderType : natIdentityRanking.orderType = .omega :=
 /-- The counting order on `ℕ` is a well-order: its strict order is well founded. -/
 theorem natIdentityRanking_wellFounded_lt : WellFounded natIdentityRanking.lt :=
   natIdentityRanking.wellFounded_lt_nat
+
+/-- The ω side of the classification: a ranking by `ℕ` makes the carrier infinite — the chosen
+encoding of a *selected* enumeration is not evidence of this, the ranking is. -/
+theorem natIdentityRanking_infinite : Infinite ℕ :=
+  natIdentityRanking.infinite_nat
+
+/-- The ω side counts as `0` under `Nat.card`, the `cardinality()` reading of a countably infinite
+carrier: `NN.counting_well_order()` is `NN`, not a finite set of some size. -/
+theorem natIdentityRanking_natCard : Nat.card ℕ = 0 :=
+  natIdentityRanking.natCard_nat
 
 end LeanCategories.Foundation
