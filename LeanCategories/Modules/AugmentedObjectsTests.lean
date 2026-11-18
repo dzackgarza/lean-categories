@@ -150,6 +150,11 @@ example : ChainComplex (ModuleCat ℤ) ℕ := chainComplex intKoszul
 example (n : ℕ) : (chainComplex intKoszul).d (n + 1) n = intKoszul.diff n :=
   chainComplex_d intKoszul n
 
+/-- 4. The augmentation is a chain map into the complex supported in degree zero, so the augmented
+diagram is an arrow of `Ch(C)`. -/
+example : chainComplex intCover ⟶ (ChainComplex.single₀ (ModuleCat ℤ)).obj intCover.point :=
+  augmentation intCover
+
 /-- 5. The module framing case: a one-term object is a framing exactly when its augmentation is an
 isomorphism. -/
 example (P M : ModuleCat ℤ) (ε : P ⟶ M) :

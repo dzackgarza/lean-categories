@@ -53,4 +53,25 @@ theorem chainComplex_d (S : AugmentedGradedObject C) (n : ℕ) :
     (chainComplex S).d (n + 1) n = S.diff n := by
   simp [chainComplex]
 
+section Augmentation
+
+variable [HasZeroObject C]
+
+/-- The augmentation of a selected augmented object, as a chain map into the chain complex supported
+in degree zero: the augmented diagram is an arrow of `Ch(C)`. -/
+noncomputable def augmentation (S : AugmentedGradedObject C) :
+    chainComplex S ⟶ (ChainComplex.single₀ C).obj S.point :=
+  ChainComplex.ofHom
+    (fun i => match i with
+      | 0 => S.augment
+      | _ + 1 => 0)
+    (fun i => by
+      match i with
+      | 0 =>
+        rw [chainComplex_d, zero_comp]
+        exact S.comp_augment.symm
+      | _ + 1 => simp only [zero_comp, comp_zero])
+
+end Augmentation
+
 end LeanCategories.Modules
