@@ -76,6 +76,23 @@ this restates it at the type consumers actually see. -/
     (h : InducedCategory.Hom.hom f = InducedCategory.Hom.hom g) : f = g :=
   InducedCategory.Hom.ext h
 
+/-- Every function between carriers is a morphism of enumerated sets. The category is
+`InducedCategory (Type u) carrier`, so its maps are all functions: a selected presentation chooses
+the carrier's enumeration, never a class of maps, and in particular two presentations of one carrier
+are related by the ordinary maps of this category rather than by order isomorphisms. -/
+def homOfFun {X Y : EnumeratedSetCat.{u}} (f : X.carrier → Y.carrier) : X ⟶ Y :=
+  InducedCategory.homMk (TypeCat.ofHom f)
+
+/-- The underlying function of `homOfFun f` is `f`. -/
+@[simp] theorem homOfFun_apply {X Y : EnumeratedSetCat.{u}} (f : X.carrier → Y.carrier)
+    (x : X.carrier) : (homOfFun f).hom x = f x := rfl
+
+/-- The identity function is a morphism between any two presentations of one carrier: a
+ranking-derived object and an object of a pre-existing encoding have the same carrier, and this map
+is what relates them — it is not a comparison of their selected orders. -/
+def homOfId (X Y : EnumeratedSetCat.{u}) (h : X.carrier = Y.carrier) : X ⟶ Y :=
+  homOfFun fun x => h ▸ x
+
 /-- Forget the chosen enumeration. -/
 def forget : EnumeratedSetCat.{u} ⥤ Type u where
   obj X := X.carrier

@@ -234,4 +234,32 @@ theorem eqv_toDenumerable_natIdentity :
     @Denumerable.eqv ℕ natIdentityRanking.toDenumerable = natIdentityRanking.rank :=
   RankingData.eqv_toDenumerable natIdentityRanking
 
+/-! ### Two presentations of one carrier are related by a map, not by their orders (#96)
+
+A ranking-derived object and the object of a pre-existing encoding of the same carrier are distinct
+selected data. What relates them is an ordinary map of the all-function category; whether that map
+compares their selected orders is a separate question, and here the answer is no. -/
+
+/-- The identity on `Bool` as a morphism from the ranking-derived object to the object of the
+pre-existing encoding. -/
+noncomputable def rankedFinBoolHom :
+    CasCatalogue.Foundation.Rankings.rankedFin 2 Bool boolReverseRanking ⟶
+      boolPreexistingObject :=
+  EnumeratedSetCat.homOfFun id
+
+/-- The map between the two presentations is the identity on the carrier. -/
+theorem rankedFinBoolHom_apply (b : Bool) : rankedFinBoolHom.hom b = b := rfl
+
+/-- It is not a comparison of the selected orders: `false ≤ true` holds under the ranking-derived
+object and fails under the pre-existing encoding, so the identity of carriers is an ordinary map of
+the all-function category and nothing more. A monotone comparison between the two selected rankings
+would have to be supplied as data, and none is claimed. -/
+theorem rankedFinBoolHom_not_monotone :
+    ¬ ∀ x y : Bool,
+        (EnumeratedSetCat.leMap
+            (CasCatalogue.Foundation.Rankings.rankedFin 2 Bool boolReverseRanking)).hom (x, y) →
+          (EnumeratedSetCat.leMap boolPreexistingObject).hom (x, y) := by
+  intro h
+  exact rankedFin_bool_le_not_preexisting.2 (h false true rankedFin_bool_le_not_preexisting.1)
+
 end LeanCategories.Foundation
