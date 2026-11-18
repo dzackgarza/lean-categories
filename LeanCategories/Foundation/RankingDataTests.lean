@@ -140,4 +140,62 @@ theorem rankedFin_bool_le_not_preexisting :
   have hle' := (EnumeratedSetCat.leMap_apply boolPreexistingObject false true).mp hle
   exact absurd hle' (by decide)
 
+/-! ### The selected order is the counting order, and its order type is `n` or `ω` (#96 item 3)
+
+The research expectations read off the ranking, on the smallest inputs that decide each one: the
+finite ordinal `Fin 3` ranked by its own order (ordered enumeration, `enumeration`/`inverse`,
+`ranking_map()(three(2)) == NN(2)`, `order_type() == ordinal(3)`) and `ℕ` ranked by itself (the
+counting well-order, `counting_well_order().cardinality() == cardinal(3)` and `NN is NN`). -/
+
+/-- The selected order is antisymmetric and total, so the comparison the ranking contract uses is a
+linear order on the carrier, not merely a preorder. -/
+theorem boolReverseRanking_le_isLinear (x y : Bool) :
+    (boolReverseRanking.le x y → boolReverseRanking.le y x → x = y) ∧
+      (boolReverseRanking.le x y ∨ boolReverseRanking.le y x) :=
+  ⟨fun h₁ h₂ => boolReverseRanking.le_antisymm h₁ h₂, boolReverseRanking.le_total x y⟩
+
+/-- The strict selected order of a finite ranking is well founded: the counting order on a finite
+carrier is a well-order, read through the ranking. -/
+theorem boolReverseRanking_wellFounded_lt : WellFounded boolReverseRanking.lt :=
+  boolReverseRanking.wellFounded_lt_fin
+
+/-- A ranking by `Fin 2` has a carrier of exactly two elements: no finiteness is assumed of `Bool`,
+it is read along the ranking. -/
+theorem boolReverseRanking_natCard : Nat.card Bool = 2 :=
+  boolReverseRanking.natCard_fin
+
+/-- The standard finite ordinal `Fin 3` ranked by its own order. -/
+def finThreeIdentityRanking : RankingData (Fin 3) (Fin 3) := ⟨Equiv.refl (Fin 3)⟩
+
+/-- `ranking_map()(three(2)) == NN(2)`: indexing the point `2` returns `2`. -/
+theorem finThreeIdentityRanking_indexOf_two : finThreeIdentityRanking.indexOf 2 = 2 := rfl
+
+/-- The inverse of the indexing: the point at position `2` is `2`. -/
+theorem finThreeIdentityRanking_nth_two : finThreeIdentityRanking.nth 2 = 2 := rfl
+
+/-- `order_type() == ordinal(3)`: the selected index is `Fin 3`, so the order type is `3`. -/
+theorem finThreeIdentityRanking_orderType : finThreeIdentityRanking.orderType = .finite 3 :=
+  RankingData.orderType_fin finThreeIdentityRanking
+
+/-- `cardinality() == cardinal(3)`, read along the ranking. -/
+theorem finThreeIdentityRanking_natCard : Nat.card (Fin 3) = 3 :=
+  finThreeIdentityRanking.natCard_fin
+
+/-- The standard countable index `ℕ` ranked by its own order: `NN.counting_well_order() is NN`. -/
+def natIdentityRanking : RankingData ℕ ℕ := ⟨Equiv.refl ℕ⟩
+
+/-- Indexing is the identity on the counting order: `ranking_map()(n) == NN(n)`, reversed. -/
+theorem natIdentityRanking_indexOf (m : ℕ) : natIdentityRanking.indexOf m = m := rfl
+
+/-- `nth` is the identity on the counting order, at every position. -/
+theorem natIdentityRanking_nth (m : ℕ) : natIdentityRanking.nth m = m := rfl
+
+/-- The order type of the countable index is `ω`, which has a value rather than being absent. -/
+theorem natIdentityRanking_orderType : natIdentityRanking.orderType = .omega :=
+  RankingData.orderType_nat natIdentityRanking
+
+/-- The counting order on `ℕ` is a well-order: its strict order is well founded. -/
+theorem natIdentityRanking_wellFounded_lt : WellFounded natIdentityRanking.lt :=
+  natIdentityRanking.wellFounded_lt_nat
+
 end LeanCategories.Foundation

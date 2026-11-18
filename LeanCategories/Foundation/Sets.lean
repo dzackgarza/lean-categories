@@ -141,6 +141,20 @@ theorem le_refl (r : RankingData X I) (x : X) : r.le x x := _root_.le_rfl
 theorem le_trans (r : RankingData X I) {x y z : X} (h₁ : r.le x y) (h₂ : r.le y z) : r.le x z :=
   _root_.le_trans h₁ h₂
 
+/-- The selected order is antisymmetric: the ranking is injective, so two points of one index are
+one point. With `le_refl`, `le_trans` and `le_total` this is the linear order the standard index
+carries, read through `rank` — the comparison the ranking contract uses, and the order whose order
+type `orderType` reports. -/
+theorem le_antisymm (r : RankingData X I) {x y : X} (h₁ : r.le x y) (h₂ : r.le y x) : x = y :=
+  r.rank.injective (_root_.le_antisymm h₁ h₂)
+
+/-- The selected order is total: the standard order of the index decides every pair of points. -/
+theorem le_total (r : RankingData X I) (x y : X) : r.le x y ∨ r.le y x :=
+  _root_.le_total (r.rank x) (r.rank y)
+
+/-- The strict selected order: `x < y` when the index of `x` precedes the index of `y`. -/
+def lt (r : RankingData X I) (x y : X) : Prop := r.rank x < r.rank y
+
 /-- The ranking-derived encoding of the carrier by its selected index, when the index is itself
 encodable: an element is encoded by the encoding of its selected index and decoded by the same
 inverse. Whether it orders the carrier as the selected ranking does depends on the index's own
@@ -307,6 +321,24 @@ noncomputable def fintypeCarrier (r : RankingData X I) (h : IsFiniteIndex I) : F
   classical
   letI := Classical.choice h
   exact Fintype.ofEquiv I r.rank.symm
+
+/-- The selected strict order of a ranking by `ℕ` is well founded: it is the standard order of `ℕ`
+pulled back along the ranking. This is the `ω` half of the counting well-order, stated on the
+selected order rather than on the chosen encoding. -/
+theorem wellFounded_lt_nat (r : RankingData X ℕ) : WellFounded r.lt :=
+  InvImage.wf r.rank Nat.lt_wfRel.wf
+
+/-- The selected strict order of a ranking by `Fin n` is well founded: it is the standard order of
+`ℕ` pulled back along the value of the ranking. This is the finite half of the counting well-order.
+-/
+theorem wellFounded_lt_fin {n : ℕ} (r : RankingData X (Fin n)) : WellFounded r.lt :=
+  InvImage.wf (fun x => (r.rank x).val) Nat.lt_wfRel.wf
+
+/-- The carrier of a ranking by `Fin n` has exactly `n` elements: the selected index classifies the
+carrier, and the count is read along the ranking rather than assumed
+(`cardinality() == cardinal(n)` of the counting-order contract). -/
+theorem natCard_fin {n : ℕ} (r : RankingData X (Fin n)) : Nat.card X = n := by
+  rw [Nat.card_congr r.rank, Nat.card_fin]
 
 /-- `rank` as a plain function on carriers, the underlying map of the ranking morphism. -/
 def rankFun (r : RankingData X I) : X → I := r.rank
