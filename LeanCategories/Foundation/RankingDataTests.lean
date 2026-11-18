@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 -/
 module
 
+public import LeanCategories.Catalogue.Semantics.Foundation.Rankings
 public import LeanCategories.Foundation.Sets
 public import Mathlib.Tactic.FinCases
 
@@ -13,6 +14,11 @@ public import Mathlib.Tactic.FinCases
 On the same carrier, a pre-existing encoding and an encoding derived from a selected ranking need
 not agree, and the ranking-derived one does not replace the earlier selection. This is the compiled
 control for that: two selections on `Bool`, differing at `true`.
+
+The control now runs at the level of the catalogue's objects as well as of the encodings: the
+ranking-derived object `Rankings.rankedFin` and the object of the pre-existing encoding are two
+*objects* of `EnumeratedSetCat`, they are unequal, and their selected orders disagree on the pair
+`(false, true)`. This file imports the catalogue module for that comparison only.
 
 The pre-existing encoding sends `true ↦ 0`, `false ↦ 1`; the selected ranking is the reverse
 standard ranking `true ↦ 1`, `false ↦ 0`, whose derived encoding inherits that order. No monotone
@@ -64,5 +70,74 @@ theorem boolReverseRanking_unrank_one : boolReverseRanking.unrank 1 = true := by
 theorem boolReverseRanking_rank_unrank :
     boolReverseRanking.rank (boolReverseRanking.unrank 0) = 0 :=
   boolReverseRanking.rank_unrank 0
+
+/-- The pre-existing enumerated object on `Bool`: the encoding that puts `true` first, selected
+before any ranking of this carrier was. -/
+noncomputable def boolPreexistingObject : EnumeratedSetCat.{0} :=
+  @EnumeratedSetCat.mk Bool boolEncodingTrueFirst
+
+/-- The pre-existing encoding sends `true` to `0`. -/
+theorem boolEncodingTrueFirst_encode_true : boolEncodingTrueFirst.encode true = 0 := rfl
+
+/-- The ranking-derived encoding sends `true` to `1`: the natural-number value of its index. -/
+theorem boolReverseRanking_toEncodableFin_encode_true :
+    boolReverseRanking.toEncodableFin.encode true = 1 := by
+  rw [RankingData.toEncodableFin_encode]
+  decide
+
+/-- The ranking-derived object's chosen encoding sends `true` to `1`. -/
+theorem rankedFin_bool_encode_true :
+    (CasCatalogue.Foundation.Rankings.rankedFin 2 Bool boolReverseRanking).enumeration.encode true =
+      1 :=
+  boolReverseRanking_toEncodableFin_encode_true
+
+/-- The pre-existing encoding sends `false` to `1`. -/
+theorem boolEncodingTrueFirst_encode_false : boolEncodingTrueFirst.encode false = 1 := rfl
+
+/-- A ranking-derived presentation and a pre-existing encoding of one carrier are distinct
+selected data: the two objects of the enumerated-set category are unequal, because their chosen
+encodings send `true` to different numbers. Neither replaces the other. -/
+theorem rankedFin_bool_ne_preexisting :
+    CasCatalogue.Foundation.Rankings.rankedFin 2 Bool boolReverseRanking ≠
+      boolPreexistingObject := by
+  intro h
+  have hcarrier :
+      @EnumeratedSetCat.mk Bool boolReverseRanking.toEncodableFin =
+        @EnumeratedSetCat.mk Bool boolEncodingTrueFirst := h
+  have henc : boolReverseRanking.toEncodableFin = boolEncodingTrueFirst := by
+    injection hcarrier
+  have hval := congrFun (congrArg (fun e : Encodable Bool => e.encode) henc) true
+  rw [boolReverseRanking_toEncodableFin_encode_true, boolEncodingTrueFirst_encode_true] at hval
+  exact Nat.one_ne_zero hval
+
+/-- Two different selected rankings of one carrier give two different objects: the identity ranking
+of `Fin 2` and the swap ranking of the same carrier encode `0` differently. -/
+theorem rankedFin_two_rankings_distinct :
+    CasCatalogue.Foundation.Rankings.rankedOrdinal 2 ≠
+      CasCatalogue.Foundation.Rankings.rankedFin 2 (Fin 2) ⟨Equiv.swap (0 : Fin 2) 1⟩ := by
+  intro h
+  have hcarrier :
+      @EnumeratedSetCat.mk (Fin 2)
+          (⟨Equiv.refl (Fin 2)⟩ : RankingData (Fin 2) (Fin 2)).toEncodableFin =
+        @EnumeratedSetCat.mk (Fin 2)
+          (⟨Equiv.swap (0 : Fin 2) 1⟩ : RankingData (Fin 2) (Fin 2)).toEncodableFin := h
+  have henc : (⟨Equiv.refl (Fin 2)⟩ : RankingData (Fin 2) (Fin 2)).toEncodableFin =
+      (⟨Equiv.swap (0 : Fin 2) 1⟩ : RankingData (Fin 2) (Fin 2)).toEncodableFin := by
+    injection hcarrier
+  have hval := congrFun (congrArg (fun e : Encodable (Fin 2) => e.encode) henc) 0
+  rw [RankingData.toEncodableFin_encode, RankingData.toEncodableFin_encode] at hval
+  simp at hval
+
+/-- The two selected orders on `Bool` disagree: `false` precedes `true` under the ranking-derived
+object, and does not under the pre-existing encoding. No identification of the two selected
+rankings is available, and none is claimed. -/
+theorem rankedFin_bool_le_not_preexisting :
+    (CasCatalogue.Foundation.Rankings.rankedFin 2 Bool boolReverseRanking).leMap.hom (false, true) ∧
+      ¬ boolPreexistingObject.leMap.hom (false, true) := by
+  refine ⟨(CasCatalogue.Foundation.Rankings.leMap_rankedFin 2 Bool boolReverseRanking false
+    true).mpr boolReverseRanking_le_false_true, ?_⟩
+  intro hle
+  have hle' := (EnumeratedSetCat.leMap_apply boolPreexistingObject false true).mp hle
+  exact absurd hle' (by decide)
 
 end LeanCategories.Foundation
