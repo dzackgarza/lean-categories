@@ -22,7 +22,8 @@ registered mathematics from a lookalike:
 * the action on `{1, 2} ⊆ Fin 3` under the collapsing map `Fin 3 → Fin 2`;
 * both functor laws, applied to concrete subsets rather than read off the proof fields;
 * the cell's component *is* the registered object inclusion of finite subsets into `𝒫`, and its
-  naturality square commutes on the same finite subset;
+  naturality square commutes at the collapsing map (`inclusionCell.naturality`, i.e.
+  `inclusion_natural`, i.e. `Finset.coe_image`);
 * the inclusion is not natural into the contravariant preimage action, which is why its target is
   the covariant `𝒫` and not a preimage-valued power-set functor;
 * the registration is load-bearing: the registered cell validates, and a row naming the wrong
