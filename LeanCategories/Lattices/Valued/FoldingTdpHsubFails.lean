@@ -23,14 +23,15 @@ This file supplies it, for every submodule of a finite free `ℤ`-module:
 * `submodule_projective` — `Module.Projective ℤ ↥P`, from `IsNoetherian.noetherian` (`P.FG`),
   `Module.Finite.of_fg`, and `Module.free_of_finite_type_torsion_free'`.
 
-and then states the conclusion:
+then supplies the concrete instance by a `show` transport across the bundled carrier, and states the
+conclusion:
 
 * `tdp_foldedWallFamily_mem` — the folded `E₈` walls are roots of `M^σ`, by AEGS Lemma 3.4's forward
   direction (`foldedWallFamily_mem_negativeReflectiveRoots`, **printed pp. 11–12**) applied to the
   published family: the roots are reflective of square `−2` and orthogonal to their images;
 * `tdp_hsub_fails` — **`hsub` is false** for the `T_dP` folding: the ambient image of a root of
-  `M^σ` need not be a root of `T_dP`. That is AEGS's `div(α^I) ≠ 2` (**printed p. 12**), now an
-  implication rather than a remark.
+  `M^σ` need not be a root of `T_dP`. That is AEGS's `div(α^I) ≠ 2` (**printed p. 12**), now a
+  theorem rather than a remark, and with no hypothesis left: the projectivity instance is supplied.
 
 So the chamber theorem of item 4, though true, cannot be applied to the `T_dP` folding: its root
 hypothesis — in either guise, `hsub` or `hsq` (`FoldingRootTransferEquivalence.lean`) — fails there.
@@ -70,10 +71,19 @@ theorem submodule_projective {ι : Type*} [Finite ι] (P : Submodule ℤ (ι →
   haveI hfree : Module.Free ℤ ↥P := Module.free_of_finite_type_torsion_free'
   infer_instance
 
+/-- **The fixed sublattice of `tdpIsometry` is projective**, so that `invariantFixedLattice` can be
+formed without a hypothesis. The transport across the bundled carrier is by `show`, a definitional
+check: `submodule_projective` unifies at `TdpIndex → ℤ`, where `Module.IsTorsionFree` synthesizes,
+but not at `tdpFiniteLattice.obj.obj.carrier`. -/
+instance : Module.Projective ℤ
+    ↥(involutionFixedSubmodule (L := tdpFiniteLattice) tdpIsometry) :=
+  show Module.Projective ℤ ↥(show Submodule ℤ (TdpIndex → ℤ) from
+    involutionFixedSubmodule (L := tdpFiniteLattice) tdpIsometry) from
+    submodule_projective _
+
 /-- **The folded `E₈` walls are roots of `M^σ`** — AEGS Lemma 3.4 forward (**printed pp. 11–12**) on
 the published family of `FoldingDiagram.lean`. -/
-theorem tdp_foldedWallFamily_mem
-    [Module.Projective ℤ (involutionFixedSubmodule (L := tdpFiniteLattice) tdpIsometry)] :
+theorem tdp_foldedWallFamily_mem :
     ∀ i, foldedWallFamily tdpIsometry tdpIsometry_mul_self (fun i : Fin 8 => tdpE8Root i) i ∈
       negativeReflectiveRoots (invariantFixedLattice (L := tdpFiniteLattice) tdpIsometry) :=
   foldedWallFamily_mem_negativeReflectiveRoots tdpIsometry tdpIsometry_mul_self
@@ -84,8 +94,7 @@ theorem tdp_foldedWallFamily_mem
 
 /-- **`hsub` fails for the `T_dP` folding**: the ambient image of a root of `M^σ` is not always a
 root of `T_dP`. AEGS's `div(α^I) ≠ 2`, **printed p. 12**. -/
-theorem tdp_hsub_fails
-    [Module.Projective ℤ (involutionFixedSubmodule (L := tdpFiniteLattice) tdpIsometry)] :
+theorem tdp_hsub_fails :
     ¬ ∀ ρ ∈ negativeReflectiveRoots (invariantFixedLattice (L := tdpFiniteLattice) tdpIsometry),
         invariantCarrierToAmbient (L := tdpFiniteLattice) tdpIsometry ρ ∈
           negativeReflectiveRoots tdpFiniteLattice := by
