@@ -24,8 +24,18 @@ only nonvanishing.
 * `foldedWallFamily_pairing_pos` — positivity transfers to the folded walls;
 * `isChamberWithWalls_invariant_of_wall_data'` — the assembled chamber theorem with `hwv` derived.
 
-The remaining hypotheses of the assembled theorem are then `hw` (an interior vector), the diagram
-data (`hR`, `hneg`, `hcase`), and the two external inputs (`hsq`, `hamb`).
+The remaining hypotheses of the assembled theorem are then `hw` (an interior *lattice* vector), the
+diagram data (`hR`, `hneg`, `hcase`), and the two external inputs (`hsq`, `hamb`).
+
+`hw` is not derivable from the maximal-dimension hypothesis, and the repository's own precedent
+says so. AEGS Lemma 3.8 (**printed p. 12**) gives a chamber point in the real form, which the
+development extracts as `exists_mem_fixedPart_interior`
+(`FoldingInvariantChamber.lean:340`) — a statement about `realFormFixedPart g`, not about a lattice
+vector — while the earlier joining theorem `isChamberWithWalls_invariant_of_chamber`
+(`FoldingInvariantChamber.lean:370`) carries *both* that real-form existence and a separate lattice
+`w` with `hw`, `hwv`. There is no passage from a real-form interior point to a lattice one in the
+development (no rationality or density lemma), and the paper does not supply one either: it works
+with chambers in `H = PC` over `ℝ`. So `hw` stays a hypothesis.
 
 ## LC-09 record
 
