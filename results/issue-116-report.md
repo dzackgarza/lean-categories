@@ -16,7 +16,7 @@ source's: invariants, not coinvariants.
 | 1 | The fixed sublattice `M^σ` | **met** | `involutionFixedSubmodule` `Folding.lean:114` (ker of `σ − 1`); as a lattice object `invariantFixedLattice` `FoldingInvariantChamber.lean:120` |
 | 2 | The folded root set (Def. 3.3 → Def. 3.7) | **met** | `foldedVector` `Folding.lean:126`; filtered set `foldedRootSet` `Folding.lean:416` |
 | 3 | Its Coxeter diagram | **met** | `foldedDiagramOfRoots` `Folding.lean:480`; family/set agreement `range_foldedDiagramOfRoots_eq` `FoldingDiagramOrbits.lean:78` |
-| 4 | The chamber theorem | **met modulo `hamb` and one root hypothesis** (`hsq`/`hsub`, interchangeable — see below) | `isChamberWithWalls_invariant_of_foldedRootSet` `FoldingChamberOfDefinition37.lean` |
+| 4 | The chamber theorem | **met as an implication; its root hypothesis fails in `T_dP`** — proved below, so it does not by itself give Lemma 3.8 for `T_dP` | `isChamberWithWalls_invariant_of_foldedRootSet` `FoldingChamberOfDefinition37.lean` |
 | 5 | One worked declaration from a published folded diagram | **met** | the `E₈` block of `T_dP` folds to `E₈(2)`: `tdpFoldedE8Diagram` `FoldingDiagram.lean:385` with `tdpFoldedE8Diagram_adjacent` `:407` |
 | 6 | Compiles with no `sorry` | **met** | zero `sorry`/`admit` across the `Folding*.lean` modules; **all 65 of them imported by `LeanCategories/All.lean`** (audited at this commit: 65 modules on disk, 65 `public import` lines, no gap and no stray — a module missing there is never elaborated) |
 
@@ -165,6 +165,25 @@ equivalent given the p. 10 properties of `L`, and each is what Namikawa's classi
 `O(T_En)`-orbits supplies for the black vertices. The p. 10 rule itself is no longer cited as a
 classification: it is proved (`TwoElementaryRootSquare.lean`). So what is cited rather than reproved
 is Vinberg's chamber theory and Namikawa's orbit classification, and nothing else.
+
+**That root hypothesis is false in `T_dP`** — AEGS's own `div(α^I) ≠ 2`, **printed p. 12**.
+`FoldingTdpE8FoldNotRoot.lean` machine-checks it in the block model. The fold of the `i`-th `E₈`
+simple root is `αᵢ + Iαᵢ`, and pairing it with the first-block vector `αⱼ` leaves the `E₈` Gram entry
+(`tdpFoldedE8Root_pairing_single`); the `(0,2)` entry is `1` (`tdpFoldedE8Root_pairing_zero_two`, by
+`decide` on the published matrix). Hence the fold has an odd ambient pairing
+(`tdpFoldedE8Root_not_two_dvd`), so `div ≠ 2`, and since its square is `(−4)`
+(`tdpFoldedE8Root_square`) it is **not a reflective root of `T_dP`**
+(`tdpFoldedE8Root_not_isReflectiveRoot`) and not a root of `T_dP` at all
+(`tdpFoldedE8Root_not_mem_negativeReflectiveRoots`).
+
+Since the folded walls *are* roots of `M^σ` (Lemma 3.4 forward,
+`foldedWallFamily_mem_negativeReflectiveRoots`), while their ambient image is the fold itself
+(`invariantCarrierToAmbient_foldedWallFamily`), `hsub` fails at these roots — and with it `hsq`. So
+the chamber theorem, though true as an implication, is **not** an instance of Lemma 3.8 for `T_dP`;
+its hypothesis is met only in the direction where the folds are roots, which is the `T_En` half of the
+source's dichotomy. This is not a defect of the formalization and not a defect of the source: it is
+why the source separates `div(α^I) ≠ 2` from `= 2` in the first place, and it means an application of
+item 4 needs the `T_En` block data, not the `T_dP` one.
 
 Everything the paper argues *by folding* is therefore formalized; what is not is the arithmetic of
 `T_En` and Vinberg's chamber theory, both cited rather than reproved.
