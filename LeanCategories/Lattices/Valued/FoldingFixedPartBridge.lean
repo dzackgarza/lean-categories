@@ -22,11 +22,22 @@ type. Moving between them is the bridge those two files lack. This file builds i
 * `invariantToAmbient_range` — **its range is exactly the fixed locus**: the image of the pure
   tensors is the span of the fixed lattice vectors, and `≅` says that span is the fixed locus.
 
-An equivariant linear *equivalence* `realForm M^σ ≃ realFormFixedPart g` is then
-`LinearMap.range`-restricted image of this map once injectivity is added; injectivity is flatness of
-`ℝ` over `ℤ` (`Module.Flat.tensorProduct_mk_injective`), and is the next step, not this one. What is
-here is everything the transport of the *quadratic form* needs, since the pairing of two pure
-tensors is `invariant_pairing_toRealForm` (`FoldingInvariantChamber.lean`).
+An equivariant linear *equivalence* `realForm M^σ ≃ realFormFixedPart g` is then the
+`LinearMap.range`-restricted image of this map once injectivity is added. **Injectivity is measured
+here, not proved.** The flatness input is available: `ℝ` is flat over `ℤ` (the instance
+`Module.Flat ℤ ℝ` synthesizes, from `ℤ` Dedekind and `ℝ` torsion-free), and the tool is
+`Module.Flat.rTensor_preserves_injective_linearMap` applied to
+`Submodule.subtype (involutionFixedSubmodule g)`. What blocks it is the instance path: stating that
+subtype as a `→ₗ[ℤ]` at the tensor's tensor factor forces
+
+  `AddCommGroup.toIntModule ↥(involutionFixedSubmodule g)`
+
+where the expression needs `(involutionFixedSubmodule g).module`, and the two are not definitionally
+equal — the same `Submodule.module` / `AddCommGroup.toIntModule` mismatch recorded in
+`results/issue-116-report.md` for the signature of `invariantFixedLattice 1`. So injectivity here is
+gated by that identification, not by flatness. What is already here is everything the transport of
+the *quadratic form* needs, since the pairing of two pure tensors is
+`invariant_pairing_toRealForm` (`FoldingInvariantChamber.lean`).
 
 ## LC-09 record
 
