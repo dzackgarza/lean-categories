@@ -109,7 +109,7 @@ rule applied to `L` at the image of the root. -/
 theorem hsq_of_hsub_of_two_elementary (g : OrthogonalGroup L.obj)
     [Module.Projective ℤ (involutionFixedSubmodule g)]
     (hev : ∀ y : L.obj.obj.carrier, (2 : ℤ) ∣ L.obj.obj.pairing y y)
-    (h2e : ∀ x : L.obj.obj.carrier, ∃ (y₁ y₂ : L.obj.obj.carrier) (c₁ c₂ : ℤ),
+    (h2e : ∀ x : L.obj.obj.carrier, x ≠ 0 → ∃ (y₁ y₂ : L.obj.obj.carrier) (c₁ c₂ : ℤ),
       c₁ * L.obj.obj.pairing x y₁ + c₂ * L.obj.obj.pairing x y₂ = 2)
     (hsub : ∀ ρ ∈ negativeReflectiveRoots (invariantFixedLattice (L := L) g),
       invariantCarrierToAmbient (L := L) g ρ ∈ negativeReflectiveRoots L) :
@@ -130,7 +130,7 @@ theorem hsq_of_hsub_of_two_elementary (g : OrthogonalGroup L.obj)
 theorem hsub_iff_hsq_of_two_elementary (g : OrthogonalGroup L.obj)
     [Module.Projective ℤ (involutionFixedSubmodule g)]
     (hev : ∀ y : L.obj.obj.carrier, (2 : ℤ) ∣ L.obj.obj.pairing y y)
-    (h2e : ∀ x : L.obj.obj.carrier, ∃ (y₁ y₂ : L.obj.obj.carrier) (c₁ c₂ : ℤ),
+    (h2e : ∀ x : L.obj.obj.carrier, x ≠ 0 → ∃ (y₁ y₂ : L.obj.obj.carrier) (c₁ c₂ : ℤ),
       c₁ * L.obj.obj.pairing x y₁ + c₂ * L.obj.obj.pairing x y₂ = 2) :
     (∀ ρ ∈ negativeReflectiveRoots (invariantFixedLattice (L := L) g),
         invariantCarrierToAmbient (L := L) g ρ ∈ negativeReflectiveRoots L) ↔

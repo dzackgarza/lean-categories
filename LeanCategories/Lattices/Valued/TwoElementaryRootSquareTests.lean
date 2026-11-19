@@ -40,7 +40,7 @@ namespace LeanCategories.Lattices.Valued
 example
     (hev : ∀ y : hyperbolicPlaneFiniteLattice.obj.obj.carrier,
       (2 : ℤ) ∣ hyperbolicPlaneFiniteLattice.obj.obj.pairing y y)
-    (h2e : ∀ x : hyperbolicPlaneFiniteLattice.obj.obj.carrier,
+    (h2e : ∀ x : hyperbolicPlaneFiniteLattice.obj.obj.carrier, x ≠ 0 →
       ∃ (y₁ y₂ : hyperbolicPlaneFiniteLattice.obj.obj.carrier) (c₁ c₂ : ℤ),
         c₁ * hyperbolicPlaneFiniteLattice.obj.obj.pairing x y₁ +
           c₂ * hyperbolicPlaneFiniteLattice.obj.obj.pairing x y₂ = 2)
@@ -55,7 +55,7 @@ example
 example
     (hev : ∀ y : hyperbolicPlaneFiniteLattice.obj.obj.carrier,
       (2 : ℤ) ∣ hyperbolicPlaneFiniteLattice.obj.obj.pairing y y)
-    (h2e : ∀ x : hyperbolicPlaneFiniteLattice.obj.obj.carrier,
+    (h2e : ∀ x : hyperbolicPlaneFiniteLattice.obj.obj.carrier, x ≠ 0 →
       ∃ (y₁ y₂ : hyperbolicPlaneFiniteLattice.obj.obj.carrier) (c₁ c₂ : ℤ),
         c₁ * hyperbolicPlaneFiniteLattice.obj.obj.pairing x y₁ +
           c₂ * hyperbolicPlaneFiniteLattice.obj.obj.pairing x y₂ = 2)
@@ -74,7 +74,7 @@ example
 example
     (hev : ∀ y : hyperbolicPlaneFiniteLattice.obj.obj.carrier,
       (2 : ℤ) ∣ hyperbolicPlaneFiniteLattice.obj.obj.pairing y y)
-    (h2e : ∀ x : hyperbolicPlaneFiniteLattice.obj.obj.carrier,
+    (h2e : ∀ x : hyperbolicPlaneFiniteLattice.obj.obj.carrier, x ≠ 0 →
       ∃ (y₁ y₂ : hyperbolicPlaneFiniteLattice.obj.obj.carrier) (c₁ c₂ : ℤ),
         c₁ * hyperbolicPlaneFiniteLattice.obj.obj.pairing x y₁ +
           c₂ * hyperbolicPlaneFiniteLattice.obj.obj.pairing x y₂ = 2)

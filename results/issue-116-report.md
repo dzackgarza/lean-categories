@@ -114,6 +114,13 @@ gives `q ∣ 2(α·y)` for every `y`, two-elementary puts `2` in the ideal gener
 `q ∣ 4`; then `q < 0` and `q` even leave `q ∈ {−2, −4}`, and at `q = −4` reflectivity itself reads
 `2 ∣ (α·y)`.
 
+**Correction to that paragraph's first version.** As first pushed, the hypothesis was stated over *all*
+vectors, which is unsatisfiable: at `x = 0` every value vanishes, so no `ℤ`-combination is `2`
+(`twoElementary_hypothesis_fails_at_zero`) — the theorem was vacuously true. The hypothesis now asks
+for `x ≠ 0`, which every root of negative square satisfies. Nothing downstream consumed the vacuous
+form, so no other statement changed. Separately, the hypothesis is `div ∣ 2` *as data*: this file does
+not derive it from 2-elementarity, and whether it follows from it is not settled here.
+
 **What that does and does not do for `hsq`.** Applied to `M^σ` — which the source asserts is even
 2-elementary, **p. 10** — the rule gives every root of `M^σ` square `(−2)` or `(−4)`: the *square*
 half of `hsq`, with no classification. It does **not** give `hsq`'s second clause, which pairs the
