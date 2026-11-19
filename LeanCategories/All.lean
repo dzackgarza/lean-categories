@@ -469,6 +469,8 @@ public import LeanCategories.Lattices.Valued.FoldingRootsAreFoldsCarrier
 public import LeanCategories.Lattices.Valued.FoldingRootsAreFoldsCarrierTests
 public import LeanCategories.Lattices.Valued.FoldingRootReflection
 public import LeanCategories.Lattices.Valued.FoldingRootReflectionTests
+public import LeanCategories.Lattices.Valued.FoldingChamberImage
+public import LeanCategories.Lattices.Valued.FoldingChamberImageTests
 public import LeanCategories.Lattices.Valued.FoldingEnriques
 public import LeanCategories.Lattices.Valued.CobleCuspLattice
 -- lean-categories#22: the quasi-coherent O_X-algebra layer, the symmetric monoidal
