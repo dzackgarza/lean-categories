@@ -24,21 +24,21 @@ open LeanCategories.Modules.Bilinear.Valued
 namespace LeanCategories.Lattices.Valued
 
 /-- The bridge sends the plane's fixed root vector to the ambient root vector. -/
-example : invariantToAmbient (L := hyperbolicPlaneFiniteLattice)
+example : invariantCarrierToAmbient (L := hyperbolicPlaneFiniteLattice)
     (1 : OrthogonalGroup hyperbolicPlaneFiniteLattice.obj) uRootFixed = uRoot := rfl
 
 /-- The bridge commutes with `2 •` on that vector — the `ℤ`-linearity the transfer uses. -/
-example : invariantToAmbient (L := hyperbolicPlaneFiniteLattice)
+example : invariantCarrierToAmbient (L := hyperbolicPlaneFiniteLattice)
     (1 : OrthogonalGroup hyperbolicPlaneFiniteLattice.obj)
     ((2 : ℤ) • (show (invariantFixedLattice (L := hyperbolicPlaneFiniteLattice)
       (1 : OrthogonalGroup hyperbolicPlaneFiniteLattice.obj)).obj.obj.carrier from uRootFixed))
       = (2 : ℤ) • uRoot := by
-  rw [invariantToAmbient_zsmul]
+  rw [invariantCarrierToAmbient_zsmul]
   rfl
 
 /-- The bridge sends the folded wall family to the folded vectors — the law the ambient-sign
 composition needs to phrase an expansion of `M^σ`'s roots in `L`. -/
-example : invariantToAmbient (L := hyperbolicPlaneFiniteLattice)
+example : invariantCarrierToAmbient (L := hyperbolicPlaneFiniteLattice)
     (1 : OrthogonalGroup hyperbolicPlaneFiniteLattice.obj)
     (foldedWallFamily (L := hyperbolicPlaneFiniteLattice)
       (1 : OrthogonalGroup hyperbolicPlaneFiniteLattice.obj) (one_mul 1)

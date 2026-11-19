@@ -22,7 +22,7 @@ the ambient-sign composition of `FoldingInvariantChamberOfAmbientSigns` could no
 This file supplies the bridge explicitly, as a function rather than a coercion:
 
 * `invariantFixedLattice_carrier_eq` — the carrier is the fixed submodule (by `rfl`);
-* `invariantToAmbient` — the map `M^σ → L` it induces, defined through
+* `invariantCarrierToAmbient` — the map `M^σ → L` it induces, defined through
   `show ↥(involutionFixedSubmodule g) from ρ`, which does elaborate;
 * its laws: additive, `ℤ`-linear, and the value on a folded wall family.
 
@@ -34,7 +34,8 @@ in a form that is syntactically the subtype it is definitionally equal to").
 
 ## LC-09 record
 
-`rg "invariantToAmbient|carrier_bridge|carrier_eq"` over the repository gives nothing; the report's
+`rg "invariantCarrierToAmbient|carrier_bridge|carrier_eq"` over the repository gives nothing; the
+report's
 carrier obstruction is recorded as a failure, never as a definition. Nothing ported.
 -/
 
@@ -51,40 +52,47 @@ theorem invariantFixedLattice_carrier_eq (g : OrthogonalGroup L.obj)
     [Module.Projective ℤ (involutionFixedSubmodule g)] :
     (invariantFixedLattice (L := L) g).obj.obj.carrier = ↥(involutionFixedSubmodule g) := rfl
 
-/-- **The bridge from `M^σ` to its ambient lattice.** A vector of the invariant lattice, read in
-`L`. The definition goes through `show ↥(involutionFixedSubmodule g) from ρ`, which elaborates where
-the ascription `(ρ : ↥…)` does not. -/
-noncomputable def invariantToAmbient (g : OrthogonalGroup L.obj)
+/-- **The bridge from `M^σ` to its ambient lattice**, i.e. the coercion of the fixed submodule read
+on the invariant lattice's carrier. It *is* Mathlib's
+`Submodule.subtype (involutionFixedSubmodule g)` — the carrier of `M^σ` is definitionally `↥P`, by
+`invariantFixedLattice_carrier_eq` — with the
+`show ↥P from ρ` spelling because the ascription `(ρ : ↥P)` triggers a coercion *search*, while
+`show` triggers a *definitional check*, and only the latter elaborates.
+
+It is **not** `FoldingFixedPartBridge.invariantToAmbient` (the same coercion's `ℝ`-linear extension
+to `TensorProduct ℤ ℝ ↥P`); the two names must stay distinct, and this one is the element-level form
+the statements about roots use. -/
+noncomputable def invariantCarrierToAmbient (g : OrthogonalGroup L.obj)
     [Module.Projective ℤ (involutionFixedSubmodule g)] :
     (invariantFixedLattice (L := L) g).obj.obj.carrier → L.obj.obj.carrier :=
   fun ρ => ((show ↥(involutionFixedSubmodule g) from ρ) : L.obj.obj.carrier)
 
-@[simp] theorem invariantToAmbient_apply (g : OrthogonalGroup L.obj)
+@[simp] theorem invariantCarrierToAmbient_apply (g : OrthogonalGroup L.obj)
     [Module.Projective ℤ (involutionFixedSubmodule g)]
     (ρ : (invariantFixedLattice (L := L) g).obj.obj.carrier) :
-    invariantToAmbient (L := L) g ρ
+    invariantCarrierToAmbient (L := L) g ρ
       = ((show ↥(involutionFixedSubmodule g) from ρ) : L.obj.obj.carrier) := rfl
 
 /-- The bridge is additive. -/
-theorem invariantToAmbient_add (g : OrthogonalGroup L.obj)
+theorem invariantCarrierToAmbient_add (g : OrthogonalGroup L.obj)
     [Module.Projective ℤ (involutionFixedSubmodule g)]
     (x y : (invariantFixedLattice (L := L) g).obj.obj.carrier) :
-    invariantToAmbient (L := L) g (x + y)
-      = invariantToAmbient (L := L) g x + invariantToAmbient (L := L) g y := rfl
+    invariantCarrierToAmbient (L := L) g (x + y)
+      = invariantCarrierToAmbient (L := L) g x + invariantCarrierToAmbient (L := L) g y := rfl
 
 /-- The bridge commutes with integer multiples. -/
-theorem invariantToAmbient_zsmul (g : OrthogonalGroup L.obj)
+theorem invariantCarrierToAmbient_zsmul (g : OrthogonalGroup L.obj)
     [Module.Projective ℤ (involutionFixedSubmodule g)]
     (k : ℤ) (x : (invariantFixedLattice (L := L) g).obj.obj.carrier) :
-    invariantToAmbient (L := L) g (k • x)
-      = k • invariantToAmbient (L := L) g x := rfl
+    invariantCarrierToAmbient (L := L) g (k • x)
+      = k • invariantCarrierToAmbient (L := L) g x := rfl
 
 /-- The bridge sends the folded wall family to the folded vectors: this is what lets a statement
 about `M^σ`'s roots be phrased in `L`. -/
-theorem invariantToAmbient_foldedWallFamily (g : OrthogonalGroup L.obj) (hg : g * g = 1)
+theorem invariantCarrierToAmbient_foldedWallFamily (g : OrthogonalGroup L.obj) (hg : g * g = 1)
     [Module.Projective ℤ (involutionFixedSubmodule g)]
     {n : ℕ} (R : Fin n → L.obj.obj.carrier) (i : Fin n) :
-    invariantToAmbient (L := L) g (foldedWallFamily (L := L) g hg R i)
+    invariantCarrierToAmbient (L := L) g (foldedWallFamily (L := L) g hg R i)
       = foldedVector g (R i) := rfl
 
 end LeanCategories.Lattices.Valued

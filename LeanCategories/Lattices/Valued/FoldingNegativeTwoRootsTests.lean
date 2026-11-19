@@ -29,9 +29,9 @@ example : IsReflectiveRoot hyperbolicPlaneFiniteLattice.obj uRoot :=
 /-- The same root, read in `M^σ` at the identity involution: a `(−2)`-root of `M^σ` is a root of
 `L`, through the bridge. -/
 example : IsReflectiveRoot hyperbolicPlaneFiniteLattice.obj
-    (invariantToAmbient (L := hyperbolicPlaneFiniteLattice)
+    (invariantCarrierToAmbient (L := hyperbolicPlaneFiniteLattice)
       (1 : OrthogonalGroup hyperbolicPlaneFiniteLattice.obj) uRootFixed) := by
-  refine isReflectiveRoot_invariantToAmbient_of_square_neg_two
+  refine isReflectiveRoot_invariantCarrierToAmbient_of_square_neg_two
     (L := hyperbolicPlaneFiniteLattice)
     (g := (1 : OrthogonalGroup hyperbolicPlaneFiniteLattice.obj)) ?_
   rw [invariantFixedLattice_pairing]

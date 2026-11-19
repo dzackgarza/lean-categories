@@ -52,7 +52,7 @@ example
             (1 : OrthogonalGroup hyperbolicPlaneFiniteLattice.obj)).obj.obj.pairing ρ ρ = -4 ∧
           ∀ y : hyperbolicPlaneFiniteLattice.obj.obj.carrier,
             (2 : ℤ) ∣ hyperbolicPlaneFiniteLattice.obj.obj.pairing
-              (invariantToAmbient (L := hyperbolicPlaneFiniteLattice)
+              (invariantCarrierToAmbient (L := hyperbolicPlaneFiniteLattice)
                 (1 : OrthogonalGroup hyperbolicPlaneFiniteLattice.obj) ρ) y))
     (hamb : ∀ ρ ∈ negativeReflectiveRoots hyperbolicPlaneFiniteLattice, ∃ c : Fin 1 → ℤ,
       ρ = ∑ i, c i • (fun _ : Fin 1 => uRoot) i ∧

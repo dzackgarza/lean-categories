@@ -15,9 +15,9 @@ through the carrier bridge, is a root of `L`. That is a statement about reflecti
 has to know individually. This file replaces it by the criterion the last two commits prove:
 
 * a root of square `−2` is **always** a root of `L`
-  (`isReflectiveRoot_invariantToAmbient_of_square_neg_two`);
+  (`isReflectiveRoot_invariantCarrierToAmbient_of_square_neg_two`);
 * a root of square `−4` is one **iff** all its ambient pairings are even
-  (`isReflectiveRoot_invariantToAmbient_iff_two_dvd_pairing`).
+  (`isReflectiveRoot_invariantCarrierToAmbient_iff_two_dvd_pairing`).
 
 So on a lattice whose roots have square `−2` or `−4` — the even 2-elementary case, which is AEGS's
 setting (**printed p. 10**: "the roots are the `(−2)`-vectors and the `(−4)`-vectors with
@@ -62,29 +62,29 @@ theorem isChamberWithWalls_invariant_of_square_criterion (g : OrthogonalGroup L.
       (invariantFixedLattice (L := L) g).obj.obj.pairing ρ ρ = -2 ∨
         ((invariantFixedLattice (L := L) g).obj.obj.pairing ρ ρ = -4 ∧
           ∀ y : L.obj.obj.carrier,
-            (2 : ℤ) ∣ L.obj.obj.pairing (invariantToAmbient (L := L) g ρ) y))
+            (2 : ℤ) ∣ L.obj.obj.pairing (invariantCarrierToAmbient (L := L) g ρ) y))
     (hamb : ∀ ρ ∈ negativeReflectiveRoots L, ∃ c : Fin n → ℤ,
       ρ = ∑ i, c i • R i ∧ ((∀ i, 0 ≤ c i) ∨ ∀ i, c i ≤ 0)) :
     IsChamberWithWalls (invariantFixedLattice (L := L) g) (toRealForm _ w)
       (Set.range (foldedWallFamily (L := L) g hg R)) := by
   refine isChamberWithWalls_invariant_of_ambient_signs (L := L) g hg R w hw hroot hwv ?_ hamb
   intro ρ hρ
-  have hcoe : L.obj.obj.pairing (invariantToAmbient (L := L) g ρ)
-      (invariantToAmbient (L := L) g ρ)
+  have hcoe : L.obj.obj.pairing (invariantCarrierToAmbient (L := L) g ρ)
+      (invariantCarrierToAmbient (L := L) g ρ)
       = (invariantFixedLattice (L := L) g).obj.obj.pairing ρ ρ := by
-    rw [invariantToAmbient_apply]
+    rw [invariantCarrierToAmbient_apply]
     exact (invariantFixedLattice_pairing (L := L) g
       (show ↥(involutionFixedSubmodule g) from ρ)
       (show ↥(involutionFixedSubmodule g) from ρ)).symm
-  have hneg : L.obj.obj.pairing (invariantToAmbient (L := L) g ρ)
-      (invariantToAmbient (L := L) g ρ) < 0 := by
+  have hneg : L.obj.obj.pairing (invariantCarrierToAmbient (L := L) g ρ)
+      (invariantCarrierToAmbient (L := L) g ρ) < 0 := by
     rw [hcoe]
     rcases hsq ρ hρ with h2 | ⟨h4, _⟩
     · rw [h2]; norm_num
     · rw [h4]; norm_num
   refine ⟨?_, hneg⟩
   rcases hsq ρ hρ with h2 | ⟨h4, hev⟩
-  · exact isReflectiveRoot_invariantToAmbient_of_square_neg_two (L := L) g h2
-  · exact (isReflectiveRoot_invariantToAmbient_iff_two_dvd_pairing (L := L) g h4).mpr hev
+  · exact isReflectiveRoot_invariantCarrierToAmbient_of_square_neg_two (L := L) g h2
+  · exact (isReflectiveRoot_invariantCarrierToAmbient_iff_two_dvd_pairing (L := L) g h4).mpr hev
 
 end LeanCategories.Lattices.Valued

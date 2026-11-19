@@ -20,7 +20,7 @@ carried by the **`(−4)`-roots** alone, which is exactly AEGS Lemma 3.4's shape
 (**printed p. 12**).
 
 * `isReflectiveRoot_of_pairing_self_eq_neg_two` — square `−2` implies reflective, in any lattice;
-* `isReflectiveRoot_invariantToAmbient_of_square_neg_two` — hence a `(−2)`-root of `M^σ` is a root
+* `isReflectiveRoot_invariantCarrierToAmbient_of_square_neg_two` — hence a `(−2)`-root of `M^σ` is a root
   of `L`, read through the carrier bridge;
 * `pairing_ne_neg_two_of_not_isReflectiveRoot` — contrapositive: the residual is `(−4)`-only.
 
@@ -56,16 +56,16 @@ theorem isReflectiveRoot_of_pairing_self_eq_neg_two {x : L.obj.obj.carrier}
     exact ⟨-(L.obj.obj.pairing x y), by ring⟩
 
 /-- **A `(−2)`-root of `M^σ` is a root of `L`** — read through the carrier bridge. -/
-theorem isReflectiveRoot_invariantToAmbient_of_square_neg_two (g : OrthogonalGroup L.obj)
+theorem isReflectiveRoot_invariantCarrierToAmbient_of_square_neg_two (g : OrthogonalGroup L.obj)
     [Module.Projective ℤ (involutionFixedSubmodule g)]
     {ρ : (invariantFixedLattice (L := L) g).obj.obj.carrier}
     (h : (invariantFixedLattice (L := L) g).obj.obj.pairing ρ ρ = -2) :
-    IsReflectiveRoot L.obj (invariantToAmbient (L := L) g ρ) := by
+    IsReflectiveRoot L.obj (invariantCarrierToAmbient (L := L) g ρ) := by
   refine isReflectiveRoot_of_pairing_self_eq_neg_two (L := L) ?_
-  have hcoe : L.obj.obj.pairing (invariantToAmbient (L := L) g ρ)
-      (invariantToAmbient (L := L) g ρ)
+  have hcoe : L.obj.obj.pairing (invariantCarrierToAmbient (L := L) g ρ)
+      (invariantCarrierToAmbient (L := L) g ρ)
       = (invariantFixedLattice (L := L) g).obj.obj.pairing ρ ρ := by
-    rw [invariantToAmbient_apply]
+    rw [invariantCarrierToAmbient_apply]
     exact (invariantFixedLattice_pairing (L := L) g
       (show ↥(involutionFixedSubmodule g) from ρ)
       (show ↥(involutionFixedSubmodule g) from ρ)).symm
@@ -76,9 +76,9 @@ theorem isReflectiveRoot_invariantToAmbient_of_square_neg_two (g : OrthogonalGro
 theorem pairing_ne_neg_two_of_not_isReflectiveRoot (g : OrthogonalGroup L.obj)
     [Module.Projective ℤ (involutionFixedSubmodule g)]
     {ρ : (invariantFixedLattice (L := L) g).obj.obj.carrier}
-    (h : ¬ IsReflectiveRoot L.obj (invariantToAmbient (L := L) g ρ)) :
+    (h : ¬ IsReflectiveRoot L.obj (invariantCarrierToAmbient (L := L) g ρ)) :
     (invariantFixedLattice (L := L) g).obj.obj.pairing ρ ρ ≠ -2 := by
   intro h2
-  exact h (isReflectiveRoot_invariantToAmbient_of_square_neg_two (L := L) g h2)
+  exact h (isReflectiveRoot_invariantCarrierToAmbient_of_square_neg_two (L := L) g h2)
 
 end LeanCategories.Lattices.Valued

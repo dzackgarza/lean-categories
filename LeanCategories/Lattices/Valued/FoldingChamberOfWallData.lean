@@ -63,7 +63,7 @@ theorem isChamberWithWalls_invariant_of_wall_data (g : OrthogonalGroup L.obj) (h
       (invariantFixedLattice (L := L) g).obj.obj.pairing ρ ρ = -2 ∨
         ((invariantFixedLattice (L := L) g).obj.obj.pairing ρ ρ = -4 ∧
           ∀ y : L.obj.obj.carrier,
-            (2 : ℤ) ∣ L.obj.obj.pairing (invariantToAmbient (L := L) g ρ) y))
+            (2 : ℤ) ∣ L.obj.obj.pairing (invariantCarrierToAmbient (L := L) g ρ) y))
     (hamb : ∀ ρ ∈ negativeReflectiveRoots L, ∃ c : Fin n → ℤ,
       ρ = ∑ i, c i • R i ∧ ((∀ i, 0 ≤ c i) ∨ ∀ i, c i ≤ 0)) :
     IsChamberWithWalls (invariantFixedLattice (L := L) g) (toRealForm _ w)

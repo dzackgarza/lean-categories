@@ -28,7 +28,7 @@ The paper then decides *which* `(−4)`-vectors occur by Namikawa's orbit classi
 classification is what this file does **not** supply, and it is the remaining gap.
 
 * `isReflectiveRoot_iff_two_dvd_pairing` — the criterion on square `−4`;
-* `isReflectiveRoot_invariantToAmbient_iff_two_dvd_pairing` — the same at `M^σ`, through the bridge.
+* `isReflectiveRoot_invariantCarrierToAmbient_iff_two_dvd_pairing` — the same at `M^σ`, through the bridge.
 
 ## LC-09 record
 
@@ -70,18 +70,18 @@ theorem isReflectiveRoot_iff_two_dvd_pairing {x : L.obj.obj.carrier}
 
 /-- **The residual, exactly**: a `(−4)`-root of `M^σ` is a root of `L` iff all its ambient pairings
 are even. The roots where this fails are AEGS Lemma 3.4's type (3). -/
-theorem isReflectiveRoot_invariantToAmbient_iff_two_dvd_pairing (g : OrthogonalGroup L.obj)
+theorem isReflectiveRoot_invariantCarrierToAmbient_iff_two_dvd_pairing (g : OrthogonalGroup L.obj)
     [Module.Projective ℤ (involutionFixedSubmodule g)]
     {ρ : (invariantFixedLattice (L := L) g).obj.obj.carrier}
     (h : (invariantFixedLattice (L := L) g).obj.obj.pairing ρ ρ = -4) :
-    IsReflectiveRoot L.obj (invariantToAmbient (L := L) g ρ)
+    IsReflectiveRoot L.obj (invariantCarrierToAmbient (L := L) g ρ)
       ↔ ∀ y : L.obj.obj.carrier,
-          (2 : ℤ) ∣ L.obj.obj.pairing (invariantToAmbient (L := L) g ρ) y := by
+          (2 : ℤ) ∣ L.obj.obj.pairing (invariantCarrierToAmbient (L := L) g ρ) y := by
   refine isReflectiveRoot_iff_two_dvd_pairing (L := L) ?_
-  have hcoe : L.obj.obj.pairing (invariantToAmbient (L := L) g ρ)
-      (invariantToAmbient (L := L) g ρ)
+  have hcoe : L.obj.obj.pairing (invariantCarrierToAmbient (L := L) g ρ)
+      (invariantCarrierToAmbient (L := L) g ρ)
       = (invariantFixedLattice (L := L) g).obj.obj.pairing ρ ρ := by
-    rw [invariantToAmbient_apply]
+    rw [invariantCarrierToAmbient_apply]
     exact (invariantFixedLattice_pairing (L := L) g
       (show ↥(involutionFixedSubmodule g) from ρ)
       (show ↥(involutionFixedSubmodule g) from ρ)).symm

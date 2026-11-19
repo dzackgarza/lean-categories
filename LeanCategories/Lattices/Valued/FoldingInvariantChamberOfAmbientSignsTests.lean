@@ -32,7 +32,7 @@ example
     (hsub : ∀ ρ ∈ negativeReflectiveRoots
         (invariantFixedLattice (L := hyperbolicPlaneFiniteLattice)
           (1 : OrthogonalGroup hyperbolicPlaneFiniteLattice.obj)),
-      invariantToAmbient (L := hyperbolicPlaneFiniteLattice)
+      invariantCarrierToAmbient (L := hyperbolicPlaneFiniteLattice)
         (1 : OrthogonalGroup hyperbolicPlaneFiniteLattice.obj) ρ ∈
         negativeReflectiveRoots hyperbolicPlaneFiniteLattice)
     (hamb : ∀ ρ ∈ negativeReflectiveRoots hyperbolicPlaneFiniteLattice, ∃ c : Fin 1 → ℤ,
