@@ -491,6 +491,8 @@ public import LeanCategories.Lattices.Valued.FoldingNegativeTwoRoots
 public import LeanCategories.Lattices.Valued.FoldingNegativeTwoRootsTests
 public import LeanCategories.Lattices.Valued.FoldingNegativeFourRoots
 public import LeanCategories.Lattices.Valued.FoldingNegativeFourRootsTests
+public import LeanCategories.Lattices.Valued.FoldingRootTransferEquivalence
+public import LeanCategories.Lattices.Valued.FoldingRootTransferEquivalenceTests
 public import LeanCategories.Lattices.Valued.FoldingChamberOfSquareCriterion
 public import LeanCategories.Lattices.Valued.FoldingChamberOfSquareCriterionTests
 public import LeanCategories.Lattices.Valued.FoldingFoldOfRoot

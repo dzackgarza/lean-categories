@@ -16,7 +16,7 @@ source's: invariants, not coinvariants.
 | 1 | The fixed sublattice `M^σ` | **met** | `involutionFixedSubmodule` `Folding.lean:114` (ker of `σ − 1`); as a lattice object `invariantFixedLattice` `FoldingInvariantChamber.lean:120` |
 | 2 | The folded root set (Def. 3.3 → Def. 3.7) | **met** | `foldedVector` `Folding.lean:126`; filtered set `foldedRootSet` `Folding.lean:416` |
 | 3 | Its Coxeter diagram | **met** | `foldedDiagramOfRoots` `Folding.lean:480`; family/set agreement `range_foldedDiagramOfRoots_eq` `FoldingDiagramOrbits.lean:78` |
-| 4 | The chamber theorem | **met modulo `hamb` and the ambient-pairing half of `hsq`** — see below | `isChamberWithWalls_invariant_of_foldedRootSet` `FoldingChamberOfDefinition37.lean` |
+| 4 | The chamber theorem | **met modulo `hamb` and one root hypothesis** (`hsq`/`hsub`, interchangeable — see below) | `isChamberWithWalls_invariant_of_foldedRootSet` `FoldingChamberOfDefinition37.lean` |
 | 5 | One worked declaration from a published folded diagram | **met** | the `E₈` block of `T_dP` folds to `E₈(2)`: `tdpFoldedE8Diagram` `FoldingDiagram.lean:385` with `tdpFoldedE8Diagram_adjacent` `:407` |
 | 6 | Compiles with no `sorry` | **met** | zero `sorry`/`admit` across the `Folding*.lean` modules; **all 65 of them imported by `LeanCategories/All.lean`** (audited at this commit: 65 modules on disk, 65 `public import` lines, no gap and no stray — a module missing there is never elaborated) |
 
@@ -99,10 +99,9 @@ with
   classification behind Lemma 3.4's converse (**printed p. 12**);
 * `hamb` — every root of `L` is a same-sign combination of the walls: Vinberg's one-sign expansion.
 
-The first three are checkable on the diagrams; `hamb` and the ambient-pairing half of `hsq` are the
-inputs (its square half is now a theorem, **p. 10**, below). What is **not** a
-hypothesis any more: `hcomplete`, the sign covering, the carrier identification, `hroot`, and the
-folded positivity `hwv`.
+The first three are checkable on the diagrams; `hamb` and one root hypothesis (`hsq`, equivalently
+`hsub`) are the inputs. What is **not** a hypothesis any more: `hcomplete`, the sign covering, the
+carrier identification, `hroot`, and the folded positivity `hwv`.
 
 **The `(−2)`/`(−4)` rule is a theorem (AEGS p. 10).** The source states it on **printed p. 10**:
 *"The lattices `L^±_En` and `L^±_dP` are even 2-elementary. For such lattices the roots are the
@@ -121,8 +120,21 @@ half of `hsq`, with no classification. It does **not** give `hsq`'s second claus
 *ambient image* `ρ^` with vectors `y ∈ L` of the ambient lattice. For such `y` one has
 `⟨ρ^, y⟩ = ⟨ρ, y + gy⟩/2`, and evenness of `⟨ρ, ·⟩` on `M^σ` makes `⟨ρ^, y⟩` an integer, not
 necessarily an even one; applying the rule to `L` instead would need `ρ^` to be a root of `L`, which
-is `hsub` itself. So the ambient clause — the reflectivity transfer of AEGS Lemma 3.4's type (3),
-**printed p. 12** — remains the input, and Namikawa is still what supplies it for black vertices.
+is `hsub` itself. So the ambient clause is not something the rule on `M^σ` supplies.
+
+**But it is not a second input either.** Applied to `L` — which the source also asserts is even
+2-elementary, **p. 10** — the rule gives `hsq`'s ambient clause verbatim at `ρ^`, and nothing more is
+needed. `FoldingRootTransferEquivalence.lean` records the two implications:
+
+* `hsub_of_hsq` — `hsq` gives `hsub`, with no hypothesis on `L` (the `(−2)`/`(−4)` case split);
+* `hsq_of_hsub_of_two_elementary` — `hsub` gives `hsq`, given the p. 10 hypotheses on `L`, by the
+  rule applied at `ρ^`;
+* `hsub_iff_hsq_of_two_elementary` — so the two guises are one hypothesis.
+
+That is the content of Lemma 3.4's type (3) and nothing besides: the ambient-pairing clause carries
+no information beyond the reflectivity transfer. `hsq` and `hsub` may be carried interchangeably, and
+the chain carries whichever is convenient — `hsub` is the weaker interface, `hsq` the one the
+class-restriction corollaries are stated at.
 
 **`hsq`'s only job in the chain is `hsub`.** `hsq` is consumed in exactly one place: to produce "the
 ambient image of a root of `M^σ` is a root of `L`", the `hsub` hypothesis of
@@ -147,11 +159,12 @@ be roots of `L` are precisely the `(−4)`-ones with an odd pairing — AEGS Lem
 * *The ambient expansion* (`hamb`): Vinberg's same-sign expansion of every root of `L` in its wall
   family. This needs chambers and a Tits cone for a reflection group, which Mathlib does not have.
 
-The p. 10 rule is no longer cited as a classification: it is proved (`TwoElementaryRootSquare.lean`),
-and what it leaves is the *embedding* half of `hsq`, not a statement about `M^σ` alone. So the paper's
-argument now splits cleanly: the root-square arithmetic of its lattices is formalized from p. 10, the
-folding is formalized, and what is cited rather than reproved is Vinberg's chamber theory and
-Namikawa's classification of the orbits behind the ambient-pairing clause.
+Alongside it the chain carries **one** root hypothesis, in either guise: `hsub` (the ambient image of
+every root of `M^σ` is a root of `L`) or `hsq` (`(−2)`, or `(−4)` with even ambient pairings). They are
+equivalent given the p. 10 properties of `L`, and each is what Namikawa's classification of
+`O(T_En)`-orbits supplies for the black vertices. The p. 10 rule itself is no longer cited as a
+classification: it is proved (`TwoElementaryRootSquare.lean`). So what is cited rather than reproved
+is Vinberg's chamber theory and Namikawa's orbit classification, and nothing else.
 
 Everything the paper argues *by folding* is therefore formalized; what is not is the arithmetic of
 `T_En` and Vinberg's chamber theory, both cited rather than reproved.
