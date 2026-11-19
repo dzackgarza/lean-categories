@@ -89,6 +89,24 @@ text.
   (Submodule.topEquiv)` fails with `synthesized AddCommGroup.toIntModule ↥⊤ / inferred ⊤.module`.
   So the two residuals have one cause, and it is a carrier-level bookkeeping problem, not a
   mathematical one.
+  **The obstruction, measured exactly.** Attempting to bridge it — proving projectivity of a formed
+  sublattice's carrier from projectivity of its submodule — shows what the two objects are:
+
+  ```
+  hP  : @Module.Projective ℤ Int.instSemiring (↥P) P.addCommMonoid (AddCommGroup.toIntModule ↥P)
+  want: @Module.Projective ℤ Int.instSemiring (formedSublattice L.obj P).obj.carrier
+          (formedSublattice L.obj P).obj.carrier.isAddCommGroup.toAddCommMonoid
+          (formedSublattice L.obj P).obj.carrier.isModule
+  ```
+
+  The lattice's carrier carries its group and module structure as **data** of the bundled category
+  (`isAddCommGroup`, `isModule`); the submodule carries them as **type-class instances**
+  (`AddCommGroup.toIntModule`). No defeq check identifies those, and `inferInstance` on the first type
+  *times out* rather than failing. So the fix is not another transport: statements needing
+  `Module.Projective` at the invariant lattice (the signature, the bridge's injectivity) must be
+  stated on a carrier built the way the lattice's own is — taking projectivity from the lattice-level
+  hypothesis, or re-deriving the formed sublattice through `BilinModuleCat.ofBilinMap` on a type that
+  already carries the wanted instances.
 
 A third front, and the reason the "one predicate" reduction is not written down either: the carrier of
 `invariantFixedLattice g` is `(formedSublattice L.obj P).obj.carrier`, which is *definitionally* but
