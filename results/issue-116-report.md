@@ -103,6 +103,23 @@ The first three are checkable on the diagrams; the last two are the external inp
 hypothesis any more: `hcomplete`, the sign covering, the carrier identification, `hroot`, and the
 folded positivity `hwv`.
 
+**`hsq`'s only job is `hsub`.** Reading the chain, `hsq` is consumed in exactly one place: to produce
+"the ambient image of a root of `M^σ` is a root of `L`", which is the `hsub` hypothesis of
+`isChamberWithWalls_invariant_of_ambient_signs` (`FoldingInvariantChamberOfAmbientSigns.lean:63`). It
+is used for nothing else. The theorem is therefore also stated at `hsub`, which is strictly weaker
+than `hsq` — one divisibility check per root instead of a classification of root orbits:
+`isChamberWithWalls_invariant_of_foldedRootSet_of_hsub` (`FoldingChamberOfAmbientRoots.lean`). Two
+consequences, one in each direction:
+
+* in the **white** case of AEGS **printed p. 10** — every root of `M^σ` a `(−2)`-vector — `hsub` is
+  `isReflectiveRoot_invariantCarrierToAmbient_of_square_neg_two` applied root by root, so no
+  classification input remains at all:
+  `isChamberWithWalls_invariant_of_foldedRootSet_of_square_neg_two` (same module);
+* but the paper's own `T_En`/`T_dP` foldings carry `(−4)`-roots — black vertices, Figures 7–8,
+  **printed pp. 13–14** — so the first bullet is a genuine special case, not a discharge for those
+  lattices. For them `hsq` (equivalently `hsub`) is still the input, and the classification is still
+  what supplies it.
+
 **Why the class restriction has that form.** A `(−2)`-vector of an integral lattice is always
 reflective (`−2 ∣ 2·anything`), so a `(−2)`-root of `M^σ` is a root of `L`
 (`isReflectiveRoot_invariantCarrierToAmbient_of_square_neg_two` `FoldingNegativeTwoRoots.lean:59`). A `(−4)`-vector
@@ -115,10 +132,10 @@ be roots of `L` are precisely the `(−4)`-ones with an odd pairing — AEGS Lem
 
 * *The ambient expansion* (`hamb`): Vinberg's same-sign expansion of every root of `L` in its wall
   family. This needs chambers and a Tits cone for a reflection group, which Mathlib does not have.
-* *That the `(−4)`-roots have even ambient pairings* (`hsq`'s second alternative): decided in the
-  source by Namikawa's classification of `O(T_En)`-orbits of `(−2)`- and `(−4)`-vectors
-  (**printed p. 12**, Lemma 3.4's converse, cited to [Nam85, 2.13 and 2.15]). The classification is
-  not in the development.
+* *That the `(−4)`-roots have even ambient pairings* (`hsq`'s second alternative, and with it
+  `hsub`): decided in the source by Namikawa's classification of `O(T_En)`-orbits of `(−2)`- and
+  `(−4)`-vectors (**printed p. 12**, Lemma 3.4's converse, cited to [Nam85, 2.13 and 2.15]). The
+  classification is not in the development. It is needed only for the `(−4)`-roots; see above.
 
 Everything the paper argues *by folding* is therefore formalized; what is not is the arithmetic of
 `T_En` and Vinberg's chamber theory, both cited rather than reproved.

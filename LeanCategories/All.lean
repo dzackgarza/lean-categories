@@ -503,6 +503,8 @@ public import LeanCategories.Lattices.Valued.FoldingChamberPositivity
 public import LeanCategories.Lattices.Valued.FoldingChamberPositivityTests
 public import LeanCategories.Lattices.Valued.FoldingChamberOfDefinition37
 public import LeanCategories.Lattices.Valued.FoldingChamberOfDefinition37Tests
+public import LeanCategories.Lattices.Valued.FoldingChamberOfAmbientRoots
+public import LeanCategories.Lattices.Valued.FoldingChamberOfAmbientRootsTests
 public import LeanCategories.Lattices.Valued.FoldingInvariantChamberOfTwoSmulSigns
 public import LeanCategories.Lattices.Valued.FoldingInvariantChamberOfTwoSmulSignsTests
 public import LeanCategories.Lattices.Valued.FoldingEnriques
