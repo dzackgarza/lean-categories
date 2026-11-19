@@ -67,8 +67,8 @@ generated; this is the composition of the two Mathlib facts. -/
 theorem submodule_projective {ι : Type*} [Finite ι] (P : Submodule ℤ (ι → ℤ)) :
     Module.Projective ℤ ↥P := by
   have h : P.FG := IsNoetherian.noetherian P
-  haveI hfin : Module.Finite ℤ ↥P := Module.Finite.of_fg h
-  haveI hfree : Module.Free ℤ ↥P := Module.free_of_finite_type_torsion_free'
+  have hfin : Module.Finite ℤ ↥P := Module.Finite.of_fg h
+  have hfree : Module.Free ℤ ↥P := Module.free_of_finite_type_torsion_free'
   infer_instance
 
 /-- **The fixed sublattice of `tdpIsometry` is projective**, so that `invariantFixedLattice` can be
