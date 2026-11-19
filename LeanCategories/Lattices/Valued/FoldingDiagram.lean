@@ -87,6 +87,7 @@ The statements below are proved from the pairing of `Folding.lean` and `WeylCham
 @[expose] public section
 
 open QuadraticMap
+open LeanCategories.Algebra
 open LeanCategories.Modules.Bilinear.Valued
 
 namespace LeanCategories.Lattices.Valued
@@ -377,6 +378,40 @@ theorem tdpFoldedE8Root_pairing (i j : Fin 8) :
     rw [tdpIsometry_tdpE8Root j, tdpE8Root, tdpE8RootImage, tdpBlock_pairing_first_second]]
   rw [tdpE8Root, tdpE8Root, tdpBlock_pairing_first_first, e8Basis_pairing]
   ring
+
+/-- **The folded diagram of the `E₈` block, as a `CoxeterDiagram`** (AEGS Lemma 3.9's `E₈(2)`): the
+eight folded simple roots are the vertices, and Definition 3.7's weights are
+`(e_ij)² / 4` of the `E₈` Gram matrix. -/
+noncomputable def tdpFoldedE8Diagram : CoxeterDiagram (Fin 8) :=
+  foldedCoxeterDiagram tdpIsometry tdpE8Root (fun i => by
+    change tdpFiniteLattice.obj.obj.pairing (foldedVector tdpIsometry (tdpE8Root i))
+      (foldedVector tdpIsometry (tdpE8Root i)) < 0
+    rw [tdpFoldedE8Root_square i]
+    norm_num)
+
+theorem tdpFoldedE8Diagram_edges_formula (i j : Fin 8) :
+    tdpFoldedE8Diagram.edges i j = (e8GramMatrix i j : ℚ) ^ 2 / 4 := by
+  rw [tdpFoldedE8Diagram, foldedCoxeterDiagram_edges]
+  simp only [coxeterDiagramOfRootsEdges, foldedRootFamily, tdpFoldedE8Root_pairing i j,
+    tdpFoldedE8Root_square i, tdpFoldedE8Root_square j]
+  push_cast
+  ring
+
+/-- The diagonal weight is `1`: the folded roots all have square `-4`, which is what makes `E₈(2)`
+simply laced. -/
+theorem tdpFoldedE8Diagram_self (i : Fin 8) : tdpFoldedE8Diagram.edges i i = 1 := by
+  rw [tdpFoldedE8Diagram_edges_formula, e8GramMatrix_eq]
+  fin_cases i <;> norm_num
+
+/-- **An `E₈` edge of the folded diagram has weight `1/4`** — the `E₈(2)` edge. -/
+theorem tdpFoldedE8Diagram_adjacent : tdpFoldedE8Diagram.edges 2 3 = 1 / 4 := by
+  rw [tdpFoldedE8Diagram_edges_formula, e8GramMatrix_eq]
+  norm_num
+
+/-- An orthogonal pair of `E₈` roots stays orthogonal in the folded diagram. -/
+theorem tdpFoldedE8Diagram_orthogonal : tdpFoldedE8Diagram.edges 0 1 = 0 := by
+  rw [tdpFoldedE8Diagram_edges_formula, e8GramMatrix_eq]
+  norm_num
 
 /-- **The folded diagram of the `E₈` block** (AEGS Lemma 3.9's `E₈(2)`, in block form): the eight
 folded simple roots are the vertices, and the edge weight between two of them is the normalized
