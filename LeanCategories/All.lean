@@ -491,6 +491,8 @@ public import LeanCategories.Lattices.Valued.FoldingNegativeFourRoots
 public import LeanCategories.Lattices.Valued.FoldingNegativeFourRootsTests
 public import LeanCategories.Lattices.Valued.FoldingChamberOfSquareCriterion
 public import LeanCategories.Lattices.Valued.FoldingChamberOfSquareCriterionTests
+public import LeanCategories.Lattices.Valued.FoldingFoldOfRoot
+public import LeanCategories.Lattices.Valued.FoldingFoldOfRootTests
 public import LeanCategories.Lattices.Valued.FoldingInvariantChamberOfTwoSmulSigns
 public import LeanCategories.Lattices.Valued.FoldingInvariantChamberOfTwoSmulSignsTests
 public import LeanCategories.Lattices.Valued.FoldingEnriques
