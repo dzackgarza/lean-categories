@@ -1,6 +1,7 @@
 # #116 — folding a Lorentzian chamber along a diagram involution
 
-Status at `2c0490b1` on `main`. What the issue asks for, item by item, with the declaration that
+Status at `66600d4e` on `main`, and every `file:line` and declaration name below is re-checked against
+that commit. What the issue asks for, item by item, with the declaration that
 carries each; then the one theorem the chamber item reduces to, its five hypotheses, and where each
 comes from.
 
@@ -104,7 +105,7 @@ folded positivity `hwv`.
 
 **Why the class restriction has that form.** A `(−2)`-vector of an integral lattice is always
 reflective (`−2 ∣ 2·anything`), so a `(−2)`-root of `M^σ` is a root of `L`
-(`isReflectiveRoot_invariantToAmbient_of_square_neg_two` `FoldingNegativeTwoRoots.lean`). A `(−4)`-vector
+(`isReflectiveRoot_invariantCarrierToAmbient_of_square_neg_two` `FoldingNegativeTwoRoots.lean:59`). A `(−4)`-vector
 is reflective exactly when all its pairings are even: `−4 ∣ 2⟨x,y⟩ ⟺ 2 ∣ ⟨x,y⟩`
 (`isReflectiveRoot_iff_two_dvd_pairing` `FoldingNegativeFourRoots.lean`). So the roots that can fail to
 be roots of `L` are precisely the `(−4)`-ones with an odd pairing — AEGS Lemma 3.4's type (3)
@@ -127,15 +128,16 @@ Everything the paper argues *by folding* is therefore formalized; what is not is
 An earlier state of this report recorded that `M^σ`'s carrier is `(formedSublattice L.obj P).obj.carrier`,
 definitionally but not syntactically the subtype `↥P`, and that no coercion between them exists — so
 predicates about roots of `M^σ` could not be stated in `L` at all. That is now resolved:
-`invariantFixedLattice_carrier_eq` proves the carrier equality by `rfl` and `invariantToAmbient`
-(`FoldingCarrierBridge.lean`) supplies the map, with its additive, `ℤ`-linear and
+`invariantFixedLattice_carrier_eq` proves the carrier equality by `rfl` (`FoldingCarrierBridge.lean:51`)
+and `invariantCarrierToAmbient` (`FoldingCarrierBridge.lean:65`) supplies the map, with its additive,
+`ℤ`-linear and
 `foldedWallFamily`-compatible laws, all by `rfl`. The failure mode was an ascription
 (`(ρ : L.obj.obj.carrier)`) triggering a *coercion search* where `show ↥P from ρ` triggers a
 *definitional check*; the latter elaborates.
 
 ## Other open items, outside the acceptance
 
-* `invariantToAmbient_range` `FoldingFixedPartBridge.lean:130` identifies the range of `r ⊗ v ↦ r • v`
+* `invariantToAmbient_range` `FoldingFixedPartBridge.lean:141` identifies the range of `r ⊗ v ↦ r • v`
   with the fixed locus, and `invariantToAmbient_qf_tmul` (`FoldingFixedPartIsometry.lean`) shows it is
   form-preserving on pure tensors. **Injectivity is not proved**: relating the map to
   `LinearMap.lTensor` fails on an instance path (`Submodule.module` on `↥M^σ` versus
@@ -149,7 +151,7 @@ predicates about roots of `M^σ` could not be stated in `L` at all. That is now 
   (`isAddCommGroup`, `isModule`), while a submodule carries them as **type-class instances**
   (`AddCommGroup.toIntModule`), and no defeq check identifies those. The fix is to state such
   facts on a carrier built the way the lattice's own is, which is what
-  `FoldingOfBilinMapProjective.ofBilinMap_projective` records as available.
+  `ofBilinMap_projective` (`FoldingOfBilinMapProjective.lean:43`) records as available.
 
 ## LC-09
 
