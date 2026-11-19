@@ -485,6 +485,8 @@ public import LeanCategories.Lattices.Valued.FoldingCarrierBridge
 public import LeanCategories.Lattices.Valued.FoldingCarrierBridgeTests
 public import LeanCategories.Lattices.Valued.FoldingInvariantChamberOfAmbientSigns
 public import LeanCategories.Lattices.Valued.FoldingInvariantChamberOfAmbientSignsTests
+public import LeanCategories.Lattices.Valued.FoldingNegativeTwoRoots
+public import LeanCategories.Lattices.Valued.FoldingNegativeTwoRootsTests
 public import LeanCategories.Lattices.Valued.FoldingInvariantChamberOfTwoSmulSigns
 public import LeanCategories.Lattices.Valued.FoldingInvariantChamberOfTwoSmulSignsTests
 public import LeanCategories.Lattices.Valued.FoldingEnriques
