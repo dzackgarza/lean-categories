@@ -1,6 +1,6 @@
 # #116 — folding a Lorentzian chamber along a diagram involution
 
-Status at `36154787` on `main`. What the issue asks for, item by item, with the declaration that
+Status at `2c0490b1` on `main`. What the issue asks for, item by item, with the declaration that
 carries each; then the one theorem the chamber item reduces to, its five hypotheses, and where each
 comes from.
 
@@ -15,7 +15,7 @@ source's: invariants, not coinvariants.
 | 1 | The fixed sublattice `M^σ` | **met** | `involutionFixedSubmodule` `Folding.lean:114` (ker of `σ − 1`); as a lattice object `invariantFixedLattice` `FoldingInvariantChamber.lean:120` |
 | 2 | The folded root set (Def. 3.3 → Def. 3.7) | **met** | `foldedVector` `Folding.lean:126`; filtered set `foldedRootSet` `Folding.lean:416` |
 | 3 | Its Coxeter diagram | **met** | `foldedDiagramOfRoots` `Folding.lean:480`; family/set agreement `range_foldedDiagramOfRoots_eq` `FoldingDiagramOrbits.lean:78` |
-| 4 | The chamber theorem | **met modulo two named inputs** — see below | `isChamberWithWalls_invariant_of_wall_data` `FoldingChamberOfWallData.lean` |
+| 4 | The chamber theorem | **met modulo two named inputs** — see below | `isChamberWithWalls_invariant_of_foldedRootSet` `FoldingChamberOfDefinition37.lean` |
 | 5 | One worked declaration from a published folded diagram | **met** | the `E₈` block of `T_dP` folds to `E₈(2)`: `tdpFoldedE8Diagram` `FoldingDiagram.lean:385` with `tdpFoldedE8Diagram_adjacent` `:407` |
 | 6 | Compiles with no `sorry` | **met** | zero `sorry`/`admit` across the `Folding*.lean` modules; all imported by `LeanCategories/All.lean` |
 
@@ -73,15 +73,23 @@ counting argument is in `FoldingInvariantChamberOfSigns`'s docstring. The sign c
    the image. Its ingredient `isReflectiveRoot_of_mem_of_isReflectiveRoot` is the easy direction of
    Lemma 3.4: reflectivity passes from `L` to `M^σ` for a fixed vector.
 
-**The statement everything reduces to** (`FoldingChamberOfWallData.lean`):
+**The statement everything reduces to** (`FoldingChamberOfDefinition37.lean`):
 
-  `isChamberWithWalls_invariant_of_wall_data (g) (hg) (R) (w) (hw) (hwv) (hR) (hneg) (hcase) (hsq)
-  (hamb) : IsChamberWithWalls M (toRealForm _ w) (Set.range (foldedWallFamily g hg R))`
+  `isChamberWithWalls_invariant_of_foldedRootSet (g) (hg) (R) (w) (hw) (hwamb) (hR) (hneg) (hcase)
+  (hsq) (hamb) : IsChamberWithWalls M (toRealForm _ w) (foldedRootSet g (Set.range R))`
+
+Its wall set is Definition 3.7's folded root set `Λ^{J=1}` (**printed p. 12**) — the object AEGS state
+Lemma 3.8 for — because `range_foldedWallFamily_eq_foldedRootSet` identifies it with the range of the
+indexing family once no fold is dropped, which `foldedWallFamily_mem_negativeReflectiveRoots` supplies.
 
 with
 
-* `hw`, `hwv` — an interior vector of the folded cone: Lemma 3.8's maximal-dimension hypothesis
-  (**printed p. 12**), realized by `exists_mem_fixedPart_interior` under `hstab`;
+* `hw` — an interior *lattice* vector of the folded cone. It is not derivable from the
+  maximal-dimension hypothesis: AEGS's hypothesis is a chamber point in `H = PC` over `ℝ`, which
+  `exists_mem_fixedPart_interior` extracts as a statement about `realFormFixedPart g`, and the earlier
+  joining theorem `isChamberWithWalls_invariant_of_chamber` likewise carries a lattice `w` separately;
+* `hwamb` — that vector's positivity against the *ambient* walls; positivity against the folded walls
+  follows by `foldedWallFamily_pairing_pos`;
 * `hR`, `hneg` — every wall root is reflective and of negative square: the diagram of `L`
   (Figure 5, **printed p. 11**);
 * `hcase` — every wall root is fixed or orthogonal to its image: the arithmetic of `T_dP`, per wall
@@ -91,7 +99,8 @@ with
 * `hamb` — every root of `L` is a same-sign combination of the walls: Vinberg's one-sign expansion.
 
 The first three are checkable on the diagrams; the last two are the external inputs. What is **not** a
-hypothesis any more: `hcomplete`, the sign covering, the carrier identification, and `hroot`.
+hypothesis any more: `hcomplete`, the sign covering, the carrier identification, `hroot`, and the
+folded positivity `hwv`.
 
 **Why the class restriction has that form.** A `(−2)`-vector of an integral lattice is always
 reflective (`−2 ∣ 2·anything`), so a `(−2)`-root of `M^σ` is a root of `L`
