@@ -497,6 +497,8 @@ public import LeanCategories.Lattices.Valued.FoldingRootTransferEquivalence
 public import LeanCategories.Lattices.Valued.FoldingRootTransferEquivalenceTests
 public import LeanCategories.Lattices.Valued.FoldingTdpE8FoldNotRoot
 public import LeanCategories.Lattices.Valued.FoldingTdpE8FoldNotRootTests
+public import LeanCategories.Lattices.Valued.FoldingTdpFoldEvenOnFixed
+public import LeanCategories.Lattices.Valued.FoldingTdpFoldEvenOnFixedTests
 public import LeanCategories.Lattices.Valued.FoldingChamberOfSquareCriterion
 public import LeanCategories.Lattices.Valued.FoldingChamberOfSquareCriterionTests
 public import LeanCategories.Lattices.Valued.FoldingFoldOfRoot
