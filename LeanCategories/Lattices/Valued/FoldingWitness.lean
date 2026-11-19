@@ -37,10 +37,12 @@ Everything the joining theorem asks for is then a theorem of this file, not a hy
 and concludes both the maximal-dimension statement and `IsChamberWithWalls (M^σ)` with the folded
 wall set. The involution is the identity, which is the only chamber-preserving involution of `U` (the
 swap of `e` and `f` sends the wall to its negative and exchanges the two sides of the chamber). A
-*non-trivial* involution instance needs a Lorentzian lattice with more than one chamber wall; the
-repository has exactly one such chamber (`E₁₀(2)`, `VinbergE10Chamber.e10_isChamberWithWalls`) and
-the diagram reversal `αᵢ ↦ α_{9-i}` as the candidate, whose isometry and fixed-lattice root
-classification are a separate unit.
+*non-trivial* involution instance needs a Lorentzian lattice with more than one chamber wall, and
+the one such chamber in this repository cannot supply it: the `E₁₀` diagram is a tree with a unique
+branch point (node `4`, degree `3`) whose three branches have lengths `1`, `2` and `6`, so its
+automorphism group is trivial (`FoldingE10Rigidity.lean`). A non-trivial instance therefore has to
+come from `T_dP` with `I = -I_En` — the source's setting — whose folded diagrams rest on the
+untabulated 19- and 22-vertex diagrams of AEGS Figure 5.
 
 ## LC-09 record
 
