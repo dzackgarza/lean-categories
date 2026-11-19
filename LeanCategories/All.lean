@@ -477,6 +477,8 @@ public import LeanCategories.Lattices.Valued.FoldingInvariantChamberOfSigns
 public import LeanCategories.Lattices.Valued.FoldingInvariantChamberOfSignsTests
 public import LeanCategories.Lattices.Valued.FoldingSignTransfer
 public import LeanCategories.Lattices.Valued.FoldingSignTransferTests
+public import LeanCategories.Lattices.Valued.FoldingInvariantChamberOfTwoSmulSigns
+public import LeanCategories.Lattices.Valued.FoldingInvariantChamberOfTwoSmulSignsTests
 public import LeanCategories.Lattices.Valued.FoldingEnriques
 public import LeanCategories.Lattices.Valued.CobleCuspLattice
 -- lean-categories#22: the quasi-coherent O_X-algebra layer, the symmetric monoidal
