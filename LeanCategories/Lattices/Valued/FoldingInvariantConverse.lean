@@ -15,24 +15,33 @@ root of `M^σ` is a nonzero integer multiple of a *folded wall* root. Its docstr
 is not AEGS Lemma 3.4's converse, and that as stated it fails for a general chamber (`E₁₀(2)`,
 where a reflection of a simple root is a root that is not a multiple of any simple root).
 
-This file replaces it by the two statements that compose to it, each of which is the right kind of
-statement:
+This file adds three things, and is explicit about what each does and does not buy.
 
-* **the wall covering** — every negative reflective root of `M^σ` *is* a folded wall root
-  (`hcomplete_of_sign_cover`). This is Lemma 3.4's converse ("vice versa, all roots of `T_En`
-  are of these three types", AEGS printed p. 12) composed with the covering of the folds by the
-  chamber's wall set: no multiple is involved, so the `E₁₀(2)` counterexample does not apply;
-* **the non-orthogonality of a folded wall root to an interior point**
-  (`foldedVector_pairing_ne_zero_of_mem_interior`) — the content `hcomplete` was standing in for:
-  the folded roots of *all* ambient roots are mirrors that miss the open chamber, not merely the
-  folds of the chosen wall set.
+* **A sign covering implies `hcomplete`** (`hcomplete_of_sign_cover`): if every negative reflective
+  root of `M^σ` is a folded wall root or its negative, then it is a nonzero integer multiple of one,
+  with multiplier `±1`. That is an implication, and the direction matters: the sign covering is
+  **strictly stronger** than `hcomplete`, not weaker. It is the shape a rank-one classification
+  delivers (`±(e - f)` for the hyperbolic plane) and nothing more.
+* **`hcomplete` is still an assumption, and the sign covering does not remove it.** Both are refuted
+  by the same example in `E₁₀(2)` with its simple roots as the wall set: the reflection of `α₁` in
+  `α₀` is a negative reflective root which is no integer multiple of a simple root, hence in
+  particular not `±` one. Neither hypothesis is a consequence of `IsChamberWithWalls`, and this file
+  therefore does **not** recover AEGS Lemma 3.8 from its chamber and maximal-dimension hypotheses.
+  What the predicate's `interior_regular` field actually needs is the reflection-group statement
+  that every root of `M^σ` is a `W(M^σ)`-translate of a wall root, together with the stability of
+  the interior cone under `W(M^σ)`; neither is built here (no action of a reflection group on the
+  chambers of `M^σ` exists in this development).
+* **The non-orthogonality of a folded root to an interior point**
+  (`foldedVector_pairing_ne_zero_of_mem_interior`) — the geometric content `hcomplete` stands in
+  for: the fold of *any* ambient root is transverse to an interior point of the chamber, not merely
+  the folds of the chosen wall set. This one is a theorem, with no classification hypothesis.
 
-The second is proved in the ambient real form at a point of `M^σ ⊗ ℝ`, which is where the argument
-lives: an interior point of the chamber is regular (`IsChamberWithWalls.interior_regular`), it is
-fixed, and the fold pairs by `2 (z · α)` (`realForm_pairing_folded_of_not_fixed_part`). Lifting
-it to the predicate for `M^σ` itself would need an identification of `realForm M^σ` with the fixed
-part
-`M^σ ⊗ ℝ`; that bridge is not built, so the theorem is stated where it is proved.
+The third of these is proved in the ambient real form at a point of `M^σ ⊗ ℝ`, which is where the
+argument lives: an interior point of the chamber is regular
+(`IsChamberWithWalls.interior_regular`), it is fixed, and the fold pairs by `2 (z · α)`
+(`realForm_pairing_folded_of_not_fixed_part`). Lifting it to the predicate for `M^σ` itself would
+need an identification of `realForm M^σ` with the fixed part `M^σ ⊗ ℝ`; that bridge is not built
+(`FoldingFixedPartIsometry.lean` records why), so the theorem is stated where it is proved.
 
 ## LC-09 record
 
@@ -84,10 +93,16 @@ theorem foldedVector_pairing_ne_zero_of_mem_interior (g : OrthogonalGroup L.obj)
 
 /-! ## The sign covering gives `hcomplete` -/
 
-/-- **A sign covering implies `hcomplete`**, with multiplier `1` or `-1`. The hypothesis is that
-every negative reflective root of `M^σ` is a folded wall root or its negative — weaker than
-`hcomplete`, which allows any nonzero integer multiple, and the shape that a root classification
-actually delivers in rank one (`±(e - f)` for the hyperbolic plane). -/
+/-- **A sign covering implies `hcomplete`**, with multiplier `1` or `-1`.
+
+The hypothesis is that every negative reflective root of `M^σ` is a folded wall root or its
+negative. It is **strictly stronger** than `hcomplete`, not weaker: `hcomplete` allows any nonzero
+integer multiple, and this theorem is the implication in that direction. (An earlier version of this
+docstring said the opposite; the direction of the implication settles it.) The converse of this
+theorem fails, by the same `E₁₀(2)` example that refutes `hcomplete`
+(`FoldingInvariantChamber.lean`: the reflection of the simple root `α₁` in `α₀` is a root that is no
+integer multiple of a simple root, hence in particular not `±` one). So the sign covering is the
+shape a *rank-one* classification delivers (`±(e - f)` for the hyperbolic plane) and nothing more. -/
 theorem hcomplete_of_sign_cover (g : OrthogonalGroup L.obj)
     [Module.Projective ℤ (involutionFixedSubmodule g)] (R : Set L.obj.obj.carrier)
     (hcover : ∀ ρ ∈ negativeReflectiveRoots (invariantFixedLattice (L := L) g),
@@ -106,7 +121,8 @@ theorem hcomplete_of_sign_cover (g : OrthogonalGroup L.obj)
 
 /-- **The invariant chamber, from a sign covering.** `isChamberWithWalls_invariant` with its
 `hcomplete` hypothesis discharged from the sign covering; the interior lattice vector (`hw`, `hwv`)
-is still an input, since folding does not produce one. -/
+is still an input, since folding does not produce one. The sign covering is stronger than `hcomplete`
+(see `hcomplete_of_sign_cover`), so this is not a weakening of the hypothesis. -/
 theorem isChamberWithWalls_invariant_of_sign_cover (g : OrthogonalGroup L.obj)
     [Module.Projective ℤ (involutionFixedSubmodule g)] (R : Set L.obj.obj.carrier)
     (w : involutionFixedSubmodule g)

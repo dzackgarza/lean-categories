@@ -10,18 +10,19 @@ public import LeanCategories.Lattices.Valued.FoldingInvariantConverse
 # The invariant chamber is the folded cone, from the sign covering (`#116`)
 
 `FoldingInvariantChamber.chamberOf_invariant_folded` identifies the chamber of the invariant lattice
-with the cone cut out by Definition 3.7's folded root set — but it takes `hcomplete`, which
-`FoldingInvariantConverse` shows is not the source's converse and fails for a general chamber.
-`isChamberWithWalls_invariant_of_sign_cover` needs only the sign covering instead. This file carries
-the identification across to that hypothesis, so the chamber-theorem chain closes on the arithmetic
-input that is actually true:
+with the cone cut out by Definition 3.7's folded root set — but it takes `hcomplete`.
+`isChamberWithWalls_invariant_of_sign_cover` takes a sign covering instead. This file carries the
+identification across to that hypothesis. **It does not thereby recover AEGS Lemma 3.8 in general:**
+the sign covering is *stronger* than `hcomplete` (multiplier `±1`), not weaker, and it is refuted by
+the same `E₁₀(2)` example recorded in `FoldingInvariantChamber.lean`. What the two theorems here say
+is conditional on a hypothesis that a rank-one classification supplies and that a general chamber
+does not.
 
 * `rootInteriorCone_invariant_self` — the interior vector `w` of the involution's lattice lies in
-the
-  interior cone of the folded wall set, which is what `IsChamberWithWalls.chamberOf_eq` needs to
+  the interior cone of the folded wall set, which is what `IsChamberWithWalls.chamberOf_eq` needs to
   identify the chamber at `w`;
 * `chamberOf_invariant_folded_of_sign_cover` — at that point, the chamber of `M^σ` *is* the folded
-  cone, from the sign covering and the interior lattice vector only.
+  cone, from the sign covering, the interior lattice vector and the signature hypothesis `hpos`.
 
 ## LC-09 record
 
@@ -77,8 +78,12 @@ theorem rootInteriorCone_invariant_self (g : OrthogonalGroup L.obj)
     exact_mod_cast hwv v hv
 
 /-- **The chamber of the invariant lattice is the folded cone**, from the sign covering. The
-hypotheses are the interior lattice vector (`hw`, `hwv`) and the sign covering — no `hcomplete`, and
-no hypothesis about multiplicities. -/
+hypotheses are the interior lattice vector (`hw`, `hwv`), the sign covering and the signature
+condition `hpos`.
+
+The sign covering is *stronger* than `hcomplete` (it pins the multiplier to `±1`) and is refuted by
+the same `E₁₀(2)` example, so this theorem is a conditional statement about chambers whose root
+classification is rank-one-like, not a derivation of AEGS Lemma 3.8 from the chamber hypotheses. -/
 theorem chamberOf_invariant_folded_of_sign_cover (g : OrthogonalGroup L.obj)
     [Module.Projective ℤ (involutionFixedSubmodule g)] (R : Set L.obj.obj.carrier)
     (w : involutionFixedSubmodule g)

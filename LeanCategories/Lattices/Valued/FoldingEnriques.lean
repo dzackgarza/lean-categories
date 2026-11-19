@@ -64,7 +64,13 @@ open LeanCategories.Modules.Bilinear.Valued
 
 namespace LeanCategories.Lattices.Valued
 
-/-! ## Splitting a bilinear form into two blocks -/
+/-! ## Splitting a bilinear form into two blocks
+
+The `private` lemmas below are proof glue, not library API: each is `map_add`/`map_neg` for
+`Matrix.toBilin'` written in the pointwise-function shape the block-matrix proofs produce (Lean's
+`map_add` does not fire on `fun i => u i + v i`). They are `private` precisely so that nothing here
+restates a Mathlib result as an exported declaration; `toBilin'_symm` below is the one such
+statement that is needed publicly, and it *is* Mathlib's `isSymm_toBilin'_iff_isSymm`. -/
 
 theorem toBilin'_fromBlocks_zero_apply {ι κ : Type*} [Fintype ι] [Fintype κ]
     [DecidableEq ι] [DecidableEq κ]
@@ -78,33 +84,33 @@ theorem toBilin'_fromBlocks_zero_apply {ι κ : Type*} [Fintype ι] [Fintype κ]
     Matrix.fromBlocks_apply₂₁, Matrix.fromBlocks_apply₂₂, Matrix.zero_apply, mul_zero, zero_mul,
     Finset.sum_const_zero, add_zero, zero_add]
 
-theorem toBilin'_add_left {ι : Type*} [Fintype ι] [DecidableEq ι] (M : Matrix ι ι ℤ)
+private theorem toBilin'_add_left {ι : Type*} [Fintype ι] [DecidableEq ι] (M : Matrix ι ι ℤ)
     (u v w : ι → ℤ) :
     Matrix.toBilin' M (u + v) w = Matrix.toBilin' M u w + Matrix.toBilin' M v w := by
   rw [map_add]
   rfl
 
-theorem toBilin'_add_right {ι : Type*} [Fintype ι] [DecidableEq ι] (M : Matrix ι ι ℤ)
+private theorem toBilin'_add_right {ι : Type*} [Fintype ι] [DecidableEq ι] (M : Matrix ι ι ℤ)
     (u v w : ι → ℤ) :
     Matrix.toBilin' M u (v + w) = Matrix.toBilin' M u v + Matrix.toBilin' M u w := by
   rw [map_add]
 
-theorem toBilin'_neg_left {ι : Type*} [Fintype ι] [DecidableEq ι] (M : Matrix ι ι ℤ)
+private theorem toBilin'_neg_left {ι : Type*} [Fintype ι] [DecidableEq ι] (M : Matrix ι ι ℤ)
     (u v : ι → ℤ) :
     Matrix.toBilin' M (-u) v = -Matrix.toBilin' M u v := by
   rw [map_neg, LinearMap.neg_apply]
 
-theorem toBilin'_neg_right {ι : Type*} [Fintype ι] [DecidableEq ι] (M : Matrix ι ι ℤ)
+private theorem toBilin'_neg_right {ι : Type*} [Fintype ι] [DecidableEq ι] (M : Matrix ι ι ℤ)
     (u v : ι → ℤ) :
     Matrix.toBilin' M u (-v) = -Matrix.toBilin' M u v := by
   rw [map_neg]
 
-theorem toBilin'_neg_fun_left {ι : Type*} [Fintype ι] [DecidableEq ι] (M : Matrix ι ι ℤ)
+private theorem toBilin'_neg_fun_left {ι : Type*} [Fintype ι] [DecidableEq ι] (M : Matrix ι ι ℤ)
     (u v : ι → ℤ) :
     Matrix.toBilin' M (fun i => -u i) v = -Matrix.toBilin' M u v := by
   rw [show (fun i => -u i) = -u from rfl, toBilin'_neg_left]
 
-theorem toBilin'_neg_fun_right {ι : Type*} [Fintype ι] [DecidableEq ι] (M : Matrix ι ι ℤ)
+private theorem toBilin'_neg_fun_right {ι : Type*} [Fintype ι] [DecidableEq ι] (M : Matrix ι ι ℤ)
     (u v : ι → ℤ) :
     Matrix.toBilin' M u (fun i => -v i) = -Matrix.toBilin' M u v := by
   rw [show (fun i => -v i) = -v from rfl, toBilin'_neg_right]

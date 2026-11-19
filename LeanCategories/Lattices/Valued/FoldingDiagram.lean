@@ -302,8 +302,7 @@ theorem e8Basis_neg_pairing (i j : Fin 8) :
       = e8GramMatrix i j := by
   rw [show (fun k => -e8Basis i k) = -e8Basis i from rfl,
     show (fun k => -e8Basis j k) = -e8Basis j from rfl,
-    toBilin'_neg_left, toBilin'_neg_right, e8Basis_pairing]
-  ring
+    map_neg, map_neg, LinearMap.neg_apply, neg_neg, e8Basis_pairing]
 
 /-- The `i`-th simple root of the first `E₈` summand of `T_dP`. -/
 def tdpE8Root (i : Fin 8) : tdpFiniteLattice.obj.obj.carrier := tdpFirstE8Block (e8Basis i)
