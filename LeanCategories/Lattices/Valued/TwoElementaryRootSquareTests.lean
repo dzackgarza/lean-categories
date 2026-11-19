@@ -86,4 +86,28 @@ example
           (2 : ℤ) ∣ hyperbolicPlaneFiniteLattice.obj.obj.pairing ρ y) :=
   square_criterion_of_two_elementary hev h2e ρ hρ
 
+/-- The divisibility hypothesis is free at a `(−2)`-vector. -/
+example {x : hyperbolicPlaneFiniteLattice.obj.obj.carrier}
+    (h : hyperbolicPlaneFiniteLattice.obj.obj.pairing x x = -2) :
+    ∃ (y₁ y₂ : hyperbolicPlaneFiniteLattice.obj.obj.carrier) (c₁ c₂ : ℤ),
+      c₁ * hyperbolicPlaneFiniteLattice.obj.obj.pairing x y₁ +
+        c₂ * hyperbolicPlaneFiniteLattice.obj.obj.pairing x y₂ = 2 :=
+  div_two_of_square_neg_two h
+
+/-- And the rule needs it only at the vector in question. -/
+example
+    (hev : ∀ y : hyperbolicPlaneFiniteLattice.obj.obj.carrier,
+      (2 : ℤ) ∣ hyperbolicPlaneFiniteLattice.obj.obj.pairing y y)
+    {x : hyperbolicPlaneFiniteLattice.obj.obj.carrier}
+    (hdiv : ∃ (y₁ y₂ : hyperbolicPlaneFiniteLattice.obj.obj.carrier) (c₁ c₂ : ℤ),
+      c₁ * hyperbolicPlaneFiniteLattice.obj.obj.pairing x y₁ +
+        c₂ * hyperbolicPlaneFiniteLattice.obj.obj.pairing x y₂ = 2)
+    (hx : IsReflectiveRoot hyperbolicPlaneFiniteLattice.obj x)
+    (hneg : hyperbolicPlaneFiniteLattice.obj.obj.pairing x x < 0) :
+    hyperbolicPlaneFiniteLattice.obj.obj.pairing x x = -2 ∨
+      (hyperbolicPlaneFiniteLattice.obj.obj.pairing x x = -4 ∧
+        ∀ y : hyperbolicPlaneFiniteLattice.obj.obj.carrier,
+          (2 : ℤ) ∣ hyperbolicPlaneFiniteLattice.obj.obj.pairing x y) :=
+  pairing_eq_neg_two_or_neg_four_of_div_at hev hdiv hx hneg
+
 end LeanCategories.Lattices.Valued
