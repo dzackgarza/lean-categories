@@ -481,6 +481,8 @@ public import LeanCategories.Lattices.Valued.FoldingSignTransfer
 public import LeanCategories.Lattices.Valued.FoldingSignTransferTests
 public import LeanCategories.Lattices.Valued.FoldingSignTransferLattice
 public import LeanCategories.Lattices.Valued.FoldingSignTransferLatticeTests
+public import LeanCategories.Lattices.Valued.FoldingCarrierBridge
+public import LeanCategories.Lattices.Valued.FoldingCarrierBridgeTests
 public import LeanCategories.Lattices.Valued.FoldingInvariantChamberOfTwoSmulSigns
 public import LeanCategories.Lattices.Valued.FoldingInvariantChamberOfTwoSmulSignsTests
 public import LeanCategories.Lattices.Valued.FoldingEnriques
