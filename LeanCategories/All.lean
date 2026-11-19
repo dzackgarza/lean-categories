@@ -499,6 +499,8 @@ public import LeanCategories.Lattices.Valued.FoldingRootHypothesis
 public import LeanCategories.Lattices.Valued.FoldingRootHypothesisTests
 public import LeanCategories.Lattices.Valued.FoldingChamberOfWallData
 public import LeanCategories.Lattices.Valued.FoldingChamberOfWallDataTests
+public import LeanCategories.Lattices.Valued.FoldingChamberPositivity
+public import LeanCategories.Lattices.Valued.FoldingChamberPositivityTests
 public import LeanCategories.Lattices.Valued.FoldingInvariantChamberOfTwoSmulSigns
 public import LeanCategories.Lattices.Valued.FoldingInvariantChamberOfTwoSmulSignsTests
 public import LeanCategories.Lattices.Valued.FoldingEnriques
