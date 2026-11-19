@@ -82,8 +82,13 @@ text.
   `realForm M^σ ≃ M^σ ⊗ ℝ`, which is what lifting the cone statements to the invariant lattice's own
   real form needs.
 * Consequently the signature of `invariantFixedLattice 1` (needed to drop the `hpos` premise from the
-  chamber-equality statement rather than from the predicate) is also unproved; it follows from
-  `⊤ ≅ U` once the transport above exists.
+  chamber-equality statement rather than from the predicate) is also unproved. An attempt to build it
+  as the isomorphism `M^1 ≅ M` — the fixed submodule is `⊤`, so the carrier equivalence is
+  `Submodule.topEquiv` and `integralSignature_eq_of_iso` finishes — hits **the same instance path**,
+  now on a second front: proving `Module.Projective ℤ ↥⊤` by `Module.Projective.of_equiv
+  (Submodule.topEquiv)` fails with `synthesized AddCommGroup.toIntModule ↥⊤ / inferred ⊤.module`.
+  So the two residuals have one cause, and it is a carrier-level bookkeeping problem, not a
+  mathematical one.
 
 ## LC-09
 
