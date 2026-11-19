@@ -90,6 +90,16 @@ text.
   So the two residuals have one cause, and it is a carrier-level bookkeeping problem, not a
   mathematical one.
 
+A third front, and the reason the "one predicate" reduction is not written down either: the carrier of
+`invariantFixedLattice g` is `(formedSublattice L.obj P).obj.carrier`, which is *definitionally* but
+not *syntactically* the subtype `↥P`. So an element of `negativeReflectiveRoots (invariantFixedLattice
+g)` cannot be coerced to `L.obj.obj.carrier` at all, and a predicate of the form "every root of `M^σ`
+(in the lattice's own type) is the fold of a wall root" cannot even be *stated* in the current
+encoding — the fold lives in `L.obj.obj.carrier`, the root in the lattice's carrier. Stating AEGS
+Lemma 3.4's converse as a hypothesis therefore needs the same carrier identification that the bridge
+and the signature need. All three residuals are one problem: `M^σ`'s carrier must be presented in a
+form that is syntactically the tensor/subtype it is definitionally equal to.
+
 ## LC-09
 
 Each module carries its own record: repository search, Mathlib at the pinned head, and the live
