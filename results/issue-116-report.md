@@ -1,8 +1,8 @@
 # #116 — folding a Lorentzian chamber along a diagram involution
 
-Status at `6203bee1` on `main`. What the issue asks for, item by item, with the declaration that
-carries each; then the chamber theorem's exact hypotheses and the two inputs it still takes from
-outside the folding argument.
+Status at `36154787` on `main`. What the issue asks for, item by item, with the declaration that
+carries each; then the one theorem the chamber item reduces to, its five hypotheses, and where each
+comes from.
 
 Source: Alexeev–Engel–Garza–Schaffler, *Compact moduli of Enriques surfaces of degree 2*, Nagoya Math.
 J. 259 (2025), arXiv:2312.03638v2, §3.7–3.8 (printed pp. 11–13). The construction direction is the
@@ -15,7 +15,7 @@ source's: invariants, not coinvariants.
 | 1 | The fixed sublattice `M^σ` | **met** | `involutionFixedSubmodule` `Folding.lean:114` (ker of `σ − 1`); as a lattice object `invariantFixedLattice` `FoldingInvariantChamber.lean:120` |
 | 2 | The folded root set (Def. 3.3 → Def. 3.7) | **met** | `foldedVector` `Folding.lean:126`; filtered set `foldedRootSet` `Folding.lean:416` |
 | 3 | Its Coxeter diagram | **met** | `foldedDiagramOfRoots` `Folding.lean:480`; family/set agreement `range_foldedDiagramOfRoots_eq` `FoldingDiagramOrbits.lean:78` |
-| 4 | The chamber theorem | **met modulo two named inputs** — see below | `isChamberWithWalls_invariant_of_square_criterion` `FoldingChamberOfSquareCriterion.lean` |
+| 4 | The chamber theorem | **met modulo two named inputs** — see below | `isChamberWithWalls_invariant_of_wall_data` `FoldingChamberOfWallData.lean` |
 | 5 | One worked declaration from a published folded diagram | **met** | the `E₈` block of `T_dP` folds to `E₈(2)`: `tdpFoldedE8Diagram` `FoldingDiagram.lean:385` with `tdpFoldedE8Diagram_adjacent` `:407` |
 | 6 | Compiles with no `sorry` | **met** | zero `sorry`/`admit` across the `Folding*.lean` modules; all imported by `LeanCategories/All.lean` |
 
@@ -62,6 +62,36 @@ counting argument is in `FoldingInvariantChamberOfSigns`'s docstring. The sign c
 6. `isChamberWithWalls_invariant_of_square_criterion` (`FoldingChamberOfSquareCriterion.lean`) — the
    class restriction in checkable form: every root of `M^σ` has square `−2`, or square `−4` with all
    ambient pairings even.
+7. The fold analysis, AEGS Lemma 3.4's forward direction (**printed pp. 11–12**): a non-fixed root
+   orthogonal to its image folds to a root (`isReflectiveRoot_foldedVector_of_orthogonal`
+   `FoldingFoldOfRoot.lean`), while a `(−4)`-root that is *not* orthogonal to its image folds to a
+   vector of non-negative square and is dropped by Definition 3.7's filter
+   (`foldedWallFamily_not_mem_negativeReflectiveRoots` `FoldingFoldNonRoot.lean`).
+8. `foldedWallFamily_mem_negativeReflectiveRoots` (`FoldingRootHypothesis.lean`) — hence `hroot`
+   ("every fold of a wall root is a root"), which the chamber theorems had carried as a hypothesis,
+   follows from three per-wall conditions: reflective, negative square, and fixed or orthogonal to
+   the image. Its ingredient `isReflectiveRoot_of_mem_of_isReflectiveRoot` is the easy direction of
+   Lemma 3.4: reflectivity passes from `L` to `M^σ` for a fixed vector.
+
+**The statement everything reduces to** (`FoldingChamberOfWallData.lean`):
+
+  `isChamberWithWalls_invariant_of_wall_data (g) (hg) (R) (w) (hw) (hwv) (hR) (hneg) (hcase) (hsq)
+  (hamb) : IsChamberWithWalls M (toRealForm _ w) (Set.range (foldedWallFamily g hg R))`
+
+with
+
+* `hw`, `hwv` — an interior vector of the folded cone: Lemma 3.8's maximal-dimension hypothesis
+  (**printed p. 12**), realized by `exists_mem_fixedPart_interior` under `hstab`;
+* `hR`, `hneg` — every wall root is reflective and of negative square: the diagram of `L`
+  (Figure 5, **printed p. 11**);
+* `hcase` — every wall root is fixed or orthogonal to its image: the arithmetic of `T_dP`, per wall
+  (**printed p. 12**);
+* `hsq` — every root of `M^σ` is `(−2)`, or `(−4)` with even ambient pairings: Namikawa's
+  classification behind Lemma 3.4's converse (**printed p. 12**);
+* `hamb` — every root of `L` is a same-sign combination of the walls: Vinberg's one-sign expansion.
+
+The first three are checkable on the diagrams; the last two are the external inputs. What is **not** a
+hypothesis any more: `hcomplete`, the sign covering, the carrier identification, and `hroot`.
 
 **Why the class restriction has that form.** A `(−2)`-vector of an integral lattice is always
 reflective (`−2 ∣ 2·anything`), so a `(−2)`-root of `M^σ` is a root of `L`
