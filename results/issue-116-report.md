@@ -17,7 +17,7 @@ source's: invariants, not coinvariants.
 | 3 | Its Coxeter diagram | **met** | `foldedDiagramOfRoots` `Folding.lean:480`; family/set agreement `range_foldedDiagramOfRoots_eq` `FoldingDiagramOrbits.lean:78` |
 | 4 | The chamber theorem | **met modulo two named inputs** — see below | `isChamberWithWalls_invariant_of_foldedRootSet` `FoldingChamberOfDefinition37.lean` |
 | 5 | One worked declaration from a published folded diagram | **met** | the `E₈` block of `T_dP` folds to `E₈(2)`: `tdpFoldedE8Diagram` `FoldingDiagram.lean:385` with `tdpFoldedE8Diagram_adjacent` `:407` |
-| 6 | Compiles with no `sorry` | **met** | zero `sorry`/`admit` across the `Folding*.lean` modules; all imported by `LeanCategories/All.lean` |
+| 6 | Compiles with no `sorry` | **met** | zero `sorry`/`admit` across the `Folding*.lean` modules; **all 65 of them imported by `LeanCategories/All.lean`** (audited at this commit: 65 modules on disk, 65 `public import` lines, no gap and no stray — a module missing there is never elaborated) |
 
 Supporting statements that are proved rather than assumed:
 
