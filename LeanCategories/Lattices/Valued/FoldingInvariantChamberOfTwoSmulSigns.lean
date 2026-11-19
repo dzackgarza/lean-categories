@@ -5,6 +5,7 @@ Released under Apache 2.0 license or a later version; see the LICENSE file.
 module
 
 public import LeanCategories.Lattices.Valued.FoldingInvariantChamberOfSigns
+public import LeanCategories.Lattices.Valued.NegativeSquareTwoZsmul
 
 /-!
 # The folded chamber from a *doubled* one-sign property (`#116`)
@@ -22,7 +23,9 @@ nonzero pairing. This file proves the chamber from the doubled form, so that the
 with it without leaving `ℤ`.
 
 * `isChamberWithWalls_invariant_of_two_smul_folded_signs` — the chamber, from the doubled one-sign
-  property.
+  property. The nonvanishing `2 • ρ ≠ 0` that the criterion needs is **derived** from `ρ² < 0`
+  (`NegativeSquareTwoZsmul.two_zsmul_ne_zero_of_pairing_neg`), so the statement carries no auxiliary
+  hypothesis beyond the expansion itself.
 
 Source: AEGS Lemma 3.8 (**printed p. 12**) again; nothing new from the paper, the statement is the
 same chamber with the `ℤ`-level form the folding actually yields. The `2` is the `ε` of Lemma 3.4's
@@ -47,7 +50,11 @@ variable {L : FiniteProjectiveLatticeCat ℤ ℤ}
 
 Same conclusion as `isChamberWithWalls_invariant_of_folded_signs`, with `2 • ρ` in place of `ρ` in
 the hypothesis. Since `⟨z, 2ρ⟩ = 2⟨z, ρ⟩` at an interior point, the doubling costs nothing: the
-pairing with `z` is nonzero exactly when the doubled one is. -/
+pairing with `z` is nonzero exactly when the doubled one is.
+
+The criterion `pairing_ne_zero_of_signs` also needs `2 • ρ ≠ 0`; that is not a hypothesis but a
+consequence of `ρ² < 0` (`two_zsmul_ne_zero_of_pairing_neg`), since a negative-square vector is not
+2-torsion. -/
 theorem isChamberWithWalls_invariant_of_two_smul_folded_signs (g : OrthogonalGroup L.obj)
     (hg : g * g = 1) [Module.Projective ℤ (involutionFixedSubmodule g)]
     {n : ℕ} (r : Fin n → L.obj.obj.carrier) (w : involutionFixedSubmodule g)
@@ -59,7 +66,7 @@ theorem isChamberWithWalls_invariant_of_two_smul_folded_signs (g : OrthogonalGro
     (hsign : ∀ ρ ∈ negativeReflectiveRoots (invariantFixedLattice (L := L) g),
       ∃ b : Fin n → ℤ,
         (2 : ℤ) • ρ = ∑ i, b i • foldedWallFamily (L := L) g hg r i ∧
-        ((∀ i, 0 ≤ b i) ∨ ∀ i, b i ≤ 0) ∧ (2 : ℤ) • ρ ≠ 0) :
+        ((∀ i, 0 ≤ b i) ∨ ∀ i, b i ≤ 0)) :
     IsChamberWithWalls (invariantFixedLattice (L := L) g) (toRealForm _ w)
       (Set.range (foldedWallFamily (L := L) g hg r)) := by
   refine ⟨?_, ⟨toRealForm _ w, ⟨⟨?_, ?_⟩, ?_⟩⟩, ?_⟩
@@ -92,7 +99,9 @@ theorem isChamberWithWalls_invariant_of_two_smul_folded_signs (g : OrthogonalGro
     refine (mem_weylRegularLocus_iff (L := invariantFixedLattice (L := L) g)
       (t := toRealForm _ w) (x := z)).mpr ⟨hz'.1, ?_⟩
     intro ρ hρ
-    obtain ⟨b, hsum, hsignb, hne⟩ := hsign ρ hρ
+    obtain ⟨b, hsum, hsignb⟩ := hsign ρ hρ
+    have hne : (2 : ℤ) • ρ ≠ 0 :=
+      two_zsmul_ne_zero_of_pairing_neg (L := invariantFixedLattice (L := L) g) hρ.2
     have hne2 : (realForm (invariantFixedLattice (L := L) g)).obj.pairing z
         (toRealForm _ ((2 : ℤ) • ρ)) ≠ 0 :=
       pairing_ne_zero_of_signs (L := invariantFixedLattice (L := L) g)

@@ -37,7 +37,7 @@ example
         (2 : ℤ) • ρ = ∑ i, b i • foldedWallFamily (L := hyperbolicPlaneFiniteLattice)
           (1 : OrthogonalGroup hyperbolicPlaneFiniteLattice.obj) (one_mul 1)
           (fun _ : Fin 1 => uRoot) i ∧
-        ((∀ i, 0 ≤ b i) ∨ ∀ i, b i ≤ 0) ∧ (2 : ℤ) • ρ ≠ 0) :
+        ((∀ i, 0 ≤ b i) ∨ ∀ i, b i ≤ 0)) :
     IsChamberWithWalls
       (invariantFixedLattice (L := hyperbolicPlaneFiniteLattice)
         (1 : OrthogonalGroup hyperbolicPlaneFiniteLattice.obj))
