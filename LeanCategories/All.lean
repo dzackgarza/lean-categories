@@ -448,6 +448,8 @@ public import LeanCategories.Lattices.Valued.FoldingWitness
 public import LeanCategories.Lattices.Valued.FoldingE10Rigidity
 public import LeanCategories.Lattices.Valued.FoldingChamberStability
 public import LeanCategories.Lattices.Valued.FoldingChamberStabilityTests
+public import LeanCategories.Lattices.Valued.FoldingInvariantConverse
+public import LeanCategories.Lattices.Valued.FoldingInvariantConverseTests
 public import LeanCategories.Lattices.Valued.FoldingEnriques
 public import LeanCategories.Lattices.Valued.CobleCuspLattice
 -- lean-categories#22: the quasi-coherent O_X-algebra layer, the symmetric monoidal
