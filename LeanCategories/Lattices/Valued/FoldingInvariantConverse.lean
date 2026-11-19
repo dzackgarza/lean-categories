@@ -24,8 +24,10 @@ This file adds three things, and is explicit about what each does and does not b
   delivers (`±(e - f)` for the hyperbolic plane) and nothing more.
 * **`hcomplete` is still an assumption, and the sign covering does not remove it.** Both are refuted
   by the same example in `E₁₀(2)` with its simple roots as the wall set: the reflection of `α₁` in
-  `α₀` is a negative reflective root which is no integer multiple of a simple root, hence in
-  particular not `±` one. Neither hypothesis is a consequence of `IsChamberWithWalls`, and this file
+  `α₃` is `α₁ + α₃` (`C₁₃ = -1`, while the reflection in `α₀` fixes `α₁` because `C₀₁ = 0`), a
+  negative reflective root which is no integer multiple of a simple root — see
+  `FoldingE10RootNotWall.e10_reflected_root_not_multiple`, where it is proved — hence in particular
+  not `±` one. Neither hypothesis is a consequence of `IsChamberWithWalls`, and this file
   therefore does **not** recover AEGS Lemma 3.8 from its chamber and maximal-dimension hypotheses.
   What the predicate's `interior_regular` field actually needs is the reflection-group statement
   that every root of `M^σ` is a `W(M^σ)`-translate of a wall root, together with the stability of
@@ -102,7 +104,8 @@ docstring said the opposite; the direction of the implication settles it.) The c
 theorem fails, by the same `E₁₀(2)` example that refutes `hcomplete`
 (`FoldingInvariantChamber.lean`: the reflection of the simple root `α₁` in `α₀` is a root that is no
 integer multiple of a simple root, hence in particular not `±` one). So the sign covering is the
-shape a *rank-one* classification delivers (`±(e - f)` for the hyperbolic plane) and nothing more. -/
+shape a *rank-one* classification delivers (`±(e - f)` for the hyperbolic plane) and nothing more.
+-/
 theorem hcomplete_of_sign_cover (g : OrthogonalGroup L.obj)
     [Module.Projective ℤ (involutionFixedSubmodule g)] (R : Set L.obj.obj.carrier)
     (hcover : ∀ ρ ∈ negativeReflectiveRoots (invariantFixedLattice (L := L) g),
@@ -121,7 +124,8 @@ theorem hcomplete_of_sign_cover (g : OrthogonalGroup L.obj)
 
 /-- **The invariant chamber, from a sign covering.** `isChamberWithWalls_invariant` with its
 `hcomplete` hypothesis discharged from the sign covering; the interior lattice vector (`hw`, `hwv`)
-is still an input, since folding does not produce one. The sign covering is stronger than `hcomplete`
+is still an input, since folding does not produce one. The sign covering is stronger than
+`hcomplete`
 (see `hcomplete_of_sign_cover`), so this is not a weakening of the hypothesis. -/
 theorem isChamberWithWalls_invariant_of_sign_cover (g : OrthogonalGroup L.obj)
     [Module.Projective ℤ (involutionFixedSubmodule g)] (R : Set L.obj.obj.carrier)

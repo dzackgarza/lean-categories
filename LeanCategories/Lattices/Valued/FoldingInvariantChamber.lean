@@ -242,9 +242,12 @@ AEGS Lemma 3.4's converse says something different — every root of `T_En` is t
 root of `T_dP` ("vice versa, all roots of `T_En` are of these three types", printed p. 12) — and it
 does not make roots multiples of wall roots. The condition here is strictly stronger than the
 source's, and it is *false* for a general chamber: in `E₁₀(2)` with its simple roots as the wall set
-(`VinbergE10Chamber.e10_isChamberWithWalls`) the reflection `w_{α₀}` carries the simple root `α₁` to
-`α₁ + α₀`, which is again a negative reflective root (the reflection of a root is a root) and is not
-an integer multiple of any simple root. (Hand computation, not formalized.) What the predicate
+(`VinbergE10Chamber.e10_isChamberWithWalls`), `C₁₃ = -1` and `C₀₁ = 0`, so the reflection in `α₃`
+carries the simple root `α₁` to `α₁ + α₃` while the reflection in `α₀` fixes it. `α₁ + α₃` is a
+negative reflective root of the lattice (`FoldingE10RootNotWall.e10_reflected_root_reflective`,
+`…_square`) and is no nonzero integer multiple of any simple root
+(`FoldingE10RootNotWall.e10_reflected_root_not_multiple`) — so `hcomplete` fails there. What the
+predicate
 actually needs is the reflection-group statement that every root of `M^σ` is a `W(M^σ)`-translate of
 a wall root — then the walls' mirrors miss the open chamber — and that is the residual this
 hypothesis stands in for. It is recorded as a *sufficient* condition, not as the cited converse. -/
