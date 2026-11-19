@@ -35,8 +35,9 @@ Everything the joining theorem asks for is then a theorem of this file, not a hy
   classification read in the invariant lattice,
 
 and concludes both the maximal-dimension statement and `IsChamberWithWalls (M^σ)` with the folded
-wall set. The involution is the identity, which is the only chamber-preserving involution of `U` (the
-swap of `e` and `f` sends the wall to its negative and exchanges the two sides of the chamber). A
+wall set. The involution is the identity, which is the only chamber-preserving involution of `U`
+(the swap of `e` and `f` sends the wall to its negative and exchanges the two sides of the
+chamber). A
 *non-trivial* involution instance needs a Lorentzian lattice with more than one chamber wall, and
 the one such chamber in this repository cannot supply it: the `E₁₀` diagram is a tree with a unique
 branch point (node `4`, degree `3`) whose three branches have lengths `1`, `2` and `6`, so its
