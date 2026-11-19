@@ -437,6 +437,8 @@ public import LeanCategories.Lattices.Valued.LatticeCone
 public import LeanCategories.Lattices.Valued.IsotropicQuotientSignature
 public import LeanCategories.Lattices.Valued.WeylCone
 public import LeanCategories.Lattices.Valued.WeylChambers
+public import LeanCategories.Lattices.Valued.TwoElementaryRootSquare
+public import LeanCategories.Lattices.Valued.TwoElementaryRootSquareTests
 public import LeanCategories.Lattices.Valued.NegativeSquareTwoZsmul
 public import LeanCategories.Lattices.Valued.NegativeSquareTwoZsmulTests
 public import LeanCategories.Lattices.Valued.VinbergE10Roots
