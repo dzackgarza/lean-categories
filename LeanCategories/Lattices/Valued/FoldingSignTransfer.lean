@@ -90,4 +90,28 @@ theorem two_smul_eq_sum_smul_foldedVector (g : OrthogonalGroup L.obj)
           ((congrArg (fun y => c i • y) (hε i)).trans
             (mul_zsmul (foldedVector g (R i)) (c i) (ε i)).symm))
 
+/-- **The per-wall scalar `ε`, packaged with its sign.** For any family of wall roots there is a
+nonnegative `ε : Fin n → ℤ` with `Rᵢ + gRᵢ = εᵢ • Rᵢ^g`: the scalar is `2` at a fixed wall and `1`
+elsewhere. This is the form the ambient-sign composition consumes, and the nonnegativity is what
+keeps a one-sign expansion one-signed after folding (the folded coefficients are `cᵢ εᵢ`). -/
+theorem exists_smul_eq_add_involution (g : OrthogonalGroup L.obj) {n : ℕ}
+    (R : Fin n → L.obj.obj.carrier) :
+    ∃ ε : Fin n → ℤ, (∀ i, 0 ≤ ε i) ∧
+      ∀ i, R i + g.1 (R i) = ε i • foldedVector g (R i) := by
+  classical
+  refine ⟨fun i => if h : g.1 (R i) = R i then (2 : ℤ) else 1, ?_, ?_⟩
+  · intro i
+    change (0 : ℤ) ≤ if h : g.1 (R i) = R i then (2 : ℤ) else 1
+    by_cases h : g.1 (R i) = R i
+    · rw [dite_eq_left h]; norm_num
+    · rw [dite_eq_right h]; norm_num
+  · intro i
+    change R i + g.1 (R i)
+      = (if h : g.1 (R i) = R i then (2 : ℤ) else 1) • foldedVector g (R i)
+    by_cases h : g.1 (R i) = R i
+    · rw [dite_eq_left h]
+      exact add_apply_eq_two_smul_foldedVector g h
+    · rw [dite_eq_right h, one_zsmul]
+      exact add_apply_eq_foldedVector_of_not_fixed g h
+
 end LeanCategories.Lattices.Valued

@@ -6,6 +6,7 @@ module
 
 public import LeanCategories.Lattices.Valued.FoldingSignTransfer
 public import LeanCategories.Lattices.Valued.Standard
+public import LeanCategories.Lattices.Valued.FoldingSignCoverWitness
 
 /-!
 # Probe for the fold transfer, on the smallest input that decides the coefficients
@@ -50,5 +51,30 @@ example (x : hyperbolicPlaneFiniteLattice.obj.obj.carrier) :
     (R := fun _ : Fin 1 => x) (ρ := (3 : ℤ) • x) (by rfl) (fun _ => 2) hε (fun _ => 3)
     (by rw [Fin.sum_univ_one])
   simpa using h
+
+/-- The packaged scalar exists at the plane, with its sign: the `ε` the composition needs. The
+family is the plane's root vector as an element of the ambient lattice, where `foldedVector`
+lives. -/
+example : ∃ ε : Fin 1 → ℤ, (∀ i, 0 ≤ ε i) ∧ ∀ i,
+    (fun _ : Fin 1 => ((uRootFixed : involutionFixedSubmodule
+        (L := hyperbolicPlaneFiniteLattice)
+          (1 : OrthogonalGroup hyperbolicPlaneFiniteLattice.obj)) :
+        hyperbolicPlaneFiniteLattice.obj.obj.carrier)) i
+      + (1 : OrthogonalGroup hyperbolicPlaneFiniteLattice.obj).1
+          ((fun _ : Fin 1 => ((uRootFixed : involutionFixedSubmodule
+            (L := hyperbolicPlaneFiniteLattice)
+              (1 : OrthogonalGroup hyperbolicPlaneFiniteLattice.obj)) :
+            hyperbolicPlaneFiniteLattice.obj.obj.carrier)) i)
+      = ε i • foldedVector (1 : OrthogonalGroup hyperbolicPlaneFiniteLattice.obj)
+          ((fun _ : Fin 1 => ((uRootFixed : involutionFixedSubmodule
+            (L := hyperbolicPlaneFiniteLattice)
+              (1 : OrthogonalGroup hyperbolicPlaneFiniteLattice.obj)) :
+            hyperbolicPlaneFiniteLattice.obj.obj.carrier)) i) :=
+  exists_smul_eq_add_involution (L := hyperbolicPlaneFiniteLattice)
+    (g := (1 : OrthogonalGroup hyperbolicPlaneFiniteLattice.obj))
+    (fun _ : Fin 1 => ((uRootFixed : involutionFixedSubmodule
+      (L := hyperbolicPlaneFiniteLattice)
+        (1 : OrthogonalGroup hyperbolicPlaneFiniteLattice.obj)) :
+      hyperbolicPlaneFiniteLattice.obj.obj.carrier))
 
 end LeanCategories.Lattices.Valued
