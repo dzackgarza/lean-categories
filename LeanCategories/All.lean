@@ -454,6 +454,8 @@ public import LeanCategories.Lattices.Valued.FoldingFixedPartBridge
 public import LeanCategories.Lattices.Valued.FoldingFixedPartBridgeTests
 public import LeanCategories.Lattices.Valued.FoldingFixedPartIsometry
 public import LeanCategories.Lattices.Valued.FoldingFixedPartIsometryTests
+public import LeanCategories.Lattices.Valued.FoldingDiagramOrbits
+public import LeanCategories.Lattices.Valued.FoldingDiagramOrbitsTests
 public import LeanCategories.Lattices.Valued.FoldingEnriques
 public import LeanCategories.Lattices.Valued.CobleCuspLattice
 -- lean-categories#22: the quasi-coherent O_X-algebra layer, the symmetric monoidal
