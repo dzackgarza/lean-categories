@@ -1,7 +1,8 @@
 # #116 — folding a Lorentzian chamber along a diagram involution
 
-Status at `b95afe04` on `main`. What the issue asks for, item by item, with the declaration that
-carries each; then what is *not* delivered and why, with the machine-checked obstruction.
+Status at `6203bee1` on `main`. What the issue asks for, item by item, with the declaration that
+carries each; then the chamber theorem's exact hypotheses and the two inputs it still takes from
+outside the folding argument.
 
 Source: Alexeev–Engel–Garza–Schaffler, *Compact moduli of Enriques surfaces of degree 2*, Nagoya Math.
 J. 259 (2025), arXiv:2312.03638v2, §3.7–3.8 (printed pp. 11–13). The construction direction is the
@@ -12,117 +13,110 @@ source's: invariants, not coinvariants.
 | # | Item | Status | Declaration (file:line) |
 |---|---|---|---|
 | 1 | The fixed sublattice `M^σ` | **met** | `involutionFixedSubmodule` `Folding.lean:114` (ker of `σ − 1`); as a lattice object `invariantFixedLattice` `FoldingInvariantChamber.lean:120` |
-| 2 | The folded root set (Def. 3.3 → Def. 3.7) | **met** | `foldedVector` `Folding.lean:126`; filtered set `foldedRootSet` `Folding.lean:416` (keeps only folds that are roots of `M^σ`) |
-| 3 | Its Coxeter diagram | **met** | `foldedDiagramOfRoots` `Folding.lean:480` (indexed by the surviving folds, no negative-square hypothesis); family/set agreement `range_foldedDiagramOfRoots_eq` `FoldingDiagramOrbits.lean:78` |
-| 4 | The chamber theorem | **partly met** — see below | ambient trace/wall identity `chamberOf_folded_trace_walls` `FoldingDiagram.lean:198`; predicate `isChamberWithWalls_invariant` `FoldingInvariantChamber.lean:254`; joining theorem `isChamberWithWalls_invariant_of_chamber` `FoldingInvariantChamber.lean:370`; chamber = folded cone `chamberOf_invariant_folded_of_sign_cover` `FoldingInvariantChamberSignCover.lean:87` |
-| 5 | One worked declaration from a published folded diagram | **met** | the `E₈` block of `T_dP` folds to `E₈(2)`: `tdpFoldedE8Diagram` `FoldingDiagram.lean:385` with `tdpFoldedE8Diagram_adjacent` `FoldingDiagram.lean:407` (an `E₈` edge has weight `1/4`) |
-| 6 | Compiles with no `sorry` | **met** | zero `sorry`/`admit` across the 25 `Folding*.lean` modules; all imported by `LeanCategories/All.lean:442-466` |
+| 2 | The folded root set (Def. 3.3 → Def. 3.7) | **met** | `foldedVector` `Folding.lean:126`; filtered set `foldedRootSet` `Folding.lean:416` |
+| 3 | Its Coxeter diagram | **met** | `foldedDiagramOfRoots` `Folding.lean:480`; family/set agreement `range_foldedDiagramOfRoots_eq` `FoldingDiagramOrbits.lean:78` |
+| 4 | The chamber theorem | **met modulo two named inputs** — see below | `isChamberWithWalls_invariant_of_square_criterion` `FoldingChamberOfSquareCriterion.lean` |
+| 5 | One worked declaration from a published folded diagram | **met** | the `E₈` block of `T_dP` folds to `E₈(2)`: `tdpFoldedE8Diagram` `FoldingDiagram.lean:385` with `tdpFoldedE8Diagram_adjacent` `:407` |
+| 6 | Compiles with no `sorry` | **met** | zero `sorry`/`admit` across the `Folding*.lean` modules; all imported by `LeanCategories/All.lean` |
 
 Supporting statements that are proved rather than assumed:
 
 * `roots_mem` of the predicate is *derived* from Definition 3.7's filter, not hypothesised:
   `foldedRootSet_subset_negativeReflectiveRoots` (`FoldingInvariantChamber.lean`).
-* `hstab` (the involution preserves the chamber cone) is *derived* from a diagram involution:
-  `realFormOrthogonalHom_mem_rootInteriorCone` `FoldingChamberStability.lean:62`.
+* `hstab` is *derived* from a diagram involution: `realFormOrthogonalHom_mem_rootInteriorCone`
+  `FoldingChamberStability.lean:62`.
 * The source's maximal-dimension hypothesis is *derived*: `exists_mem_fixedPart_interior`
   (`FoldingInvariantChamber.lean`).
 * The folded roots are transverse to an interior point of the chamber, with no classification
   hypothesis: `foldedVector_pairing_ne_zero_of_mem_interior` `FoldingInvariantConverse.lean:80`.
-* The trace and wall identities are stated on the invariant part `M^σ ⊗ ℝ`
-  (`realFormFixedPart`), not on the image of the fixed lattice.
+* The trace and wall identities are stated on the invariant part `M^σ ⊗ ℝ` (`realFormFixedPart`).
 
-Closed instances (not conditional):
+## Item 4 — the chamber theorem, and what changed
 
-* `U = ⟨e,f⟩` at the identity involution, via `hcomplete`: `u_witnessed` `FoldingWitness.lean:332`,
-  with the chamber itself at `hyperbolicPlane_isChamberWithWalls` `FoldingWitness.lean:193`.
-* the same, via the sign covering and with no `hpos`: `u_invariant_isChamberWithWalls_signCover`
-  `FoldingSignCoverWitness.lean:64`.
+**`hcomplete` is false, not merely unproved.** Earlier states of this report treated
+"every negative reflective root of `M^σ` is a nonzero integer multiple of a folded wall root" as a
+sufficient hypothesis one might discharge. It cannot be discharged: in the source's own instance
+`T_En = U ⊕ E₈(2)` the vectors `e + (2l²−1)f + l·r₀` (with `r₀² = −4`) have square `−2`, divisibility
+`1` and pairwise distinct lines, while a finite wall set has at most `|R|` folds. The small
+machine-checked witness is `e10_root_not_multiple_of_wall` `FoldingE10RootNotWall.lean:148`; the
+counting argument is in `FoldingInvariantChamberOfSigns`'s docstring. The sign covering fails with it
+(it implies `hcomplete`).
 
-## Item 4: what is not delivered
+**What replaced it.** A chain of statements, each proved:
 
-**The general statement is not proved.** For a *non-trivial* involution on a Lorentzian lattice with
-more than one chamber wall, `IsChamberWithWalls (M^σ)` is proved only from an additional hypothesis
-— either
+1. `exists_smul_eq_add_involution` (`FoldingSignTransfer.lean`) — for each wall root there is a
+   nonnegative `ε ∈ {1,2}` with `R + gR = ε • R^g`; `2` at a fixed wall, `1` otherwise.
+2. `two_smul_eq_sum_smul_foldedVector` (same file) — a same-sign `ℤ`-combination of wall roots,
+   doubled, folds to a same-sign combination of the folded roots, with coefficients `cᵢ εᵢ`. The
+   factor `2` is the price of staying over `ℤ` (`cᵢ/2` is not integral).
+3. `two_smul_eq_sum_smul_foldedWallFamily` (`FoldingSignTransferLattice.lean`) — the same at `M^σ`'s
+   carrier, which is the form the chamber criterion consumes.
+4. `isChamberWithWalls_invariant_of_two_smul_folded_signs`
+   (`FoldingInvariantChamberOfTwoSmulSigns.lean`) — the chamber from a *doubled* one-sign expansion.
+   The doubling costs nothing at an interior point (`⟨z, 2ρ⟩ = 2⟨z, ρ⟩`), and the nonvanishing
+   `2 • ρ ≠ 0` is derived from `ρ² < 0` (`two_zsmul_ne_zero_of_pairing_neg`
+   `NegativeSquareTwoZsmul.lean`), not assumed.
+5. `isChamberWithWalls_invariant_of_ambient_signs` (`FoldingInvariantChamberOfAmbientSigns.lean`) —
+   the composition: an ambient same-sign expansion (in the wall family of `L`) plus the class
+   restriction gives the folded chamber.
+6. `isChamberWithWalls_invariant_of_square_criterion` (`FoldingChamberOfSquareCriterion.lean`) — the
+   class restriction in checkable form: every root of `M^σ` has square `−2`, or square `−4` with all
+   ambient pairings even.
 
-* `hcomplete`: every negative reflective root of `M^σ` is a nonzero integer multiple of a folded wall
-  root, or
-* the sign covering: every such root *is* a folded wall root or its negative
-  (`hcomplete_of_sign_cover` `FoldingInvariantConverse.lean:109` proves that this implies
-  `hcomplete`; it is **stronger**, not weaker).
+**Why the class restriction has that form.** A `(−2)`-vector of an integral lattice is always
+reflective (`−2 ∣ 2·anything`), so a `(−2)`-root of `M^σ` is a root of `L`
+(`isReflectiveRoot_invariantToAmbient_of_square_neg_two` `FoldingNegativeTwoRoots.lean`). A `(−4)`-vector
+is reflective exactly when all its pairings are even: `−4 ∣ 2⟨x,y⟩ ⟺ 2 ∣ ⟨x,y⟩`
+(`isReflectiveRoot_iff_two_dvd_pairing` `FoldingNegativeFourRoots.lean`). So the roots that can fail to
+be roots of `L` are precisely the `(−4)`-ones with an odd pairing — AEGS Lemma 3.4's type (3)
+(**printed p. 12**: `div(α^I) ≠ 2` in `T_dP`, `= 2` in `T_En`).
 
-Neither is a consequence of the chamber hypothesis, and the reason is now a theorem rather than a
-claim: in `E₁₀(2)`'s chamber the reflection in `α₃` carries the simple root `α₁` to `α₁ + α₃`
-(`C₁₃ = −1`; the reflection in `α₀` fixes `α₁`, since `C₀₁ = 0`), which is a negative reflective root
-of the lattice and no nonzero integer multiple of any simple root —
-`e10_root_not_multiple_of_wall` `FoldingE10RootNotWall.lean:148`, with the pieces at
-`…_reflective` :108, `…_square` :85 and `…_not_multiple` :132.
+**The two inputs that remain, both outside the folding argument.**
 
-What the predicate's `interior_regular` field actually needs is the reflection-group statement that
-every root of `M^σ` is a `W(M^σ)`-translate of a wall root, together with stability of the interior
-cone under `W(M^σ)`. No action of a reflection group on the chambers of `M^σ` exists in this
-development, so that route is not available here.
+* *The ambient expansion* (`hamb`): Vinberg's same-sign expansion of every root of `L` in its wall
+  family. This needs chambers and a Tits cone for a reflection group, which Mathlib does not have.
+* *That the `(−4)`-roots have even ambient pairings* (`hsq`'s second alternative): decided in the
+  source by Namikawa's classification of `O(T_En)`-orbits of `(−2)`- and `(−4)`-vectors
+  (**printed p. 12**, Lemma 3.4's converse, cited to [Nam85, 2.13 and 2.15]). The classification is
+  not in the development.
 
-A *non-trivial* instance would need a Lorentzian lattice with more than one chamber wall and a
-chamber-preserving involution. The repository has exactly one such chamber, `E₁₀(2)`, and its diagram
-admits none: node `4` is the unique branch point (`e10_no_other_branch` `FoldingE10Rigidity.lean:66`,
-degrees at `e10_degree` :81) and its three branches have lengths `1, 2, 6`, so the diagram's
-automorphism group is trivial. `T_dP = U ⊕ U(2) ⊕ E₈ ⊕ E₈` with `I = −I_En` is the source's own
-setting, but its 19- and 22-vertex diagrams (AEGS Figure 5) are printed as pictures and not
-tabulated, and the folded diagrams (Figures 7–8) likewise, so the data for an instance are not in the
-text.
+Everything the paper argues *by folding* is therefore formalized; what is not is the arithmetic of
+`T_En` and Vinberg's chamber theory, both cited rather than reproved.
+
+## Carry: the carrier bridge
+
+An earlier state of this report recorded that `M^σ`'s carrier is `(formedSublattice L.obj P).obj.carrier`,
+definitionally but not syntactically the subtype `↥P`, and that no coercion between them exists — so
+predicates about roots of `M^σ` could not be stated in `L` at all. That is now resolved:
+`invariantFixedLattice_carrier_eq` proves the carrier equality by `rfl` and `invariantToAmbient`
+(`FoldingCarrierBridge.lean`) supplies the map, with its additive, `ℤ`-linear and
+`foldedWallFamily`-compatible laws, all by `rfl`. The failure mode was an ascription
+(`(ρ : L.obj.obj.carrier)`) triggering a *coercion search* where `show ↥P from ρ` triggers a
+*definitional check*; the latter elaborates.
 
 ## Other open items, outside the acceptance
 
-* `invariantToAmbient_range` `FoldingFixedPartBridge.lean:130` identifies the range of the map
-  `r ⊗ v ↦ r • v` with the fixed locus, and `invariantToAmbient_qf_tmul`
-  (`FoldingFixedPartIsometry.lean`) shows it is form-preserving on pure tensors. **Injectivity is not
-  proved**: relating the map to `LinearMap.lTensor` fails on an instance path —
-  `Submodule.module` on `↥M^σ` versus `AddCommGroup.toIntModule` — recorded with the literal error in
-  `FoldingFixedPartIsometry.lean`'s docstring. Without injectivity there is no linear equivalence
-  `realForm M^σ ≃ M^σ ⊗ ℝ`, which is what lifting the cone statements to the invariant lattice's own
-  real form needs.
-* Consequently the signature of `invariantFixedLattice 1` (needed to drop the `hpos` premise from the
-  chamber-equality statement rather than from the predicate) is also unproved. An attempt to build it
-  as the isomorphism `M^1 ≅ M` — the fixed submodule is `⊤`, so the carrier equivalence is
-  `Submodule.topEquiv` and `integralSignature_eq_of_iso` finishes — hits **the same instance path**,
-  now on a second front: proving `Module.Projective ℤ ↥⊤` by `Module.Projective.of_equiv
-  (Submodule.topEquiv)` fails with `synthesized AddCommGroup.toIntModule ↥⊤ / inferred ⊤.module`.
-  So the two residuals have one cause, and it is a carrier-level bookkeeping problem, not a
-  mathematical one.
-  **The obstruction, measured exactly.** Attempting to bridge it — proving projectivity of a formed
-  sublattice's carrier from projectivity of its submodule — shows what the two objects are:
-
-  ```
-  hP  : @Module.Projective ℤ Int.instSemiring (↥P) P.addCommMonoid (AddCommGroup.toIntModule ↥P)
-  want: @Module.Projective ℤ Int.instSemiring (formedSublattice L.obj P).obj.carrier
-          (formedSublattice L.obj P).obj.carrier.isAddCommGroup.toAddCommMonoid
-          (formedSublattice L.obj P).obj.carrier.isModule
-  ```
-
-  The lattice's carrier carries its group and module structure as **data** of the bundled category
-  (`isAddCommGroup`, `isModule`); the submodule carries them as **type-class instances**
-  (`AddCommGroup.toIntModule`). No defeq check identifies those, and `inferInstance` on the first type
-  *times out* rather than failing. So the fix is not another transport: statements needing
-  `Module.Projective` at the invariant lattice (the signature, the bridge's injectivity) must be
-  stated on a carrier built the way the lattice's own is — taking projectivity from the lattice-level
-  hypothesis, or re-deriving the formed sublattice through `BilinModuleCat.ofBilinMap` on a type that
-  already carries the wanted instances.
-
-A third front, and the reason the "one predicate" reduction is not written down either: the carrier of
-`invariantFixedLattice g` is `(formedSublattice L.obj P).obj.carrier`, which is *definitionally* but
-not *syntactically* the subtype `↥P`. So an element of `negativeReflectiveRoots (invariantFixedLattice
-g)` cannot be coerced to `L.obj.obj.carrier` at all, and a predicate of the form "every root of `M^σ`
-(in the lattice's own type) is the fold of a wall root" cannot even be *stated* in the current
-encoding — the fold lives in `L.obj.obj.carrier`, the root in the lattice's carrier. Stating AEGS
-Lemma 3.4's converse as a hypothesis therefore needs the same carrier identification that the bridge
-and the signature need. All three residuals are one problem: `M^σ`'s carrier must be presented in a
-form that is syntactically the tensor/subtype it is definitionally equal to.
+* `invariantToAmbient_range` `FoldingFixedPartBridge.lean:130` identifies the range of `r ⊗ v ↦ r • v`
+  with the fixed locus, and `invariantToAmbient_qf_tmul` (`FoldingFixedPartIsometry.lean`) shows it is
+  form-preserving on pure tensors. **Injectivity is not proved**: relating the map to
+  `LinearMap.lTensor` fails on an instance path (`Submodule.module` on `↥M^σ` versus
+  `AddCommGroup.toIntModule`), recorded with the literal error in that file's docstring. Without it
+  there is no linear equivalence `realForm M^σ ≃ M^σ ⊗ ℝ`.
+* Consequently the signature of `invariantFixedLattice 1` — needed to drop the `hpos` premise from the
+  chamber-equality statement rather than from the predicate — is also unproved. Building it as
+  `M^1 ≅ M` hits the same instance path: `Module.Projective.of_equiv (Submodule.topEquiv)` fails with
+  `synthesized AddCommGroup.toIntModule ↥⊤ / inferred ⊤.module`. Both residuals have one cause: the
+  lattice carrier carries its group and module structure as **data** of the bundled category
+  (`isAddCommGroup`, `isModule`), while a submodule carries them as **type-class instances**
+  (`AddCommGroup.toIntModule`), and no defeq check identifies those. The fix is to state such
+  facts on a carrier built the way the lattice's own is, which is what
+  `FoldingOfBilinMapProjective.ofBilinMap_projective` records as available.
 
 ## LC-09
 
 Each module carries its own record: repository search, Mathlib at the pinned head, and the live
 Formalization Corpus (queries and hits listed per file). Nothing in Mathlib, the repository or the
 corpus supplies a folding of a Coxeter diagram or of a chamber along an involution; the one statement
-that is Mathlib's — symmetry of `Matrix.toBilin'` for a symmetric matrix — is now delegated to
+that is Mathlib's — symmetry of `Matrix.toBilin'` for a symmetric matrix — is delegated to
 `Matrix.isSymm_toBilin'_iff_isSymm` (`toBilin'_symm`, `FoldingEnriques.lean`), and the remaining
-`toBilin'_*` block-matrix glue is `private`, i.e. not part of the library's surface.
+`toBilin'_*` block-matrix glue is `private`.
