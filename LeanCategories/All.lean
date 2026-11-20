@@ -505,6 +505,8 @@ public import LeanCategories.Lattices.Valued.FoldingChamberTraceAtDefinition37
 public import LeanCategories.Lattices.Valued.FoldingChamberTraceAtDefinition37Tests
 public import LeanCategories.Lattices.Valued.FoldingTdpE8DiagramAtDefinition37
 public import LeanCategories.Lattices.Valued.FoldingTdpE8DiagramAtDefinition37Tests
+public import LeanCategories.Lattices.Valued.FoldingTdpE8NoFoldDropped
+public import LeanCategories.Lattices.Valued.FoldingTdpE8NoFoldDroppedTests
 public import LeanCategories.Lattices.Valued.FoldingChamberOfSquareCriterion
 public import LeanCategories.Lattices.Valued.FoldingChamberOfSquareCriterionTests
 public import LeanCategories.Lattices.Valued.FoldingFoldOfRoot
