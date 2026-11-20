@@ -441,6 +441,8 @@ public import LeanCategories.Lattices.Valued.TwoElementaryRootSquare
 public import LeanCategories.Lattices.Valued.TwoElementaryRootSquareTests
 public import LeanCategories.Lattices.Valued.TwoElementaryDivisibilityScope
 public import LeanCategories.Lattices.Valued.TwoElementaryDivisibilityScopeTests
+public import LeanCategories.Lattices.Valued.U2Lattice
+public import LeanCategories.Lattices.Valued.U2LatticeTests
 public import LeanCategories.Lattices.Valued.NegativeSquareTwoZsmul
 public import LeanCategories.Lattices.Valued.NegativeSquareTwoZsmulTests
 public import LeanCategories.Lattices.Valued.VinbergE10Roots
