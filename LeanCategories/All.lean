@@ -501,6 +501,8 @@ public import LeanCategories.Lattices.Valued.FoldingTdpFoldEvenOnFixed
 public import LeanCategories.Lattices.Valued.FoldingTdpFoldEvenOnFixedTests
 public import LeanCategories.Lattices.Valued.FoldingTdpHsubFails
 public import LeanCategories.Lattices.Valued.FoldingTdpHsubFailsTests
+public import LeanCategories.Lattices.Valued.FoldingChamberTraceAtDefinition37
+public import LeanCategories.Lattices.Valued.FoldingChamberTraceAtDefinition37Tests
 public import LeanCategories.Lattices.Valued.FoldingChamberOfSquareCriterion
 public import LeanCategories.Lattices.Valued.FoldingChamberOfSquareCriterionTests
 public import LeanCategories.Lattices.Valued.FoldingFoldOfRoot
