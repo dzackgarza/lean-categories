@@ -403,6 +403,8 @@ public import LeanCategories.Lattices.Valued.WythoffSemifan
 public import LeanCategories.Lattices.Valued.WythoffInfiniteParabolicExample
 public import LeanCategories.Lattices.Valued.FanCoarseningTests
 public import LeanCategories.Lattices.Valued.WythoffInfiniteParabolicTests
+public import LeanCategories.Lattices.Valued.WythoffCoarsenedFamily
+public import LeanCategories.Lattices.Valued.WythoffCoarsenedFamilyTests
 public import LeanCategories.Lattices.Valued.LocallyRationalDecomposition
 public import LeanCategories.Lattices.Valued.ConicalLocus
 public import LeanCategories.Lattices.Valued.FibreRefinement

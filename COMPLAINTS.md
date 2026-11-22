@@ -3996,3 +3996,86 @@ downstream assertions, computational observations, or downstream diagnostics.
   `NumberTheory/IntegralLattice/Mass.lean` and `LinearAlgebra/BilinearForm/Isometry.lean` (mass of a
   genus; isometry API), both about definite lattices. So the clause is unsourced in every surface
   available here, and a source must be supplied before it is stated.
+
+### The intersection of two Wythoff maximal cones is not proved to be a face
+
+- **Need:** #180's O3, *universal pairwise intersection-as-common-face* for the general Wythoff
+  coarsened family, reduces (via `IsConeFace.inf_left_of_inter` /
+  `IsConeFace.inf_right_of_inter`) to one statement: for `u, v ∈ W`,
+  `u(𝒞_gen) ∩ v(𝒞_gen)` is a face of each. `WythoffCoarsenedFamily.lean` names it
+  `WythoffCoarseningDatum.MaximalConesMeetInFaces` and takes it as an explicit hypothesis of
+  `coarsenedFamily_inf_commonFace`, `coarsenedFamily_inf_isConeFace_left` and
+  `coarsenedFamily_inf_mem`. Nothing else in O1/O2 depends on it.
+- **Evidence:** it is not derivable from the datum's AET hypotheses (`active_nonneg`, `convex`,
+  `irrelevant_flips`) as they stand. It is the content of AET Proposition 4.17(4) after the relevant
+  content is reduced, and it is *true* in the source's situation — AE build semitoroidal
+  compactifications by glueing along exactly these cones — but no proof is in the tree. What the
+  proof needs is the chamber fan of the Tits cone: that the translates of the fundamental chamber
+  tile the Tits cone and meet along chamber faces, so that a convex union of chambers over a
+  parabolic coset meets another one along a union of faces. The repository has that for
+  `RootPairing` chambers (`AETHypotheses.lean`: `fundamentalChamber`, `aetRootMirrorSet`,
+  `image_smul_generalizedChamber_weylGroup`) and not in the functional generality
+  (`φ : ι → M →ₗ[ℝ] ℝ`, arbitrary `W_J ≤ W`) in which the infinite-`W_J` case lives. The two
+  discharges that need no chamber fan are proved: `maximalConesMeetInFaces_of_WJ_eq_top` (every
+  wall irrelevant — then `𝒞_gen` is invariant under every linear equivalence, via
+  `image_eq_aetGeneralizedChamber_of_normalizes`) and `maximalConesMeetInFaces_of_subsingleton`.
+- **Coverage:** LC-09 searches for a formalized fan/coarsening intersection statement are recorded in
+  the module docstring (`content:semifan`, `content:"coarsened fan"`, `content:"common face"
+  content:fan`, `content:"intersection of two cones" content:face`, plus `rg` over `LeanCategories/`
+  and `Mathlib/Geometry/`); the nearest is TauCeti's `Fan.subfan` face-closure predicate, which
+  assumes a fan rather than building one. Not tried: a proof through the `RootPairing` chamber fan
+  specialized to a `W` acting on its geometric representation, which is the natural next route.
+- **Repair link:** prove `MaximalConesMeetInFaces` from a formalized statement that the
+  `W`-translates of the fundamental chamber form a fan, then delete the hypothesis from the three
+  O3 theorems. Recording the prerequisite defect does not authorize assuming it elsewhere: every use
+  is visible in the theorem's own hypothesis list.
+
+### `AET Proposition 4.17(4)` and `Definition 4.16` name different families in rank at least three
+
+- **Need:** a single family for the cones of the generalized Coxeter semifan. V. Alexeev,
+  P. Engel, A. Thompson, arXiv:1903.09742v3, Definition 4.16 (p. 26) says the cones are the faces of
+  `𝒞_gen` and their `W`-translates; Proposition 4.17(4) (p. 26) says they are `g(F)` for `g ∈ W` and
+  the *relevant* faces `F` of `K`. V. Alexeev and P. Engel, §9 `sec:semifan`, Definition
+  `def:generalized-cox-semifan`, repeats the second reading in the phrase "the generalized Coxeter
+  fan for this set `V_irr` of relevant vertices" while its displayed formula quantifies over
+  `W_dirr = ⟨w_i | i ∈ V_irr⟩`.
+- **Evidence:** the two families differ as soon as the rank is at least three. In `A₃` with
+  `J = {a, b}` put `K = {x₁ ≥ x₂ ≥ x₃ ≥ x₄}`, so `𝒞_gen = {x₄ ≤ min(x₁,x₂,x₃)}` and the relevant
+  chamber face is `F_c = K ∩ ker φ_c`. Both `F_c` and the facet `𝒞_gen ∩ ker φ_c` are
+  two-dimensional cones in the plane `x₃ = x₄` of `Σxᵢ = 0`, `F_c ⊆` that facet, and
+  `(-1, 5, -2, -2)` lies in the facet but not in `F_c` (it has `x₁ < x₂`), so `F_c` is not a face of
+  `𝒞_gen`. In rank two the two readings agree, which is why the `A₂` example in the source does not
+  expose the discrepancy. AET's own paragraph on the relevant content of a vertex set `V'` agrees
+  with Definition 4.16 after reduction, so the displayed definition plus that paragraph is the
+  coherent reading, and it is the one `WythoffCoarsenedFamily.lean` implements.
+- **Gap and impact:** `LeanCategories/Lattices/Valued/WythoffSemifan.lean` (`aetWythoffSemifan`)
+  builds the Proposition 4.17(4) family, so its members are not all faces of `𝒞_gen` in rank at
+  least three; every statement there about chamber-face members remains true of those members as
+  subsets, but they are not the cones of Definition 4.16. The truncations
+  `aetGeneralizedChamberFace φ W_J V` for active `V` are members of both families
+  (`WythoffCoarseningDatum.truncation_mem`), which is the overlap the two readings share.
+- **Repair link:** restate `aetWythoffSemifan`'s chamber-face clause as the truncation clause (or
+  add the truncations and prove the two-families comparison), then delete the chamber-face
+  description from its docstring. The source comparison, not the Lean availability, decides it.
+
+### The set-level face relation admits `∅`, so a family of cones needs a cone-valued codomain
+
+- **Need:** a cone family whose members are cones. `IsConeFace` in
+  `LeanCategories/Lattices/Valued/WythoffSemifan.lean` is the set-level port of Mathlib's
+  `PointedCone.IsFaceOf`, made at the level of `Set M` because the maximal cone `𝒞_gen` is a `Set`
+  whose convexity is AET Proposition 4.17(1), a hypothesis rather than a definitional property.
+- **Evidence:** `∅` satisfies the set-level relation vacuously, so
+  `WythoffCoarseningDatum.coarsenedFamily` contains `∅`; `WythoffCoarsenedFamilyTests.probe_empty_mem`
+  exhibits it. `∅` is not a cone and is not a cone of `𝔉_gen`. Adding `0 ∈ Φ` to the membership
+  would not repair it either: the set-level relation does not transport the apex, because it has no
+  scaling clause, so `∅` would then be a face of a member without being a member and O2 would fail
+  as stated.
+- **Gap and impact:** with `convex` (closure of `𝒞_gen` under addition) and the free closure under
+  nonnegative scaling, `𝒞_gen` is a `PointedCone ℝ M`, and `PointedCone.IsFaceOf` is then the
+  intrinsic relation: its faces are cones, the apex is automatic and `∅` is not a cone at all. O2
+  and O3 as proved in `WythoffCoarsenedFamily.lean` hold for *every* member of the larger set-level
+  family, so the cone-intrinsic statement is a corollary of them, not a repair of them.
+- **Repair link:** add `maximalConePointed : PointedCone ℝ M` built from `convex` plus scaling
+  closure, restate `coarsenedFamily` with codomain `Set (PointedCone ℝ M)` and membership
+  `F.IsFaceOf (g • maximalConePointed)`, and keep the set-level statements as the comparison. No
+  consumer needs it today; it is recorded so the codomain is not mistaken for the cones.
