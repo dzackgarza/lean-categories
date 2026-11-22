@@ -3997,48 +3997,42 @@ downstream assertions, computational observations, or downstream diagnostics.
   genus; isometry API), both about definite lattices. So the clause is unsourced in every surface
   available here, and a source must be supplied before it is stated.
 
-### The Wythoff maximal cones are not known to meet in faces, and the AET hypotheses do not force it
+### Wythoff maximal-cone intersections are proved from the restored chamber geometry
 
-- **Need:** #180's O3, *universal pairwise intersection-as-common-face* for the Wythoff coarsened
-  family. Given O2 and the two general `IsFaceOf` reduction lemmas
-  (`IsFaceOf.inf_left_of_inter`-shaped: a face of each of two cones whose cones meet in a face of the
-  first), the clause for arbitrary members is equivalent to the **maximal-cone intersection law**:
-  for `u, v ∈ W`, `u(𝒞_gen) ∩ v(𝒞_gen)` is a face of each. That statement is
-  `WythoffCoarseningDatum.MaximalConesMeetInFaces` in
-  `LeanCategories/Lattices/Valued/WythoffCoarsenedFamily.lean`. It is a `Prop` of the datum and it
-  is **not** a hypothesis of any theorem there: the pairwise clause is neither claimed nor assumed.
-- **Evidence that the datum's hypotheses do not imply it:**
-  `WythoffCoarseningDatum.swapDatum_not_maximalConesMeetInFaces`, and its packaging
-  `exists_datum_not_maximalConesMeetInFaces`. The datum `swapDatum` satisfies every field of
-  `WythoffCoarseningDatum` — `M = ℝ × ℝ`, one functional (the first coordinate), no relevant vertex,
-  trivial parabolic, `W = ⊤` — and the law fails on it: the chamber is the half-plane
-  `{p | 0 ≤ p.1}`, the coordinate swap carries it to `{p | 0 ≤ p.2}`, the two meet in the quadrant,
-  and the quadrant is not a face of a half-plane (`(1,-1)` and `(0,1)` lie in the half-plane, their
-  sum `(1,0)` lies in the quadrant, and `(1,-1)` does not). The missing structure is exactly that
-  the datum nowhere ties `W` to the wall system, so `W` may carry a chamber off its own wall; the
-  "definite sign on `𝒞_gen`" route is not available either, since in `A₃` with `J = {a,b}` the
-  translate `s_c(φ_a) = φ_a` takes both signs on `𝒞_gen` while the law still holds there.
-- **What a proof needs:** the **chamber complex** of the Tits cone — that the translates of the
-  fundamental chamber tile the Tits cone and meet along chamber faces, so that a convex union of
-  chambers over a parabolic coset meets another one along a union of faces. That is not in Mathlib
-  (no fan, no Tits cone, no chamber complex) and not in this repository (no statement that two
-  translates of a chamber, or of a parabolic-orbit chamber, meet in a common face). It **is**
-  formalized upstream and is a port target:
-  `facebookresearch/atlas-lean`, `Atlas/Buildings/code/AffineCoxeter/TitsCone.lean`
-  (`titsConeSet`, `titsFundamentalClosure`, a `TitsConeConvexity` class) and
-  `.../AffineCoxeter/Faces.lean` (faces of the affine Coxeter complex); not importable here
-  (different toolchain and lattice presentation), hence recorded rather than discharged.
-- **Coverage:** LC-09 queries recorded in the module docstring (`content:"chamber complex"` 42 files,
-  `content:"Tits cone"` 12, `content:"Coxeter complex"` 31, `content:"fundamental domain"
-  content:reflection content:chamber` 4 — the nearest assumes `Finite P.weylGroup` —,
-  `content:"fan" content:"chambers"` 3, and `rg` over `Mathlib/Geometry/` and `LeanCategories/`).
-  Not tried: a proof routed through the `RootPairing` chamber layer specialized to a `W` acting on
-  its geometric representation, which is the natural next step if the port is not taken.
-- **Repair link:** port the chamber-complex fan statement, prove
-  `MaximalConesMeetInFaces` from it with `W` preserving the wall system (a field the datum must
-  then gain), then derive the pairwise clause for all members through O2. Until then the two
-  discharges proved here (`_of_WJ_eq_top`, `_of_subsingleton`) are the only cases of the law, and
-  they are cases of the construction, not evidence for its generality.
+- **Need:** #180's O3, universal pairwise intersection-as-common-face for the Wythoff coarsened
+  family. The six-field datum restored only AET's convexity/sign fields and admitted arbitrary linear
+  groups. It omitted the root/wall system, the Coxeter identification, the standard parabolic, the
+  positive cone and wall preservation, so its swap example was a counterexample to that abstraction,
+  not to AET's construction.
+- **Delivered declarations:** `WythoffCoarseningDatum.maximalConesMeetInFaces` proves the law for
+  every pair of translates. `inf_isFaceOf_left` and `inf_isFaceOf_right` prove it for every pair of
+  members of `coarsenedCones`, while `mem_of_isFaceOf` proves universal face closure and `inf_mem`
+  membership of the intersection. All nine `#print axioms` checks in
+  `WythoffCoarsenedFamilyTests.lean` return exactly `[propext, Classical.choice, Quot.sound]`.
+- **Hypotheses retained and added:** the original fields remain, and the datum now also carries a
+  `CoxeterSystem` on `W`, `WJ` as the inactive standard parabolic (`WJ_eq`), simple-root reflection
+  formulas, AET's positive cone and its stability/salience, and `wall_preserving`. The construction
+  is the facial completion of AET Definition 4.16's maximal cones; it does not assert equality with
+  AET Proposition 4.17(4), AE22 Definition 9.1, or the dissertation's face descriptions.
+- **Proof mechanism:** an active simple functional is nonnegative on `L = 𝒞_gen` and nonpositive on
+  its translate by the corresponding simple reflection. Their sum vanishes on the shared wall, so
+  the one-simple-translate intersection is a face. `map_equiv` transports the one-wall law. A
+  reduced-gallery induction then proves `inf_wordProd_isFaceOf`: gallery convexity puts a point in
+  both ends into every prefix translate, reduced prefixes stay reduced, and the prefix and one-wall
+  face lemmas apply. This is a chamber/Tits argument through parabolic unions, not an assumed
+  intersection law. Maxwell, *Wythoff's Construction for Coxeter Groups*, Proposition 5.5 supplies
+  the stronger intersection formula; its index is `S_w^c`, as the printed page confirms.
+- **Remaining bridge:** the file does not currently construct `gallery` and `reduced_gallery` from
+  the existing `AETChamberHypotheses`; those source-justified facts remain explicit hypotheses of
+  `WythoffCoarseningDatum`. The exact bridging statement is: for the AET chamber representation,
+  discharge reduced-gallery convexity and show that every parabolic translate has such a reduced
+  representative. This is not hidden as an unproven `Prop` or silently weakened into a top/trivial
+  parabolic case.
+- **Coverage and verification:** renewed LC-09 searches included Wythoff/fan, generalized Coxeter
+  semifan, common-face chamber, parabolic-chamber-face-intersection, parabolic union, chamber
+  coarsening, relevant faces, generalized-permutohedron and normal-fan formulations. Atlas's
+  `face_intersection_property` is only an ingredient, not the needed coarsening theorem, and its
+  sorries/gaps are not used. Focused builds of both Wythoff modules pass; no full-suite gate is run.
 
 ### `AET Proposition 4.17(4)` and `Definition 4.16` name different families in rank at least three
 
@@ -4055,18 +4049,18 @@ downstream assertions, computational observations, or downstream diagnostics.
   two-dimensional cones in the plane `x₃ = x₄` of `Σxᵢ = 0`, `F_c ⊆` that facet, and
   `(-1, 5, -2, -2)` lies in the facet but not in `F_c` (it has `x₁ < x₂`), so `F_c` is not a face of
   `𝒞_gen`. In rank two the two readings agree, which is why the `A₂` example in the source does not
-  expose the discrepancy. AET's own paragraph on the relevant content of a vertex set `V'` agrees
-  with Definition 4.16 after reduction, so the displayed definition plus that paragraph is the
-  coherent reading, and it is the one `WythoffCoarsenedFamily.lean` implements.
+  expose the discrepancy. The relevant-content discussion is evidence that several source passages
+  were meant to be compatible, but it is not a proof of that comparison.
 - **Gap and impact:** `LeanCategories/Lattices/Valued/WythoffSemifan.lean` (`aetWythoffSemifan`)
   builds the Proposition 4.17(4) family, so its members are not all faces of `𝒞_gen` in rank at
   least three; every statement there about chamber-face members remains true of those members as
-  subsets, but they are not the cones of Definition 4.16. The truncations
-  `aetGeneralizedChamberFace φ W_J V` for active `V` are members of both families
-  (`WythoffCoarseningDatum.truncation_mem`), which is the overlap the two readings share.
-- **Repair link:** restate `aetWythoffSemifan`'s chamber-face clause as the truncation clause (or
-  add the truncations and prove the two-families comparison), then delete the chamber-face
-  description from its docstring. The source comparison, not the Lean availability, decides it.
+  subsets. `WythoffCoarsenedFamily.lean` instead constructs the cone-intrinsic facial completion
+  required by the issue. It does **not** assert equality with Proposition 4.17(4), AE22 Definition
+  9.1, or the dissertation's face-description.
+- **Repair link:** the source referent discrepancy remains open. Any later comparison must either
+  derive the relevant-chamber-face family from AET's stated hypotheses or give the counterexample
+  against the actual AET data, then prove or refute equality with the facial completion. The Lean
+  availability of the completion is not evidence for that comparison.
 
 ### The set-level face relation admits `∅`, so a family of cones needs a cone-valued codomain
 
