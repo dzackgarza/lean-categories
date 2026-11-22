@@ -262,17 +262,6 @@ theorem IsConeFace.trans {Φ Ψ D : Set M} (h1 : IsConeFace Φ Ψ) (h2 : IsConeF
   obtain ⟨hxΨ, hyΨ⟩ := h2.2 x hx y hy (h1.1 hxy)
   exact h1.2 x hxΨ y hyΨ hxy
 
-/-- An intersection of faces of `D` (an arbitrary nonempty intersection) is a face of `D`. -/
-theorem IsConeFace.iInter {κ : Type*} {Φ : κ → Set M} {D : Set M}
-    (h : ∀ k, IsConeFace (Φ k) D) (hne : Nonempty κ) : IsConeFace (⋂ k, Φ k) D := by
-  refine ⟨?_, ?_⟩
-  · intro x hx
-    obtain ⟨k⟩ := hne
-    exact (h k).1 (Set.mem_iInter.mp hx k)
-  · intro x hx y hy hxy
-    exact ⟨Set.mem_iInter.mpr fun k => ((h k).2 x hx y hy (Set.mem_iInter.mp hxy k)).1,
-      Set.mem_iInter.mpr fun k => ((h k).2 x hx y hy (Set.mem_iInter.mp hxy k)).2⟩
-
 /-- The image of a face under a linear equivalence is a face of the image of the cone. -/
 theorem IsConeFace.image (g : M ≃ₗ[ℝ] M) {Φ D : Set M} (h : IsConeFace Φ D) :
     IsConeFace (g '' Φ) (g '' D) := by
