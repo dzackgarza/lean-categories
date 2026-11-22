@@ -399,6 +399,8 @@ public import LeanCategories.Lattices.Valued.RationalPolyhedralCone
 public import LeanCategories.Lattices.Valued.RationalConeDuality
 public import LeanCategories.Lattices.Valued.FanCoarsening
 public import LeanCategories.Lattices.Valued.AETHypotheses
+public import LeanCategories.Lattices.Valued.WythoffSemifan
+public import LeanCategories.Lattices.Valued.WythoffInfiniteParabolicExample
 public import LeanCategories.Lattices.Valued.FanCoarseningTests
 public import LeanCategories.Lattices.Valued.WythoffInfiniteParabolicTests
 public import LeanCategories.Lattices.Valued.LocallyRationalDecomposition
