@@ -8,47 +8,29 @@ public import LeanCategories.Lattices.Valued.WythoffCoarsenedFamily
 public import Mathlib.Tactic
 
 /-!
-# Probes for #180, on the smallest inputs that decide them
+# Examples for #180
 
-Each declaration is a concrete instance that decides one clause of #180 on an input small enough to
-read off the answer, so that none of the three obligations is discharged only by a vacuous
-hypothesis.
+These are **examples**, on the smallest input that exhibits the construction: the rank-one
+chamber of `ℝ` (one functional, no relevant vertex, trivial parabolic).  They show what the members
+of the coarsened family are and exercise O2 on them.
 
-* First datum (`probeDatum`): the rank-one chamber of `ℝ` — one functional, the identity; no
-  irrelevant vertex; trivial reflection group. Here `𝒞_gen = {x | 0 ≤ x}` and the coarsened family
-  is the family of faces of that half line.
-  - `probe_maximalCone`, `probe_maximalCone_mem`: the maximal cone is a member.
-  - `probe_zero_face`, `probe_zero_mem`: **O2 on a nontrivial face** — the apex is a face of the
-    maximal cone, and gets into the family through `coarsenedFamily_faceClosed`, not by exhibiting
-    a translate.
-  - `probe_negative_not_mem`: **the separating example.** The opposite half line `{x | x ≤ 0}` is
-    *not* a member, so the family is not the whole powerset and the maximal cone's face family is
-    not saturated. (This is the wrong-model test: a weaker definition — "any subset of some
-    translate", or a family that includes the irrelevant half — would accept it.)
-  - `probe_maximalConesMeetInFaces`, `probe_inf_commonFace`: **O3** on two genuinely different
-    members, through the trivial-group discharge of the geometric input.
-* Second datum (`probeDatumTop`): no functional at all (`ι = Empty`), every vertex irrelevant
-  (`W_irr = W = ⊤`). Here `𝒞_gen` is the whole space, so the geometric input O3 needs is
-  discharged by `maximalConesMeetInFaces_of_WJ_eq_top`, the non-vacuous case of the discharge: the
-  coarsened family has a single maximal cone modulo `W` because `𝒞_gen` is invariant under every
-  linear equivalence.
-  - `probe_top_maximalConesMeetInFaces`, `probe_top_inf_commonFace`: **O3** on that datum.
-  - `probe_empty_mem`: the vacant member, documenting the caveat recorded at `coarsenedFamily`:
-    the set-level face relation accepts `∅`, which is not a cone. It is a member here, and both
-    clauses are proved for every member, so the cone-intrinsic version is unaffected.
+They are not evidence for the general clauses.  O1 and O2 are proved for every datum in
+`WythoffCoarsenedFamily`; O3 is *not* claimed there, and `swapDatum_not_maximalConesMeetInFaces`
+shows that the maximal-cone intersection law it needs is **not** a consequence of the datum's
+hypotheses, so no example could establish it either.
 -/
 
 @[expose] public section
 
 namespace LeanCategories.Lattices.Valued
 
-/-! ## The rank-one chamber of `ℝ` -/
+open PointedCone
 
-/-- The single simple-root functional of the rank-one probe: the identity of `ℝ`. -/
-def probePhi : Unit → ℝ →ₗ[ℝ] ℝ := fun _ => LinearMap.id
+/-- The single simple-root functional of the example: the identity of `ℝ`. -/
+def examplePhi : Unit → ℝ →ₗ[ℝ] ℝ := fun _ => LinearMap.id
 
-/-- The AET datum of the rank-one probe: no irrelevant vertex, trivial reflection group. -/
-def probeDatum : WythoffCoarseningDatum probePhi (∅ : Finset Unit) where
+/-- The AET datum of the example: no irrelevant vertex, trivial reflection group. -/
+def exampleDatum : WythoffCoarseningDatum examplePhi (∅ : Finset Unit) where
   W := ⊥
   WJ := ⊥
   WJ_le := le_rfl
@@ -65,78 +47,73 @@ def probeDatum : WythoffCoarseningDatum probePhi (∅ : Finset Unit) where
     exact add_nonneg (hx i) (hy i)
   irrelevant_flips := by intro j hj; exact absurd hj (by simp)
 
-/-- The maximal cone of the rank-one probe is the closed half line `{x | 0 ≤ x}`. -/
-theorem probe_maximalCone : probeDatum.maximalCone = {x : ℝ | 0 ≤ x} := by
-  rw [WythoffCoarseningDatum.maximalCone, show probeDatum.WJ = ⊥ from rfl,
+/-- The maximal cone of the example is the closed half line `{x | 0 ≤ x}`. -/
+theorem example_maximalCone : (exampleDatum.maximalCone : Set ℝ) = {x | 0 ≤ x} := by
+  rw [WythoffCoarseningDatum.coe_maximalCone, show exampleDatum.WJ = ⊥ from rfl,
     aetGeneralizedChamber_bot]
   ext x
-  simp [aetChamber, probePhi]
+  simp [aetChamber, examplePhi]
 
-/-- The maximal cone is a member of its own coarsened family. -/
-theorem probe_maximalCone_mem : probeDatum.maximalCone ∈ probeDatum.coarsenedFamily :=
-  WythoffCoarseningDatum.maximalCone_mem probeDatum
+/-- The maximal cone is a member. -/
+theorem example_maximal_mem : exampleDatum.maximalCone ∈ exampleDatum.coarsenedCones :=
+  exampleDatum.maximal_mem
 
-/-- The apex is a face of the maximal cone: `{0}` satisfies the set-level face condition in the
-half line `{x | 0 ≤ x}`. -/
-theorem probe_zero_face : IsConeFace ({0} : Set ℝ) probeDatum.maximalCone := by
-  rw [probe_maximalCone]
-  refine ⟨?_, ?_⟩
-  · intro x hx
-    have hx0 : x = 0 := Set.mem_singleton_iff.mp hx
-    subst hx0
-    simp
-  · intro x hx y hy hxy
-    have hx0 : (0 : ℝ) ≤ x := by simpa using hx
-    have hy0 : (0 : ℝ) ≤ y := by simpa using hy
-    have hsum : x + y = 0 := by simpa using hxy
-    have hx1 : x = 0 := by linarith
-    have hy1 : y = 0 := by linarith
-    rw [hx1, hy1]
-    simp
+/-- The apex is a face of the maximal cone.  Cone-intrinsically: any face of the half line
+`{x | 0 ≤ x}` that contains `a • x + y = 0` with `a > 0`, `x, y ≥ 0` must have `x = 0`. -/
+theorem example_apex_face : (⊥ : PointedCone ℝ ℝ).IsFaceOf exampleDatum.maximalCone where
+  le := by
+    intro x hx
+    subst hx
+    exact zero_mem _
+  mem_of_smul_add_mem := by
+    intro x y a hx hy ha hsum
+    have hx0 : 0 ≤ x := by
+      have h : x ∈ (exampleDatum.maximalCone : Set ℝ) := hx
+      rw [example_maximalCone] at h
+      exact h
+    have hy0 : 0 ≤ y := by
+      have h : y ∈ (exampleDatum.maximalCone : Set ℝ) := hy
+      rw [example_maximalCone] at h
+      exact h
+    have hzero : a • x + y = 0 := by
+      have h : a • x + y ∈ (⊥ : PointedCone ℝ ℝ) := hsum
+      simpa using h
+    have hx1 : x = 0 := by
+      rw [smul_eq_mul] at hzero
+      nlinarith
+    simp [hx1]
 
-/-- **O2 on the apex**: `{0}` is a member, obtained from the maximal cone by face closure. -/
-theorem probe_zero_mem : ({0} : Set ℝ) ∈ probeDatum.coarsenedFamily :=
-  WythoffCoarseningDatum.coarsenedFamily_faceClosed probeDatum probe_maximalCone_mem
-    probe_zero_face
+/-- The apex is a member: O2 applied on the example. -/
+theorem example_apex_mem : (⊥ : PointedCone ℝ ℝ) ∈ exampleDatum.coarsenedCones :=
+  exampleDatum.mem_of_isFaceOf exampleDatum.maximal_mem example_apex_face
 
-/-- **The separating example**: the opposite half line is not a member. -/
-theorem probe_negative_not_mem : {x : ℝ | x ≤ 0} ∉ probeDatum.coarsenedFamily := by
-  rw [WythoffCoarseningDatum.coarsenedFamily_of_W_eq_bot probeDatum (rfl : probeDatum.W = ⊥)]
-  intro h
-  have h1 : (-1 : ℝ) ∈ probeDatum.maximalCone := h.1 (by norm_num)
-  rw [probe_maximalCone] at h1
-  norm_num at h1
+/-- A separating example: the ambient line is not a member.  A face of the half line `{x | 0 ≤ x}`
+is a subcone of it, and `ℝ` is not. -/
+theorem example_top_not_mem : (⊤ : PointedCone ℝ ℝ) ∉ exampleDatum.coarsenedCones := by
+  rintro ⟨g, hg, hface⟩
+  have h1 : (g : ℝ ≃ₗ[ℝ] ℝ) = 1 := Subgroup.mem_bot.mp hg
+  have hx : (-1 : ℝ) ∈ (exampleDatum.maximalCone : Set ℝ) := by
+    have hle : (-1 : ℝ) ∈ (exampleDatum.translate g : Set ℝ) :=
+      hface.le (show (-1 : ℝ) ∈ (⊤ : PointedCone ℝ ℝ) from trivial)
+    rwa [WythoffCoarseningDatum.coe_translate, h1,
+      show ((1 : ℝ ≃ₗ[ℝ] ℝ) : ℝ → ℝ) = id from rfl, Set.image_id] at hle
+  rw [example_maximalCone] at hx
+  norm_num at hx
 
-/-- **O3 on the rank-one probe**: the geometric input holds for the trivial reflection group. -/
-theorem probe_maximalConesMeetInFaces : probeDatum.MaximalConesMeetInFaces := by
-  have : Subsingleton ↥probeDatum.W :=
+/-- The maximal-cone intersection law on the example: `W` is trivial. -/
+theorem example_maximalConesMeetInFaces : exampleDatum.MaximalConesMeetInFaces := by
+  have hsub : Subsingleton ↥exampleDatum.W :=
     ⟨fun a b => Subtype.ext (by
-      have ha : a.1 = 1 := Subgroup.mem_bot.mp (show a.1 ∈ (⊥ : Subgroup (ℝ ≃ₗ[ℝ] ℝ)) from a.2)
-      have hb : b.1 = 1 := Subgroup.mem_bot.mp (show b.1 ∈ (⊥ : Subgroup (ℝ ≃ₗ[ℝ] ℝ)) from b.2)
-      rw [ha, hb])⟩
-  exact WythoffCoarseningDatum.maximalConesMeetInFaces_of_subsingleton probeDatum
+      rw [show a.1 = 1 from Subgroup.mem_bot.mp (show a.1 ∈ (⊥ : Subgroup (ℝ ≃ₗ[ℝ] ℝ)) from a.2),
+        show b.1 = 1 from Subgroup.mem_bot.mp (show b.1 ∈ (⊥ : Subgroup (ℝ ≃ₗ[ℝ] ℝ)) from b.2)])⟩
+  exact exampleDatum.maximalConesMeetInFaces_of_subsingleton
 
-/-- **O3, universal pairwise intersection-as-common-face, on two different members**: the
-intersection of the half line with its apex is a face of each. -/
-theorem probe_inf_commonFace :
-    IsConeFace (probeDatum.maximalCone ∩ ({0} : Set ℝ)) probeDatum.maximalCone ∧
-      IsConeFace (probeDatum.maximalCone ∩ ({0} : Set ℝ)) ({0} : Set ℝ) :=
-  WythoffCoarseningDatum.coarsenedFamily_inf_commonFace probeDatum
-    probe_maximalConesMeetInFaces probe_maximalCone_mem probe_zero_mem
+/-- The other non-vacuous case of the law, on the every-wall-irrelevant datum: no functional,
+`W_irr = W = ⊤`. -/
+def examplePhiEmpty : Empty → ℝ →ₗ[ℝ] ℝ := fun i => i.elim
 
-/-- The intersection of two members is again a member. -/
-theorem probe_inf_mem :
-    probeDatum.maximalCone ∩ ({0} : Set ℝ) ∈ probeDatum.coarsenedFamily :=
-  WythoffCoarseningDatum.coarsenedFamily_inf_mem probeDatum probe_maximalConesMeetInFaces
-    probe_maximalCone_mem probe_zero_mem
-
-/-! ## The every-wall-irrelevant probe -/
-
-/-- No simple-root functional at all. -/
-def probePhiEmpty : Empty → ℝ →ₗ[ℝ] ℝ := fun i => i.elim
-
-/-- The AET datum with every wall irrelevant: `W_irr = W = ⊤`. -/
-def probeDatumTop : WythoffCoarseningDatum probePhiEmpty (∅ : Finset Empty) where
+/-- The datum with every wall irrelevant. -/
+def exampleDatumTop : WythoffCoarseningDatum examplePhiEmpty (∅ : Finset Empty) where
   W := ⊤
   WJ := ⊤
   WJ_le := le_rfl
@@ -146,31 +123,8 @@ def probeDatumTop : WythoffCoarseningDatum probePhiEmpty (∅ : Finset Empty) wh
     exact mem_aetGeneralizedChamber.mpr ⟨1, x + y, fun i => i.elim, rfl⟩
   irrelevant_flips := by intro j hj; exact absurd hj (by simp)
 
-/-- **The non-vacuous discharge of the geometric input of O3**: with every wall irrelevant the
-maximal cone is invariant under every linear equivalence, so two translates of it coincide. -/
-theorem probe_top_maximalConesMeetInFaces : probeDatumTop.MaximalConesMeetInFaces :=
-  WythoffCoarseningDatum.maximalConesMeetInFaces_of_WJ_eq_top probeDatumTop rfl
-
-/-- The vacant member: `∅` satisfies the set-level face relation vacuously. This is the caveat
-recorded at `coarsenedFamily`, on the smallest input. -/
-theorem probe_empty_mem : (∅ : Set ℝ) ∈ probeDatumTop.coarsenedFamily :=
-  ⟨1, Subgroup.mem_top 1, by
-    refine ⟨Set.empty_subset _, ?_⟩
-    intro x _ y _ hxy
-    exact absurd hxy (by simp)⟩
-
-/-- **O3 on the every-wall-irrelevant datum**, with the vacant member as one of the two. -/
-theorem probe_top_inf_commonFace :
-    IsConeFace (probeDatumTop.maximalCone ∩ ∅) probeDatumTop.maximalCone :=
-  (WythoffCoarseningDatum.coarsenedFamily_inf_commonFace probeDatumTop
-    probe_top_maximalConesMeetInFaces (WythoffCoarseningDatum.maximalCone_mem probeDatumTop)
-    probe_empty_mem).1
-
-/-- The maximal cone of the every-wall-irrelevant probe is the whole space: with no functional the
-chamber is `univ`, and so is the union of its translates. -/
-theorem probe_top_maximalCone : probeDatumTop.maximalCone = Set.univ := by
-  rw [WythoffCoarseningDatum.maximalCone, Set.eq_univ_iff_forall]
-  intro x
-  exact mem_aetGeneralizedChamber.mpr ⟨1, x, fun i => i.elim, rfl⟩
+/-- The law holds there: with every wall irrelevant the family has one maximal cone modulo `W`. -/
+theorem example_top_maximalConesMeetInFaces : exampleDatumTop.MaximalConesMeetInFaces :=
+  exampleDatumTop.maximalConesMeetInFaces_of_WJ_eq_top rfl
 
 end LeanCategories.Lattices.Valued
