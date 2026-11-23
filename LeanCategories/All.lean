@@ -151,6 +151,8 @@ public import LeanCategories.Algebra.CoxeterRootRescalingData
 public import LeanCategories.Algebra.CoxeterAffineSliceData
 public import LeanCategories.Algebra.CoxeterPlaneData
 public import LeanCategories.ForMathlib.Coxeter.Parabolic
+public import LeanCategories.ForMathlib.RootSystem.PositiveReflection
+public import LeanCategories.ForMathlib.RootSystem.WythoffAscent
 public import LeanCategories.Algebra.CrossedProductData
 public import LeanCategories.Algebra.ClassFunctionData
 public import LeanCategories.Algebra.MatrixFamilies

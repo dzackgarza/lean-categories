@@ -5,6 +5,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import LeanCategories.Lattices.Valued.WythoffSemifan
+public import LeanCategories.Lattices.Valued.AETHypotheses
+public import LeanCategories.ForMathlib.RootSystem.WythoffAscent
 public import Mathlib.Geometry.Convex.Cone.Face.Basic
 public import Mathlib.GroupTheory.Coxeter.Length
 public import LeanCategories.ForMathlib.Coxeter.Parabolic
@@ -45,27 +47,26 @@ family is a set of pointed cones and a face is a subcone, never a bare subset.
 
 ## What is proved
 
-* **O1, domain and codomain.**  `WythoffCoarseningDatum` retains the original AET fields and adds
-  the root/wall system, Coxeter presentation, inactive standard parabolic, positive-cone data and
-  wall preservation.  `coarsenedCones : Set (PointedCone ℝ M)` is the family of every intrinsic
-  face of every `W`-translate of `𝒞_gen`.  The #181 algebraic bridge removes `reduced_gallery`
-  and `parabolicReduced_take` as fields: double-coset reduction is now proved by
-  `WythoffCoarseningDatum.reduced_gallery`, and prefix induction uses the proved hereditary
-  predicate `ParabolicLeftReduced`.
+* **O1, actual AET domain and codomain.**  `WythoffCoarseningDatum` takes the full arbitrary-index
+  root/coroot `RootPairing`, its base and invariant form, the AET chamber hypotheses and the
+  Coxeter presentation.  The root pairing supplies the perfect pairing and full root orbit; no new
+  representation field is added as an unexplained hypothesis.  `coarsenedCones : Set
+  (PointedCone ℝ M)` consists of every intrinsic face of every AET Weyl-translate of `𝒞_gen`.
 * **O2, universal face closure.**  `mem_of_isFaceOf` applies `IsFaceOf.trans` to every member, with
-  no finiteness assumption.  `maximal_mem`, `translate_mem` and `map_mem` cover the three ways in
-  which members arise directly from the construction.
-* **O3, universal common-face intersection.**  `maximalConesMeetInFaces` is proved for every pair
-  of translates, and `inf_isFaceOf_left`/`inf_isFaceOf_right` for every pair of members.  Moreover
-  `inf_mem` shows that the intersection is itself a member.
+  no finiteness assumption.  `maximal_mem`, `translate_mem` and `map_mem` cover the direct members.
+* **Double-coset reduction.**  `WythoffCoarseningDatum.reduced_gallery` proves that every translate
+  has a reduced representative of minimum length in its inactive double coset, using only the
+  Coxeter length API.
+* **Chamber ascent.**  `CoxeterSystem.nonneg_simple_apply_of_not_isLeftDescent` proves Maxwell's
+  Proposition 5.1 from the actual AET root representation.  It uses positive-root expansion,
+  simple-reflection positivity and a one-word strong-exchange deletion, and has no `Finite` or
+  `Finite P.weylGroup` premise.
 
-The one-wall lemma `inf_simple_isFaceOf` proves that an active simple reflection meets `𝒞_gen` in a
-face.  `inf_translate_word_singleton_isFaceOf` transports it by any linear equivalence, and
-`inf_wordProd_isFaceOf` inducts on a reduced gallery: a point in both end cones occurs at each
-prefix, so the prefix induction hypothesis and the one-wall lemma apply.  The gallery hypothesis is
-an inclusion between translates, **not** the common-face conclusion.  It is the parabolic form of
-the genuine Tits chamber-complex argument used here; arbitrary `W` would not suffice, which is why
-the old arbitrary-swap example is not an AET counterexample.
+The one-wall lemma `inf_simple_isFaceOf` and its Weyl-transport `inf_translate_simple_isFaceOf`
+are also proved.  **Remaining:** the generalized-chamber prefix-nesting theorem and the dependent
+fan-intersection law are not asserted.  The remaining theorem is the gated-parabolic-residue step
+(Cuntz–Mühlherr–Weigel, *Simplicial Arrangements on Convex Cones*, Proposition 2.27), not the
+Maxwell 5.1 sign lemma supplied above.
 
 ## The exact referent, and the unresolved source discrepancy
 
@@ -86,14 +87,18 @@ chamber faces.
 
 ## Hypotheses and provenance
 
-There is no `Finite W_J`, no `WJ = ⊤` or `Subsingleton W` specialization, and no arbitrary-`W`
-counterexample.  `coxeterSystem`, `WJ_eq`, `simpleReflection_apply`, the positive-cone fields and
-`wall_preserving` make explicit the geometric data present in the conditional #180 development.
+There is no `Finite W_J`, no `WJ = ⊤` or `Subsingleton W` specialization, and no coordinate-model
+restriction.  The chamber hypotheses are the existing `AETChamberHypotheses`; their previously
+global `Finite` root-index parameter has been removed wherever it was not needed.
 `ParabolicReduced` is a reduced word which is minimal in its `W_J`-double coset.  A minimal
 representative `r = u g v` need not give the same cone as `g`; the correct translate identity is
-`g(L) = u⁻¹r(L)`, which is what `reduced_gallery` proves.  Prefixes need only one-sided
-minimality, supplied by `ParabolicReduced.toParabolicLeftReduced` and
-`parabolicLeftReduced_take`.
+`g(L) = u⁻¹r(L)`, which is what `reduced_gallery` proves.
+
+The ascent proof is an arbitrary-index port of TauCeti's
+`TauCeti.coroot'_smul_nonneg_of_not_isLeftDescent`, in invariant-form rather than coroot form.
+Its named source is `LinearAlgebra/RootSystem/Weyl/ParabolicQuotient.lean` (Tau Ceti contributors,
+Apache 2.0).  The required positivity and root-action ports live in
+`ForMathlib/RootSystem/{PositiveReflection,WythoffAscent}.lean` and carry their provenance.
 
 Maxwell, Proposition 5.5, gives the sharper parabolic intersection formula in the **standard
 geometric representation**.  Its index is `Z = X ∩ Y ∩ S_w^c`, where `S_w` is the support of a
@@ -153,8 +158,10 @@ namespace LeanCategories.Lattices.Valued
 
 open PointedCone
 
-variable {ι M : Type*} [Fintype ι] [DecidableEq ι] [AddCommGroup M] [Module ℝ M]
+variable {ι M N : Type*} [DecidableEq ι]
+  [AddCommGroup M] [Module ℝ M] [AddCommGroup N] [Module ℝ N]
 
+variable [Fintype ι] [DecidableEq ι] in
 /-- With a trivial parabolic the coarsening does nothing: the generalized chamber is the chamber. -/
 theorem aetGeneralizedChamber_bot (φ : ι → M →ₗ[ℝ] ℝ) :
     aetGeneralizedChamber φ (⊥ : Subgroup (M ≃ₗ[ℝ] M)) = aetChamber φ := by
@@ -284,207 +291,192 @@ theorem parabolicLeftReduced_take {ℳ : CoxeterMatrix ι} {W : Type*} [Group W]
   rw [hassoc] at hfull
   omega
 
-/-- The **domain** of the Wythoff coarsening.  The first six fields are the original AET
-interface.  The remaining fields restore the chamber geometry which that interface omitted.
+/-! ## The AET domain of the Wythoff coarsening
 
-* `W` is identified with the chamber's Coxeter group by `coxeterSystem`, and `WJ` with the
-  standard parabolic generated by the inactive simple reflections;
-* `root` and `simpleReflection_apply` say that the simple generators act by the wall-reflection
-  formula, and `wall_preserving` is the conditional #180 wall-preservation field;
-* `positiveCone` is AET's positive cone, with chamber containment, `W`-stability and salience.
+The abstract wall-preservation fields from the earlier conditional development are replaced by
+`RootPairing`, its base, its full root orbit and its invariant form, together with the existing AET
+chamber hypotheses.  The Coxeter presentation is genuinely on `P.weylGroup`, so translates require
+no separate identification of an arbitrary subgroup of linear equivalences.
 
-The #181 structure has no gallery fields.  `reduced_gallery` is proved below by Coxeter length
-minimization.  Prefix induction uses `ParabolicLeftReduced`, not the false assertion that every
-prefix of a double-coset-minimal word is again minimal on both sides.  The geometric `gallery`
-theorem is deliberately left as a reproducible red declaration: the current fields do not include
-Maxwell Proposition 5.1's standard-geometric ascent theorem, and this file does not smuggle it
-back in as a hypothesis.  The exact required statement is documented at that declaration.
+The gallery theorem itself has not been promoted to a structure field.  Double-coset minimality is
+proved from Coxeter length minimization.  The remaining generalized-chamber prefix theorem needs
+the standard parabolic gated-residue theorem, Proposition 2.27 of Cuntz–Mühlherr–Weigel, not just
+reflection formulas or wall preservation; no gallery or intersection property is assumed here. -/
 
-No field asserts that an intersection is a face, and no finiteness of `WJ` is assumed. -/
-structure WythoffCoarseningDatum (φ : ι → M →ₗ[ℝ] ℝ) (J : Finset ι) where
-  /-- The reflection group `W`. -/
-  W : Subgroup (M ≃ₗ[ℝ] M)
-  /-- The standard parabolic `W_irr` generated by the irrelevant simple reflections. -/
-  WJ : Subgroup (M ≃ₗ[ℝ] M)
-  /-- The parabolic is a subgroup of `W`. -/
-  WJ_le : WJ ≤ W
-  /-- AET Proposition 4.17(1), the half that needs no finiteness. -/
-  active_nonneg : ∀ i, i ∉ J → ∀ g : WJ, ∀ y : M, y ∈ aetChamber φ → 0 ≤ φ i ((g : M ≃ₗ[ℝ] M) y)
-  /-- AET Proposition 4.17(1): the generalized chamber is closed under addition. -/
-  convex : ∀ x ∈ aetGeneralizedChamber φ WJ, ∀ y ∈ aetGeneralizedChamber φ WJ,
-    x + y ∈ aetGeneralizedChamber φ WJ
-  /-- An irrelevant reflection reverses the sign of its own simple functional. -/
-  irrelevant_flips : ∀ j ∈ J, ∃ s ∈ WJ, ∀ x : M, φ j ((s : M ≃ₗ[ℝ] M) x) = -(φ j x)
-  /-- The Coxeter matrix of the chamber. -/
-  coxeterMatrix : CoxeterMatrix ι
-  /-- `W`, as an abstract group, is the chamber's Coxeter group. -/
-  coxeterSystem : CoxeterSystem coxeterMatrix W
-  /-- `WJ` is the inactive standard parabolic, mapped into the linear equivalences by the
-    subtype. -/
-  WJ_eq : WJ = (standardParabolic coxeterSystem J).map (Subgroup.subtype W)
-  /-- The simple roots. -/
-  root : ι → M
-  /-- The simple generators act by the wall-reflection formula. -/
-  simpleReflection_apply : ∀ i x, (((coxeterSystem.simple i : W) : M ≃ₗ[ℝ] M) x) =
-    x - φ i x • root i
-  /-- The simple roots have the normalization which makes the reflection formula involutive. -/
-  root_pairing : ∀ i, φ i (root i) = 2
-  /-- Every element of `W` permutes the root/wall system, up to the sign of a root. -/
-  wall_preserving : ∀ g : W, ∀ i, ∃ j,
-    (∀ x, φ i (((g⁻¹ : W) : M ≃ₗ[ℝ] M) x) = φ j x) ∨
-      (∀ x, φ i (((g⁻¹ : W) : M ≃ₗ[ℝ] M) x) = -(φ j x))
-  /-- AET's positive cone. -/
-  positiveCone : ConvexCone ℝ M
-  /-- The fundamental chamber is cut out inside the positive cone. -/
-  chamber_subset_positiveCone : aetChamber φ ⊆ (positiveCone : Set M)
-  /-- The positive cone is stable under every element of `W`. -/
-  positiveCone_stable : ∀ g : W, ∀ x ∈ positiveCone, ((g : M ≃ₗ[ℝ] M) x) ∈ positiveCone
-  /-- The positive cone is salient. -/
-  positiveCone_salient : positiveCone.Salient
+/-- The full root indices of the inactive simple roots of a Wythoff chamber. -/
+def inactiveRoots {P : RootPairing ι ℝ M N} (b : P.Base)
+    (J : Finset b.support) : Finset ι :=
+  J.map ⟨fun i : b.support ↦ (i : ι), Subtype.val_injective⟩
+
+/-- The AET domain of the coarsening.  `P` is the full root/coroot pairing (hence includes the
+complete root orbit and a perfect pairing), `b` its root base, `B` the invariant form and `H` the
+AET chamber hypotheses.  The Coxeter fields are the chamber/Coxeter part of #180; `simpleReflection`
+identifies their generators with the actual AET root reflections.  No root-index or Weyl-group
+finiteness is assumed. -/
+structure WythoffCoarseningDatum (P : RootPairing ι ℝ M N) [P.IsCrystallographic]
+    [P.IsReduced] (b : P.Base) (B : P.InvariantForm) (J : Finset b.support)
+    (H : AETChamberHypotheses P b B (inactiveRoots b J)) where
+  /-- The Coxeter matrix on the simple roots of the base. -/
+  coxeterMatrix : CoxeterMatrix b.support
+  /-- The full AET Weyl group, with its Coxeter presentation. -/
+  coxeterSystem : CoxeterSystem coxeterMatrix P.weylGroup
+  /-- The simple generators are the reflections in the simple roots of the AET base. -/
+  simpleReflection : ∀ i, coxeterSystem.simple i = RootPairing.weylGroup.ofIdx P (i : ι)
 
 namespace WythoffCoarseningDatum
 
-variable {φ : ι → M →ₗ[ℝ] ℝ} {J : Finset ι} (D : WythoffCoarseningDatum φ J)
+variable {P : RootPairing ι ℝ M N} [P.IsCrystallographic] [P.IsReduced]
+  {b : P.Base} {B : P.InvariantForm} {J : Finset b.support}
+  {H : AETChamberHypotheses P b B (inactiveRoots b J)}
+  (D : WythoffCoarseningDatum P b B J H)
 
-/-! ## The maximal cone as a pointed cone -/
-
-/-- The generalized chamber is closed under nonnegative scaling: it is a union of `WJ`-translates
-of the chamber, and the chamber is. -/
+/-- The generalized AET chamber is closed under nonnegative scaling. -/
 theorem smul_mem_generalizedChamber {c : ℝ} (hc : 0 ≤ c) {x : M}
-    (hx : x ∈ aetGeneralizedChamber φ D.WJ) : c • x ∈ aetGeneralizedChamber φ D.WJ := by
-  obtain ⟨g, y, hy, rfl⟩ := mem_aetGeneralizedChamber.mp hx
-  refine mem_aetGeneralizedChamber.mpr ⟨g, c • y, ?_, by simp⟩
-  intro i
-  have h : φ i (c • y) = c * φ i y := by simp
-  rw [h]
-  exact mul_nonneg hc (hy i)
+    (hx : x ∈ generalizedChamber P b B (inactiveRoots b J)) :
+    c • x ∈ generalizedChamber P b B (inactiveRoots b J) := by
+  simp only [generalizedChamber, Set.mem_iUnion, Set.mem_image] at hx ⊢
+  obtain ⟨g, y, hy, rfl⟩ := hx
+  refine ⟨g, c • y, ?_, by simp only [smul_comm]⟩
+  intro i hi
+  have h := hy i hi
+  rw [map_smul, smul_eq_mul]
+  exact mul_nonneg hc h
 
-/-- **The maximal cone modulo `W`**, `𝒞_gen = ⋃_{h ∈ W_irr} h.𝒞` of Definition 4.16, as the
-pointed cone it is: AET Proposition 4.17(1) (`convex`) plus closure under nonnegative scaling.
-Cones, not subsets, is what makes "face" below the intrinsic relation. -/
-noncomputable def maximalCone : PointedCone ℝ M where
-  carrier := aetGeneralizedChamber φ D.WJ
-  zero_mem' := mem_aetGeneralizedChamber.mpr ⟨1, 0, fun i => by simp, by simp⟩
-  add_mem' := fun {x y} hx hy => D.convex x hx y hy
-  smul_mem' := fun a {x} hx => D.smul_mem_generalizedChamber a.2 hx
+/-- The maximal cone `L = ⋃_{h ∈ W_J} h(K)` from AET Definition 4.16. -/
+noncomputable def maximalCone (D : WythoffCoarseningDatum P b B J H) : PointedCone ℝ M where
+  carrier := generalizedChamber P b B (inactiveRoots b J)
+  zero_mem' := by
+    simp only [generalizedChamber, Set.mem_iUnion, Set.mem_image]
+    refine ⟨1, 0, ?_, by simp⟩
+    intro i hi
+    simp
+  add_mem' := fun {x y} hx hy => by
+    rw [generalizedChamber_eq_activeHalfspaceIntersection_of_hypotheses
+      P b B (inactiveRoots b J) H] at hx hy ⊢
+    exact (aetActiveHalfspaceConvexCone P b B (inactiveRoots b J)).add_mem hx hy
+  smul_mem' := fun a {x} hx =>
+    smul_mem_generalizedChamber (P := P) (b := b) (B := B) (J := J) a.2 hx
 
-@[simp]
-theorem coe_maximalCone : (D.maximalCone : Set M) = aetGeneralizedChamber φ D.WJ := rfl
+@[simp] theorem coe_maximalCone :
+    (D.maximalCone : Set M) = generalizedChamber P b B (inactiveRoots b J) := rfl
 
-/-! ## The family -/
+/-- The translate of the maximal cone by an AET Weyl-group element. -/
+noncomputable def translate (D : WythoffCoarseningDatum P b B J H) (g : P.weylGroup) :
+    PointedCone ℝ M :=
+  D.maximalCone.map ((g : P.Aut).weightEquiv : M →ₗ[ℝ] M)
 
-/-- The translate of the maximal cone by `g`. -/
-noncomputable def translate (g : M ≃ₗ[ℝ] M) : PointedCone ℝ M :=
-  D.maximalCone.map (g : M →ₗ[ℝ] M)
+@[simp] theorem coe_translate (g : P.weylGroup) :
+    (D.translate g : Set M) = (fun x ↦ g • x) '' D.maximalCone := by
+  apply Set.ext
+  intro x
+  rfl
 
-@[simp]
-theorem coe_translate (g : M ≃ₗ[ℝ] M) : (D.translate g : Set M) = (g : M → M) '' D.maximalCone :=
-  PointedCone.coe_map _ _
-
-@[simp]
-theorem translate_one : D.translate 1 = D.maximalCone := PointedCone.map_id _
-
-/-- **O1: the general Wythoff coarsened family**, the cone-intrinsic facial completion of AET
-Definition 4.16's maximal cones `g(𝒞_gen)`, with no comparison to the other prose face lists.
--/
-noncomputable def coarsenedCones : Set (PointedCone ℝ M) :=
-  {F | ∃ g ∈ D.W, F.IsFaceOf (D.translate g)}
-
-theorem mem_coarsenedCones {F : PointedCone ℝ M} :
-    F ∈ D.coarsenedCones ↔ ∃ g ∈ D.W, F.IsFaceOf (D.translate g) :=
-  Iff.rfl
-
-/-- The maximal cone is a member. -/
-theorem maximal_mem : D.maximalCone ∈ D.coarsenedCones :=
-  ⟨1, D.W.one_mem, by simp⟩
-
-/-- Every translate of the maximal cone is a member. -/
-theorem translate_mem {g : M ≃ₗ[ℝ] M} (hg : g ∈ D.W) : D.translate g ∈ D.coarsenedCones :=
-  ⟨g, hg, IsFaceOf.refl _⟩
-
-/-- **The translates of the faces of `𝒞_gen` are members**: this is the `g(F)` half of the source's
-family, and it is where "faces of non-maximal `W`-translates" enter. -/
-theorem map_mem {F : PointedCone ℝ M} (hF : F.IsFaceOf D.maximalCone) {g : M ≃ₗ[ℝ] M}
-    (hg : g ∈ D.W) : F.map (g : M →ₗ[ℝ] M) ∈ D.coarsenedCones :=
-  ⟨g, hg, hF.map_equiv g⟩
-
-/-! ## O2: universal face closure -/
-
-/-- **O2: face closure, universally.**  A face of a member is a member: if `F` is a face of the
-translate `g(𝒞_gen)` then a face of `F` is a face of `g(𝒞_gen)` by transitivity of `IsFaceOf`.
-Nothing here distinguishes maximal members from faces of non-maximal translates, and no finiteness
-is used. -/
-theorem mem_of_isFaceOf {F G : PointedCone ℝ M} (hF : F ∈ D.coarsenedCones)
-    (hG : G.IsFaceOf F) : G ∈ D.coarsenedCones := by
-  obtain ⟨g, hg, hface⟩ := hF
-  exact ⟨g, hg, hG.trans hface⟩
-
-/-! ## O3: the maximal-cone intersection law, proved by gallery induction -/
-
-/-- Two `W`-translates of `𝒞_gen` meet in a face of each. -/
-def MaximalConesMeetInFaces : Prop :=
-  ∀ g ∈ D.W, ∀ g' ∈ D.W, (D.translate g ⊓ D.translate g').IsFaceOf (D.translate g)
-
-/-- An active simple functional is nonnegative on the whole generalized chamber. -/
-theorem active_on_maximal {i : ι} (hi : i ∉ J) {x : M}
-    (hx : x ∈ D.maximalCone) : 0 ≤ φ i x := by
-  obtain ⟨g, y, hy, rfl⟩ := mem_aetGeneralizedChamber.mp hx
-  exact D.active_nonneg i hi g y hy
-
-/-- A simple generator negates its own simple functional. -/
-theorem simpleReflection_flips (i : ι) (x : M) :
-    φ i (((D.coxeterSystem.simple i : D.W) : M ≃ₗ[ℝ] M) x) = -(φ i x) := by
-  rw [D.simpleReflection_apply, map_sub, map_smul, D.root_pairing]
-  ring
-
-/-- A simple generator fixes its wall pointwise. -/
-theorem simpleReflection_eq_self_of_ker (i : ι) {x : M} (hx : φ i x = 0) :
-    ((D.coxeterSystem.simple i : D.W) : M ≃ₗ[ℝ] M) x = x := by
-  rw [D.simpleReflection_apply, hx]
+@[simp] theorem translate_one : D.translate 1 = D.maximalCone := by
+  apply SetLike.coe_injective
+  rw [coe_translate]
+  ext x
   simp
 
-/-- The `i`-th simple functional is nonpositive on the translate by its own reflection. -/
-theorem apply_simple_nonpos {i : ι} (hi : i ∉ J) {z : M}
-    (hz : z ∈ (D.translate ((D.coxeterSystem.simple i : D.W) : M ≃ₗ[ℝ] M) : Set M)) :
-    φ i z ≤ 0 := by
-  rw [coe_translate] at hz
+/-- The cone-intrinsic facial completion of the maximal AET chambers. -/
+noncomputable def coarsenedCones (D : WythoffCoarseningDatum P b B J H) :
+    Set (PointedCone ℝ M) :=
+  {F | ∃ g : P.weylGroup, F.IsFaceOf (D.translate g)}
+
+theorem mem_coarsenedCones {F : PointedCone ℝ M} :
+    F ∈ D.coarsenedCones ↔ ∃ g : P.weylGroup, F.IsFaceOf (D.translate g) := Iff.rfl
+
+theorem maximal_mem : D.maximalCone ∈ D.coarsenedCones :=
+  ⟨1, by simp⟩
+
+theorem translate_mem (g : P.weylGroup) : D.translate g ∈ D.coarsenedCones :=
+  ⟨g, IsFaceOf.refl _⟩
+
+theorem map_mem {F : PointedCone ℝ M} (hF : F.IsFaceOf D.maximalCone) (g : P.weylGroup) :
+    F.map ((g : P.Aut).weightEquiv : M →ₗ[ℝ] M) ∈ D.coarsenedCones :=
+  ⟨g, hF.map_equiv _⟩
+
+/-- Universal face closure of the coarsened family. -/
+theorem mem_of_isFaceOf {F G : PointedCone ℝ M} (hF : F ∈ D.coarsenedCones)
+    (hG : G.IsFaceOf F) : G ∈ D.coarsenedCones := by
+  obtain ⟨g, hface⟩ := hF
+  exact ⟨g, hG.trans hface⟩
+
+/-- Every pair of maximal translates meets in a face of the left translate. -/
+def MaximalConesMeetInFaces (D : WythoffCoarseningDatum P b B J H) : Prop :=
+  ∀ g g' : P.weylGroup, (D.translate g ⊓ D.translate g').IsFaceOf (D.translate g)
+
+/-- An active simple functional is nonnegative on the generalized chamber. -/
+theorem active_on_maximal {i : b.support} (hi : i ∉ J) {x : M}
+    (hx : x ∈ D.maximalCone) : 0 ≤ B.form (P.root (i : ι)) x := by
+  change x ∈ generalizedChamber P b B (inactiveRoots b J) at hx
+  have hx' := generalizedChamber_subset_activeHalfspaceIntersection P b B
+    (inactiveRoots b J) H.J_subset hx
+  have himem : (i : ι) ∈ b.support.filter (fun j ↦ j ∉ inactiveRoots b J) := by
+    apply Finset.mem_filter.mpr
+    refine ⟨i.property, ?_⟩
+    classical
+    intro hmem
+    change (i : ι) ∈ J.map ⟨fun j : b.support ↦ (j : ι), Subtype.val_injective⟩ at hmem
+    obtain ⟨j, hj, heq⟩ := Finset.mem_map.mp hmem
+    exact hi (Subtype.ext heq ▸ hj)
+  have hval := hx' (i : ι) himem 1
+  simpa using hval
+
+/-- A simple generator negates its own simple functional. -/
+theorem simpleReflection_flips (i : b.support) (x : M) :
+    B.form (P.root (i : ι)) ((D.coxeterSystem.simple i) • x) = -B.form (P.root (i : ι)) x := by
+  rw [D.simpleReflection, RootPairing.weylGroup.ofIdx_smul, RootPairing.Equiv.reflection_smul]
+  have h := B.isOrthogonal_reflection (i : ι) (P.root (i : ι)) x
+  rw [P.reflection_apply_self] at h
+  have hn := congrArg Neg.neg h
+  simpa only [map_neg, LinearMap.neg_apply, neg_neg] using hn
+
+/-- A simple generator fixes its wall pointwise. -/
+theorem simpleReflection_eq_self_of_ker (i : b.support) {x : M}
+    (hx : B.form (P.root (i : ι)) x = 0) : (D.coxeterSystem.simple i) • x = x := by
+  have hcor := RootPairing.InvariantForm.coroot'_eq_zero_of_apply_root_eq_zero B (i : ι) hx
+  rw [D.simpleReflection, RootPairing.weylGroup.ofIdx_smul, RootPairing.Equiv.reflection_smul,
+    P.reflection_apply, hcor]
+  simp
+
+theorem apply_simple_nonpos {i : b.support} (hi : i ∉ J) {z : M}
+    (hz : z ∈ D.translate (D.coxeterSystem.simple i)) :
+    B.form (P.root (i : ι)) z ≤ 0 := by
+  change z ∈ (fun x ↦ (D.coxeterSystem.simple i) • x) '' D.maximalCone at hz
   obtain ⟨y, hy, rfl⟩ := hz
   rw [D.simpleReflection_flips]
-  exact neg_nonpos.mpr (D.active_on_maximal (i := i) (φ := φ) hi hy)
+  exact neg_nonpos.mpr (D.active_on_maximal hi hy)
 
-/-- **One gallery step.**  The generalized chamber and its translate by an active simple reflection
-meet in a face of the generalized chamber.  The proof uses only the two sign conditions and the
-fact that the simple reflection fixes its own wall. -/
-theorem inf_simple_isFaceOf {i : ι} (hi : i ∉ J) :
-    (D.maximalCone ⊓ D.translate ((D.coxeterSystem.simple i : D.W) : M ≃ₗ[ℝ] M)).IsFaceOf
-      D.maximalCone := by
+/-- The generalized chamber and its translate by an active simple reflection meet in a face. -/
+theorem inf_simple_isFaceOf {i : b.support} (hi : i ∉ J) :
+    (D.maximalCone ⊓ D.translate (D.coxeterSystem.simple i)).IsFaceOf D.maximalCone := by
   refine ⟨inf_le_left, ?_⟩
   intro x y a hx hy ha hxy
-  have hz0 : φ i (a • x + y) = 0 := by
+  have hz0 : B.form (P.root (i : ι)) (a • x + y) = 0 := by
     apply le_antisymm
-    · exact D.apply_simple_nonpos (i := i) (φ := φ) hi hxy.2
-    · exact D.active_on_maximal (i := i) (φ := φ) hi hxy.1
-  have hxnonneg := D.active_on_maximal (i := i) (φ := φ) hi hx
-  have hynonneg := D.active_on_maximal (i := i) (φ := φ) hi hy
-  have hx0 : φ i x = 0 := by
+    · exact D.apply_simple_nonpos hi hxy.2
+    · exact D.active_on_maximal hi hxy.1
+  have hxnonneg := D.active_on_maximal hi hx
+  have hynonneg := D.active_on_maximal hi hy
+  have hx0 : B.form (P.root (i : ι)) x = 0 := by
     rw [map_add, map_smul, smul_eq_mul] at hz0
     nlinarith
   refine ⟨hx, ?_⟩
   rw [coe_translate]
-  exact ⟨x, hx, D.simpleReflection_eq_self_of_ker (i := i) (φ := φ) hx0⟩
+  exact ⟨x, hx, D.simpleReflection_eq_self_of_ker i hx0⟩
 
-/-- Multiplication of translates acts on the right. -/
-theorem translate_mul (g g' : M ≃ₗ[ℝ] M) :
-    D.translate (g * g') = (D.translate g').map (g : M →ₗ[ℝ] M) := by
+/-- Multiplication of Weyl-group elements acts on the left on translates. -/
+theorem translate_mul (g g' : P.weylGroup) :
+    D.translate (g * g') = (D.translate g').map ((g : P.Aut).weightEquiv : M →ₗ[ℝ] M) := by
   apply SetLike.coe_injective
-  change ((g : M → M) ∘ (g' : M → M)) '' aetGeneralizedChamber φ D.WJ =
-    (g : M → M) '' ((g' : M → M) '' aetGeneralizedChamber φ D.WJ)
+  change (fun x ↦ (g * g') • x) '' generalizedChamber P b B (inactiveRoots b J) =
+    (fun x ↦ g • x) '' ((fun x ↦ g' • x) '' generalizedChamber P b B (inactiveRoots b J))
   rw [Set.image_image]
-  simp only [Function.comp_def]
+  simp only [Function.comp_def, mul_smul]
 
 /-- Linear equivalences preserve intersections of translates. -/
-theorem map_inf_translate (g s : M ≃ₗ[ℝ] M) :
-    (D.maximalCone ⊓ D.translate s).map (g : M →ₗ[ℝ] M) =
+theorem map_inf_translate (g s : P.weylGroup) :
+    (D.maximalCone ⊓ D.translate s).map ((g : P.Aut).weightEquiv : M →ₗ[ℝ] M) =
       D.translate g ⊓ D.translate (g * s) := by
   apply SetLike.coe_injective
   apply Set.ext
@@ -492,229 +484,94 @@ theorem map_inf_translate (g s : M ≃ₗ[ℝ] M) :
   constructor
   · rintro ⟨y, ⟨hyL, hz⟩, rfl⟩
     obtain ⟨z, hzL, hzy⟩ := hz
-    exact ⟨⟨y, hyL, rfl⟩, ⟨z, hzL, congrArg (fun t : M => g t) hzy⟩⟩
+    have hgs : g • (s • z) = g • y := congrArg (fun t : M ↦ g • t) hzy
+    rw [← mul_smul] at hgs
+    exact ⟨⟨y, hyL, rfl⟩, ⟨z, hzL, hgs⟩⟩
   · rintro ⟨⟨y, hyL, hy⟩, ⟨z, hzL, hz⟩⟩
     refine ⟨y, ⟨hyL, ?_⟩, hy⟩
     refine ⟨z, hzL, ?_⟩
-    apply (LinearEquiv.injective g)
-    change (g * s) z = g y
+    apply (g : P.Aut).weightEquiv.injective
+    change (g * s) • z = g • y
     exact hz.trans hy.symm
 
-/-- The one-step law transported by an arbitrary linear equivalence. -/
-theorem inf_translate_simple_isFaceOf (g : M ≃ₗ[ℝ] M) {i : ι} (hi : i ∉ J) :
-    (D.translate g ⊓ D.translate (g * ((D.coxeterSystem.simple i : D.W) : M ≃ₗ[ℝ] M))).IsFaceOf
-      (D.translate g) := by
-  have hface := (D.inf_simple_isFaceOf hi).map_equiv g
+/-- The one-wall law transported by every Weyl-group element. -/
+theorem inf_translate_simple_isFaceOf (g : P.weylGroup) {i : b.support} (hi : i ∉ J) :
+    (D.translate g ⊓ D.translate (g * D.coxeterSystem.simple i)).IsFaceOf (D.translate g) := by
+  have hface := (D.inf_simple_isFaceOf hi).map_equiv ((g : P.Aut).weightEquiv)
   rw [D.map_inf_translate] at hface
   exact hface
 
-/-- The generalized chamber is invariant under every linear equivalence that normalizes the
-parabolic. -/
-theorem image_eq_generalizedChamber_of_normalizes (φ : ι → M →ₗ[ℝ] ℝ)
-    (WJ : Subgroup (M ≃ₗ[ℝ] M)) {g : M ≃ₗ[ℝ] M}
-    (hpos : ∀ h ∈ WJ, g * h ∈ WJ) (hneg : ∀ h ∈ WJ, g⁻¹ * h ∈ WJ) :
-    g '' aetGeneralizedChamber φ WJ = aetGeneralizedChamber φ WJ := by
-  rw [aetGeneralizedChamber, Set.image_iUnion]
-  refine le_antisymm ?_ ?_
-  · refine Set.iUnion_subset fun h => ?_
-    rw [Set.image_image]
-    exact Set.subset_iUnion (fun k : WJ => (k : M ≃ₗ[ℝ] M) '' aetChamber φ) ⟨g * h, hpos h h.2⟩
-  · refine Set.iUnion_subset fun h => ?_
-    rintro x ⟨y, hy, rfl⟩
-    have hkey : (h : M ≃ₗ[ℝ] M) y
-        = g (((⟨g⁻¹ * (h : M ≃ₗ[ℝ] M), hneg h h.2⟩ : WJ) : M ≃ₗ[ℝ] M) y) := by
-      rw [show ((⟨g⁻¹ * (h : M ≃ₗ[ℝ] M), hneg h h.2⟩ : WJ) : M ≃ₗ[ℝ] M)
-          = g⁻¹ * (h : M ≃ₗ[ℝ] M) from rfl]
-      simp
-    rw [hkey]
-    exact Set.mem_iUnion.mpr ⟨⟨g⁻¹ * (h : M ≃ₗ[ℝ] M), hneg h h.2⟩,
-      Set.mem_image_of_mem g (Set.mem_image_of_mem _ hy)⟩
-
-/-- A member of the inactive parabolic fixes the generalized chamber setwise. -/
-theorem translate_eq_of_mem_WJ {g : M ≃ₗ[ℝ] M} (hg : g ∈ D.WJ) :
+/-- An element of the inactive parabolic fixes the generalized chamber setwise. -/
+theorem translate_eq_of_mem_irrelevant {g : P.weylGroup}
+    (hg : g ∈ irrelevantReflectionSubgroup P (inactiveRoots b J)) :
     D.translate g = D.maximalCone := by
   apply SetLike.coe_injective
   rw [coe_translate, coe_maximalCone]
-  exact image_eq_generalizedChamber_of_normalizes φ D.WJ
-    (fun _ hh => D.WJ.mul_mem hg hh) (fun _ hh => D.WJ.mul_mem (D.WJ.inv_mem hg) hh)
+  let gu : irrelevantReflectionSubgroup P (inactiveRoots b J) := ⟨g, hg⟩
+  apply Set.Subset.antisymm
+  · rintro x ⟨y, hy, rfl⟩
+    exact generalizedChamber_smul_mem P b B (inactiveRoots b J) hy gu
+  · intro x hx
+    refine ⟨gu⁻¹ • x, generalizedChamber_smul_mem P b B (inactiveRoots b J) hx gu⁻¹, ?_⟩
+    exact smul_inv_smul gu x
 
 /-- Each inactive simple generator belongs to the specified standard parabolic. -/
-theorem simple_mem_WJ {i : ι} (hi : i ∈ J) :
-    ((D.coxeterSystem.simple i : D.W) : M ≃ₗ[ℝ] M) ∈ D.WJ := by
-  rw [D.WJ_eq]
-  apply Subgroup.mem_map.mpr
-  refine ⟨D.coxeterSystem.simple i, ?_, rfl⟩
-  exact Subgroup.subset_closure ⟨⟨i, hi⟩, rfl⟩
+theorem simple_mem_irrelevant {i : b.support} (hi : i ∈ J) :
+    RootPairing.weylGroup.ofIdx P (i : ι) ∈ irrelevantReflectionSubgroup P (inactiveRoots b J) := by
+  apply Subgroup.subset_closure
+  refine ⟨(i : ι), ?_, rfl⟩
+  classical
+  simp [inactiveRoots, hi]
 
-/-- Multiplication on the right by a parabolic element does not change a translate. -/
-theorem translate_mul_eq_of_mem_WJ (g : M ≃ₗ[ℝ] M) {v : M ≃ₗ[ℝ] M} (hv : v ∈ D.WJ) :
+/-- The abstract standard parabolic is the AET inactive reflection subgroup. -/
+theorem standardParabolic_eq_irrelevant :
+    standardParabolic D.coxeterSystem J = irrelevantReflectionSubgroup P (inactiveRoots b J) := by
+  apply le_antisymm
+  · rw [standardParabolic, Subgroup.closure_le]
+    rintro x ⟨j, rfl⟩
+    change D.coxeterSystem.simple j ∈ irrelevantReflectionSubgroup P (inactiveRoots b J)
+    rw [D.simpleReflection]
+    exact simple_mem_irrelevant (P := P) (b := b) (J := J) j.property
+  · rw [irrelevantReflectionSubgroup, Subgroup.closure_le]
+    rintro x ⟨j, hj, rfl⟩
+    classical
+    change j ∈ J.map ⟨fun i : b.support ↦ (i : ι), Subtype.val_injective⟩ at hj
+    obtain ⟨i, hi, hij⟩ := Finset.mem_map.mp hj
+    subst j
+    change RootPairing.weylGroup.ofIdx P (i : ι) ∈ standardParabolic D.coxeterSystem J
+    rw [← D.simpleReflection i]
+    exact Subgroup.subset_closure ⟨⟨i, hi⟩, rfl⟩
+
+/-- Right multiplication by an inactive parabolic element does not change a translate. -/
+theorem translate_mul_eq_of_mem_irrelevant (g : P.weylGroup) {v : P.weylGroup}
+    (hv : v ∈ irrelevantReflectionSubgroup P (inactiveRoots b J)) :
     D.translate (g * v) = D.translate g := by
-  rw [D.translate_mul, D.translate_eq_of_mem_WJ hv]
+  rw [D.translate_mul, D.translate_eq_of_mem_irrelevant hv]
   rfl
 
-/-- The abstract standard parabolic is contained in the geometric parabolic. -/
-theorem parabolic_mem_WJ (u : standardParabolic D.coxeterSystem J) :
-    ((u : D.W) : M ≃ₗ[ℝ] M) ∈ D.WJ := by
-  rw [D.WJ_eq]
-  exact Subgroup.mem_map.mpr ⟨u, u.property, rfl⟩
+theorem parabolic_mem_irrelevant (u : standardParabolic D.coxeterSystem J) :
+    (u : P.weylGroup) ∈ irrelevantReflectionSubgroup P (inactiveRoots b J) := by
+  rw [← D.standardParabolic_eq_irrelevant]
+  exact u.property
 
-/-- **The double-coset reduction of every translate.**  If `r = u g v` is minimum length in its
-parabolic double coset, then `g(L) = u⁻¹r(L)`.  In general `g(L)` is *not* `r(L)`: maximal cones
-are right cosets, not double cosets. -/
-theorem reduced_gallery (g : D.W) :
-    ∃ u v : standardParabolic D.coxeterSystem J, ∃ ω : List ι,
+/-- The double-coset-minimal reduced representative of every AET Weyl-group translate. -/
+theorem reduced_gallery (g : P.weylGroup) :
+    ∃ u v : standardParabolic D.coxeterSystem J, ∃ ω : List b.support,
       ParabolicReduced D.coxeterSystem J ω ∧
-        D.coxeterSystem.wordProd ω = (u : D.W) * g * (v : D.W) ∧
-      (g : M → M) '' aetGeneralizedChamber φ D.WJ =
-        (((u⁻¹ : D.W) * D.coxeterSystem.wordProd ω : D.W) : M → M) ''
-          aetGeneralizedChamber φ D.WJ := by
+        D.coxeterSystem.wordProd ω = (u : P.weylGroup) * g * (v : P.weylGroup) ∧
+      (fun x ↦ g • x) '' generalizedChamber P b B (inactiveRoots b J) =
+        (fun x ↦ ((u⁻¹ : P.weylGroup) * D.coxeterSystem.wordProd ω) • x) ''
+          generalizedChamber P b B (inactiveRoots b J) := by
   obtain ⟨u, v, ω, hred, hprod⟩ := exists_parabolicReduced D.coxeterSystem J g
   refine ⟨u, v, ω, hred, hprod, ?_⟩
-  have hcancel : (u⁻¹ : D.W) * D.coxeterSystem.wordProd ω = g * (v : D.W) := by
+  have hcancel : (u⁻¹ : P.weylGroup) * D.coxeterSystem.wordProd ω = g * (v : P.weylGroup) := by
     rw [hprod]
     group
-  have hright : D.translate ((g * (v : D.W) : D.W) : M ≃ₗ[ℝ] M) =
-      D.translate (g : M ≃ₗ[ℝ] M) := by
-    change D.translate ((g : M ≃ₗ[ℝ] M) * ((v : D.W) : M ≃ₗ[ℝ] M)) =
-      D.translate (g : M ≃ₗ[ℝ] M)
-    exact D.translate_mul_eq_of_mem_WJ g (D.parabolic_mem_WJ v)
-  have hcones := congrArg (fun w : D.W ↦ D.translate (w : M ≃ₗ[ℝ] M)) hcancel
+  have hright : D.translate (g * (v : P.weylGroup)) = D.translate g :=
+    D.translate_mul_eq_of_mem_irrelevant g (D.parabolic_mem_irrelevant v)
+  have hcones := congrArg (fun w : P.weylGroup ↦ D.translate w) hcancel
   rw [hright] at hcones
   exact congrArg (fun C : PointedCone ℝ M ↦ (C : Set M)) hcones.symm
-
-/-- A gallery step with an inactive generator does not change the parabolic translate. -/
-theorem inf_translate_word_singleton_isFaceOf (g : M ≃ₗ[ℝ] M) (i : ι) :
-    (D.translate g ⊓ D.translate (g * ((D.coxeterSystem.simple i : D.W) : M ≃ₗ[ℝ] M))).IsFaceOf
-      (D.translate g) := by
-  by_cases hi : i ∈ J
-  · have hs := D.simple_mem_WJ hi
-    have heq : D.translate (g * ((D.coxeterSystem.simple i : D.W) : M ≃ₗ[ℝ] M)) =
-        D.translate g := by
-      rw [D.translate_mul, D.translate_eq_of_mem_WJ hs]
-      rfl
-    rw [heq, inf_idem]
-  · exact D.inf_translate_simple_isFaceOf g hi
-
-/-- **Reduced-gallery prefix nesting (deliberate red declaration for #181).**  This is the exact
-geometric domain and codomain used by `inf_wordProd_isFaceOf`: a point of the generalized AET
-chamber which also lies in the translate at the end of a reduced gallery lies in every prefix
-translate, with no finiteness restriction on `W` or `W_J`.
-
-The remaining Coxeter lemma is **Maxwell, Proposition 5.1, in the standard geometric
-representation**: for every `w : D.W`, every simple index `i` which is not a left descent of `w`,
-and every `y ∈ aetChamber φ`,
-`0 ≤ φ i (((w : M ≃ₗ[ℝ] M) : M → M) y)`.
-This is the ascent-on-the-chamber theorem used by Maxwell 5.5, not a consequence of double-coset
-minimality or word reducedness.  The present abstract `wall_preserving` field does not state that
-`φ` and `root` form Maxwell's standard geometric representation, so the attempted application is
-intentionally red.  It is not added as a field or a theorem hypothesis. -/
-theorem gallery (ω : List ι) (hred : ParabolicLeftReduced D.coxeterSystem J ω)
-    (z : M) (hzL : z ∈ aetGeneralizedChamber φ D.WJ)
-    (hzω : z ∈ (((D.coxeterSystem.wordProd ω : D.W) : M → M) ''
-      aetGeneralizedChamber φ D.WJ)) (k : ℕ) :
-    z ∈ (((D.coxeterSystem.wordProd (ω.take k) : D.W) : M → M) ''
-      aetGeneralizedChamber φ D.WJ) := by
-  have _ascent : ∀ (w : D.W) (i : ι), ¬D.coxeterSystem.IsLeftDescent w i →
-      ∀ y ∈ aetChamber φ, 0 ≤ φ i (((w : M ≃ₗ[ℝ] M) : M → M) y) := by
-    exact CoxeterSystem.nonneg_simple_apply_of_not_isLeftDescent
-
-/-- **Gallery induction.**  The intersection of the base generalized chamber with any
-parabolic-reduced translate is a face of the base chamber. -/
-theorem inf_wordProd_isFaceOf (ω : List ι) (hred : ParabolicLeftReduced D.coxeterSystem J ω) :
-    (D.maximalCone ⊓ D.translate (D.coxeterSystem.wordProd ω)).IsFaceOf D.maximalCone := by
-  induction ω using List.reverseRecOn with
-  | nil => simp
-  | append_singleton ω i ih =>
-      rw [D.coxeterSystem.wordProd_append, D.coxeterSystem.wordProd_singleton]
-      have hred' : ParabolicLeftReduced D.coxeterSystem J ω := parabolicLeftReduced_take hred
-      have hpre := ih hred'
-      refine ⟨inf_le_left, ?_⟩
-      intro x y a hx hy ha hxy
-      have hzraw : (a • x + y) ∈
-          (((D.coxeterSystem.wordProd (ω ++ [i]) : D.W) : M → M) ''
-            aetGeneralizedChamber φ D.WJ) := by
-        rw [D.coxeterSystem.wordProd_append, D.coxeterSystem.wordProd_singleton]
-        simpa only [coe_translate, coe_maximalCone] using hxy.2
-      have hzpre := D.gallery (ω ++ [i]) hred (a • x + y) hxy.1 hzraw ω.length
-      simp only [List.take_left] at hzpre
-      have hzpreCone : a • x + y ∈ D.maximalCone ⊓ D.translate (D.coxeterSystem.wordProd ω) :=
-        ⟨hxy.1, by simpa only [coe_translate, coe_maximalCone] using hzpre⟩
-      have hxpre := hpre.mem_of_smul_add_mem hx hy ha hzpreCone
-      have hypre := hpre.mem_of_smul_add_mem hy (D.maximalCone.smul_mem ha.le hx) zero_lt_one
-        (by simpa only [add_comm, one_smul] using hzpreCone)
-      have hloc := D.inf_translate_word_singleton_isFaceOf (D.coxeterSystem.wordProd ω) i
-      have hxf := hloc.mem_of_smul_add_mem hxpre.2 hypre.2 ha ⟨hzpreCone.2, hxy.2⟩
-      exact ⟨hx, hxf.2⟩
-
-/-- **The maximal-cone intersection law, universally.**  A reduced representative is transported
-back by the first group element, and the resulting face is mapped by that linear equivalence. -/
-theorem maximalConesMeetInFaces : D.MaximalConesMeetInFaces := by
-  intro g hg g' hg'
-  let u : D.W := ⟨g⁻¹ * g', D.W.mul_mem (D.W.inv_mem hg) hg'⟩
-  obtain ⟨a, v, ω, hred, -, hω⟩ := D.reduced_gallery u
-  have hωcone : D.translate (u : M ≃ₗ[ℝ] M) =
-      D.translate (((a⁻¹ : D.W) * D.coxeterSystem.wordProd ω : D.W) : M ≃ₗ[ℝ] M) := by
-    apply SetLike.coe_injective
-    rw [coe_translate, coe_translate]
-    exact hω
-  have hbase := D.inf_wordProd_isFaceOf ω hred.toParabolicLeftReduced
-  have hparabolic := hbase.map_equiv ((a⁻¹ : D.W) : M ≃ₗ[ℝ] M)
-  have ha : D.translate ((a⁻¹ : D.W) : M ≃ₗ[ℝ] M) = D.maximalCone :=
-    D.translate_eq_of_mem_WJ (D.WJ.inv_mem (D.parabolic_mem_WJ a))
-  have ha' : D.maximalCone.map (((a⁻¹ : D.W) : M ≃ₗ[ℝ] M) : M →ₗ[ℝ] M) =
-      D.maximalCone := ha
-  rw [D.map_inf_translate, ha, ha'] at hparabolic
-  change (D.maximalCone ⊓ D.translate
-    (((a⁻¹ : D.W) * D.coxeterSystem.wordProd ω : D.W) : M ≃ₗ[ℝ] M)).IsFaceOf
-      D.maximalCone at hparabolic
-  rw [← hωcone] at hparabolic
-  have hmapped := hparabolic.map_equiv g
-  have hgu : g * (u : M ≃ₗ[ℝ] M) = g' := by
-    dsimp [u]
-    group
-  rw [D.map_inf_translate, hgu] at hmapped
-  exact hmapped
-
-/-- The same law on the right. -/
-theorem maximalConesMeetInFaces_right {g g' : M ≃ₗ[ℝ] M} (hg : g ∈ D.W) (hg' : g' ∈ D.W) :
-    (D.translate g ⊓ D.translate g').IsFaceOf (D.translate g') := by
-  rw [inf_comm]
-  exact D.maximalConesMeetInFaces g' hg' g hg
-
-/-! ## The two fan clauses for every member -/
-
-/-- **O3, left common-face clause.**  Any two members of the coarsened family meet in a face of
-the first member. -/
-theorem inf_isFaceOf_left {F F' : PointedCone ℝ M}
-    (hF : F ∈ D.coarsenedCones) (hF' : F' ∈ D.coarsenedCones) :
-    (F ⊓ F').IsFaceOf F := by
-  obtain ⟨g, hg, hFface⟩ := hF
-  obtain ⟨g', hg', hF'face⟩ := hF'
-  refine ⟨inf_le_left, ?_⟩
-  intro x y a hx hy ha hxy
-  have hmax := D.maximalConesMeetInFaces g hg g' hg'
-  have hxmax := hmax.mem_of_smul_add_mem (hFface.le hx) (hFface.le hy) ha
-    ⟨hFface.le hxy.1, hF'face.le hxy.2⟩
-  have hymax := hmax.mem_of_smul_add_mem (hFface.le hy)
-    ((D.translate g).smul_mem ha.le (hFface.le hx)) zero_lt_one
-    (by simpa only [add_comm, one_smul] using
-      (show a • x + y ∈ D.translate g ⊓ D.translate g' from
-        ⟨hFface.le hxy.1, hF'face.le hxy.2⟩))
-  exact ⟨hx, hF'face.mem_of_smul_add_mem hxmax.2 hymax.2 ha hxy.2⟩
-
-/-- **O3, right common-face clause.**  Any two members of the coarsened family meet in a face of
-the second member. -/
-theorem inf_isFaceOf_right {F F' : PointedCone ℝ M}
-    (hF : F ∈ D.coarsenedCones) (hF' : F' ∈ D.coarsenedCones) :
-    (F ⊓ F').IsFaceOf F' := by
-  rw [inf_comm]
-  exact D.inf_isFaceOf_left hF' hF
-
-/-- The intersection of two members belongs to the family. -/
-theorem inf_mem {F F' : PointedCone ℝ M}
-    (hF : F ∈ D.coarsenedCones) (hF' : F' ∈ D.coarsenedCones) :
-    F ⊓ F' ∈ D.coarsenedCones :=
-  D.mem_of_isFaceOf hF (D.inf_isFaceOf_left hF hF')
 
 end WythoffCoarseningDatum
 

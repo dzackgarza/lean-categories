@@ -5,6 +5,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import LeanCategories.Lattices.Valued.RationalPolyhedralCone
+public import LeanCategories.ForMathlib.RootSystem.PositiveReflection
 public import Mathlib.Basic.Real.Basic
 public import Mathlib.LinearAlgebra.RootSystem.Base
 public import Mathlib.LinearAlgebra.RootSystem.WeylGroup
@@ -288,7 +289,7 @@ lemma notMem_weylGroupToPerm_irrelevant {i : ι}
   rw [hone] at hzero
   exact one_ne_zero hzero
 
-omit [DecidableEq ι] in
+omit [DecidableEq ι] [Finite ι] in
 lemma isPos_weylGroupToPerm_irrelevant {i : ι}
     (hi : b.IsPos i) (hiSupport : i ∈ b.support) (hiJ : i ∉ J) (hJ : J ⊆ b.support)
     (h : irrelevantReflectionSubgroup P J) :
@@ -304,7 +305,7 @@ lemma isPos_weylGroupToPerm_irrelevant {i : ι}
   induction hsub using Submonoid.closure_induction generalizing i with
   | mem x hx =>
       obtain ⟨j, hj, rfl⟩ := hx
-      exact hi.reflectionPerm (hJ hj)
+      exact RootPairing.Base.isPos_reflectionPerm_of_ne P b (hJ hj) hi
         (fun hji ↦ hiJ (hji ▸ hj))
   | one => exact hi
   | mul x y hx hy ihx ihy =>
@@ -338,6 +339,7 @@ lemma eval_root_apply_eq_inv_smul {i : ι} (h : P.weylGroup) (x : M) :
   rw [inv_smul_smul] at hinv
   exact hinv.symm
 
+omit [Finite ι] in
 lemma generalizedChamber_subset_activeHalfspaceIntersection (hJ : J ⊆ b.support) :
     generalizedChamber P b B J ⊆ activeHalfspaceIntersection P b B J := by
   intro x hx
@@ -386,6 +388,7 @@ lemma subset_generalizedChamber_of_mem_activeHalfspaceIntersection
   refine ⟨(h⁻¹ : irrelevantReflectionSubgroup P J), h • x, hch, ?_⟩
   exact inv_smul_smul h x
 
+omit [Finite ι] in
 /-- **Alexeev–Engel–Thompson, Proposition 4.17(1), finite standard-parabolic case.**
 The union of the chambers indexed by a finite irrelevant parabolic is exactly the intersection
 of the transformed active half-spaces. The coroot-interior condition is precisely the one used

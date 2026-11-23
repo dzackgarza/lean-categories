@@ -169,6 +169,7 @@ lemma northcottHeightFinitenessAt_of_finite_parabolic
     NorthcottHeightFinitenessAt P B J ρ x :=
   Set.toFinite _
 
+omit [Finite ι] in
 /-- The height minimizer of the reflection-descent argument, from the pointwise Northcott
 height finiteness hypothesis alone. -/
 lemma exists_minimal_height (ρ : M) {x : M}
@@ -185,6 +186,7 @@ lemma exists_minimal_height (ρ : M) {x : M}
     le_trans hcon.le hmin.1
   exact absurd (hmin.2 hgs hcon.le) (not_le.mpr hcon)
 
+omit [Finite ι] in
 /-- **Reverse inclusion of AET Proposition 4.17(1), pointwise form.**  A point of the
 intersection of the active transformed half-spaces which does not already lie in the chamber
 is carried into the fundamental chamber by an element of the standard parabolic `W_J`, provided
@@ -226,6 +228,7 @@ def GeneralizedChamberCovers : Prop :=
   ∀ x ∈ activeHalfspaceIntersection P b B J,
     ∃ h : irrelevantReflectionSubgroup P J, h • x ∈ fundamentalChamber P b B
 
+omit [Finite ι] in
 /-- The active half-space description is equivalent to the chamber-covering property, the
 forward inclusion being unconditional. -/
 lemma generalizedChamber_eq_iff_covers (hJ : J ⊆ b.support) :
@@ -245,6 +248,7 @@ lemma generalizedChamber_eq_iff_covers (hJ : J ⊆ b.support) :
     exact Set.mem_iUnion.mpr
       ⟨(h⁻¹ : irrelevantReflectionSubgroup P J), h • x, hh, inv_smul_smul h x⟩
 
+omit [Finite ι] in
 /-- **Alexeev–Engel–Thompson, Proposition 4.17(1), infinite standard parabolic case.**  The
 union of the chambers indexed by the standard parabolic of an arbitrary finite set `J` of
 irrelevant simple roots is exactly the intersection of the transformed active half-spaces.
@@ -271,6 +275,7 @@ theorem generalizedChamber_eq_activeHalfspaceIntersection_of_finite_parabolic
   generalizedChamber_eq_activeHalfspaceIntersection_of_northcott P b B J ρ hρcoroot
     (fun x _ _ ↦ northcottHeightFinitenessAt_of_finite_parabolic P B J ρ x) hJ
 
+omit [Finite ι] in
 /-- `L` is stable under the standard parabolic: it is a union of `W_J`-translates.  No
 finiteness of `W_J` is used. -/
 lemma generalizedChamber_smul_mem {x : M} (hx : x ∈ generalizedChamber P b B J)
@@ -280,6 +285,7 @@ lemma generalizedChamber_smul_mem {x : M} (hx : x ∈ generalizedChamber P b B J
   obtain ⟨h, y, hy, rfl⟩ := hx
   exact ⟨g * h, y, hy, mul_smul g h y⟩
 
+omit [Finite ι] in
 /-- The active half-space intersection is convex: it is cut out by linear inequalities.  No
 hypothesis on `W_J` is used. -/
 lemma convex_activeHalfspaceIntersection :
@@ -301,6 +307,7 @@ lemma convex_activeHalfspaceIntersection :
   have h2 : 0 ≤ b * B.form (P.root i) (h • y) := mul_nonneg hb hy'
   linarith
 
+omit [Finite ι] in
 /-- **Convexity of the generalized chamber, AET Proposition 4.17(1), infinite `W_J` case.** -/
 theorem convex_generalizedChamber_of_northcott
     (ρ : M) (hρ : ∀ j ∈ J, P.toLinearMap.flip (P.coroot j) ρ < 0)
@@ -322,11 +329,13 @@ lemma activeHalfspaceIntersection_smul_mem {x : M}
   rw [← mul_smul]
   exact this
 
+omit [Finite ι] in
 /-- The standard parabolic is monotone in the set of irrelevant simple roots. -/
 lemma irrelevantReflectionSubgroup_mono {J J' : Finset ι} (h : J ⊆ J') :
     irrelevantReflectionSubgroup P J ≤ irrelevantReflectionSubgroup P J' :=
   Subgroup.closure_mono (Set.image_mono (Finset.coe_subset.mpr h))
 
+omit [Finite ι] in
 /-- The generalized chamber is monotone in the set of irrelevant simple roots: enlarging the
 parabolic enlarges the union of chambers.  No finiteness of `W_J` is used. -/
 lemma generalizedChamber_mono {J J' : Finset ι} (h : J ⊆ J') :
@@ -379,6 +388,7 @@ lemma northcottHeightFinitenessAt_of_discrete_bounded {ρ x : M} {t δ : ℝ} (h
   have hnN : n ≤ N := by exact_mod_cast hnNR
   exact Set.mem_iUnion₂.mpr ⟨n, Finset.mem_Icc.mpr ⟨hn0, hnN⟩, hn⟩
 
+omit [Finite ι] in
 /-- **The AET chamber hypothesis bundle.**  The source-matched hypotheses under which the
 half-space description of the generalized chamber is proved here for an arbitrary finite set
 `J` of inactive simple roots:
@@ -455,6 +465,7 @@ noncomputable def AETChamberHypotheses.of_subset (ρ : M)
   positiveCone_smul_mem := hCstable
   positiveCone_salient := hsal
 
+omit [Finite ι] in
 /-- **Alexeev–Engel–Thompson, Proposition 4.17(1), from the hypothesis bundle**, for an
 arbitrary finite set `J` of inactive simple roots and an arbitrary standard parabolic `W_J`. -/
 theorem generalizedChamber_eq_activeHalfspaceIntersection_of_hypotheses
@@ -463,6 +474,7 @@ theorem generalizedChamber_eq_activeHalfspaceIntersection_of_hypotheses
   generalizedChamber_eq_activeHalfspaceIntersection_of_northcott P b B J H.rho H.rho_neg
     H.northcott H.J_subset
 
+omit [Finite ι] in
 /-- **Convexity of the generalized chamber from the hypothesis bundle** (AET Proposition
 4.17(1): "In particular, `L` is convex"). -/
 theorem convex_generalizedChamber_of_hypotheses (H : AETChamberHypotheses P b B J) :
@@ -648,6 +660,7 @@ variable {ι M N : Type*} [DecidableEq ι] [Finite ι]
   (P : RootPairing ι ℝ M N) [P.IsCrystallographic] [P.IsReduced]
   (b : P.Base) (B : P.InvariantForm) (J : Finset ι)
 
+omit [Finite ι] in
 /-- The fundamental chamber as a convex cone. -/
 noncomputable def aetFundamentalChamberConvexCone : ConvexCone ℝ M where
   carrier := fundamentalChamber P b B
@@ -668,6 +681,7 @@ noncomputable def aetFundamentalChamberConvexCone : ConvexCone ℝ M where
 @[simp] theorem coe_aetFundamentalChamberConvexCone :
     (aetFundamentalChamberConvexCone P b B : Set M) = fundamentalChamber P b B := rfl
 
+omit [Finite ι] in
 /-- The active half-space cone of AET Proposition 4.17(1) as a convex cone. -/
 noncomputable def aetActiveHalfspaceConvexCone : ConvexCone ℝ M where
   carrier := activeHalfspaceIntersection P b B J
