@@ -7,6 +7,7 @@ module
 public import LeanCategories.Lattices.Valued.WythoffSemifan
 public import Mathlib.Geometry.Convex.Cone.Face.Basic
 public import Mathlib.GroupTheory.Coxeter.Length
+public import LeanCategories.ForMathlib.Coxeter.Parabolic
 public import Mathlib.Tactic
 
 /-!
@@ -45,9 +46,12 @@ family is a set of pointed cones and a face is a subcone, never a bare subset.
 ## What is proved
 
 * **O1, domain and codomain.**  `WythoffCoarseningDatum` retains the original AET fields and adds
-  the root/wall system, Coxeter presentation, inactive standard parabolic, positive-cone data,
-  wall preservation, and reduced-gallery convexity.  `coarsenedCones : Set (PointedCone ℝ M)` is
-  the family of every intrinsic face of every `W`-translate of `𝒞_gen`.
+  the root/wall system, Coxeter presentation, inactive standard parabolic, positive-cone data and
+  wall preservation.  `coarsenedCones : Set (PointedCone ℝ M)` is the family of every intrinsic
+  face of every `W`-translate of `𝒞_gen`.  The #181 algebraic bridge removes `reduced_gallery`
+  and `parabolicReduced_take` as fields: double-coset reduction is now proved by
+  `WythoffCoarseningDatum.reduced_gallery`, and prefix induction uses the proved hereditary
+  predicate `ParabolicLeftReduced`.
 * **O2, universal face closure.**  `mem_of_isFaceOf` applies `IsFaceOf.trans` to every member, with
   no finiteness assumption.  `maximal_mem`, `translate_mem` and `map_mem` cover the three ways in
   which members arise directly from the construction.
@@ -83,11 +87,20 @@ chamber faces.
 ## Hypotheses and provenance
 
 There is no `Finite W_J`, no `WJ = ⊤` or `Subsingleton W` specialization, and no arbitrary-`W`
-counterexample.  `coxeterSystem`, `WJ_eq`, `simpleReflection_apply`, the positive-cone fields, and
-`wall_preserving` make the full geometric data explicit.  `gallery` records reduced-gallery
-convexity, and `reduced_gallery` supplies a reduced representative of every translate.  Maxwell,
-Proposition 5.5, gives the stronger parabolic intersection formula from which this nesting follows;
-its index is the complement `S_w^c`, as the printed page confirms.
+counterexample.  `coxeterSystem`, `WJ_eq`, `simpleReflection_apply`, the positive-cone fields and
+`wall_preserving` make explicit the geometric data present in the conditional #180 development.
+`ParabolicReduced` is a reduced word which is minimal in its `W_J`-double coset.  A minimal
+representative `r = u g v` need not give the same cone as `g`; the correct translate identity is
+`g(L) = u⁻¹r(L)`, which is what `reduced_gallery` proves.  Prefixes need only one-sided
+minimality, supplied by `ParabolicReduced.toParabolicLeftReduced` and
+`parabolicLeftReduced_take`.
+
+Maxwell, Proposition 5.5, gives the sharper parabolic intersection formula in the **standard
+geometric representation**.  Its index is `Z = X ∩ Y ∩ S_w^c`, where `S_w` is the support of a
+reduced decomposition and `S_w^c` denotes the simple reflections commuting with every element of
+`S_w` (Maxwell's Section 1 notation), not the set complement.  Proposition 5.5 uses the
+standard-representation ascent and chamber-stabilizer results 5.1–5.3 and Theorem 1.3; it imposes
+no finiteness on `W` or `W_J`, and no euclidean or hyperbolic hypothesis.
 
 ## LC-09 search record (renewed after full source review)
 
@@ -97,8 +110,13 @@ the two target clauses.  The chamber transitivity in `WeylChambers.lean` does no
 parabolic coarsening theorem.
 
 *Mathlib*: `PointedCone.IsFaceOf` is reused.  The Coxeter presentation and length API is
-`CoxeterSystem`, including `wordProd` and double-coset-length arithmetic.  No Tits cone or
-chamber-coarsening theorem is present.
+`CoxeterSystem`, including `wordProd`, `IsReduced` and the two descent predicates.  It has no
+double-coset minimality or standard-geometric ascent/chamber theorem, and no Tits cone or
+chamber-coarsening theorem.  The needed one-sided parabolic and exchange APIs were therefore
+ported from TauCeti's `GroupTheory/Coxeter/{Basic,StrongExchange,Parabolic}.lean` (Tau Ceti
+contributors, Apache 2.0), rather than reconstructed.  Those ports prove arbitrary-parabolic
+factorization, length additivity and the descent characterization used by
+`parabolicLeftReduced_iff`.
 
 *Formalization corpus*: queries included `content:"generalized Coxeter semifan"`, `content:Wythoff
 content:fan`, `content:coarsening content:Coxeter`, `content:"common face" content:chamber`,
@@ -157,24 +175,130 @@ def standardParabolic {ℳ : CoxeterMatrix ι} {W : Type*} [Group W]
     (cs : CoxeterSystem ℳ W) (J : Finset ι) : Subgroup W :=
   Subgroup.closure (Set.range (fun j : J => cs.simple j))
 
-/-- Minimality of a word in its double coset for the inactive standard parabolic. -/
+/-- The `Finset` presentation agrees with the usual standard parabolic indexed by a set. -/
+theorem standardParabolic_eq {ℳ : CoxeterMatrix ι} {W : Type*} [Group W]
+    (cs : CoxeterSystem ℳ W) (J : Finset ι) :
+    standardParabolic cs J = cs.parabolic (J : Set ι) := by
+  change Subgroup.closure (Set.range (fun j : J => cs.simple j)) =
+    Subgroup.closure (cs.simple '' (J : Set ι))
+  congr 1
+  ext x
+  constructor
+  · rintro ⟨j, rfl⟩
+    exact ⟨j, j.property, rfl⟩
+  · rintro ⟨i, hi, rfl⟩
+    exact ⟨⟨i, hi⟩, rfl⟩
+
+/-- A reduced word whose product has minimum length in its double coset for the inactive
+standard parabolic.  The word-reducedness clause is necessary: without it, `[j, j]` for `j ∈ J`
+would qualify although its prefix `[j]` is not minimal. -/
 def ParabolicReduced {ℳ : CoxeterMatrix ι} {W : Type*} [Group W]
     (cs : CoxeterSystem ℳ W) (J : Finset ι) (ω : List ι) : Prop :=
-  ∀ u v : standardParabolic cs J,
+  cs.IsReduced ω ∧ ∀ u v : standardParabolic cs J,
     cs.length (cs.wordProd ω) ≤ cs.length ((u : W) * cs.wordProd ω * (v : W))
+
+/-- Minimum length in a double coset of the inactive standard parabolic. -/
+def IsParabolicMinimal {ℳ : CoxeterMatrix ι} {W : Type*} [Group W]
+    (cs : CoxeterSystem ℳ W) (J : Finset ι) (w : W) : Prop :=
+  ∀ u v : standardParabolic cs J, cs.length w ≤ cs.length ((u : W) * w * (v : W))
+
+/-- Every double coset has a minimum-length representative, with no finiteness assumption on
+either the Coxeter group or the standard parabolic. -/
+theorem exists_isParabolicMinimal {ℳ : CoxeterMatrix ι} {W : Type*} [Group W]
+    (cs : CoxeterSystem ℳ W) (J : Finset ι) (g : W) :
+    ∃ u v : standardParabolic cs J, IsParabolicMinimal cs J ((u : W) * g * (v : W)) := by
+  classical
+  let candidates : ℕ → Prop := fun n ↦ ∃ u v : standardParabolic cs J,
+    cs.length ((u : W) * g * (v : W)) = n
+  have hcandidates : ∃ n, candidates n := by
+    refine ⟨cs.length g, 1, 1, ?_⟩
+    simp
+  obtain ⟨u, v, huv⟩ := Nat.find_spec hcandidates
+  refine ⟨u, v, fun a b ↦ ?_⟩
+  rw [huv]
+  exact Nat.find_le ⟨a * u, v * b, by simp only [Subgroup.coe_mul]; group⟩
+
+/-- Every translate has a reduced-word representative which is minimal in its
+`standardParabolic`-double coset. -/
+theorem exists_parabolicReduced {ℳ : CoxeterMatrix ι} {W : Type*} [Group W]
+    (cs : CoxeterSystem ℳ W) (J : Finset ι) (g : W) :
+    ∃ u v : standardParabolic cs J, ∃ ω : List ι,
+      ParabolicReduced cs J ω ∧ cs.wordProd ω = (u : W) * g * (v : W) := by
+  obtain ⟨u, v, hmin⟩ := exists_isParabolicMinimal cs J g
+  obtain ⟨ω, hω, hprod⟩ := cs.exists_isReduced ((u : W) * g * (v : W))
+  exact ⟨u, v, ω, ⟨hω, by rw [← hprod]; exact hmin⟩, hprod.symm⟩
+
+/-- The one-sided minimality inherited by every prefix of a reduced double-coset-minimal word.
+This is deliberately weaker than `ParabolicReduced`: a prefix of a double-coset representative
+need not remain minimal on the right. -/
+def ParabolicLeftReduced {ℳ : CoxeterMatrix ι} {W : Type*} [Group W]
+    (cs : CoxeterSystem ℳ W) (J : Finset ι) (ω : List ι) : Prop :=
+  cs.IsReduced ω ∧ ∀ u : standardParabolic cs J,
+    cs.length (cs.wordProd ω) ≤ cs.length ((u : W) * cs.wordProd ω)
+
+/-- Left-parabolic minimality is exactly the absence of inactive left descents. -/
+theorem parabolicLeftReduced_iff {ℳ : CoxeterMatrix ι} {W : Type*} [Group W]
+    {cs : CoxeterSystem ℳ W} {J : Finset ι} {ω : List ι} :
+    ParabolicLeftReduced cs J ω ↔
+      cs.IsReduced ω ∧ ∀ i ∈ J, ¬cs.IsLeftDescent (cs.wordProd ω) i := by
+  constructor
+  · rintro ⟨hred, hmin⟩
+    refine ⟨hred, fun i hi hdesc ↦ ?_⟩
+    let u : standardParabolic cs J :=
+      ⟨cs.simple i, Subgroup.subset_closure ⟨⟨i, hi⟩, rfl⟩⟩
+    have hle := hmin u
+    have hmem : (u : W) = cs.simple i := rfl
+    rw [hmem] at hle
+    exact (not_le_of_gt hdesc) hle
+  · rintro ⟨hred, hdesc⟩
+    refine ⟨hred, fun u ↦ ?_⟩
+    have hu : (u : W) ∈ cs.parabolic (J : Set ι) := by
+      rw [← standardParabolic_eq]
+      exact u.property
+    have hlength := cs.length_mul_of_forall_not_isLeftDescent hu hdesc
+    omega
+
+/-- Double-coset minimality gives minimality under left multiplication by the parabolic. -/
+theorem ParabolicReduced.toParabolicLeftReduced {ℳ : CoxeterMatrix ι} {W : Type*} [Group W]
+    {cs : CoxeterSystem ℳ W} {J : Finset ι} {ω : List ι}
+    (hred : ParabolicReduced cs J ω) : ParabolicLeftReduced cs J ω :=
+  ⟨hred.1, fun u ↦ by simpa using hred.2 u 1⟩
+
+/-- Prefixes of reduced left-parabolic-minimal words are again reduced and left-minimal. -/
+theorem parabolicLeftReduced_take {ℳ : CoxeterMatrix ι} {W : Type*} [Group W]
+    {cs : CoxeterSystem ℳ W} {J : Finset ι} {ω : List ι} {i : ι}
+    (hred : ParabolicLeftReduced cs J (ω ++ [i])) : ParabolicLeftReduced cs J ω := by
+  have hωred : cs.IsReduced ω := by simpa using hred.1.take ω.length
+  refine ⟨hωred, fun u ↦ ?_⟩
+  have hfull := hred.2 u
+  have hmul := cs.length_mul_le ((u : W) * cs.wordProd ω) (cs.simple i)
+  have hlength : cs.length (cs.wordProd (ω ++ [i])) = cs.length (cs.wordProd ω) + 1 := by
+    calc
+      cs.length (cs.wordProd (ω ++ [i])) = (ω ++ [i]).length := hred.1.eq
+      _ = ω.length + 1 := by simp
+      _ = cs.length (cs.wordProd ω) + 1 := by rw [hωred.eq]
+  rw [hlength, cs.wordProd_append, cs.wordProd_singleton] at hfull
+  rw [cs.length_simple] at hmul
+  have hassoc : (u : W) * (cs.wordProd ω * cs.simple i) =
+      ((u : W) * cs.wordProd ω) * cs.simple i := by group
+  rw [hassoc] at hfull
+  omega
 
 /-- The **domain** of the Wythoff coarsening.  The first six fields are the original AET
 interface.  The remaining fields restore the chamber geometry which that interface omitted.
 
 * `W` is identified with the chamber's Coxeter group by `coxeterSystem`, and `WJ` with the
   standard parabolic generated by the inactive simple reflections;
-* `root` and `simpleReflection_apply` say that the simple generators act as genuine wall
-  reflections, and `wall_preserving` says that `W` preserves the full wall system;
-* `positiveCone` is AET's positive cone, with chamber containment, `W`-stability and salience;
-* `gallery` records nesting along reduced galleries: a point in the base chamber and in the
-  translate at one end of the gallery lies in every prefix translate.  `reduced_gallery` supplies
-  such a gallery for every translate.  Maxwell, *Wythoff's Construction for Coxeter Groups*,
-  Proposition 5.5 gives the sharper intersection formula; nested prefixes are the form used below.
+* `root` and `simpleReflection_apply` say that the simple generators act by the wall-reflection
+  formula, and `wall_preserving` is the conditional #180 wall-preservation field;
+* `positiveCone` is AET's positive cone, with chamber containment, `W`-stability and salience.
+
+The #181 structure has no gallery fields.  `reduced_gallery` is proved below by Coxeter length
+minimization.  Prefix induction uses `ParabolicLeftReduced`, not the false assertion that every
+prefix of a double-coset-minimal word is again minimal on both sides.  The geometric `gallery`
+theorem is deliberately left as a reproducible red declaration: the current fields do not include
+Maxwell Proposition 5.1's standard-geometric ascent theorem, and this file does not smuggle it
+back in as a hypothesis.  The exact required statement is documented at that declaration.
 
 No field asserts that an intersection is a face, and no finiteness of `WJ` is assumed. -/
 structure WythoffCoarseningDatum (φ : ι → M →ₗ[ℝ] ℝ) (J : Finset ι) where
@@ -217,20 +341,6 @@ structure WythoffCoarseningDatum (φ : ι → M →ₗ[ℝ] ℝ) (J : Finset ι)
   positiveCone_stable : ∀ g : W, ∀ x ∈ positiveCone, ((g : M ≃ₗ[ℝ] M) x) ∈ positiveCone
   /-- The positive cone is salient. -/
   positiveCone_salient : positiveCone.Salient
-  /-- Nested parabolic galleries, for words minimal in their double cosets for the
-    standard parabolic. -/
-  gallery : ∀ ω : List ι, ParabolicReduced coxeterSystem J ω →
-    ∀ z ∈ aetGeneralizedChamber φ WJ,
-      z ∈ (((coxeterSystem.wordProd ω : W) : M → M) '' aetGeneralizedChamber φ WJ) →
-      ∀ k, z ∈ (((coxeterSystem.wordProd (ω.take k) : W) : M → M) ''
-        aetGeneralizedChamber φ WJ)
-  /-- Prefixes of double-coset-minimal galleries are again double-coset-minimal. -/
-  parabolicReduced_take : ∀ ω i, ParabolicReduced coxeterSystem J (ω ++ [i]) →
-    ParabolicReduced coxeterSystem J ω
-  /-- Every translate has a double-coset-minimal representative. -/
-  reduced_gallery : ∀ g : W, ∃ ω : List ι, ParabolicReduced coxeterSystem J ω ∧
-    (g : M → M) '' aetGeneralizedChamber φ WJ =
-      ((coxeterSystem.wordProd ω : W) : M → M) '' aetGeneralizedChamber φ WJ
 
 namespace WythoffCoarseningDatum
 
@@ -436,6 +546,42 @@ theorem simple_mem_WJ {i : ι} (hi : i ∈ J) :
   refine ⟨D.coxeterSystem.simple i, ?_, rfl⟩
   exact Subgroup.subset_closure ⟨⟨i, hi⟩, rfl⟩
 
+/-- Multiplication on the right by a parabolic element does not change a translate. -/
+theorem translate_mul_eq_of_mem_WJ (g : M ≃ₗ[ℝ] M) {v : M ≃ₗ[ℝ] M} (hv : v ∈ D.WJ) :
+    D.translate (g * v) = D.translate g := by
+  rw [D.translate_mul, D.translate_eq_of_mem_WJ hv]
+  rfl
+
+/-- The abstract standard parabolic is contained in the geometric parabolic. -/
+theorem parabolic_mem_WJ (u : standardParabolic D.coxeterSystem J) :
+    ((u : D.W) : M ≃ₗ[ℝ] M) ∈ D.WJ := by
+  rw [D.WJ_eq]
+  exact Subgroup.mem_map.mpr ⟨u, u.property, rfl⟩
+
+/-- **The double-coset reduction of every translate.**  If `r = u g v` is minimum length in its
+parabolic double coset, then `g(L) = u⁻¹r(L)`.  In general `g(L)` is *not* `r(L)`: maximal cones
+are right cosets, not double cosets. -/
+theorem reduced_gallery (g : D.W) :
+    ∃ u v : standardParabolic D.coxeterSystem J, ∃ ω : List ι,
+      ParabolicReduced D.coxeterSystem J ω ∧
+        D.coxeterSystem.wordProd ω = (u : D.W) * g * (v : D.W) ∧
+      (g : M → M) '' aetGeneralizedChamber φ D.WJ =
+        (((u⁻¹ : D.W) * D.coxeterSystem.wordProd ω : D.W) : M → M) ''
+          aetGeneralizedChamber φ D.WJ := by
+  obtain ⟨u, v, ω, hred, hprod⟩ := exists_parabolicReduced D.coxeterSystem J g
+  refine ⟨u, v, ω, hred, hprod, ?_⟩
+  have hcancel : (u⁻¹ : D.W) * D.coxeterSystem.wordProd ω = g * (v : D.W) := by
+    rw [hprod]
+    group
+  have hright : D.translate ((g * (v : D.W) : D.W) : M ≃ₗ[ℝ] M) =
+      D.translate (g : M ≃ₗ[ℝ] M) := by
+    change D.translate ((g : M ≃ₗ[ℝ] M) * ((v : D.W) : M ≃ₗ[ℝ] M)) =
+      D.translate (g : M ≃ₗ[ℝ] M)
+    exact D.translate_mul_eq_of_mem_WJ g (D.parabolic_mem_WJ v)
+  have hcones := congrArg (fun w : D.W ↦ D.translate (w : M ≃ₗ[ℝ] M)) hcancel
+  rw [hright] at hcones
+  exact congrArg (fun C : PointedCone ℝ M ↦ (C : Set M)) hcones.symm
+
 /-- A gallery step with an inactive generator does not change the parabolic translate. -/
 theorem inf_translate_word_singleton_isFaceOf (g : M ≃ₗ[ℝ] M) (i : ι) :
     (D.translate g ⊓ D.translate (g * ((D.coxeterSystem.simple i : D.W) : M ≃ₗ[ℝ] M))).IsFaceOf
@@ -449,15 +595,38 @@ theorem inf_translate_word_singleton_isFaceOf (g : M ≃ₗ[ℝ] M) (i : ι) :
     rw [heq, inf_idem]
   · exact D.inf_translate_simple_isFaceOf g hi
 
+/-- **Reduced-gallery prefix nesting (deliberate red declaration for #181).**  This is the exact
+geometric domain and codomain used by `inf_wordProd_isFaceOf`: a point of the generalized AET
+chamber which also lies in the translate at the end of a reduced gallery lies in every prefix
+translate, with no finiteness restriction on `W` or `W_J`.
+
+The remaining Coxeter lemma is **Maxwell, Proposition 5.1, in the standard geometric
+representation**: for every `w : D.W`, every simple index `i` which is not a left descent of `w`,
+and every `y ∈ aetChamber φ`,
+`0 ≤ φ i (((w : M ≃ₗ[ℝ] M) : M → M) y)`.
+This is the ascent-on-the-chamber theorem used by Maxwell 5.5, not a consequence of double-coset
+minimality or word reducedness.  The present abstract `wall_preserving` field does not state that
+`φ` and `root` form Maxwell's standard geometric representation, so the attempted application is
+intentionally red.  It is not added as a field or a theorem hypothesis. -/
+theorem gallery (ω : List ι) (hred : ParabolicLeftReduced D.coxeterSystem J ω)
+    (z : M) (hzL : z ∈ aetGeneralizedChamber φ D.WJ)
+    (hzω : z ∈ (((D.coxeterSystem.wordProd ω : D.W) : M → M) ''
+      aetGeneralizedChamber φ D.WJ)) (k : ℕ) :
+    z ∈ (((D.coxeterSystem.wordProd (ω.take k) : D.W) : M → M) ''
+      aetGeneralizedChamber φ D.WJ) := by
+  have _ascent : ∀ (w : D.W) (i : ι), ¬D.coxeterSystem.IsLeftDescent w i →
+      ∀ y ∈ aetChamber φ, 0 ≤ φ i (((w : M ≃ₗ[ℝ] M) : M → M) y) := by
+    exact CoxeterSystem.nonneg_simple_apply_of_not_isLeftDescent
+
 /-- **Gallery induction.**  The intersection of the base generalized chamber with any
 parabolic-reduced translate is a face of the base chamber. -/
-theorem inf_wordProd_isFaceOf (ω : List ι) (hred : ParabolicReduced D.coxeterSystem J ω) :
+theorem inf_wordProd_isFaceOf (ω : List ι) (hred : ParabolicLeftReduced D.coxeterSystem J ω) :
     (D.maximalCone ⊓ D.translate (D.coxeterSystem.wordProd ω)).IsFaceOf D.maximalCone := by
   induction ω using List.reverseRecOn with
   | nil => simp
   | append_singleton ω i ih =>
       rw [D.coxeterSystem.wordProd_append, D.coxeterSystem.wordProd_singleton]
-      have hred' : ParabolicReduced D.coxeterSystem J ω := D.parabolicReduced_take ω i hred
+      have hred' : ParabolicLeftReduced D.coxeterSystem J ω := parabolicLeftReduced_take hred
       have hpre := ih hred'
       refine ⟨inf_le_left, ?_⟩
       intro x y a hx hy ha hxy
@@ -482,17 +651,28 @@ back by the first group element, and the resulting face is mapped by that linear
 theorem maximalConesMeetInFaces : D.MaximalConesMeetInFaces := by
   intro g hg g' hg'
   let u : D.W := ⟨g⁻¹ * g', D.W.mul_mem (D.W.inv_mem hg) hg'⟩
-  obtain ⟨ω, hred, hω⟩ := D.reduced_gallery u
-  have hωcone : D.translate (u : M ≃ₗ[ℝ] M) = D.translate (D.coxeterSystem.wordProd ω) := by
+  obtain ⟨a, v, ω, hred, -, hω⟩ := D.reduced_gallery u
+  have hωcone : D.translate (u : M ≃ₗ[ℝ] M) =
+      D.translate (((a⁻¹ : D.W) * D.coxeterSystem.wordProd ω : D.W) : M ≃ₗ[ℝ] M) := by
     apply SetLike.coe_injective
     rw [coe_translate, coe_translate]
     exact hω
-  have hbase := D.inf_wordProd_isFaceOf ω hred
-  have hmapped := hbase.map_equiv g
+  have hbase := D.inf_wordProd_isFaceOf ω hred.toParabolicLeftReduced
+  have hparabolic := hbase.map_equiv ((a⁻¹ : D.W) : M ≃ₗ[ℝ] M)
+  have ha : D.translate ((a⁻¹ : D.W) : M ≃ₗ[ℝ] M) = D.maximalCone :=
+    D.translate_eq_of_mem_WJ (D.WJ.inv_mem (D.parabolic_mem_WJ a))
+  have ha' : D.maximalCone.map (((a⁻¹ : D.W) : M ≃ₗ[ℝ] M) : M →ₗ[ℝ] M) =
+      D.maximalCone := ha
+  rw [D.map_inf_translate, ha, ha'] at hparabolic
+  change (D.maximalCone ⊓ D.translate
+    (((a⁻¹ : D.W) * D.coxeterSystem.wordProd ω : D.W) : M ≃ₗ[ℝ] M)).IsFaceOf
+      D.maximalCone at hparabolic
+  rw [← hωcone] at hparabolic
+  have hmapped := hparabolic.map_equiv g
   have hgu : g * (u : M ≃ₗ[ℝ] M) = g' := by
     dsimp [u]
     group
-  rw [← hωcone, D.map_inf_translate, hgu] at hmapped
+  rw [D.map_inf_translate, hgu] at hmapped
   exact hmapped
 
 /-- The same law on the right. -/

@@ -4083,3 +4083,41 @@ downstream assertions, computational observations, or downstream diagnostics.
   closure, restate `coarsenedFamily` with codomain `Set (PointedCone ℝ M)` and membership
   `F.IsFaceOf (g • maximalConePointed)`, and keep the set-level statements as the comparison. No
   consumer needs it today; it is recorded so the codomain is not mistaken for the cones.
+
+### #181: the AET gallery bridge still needs Maxwell's standard-geometric ascent theorem
+
+- **Need:** discharge `WythoffCoarseningDatum.gallery` on the original chamber/Coxeter datum, for
+  arbitrary infinite `W` and `W_J`, without adding a gallery hypothesis.  The necessary
+  standard-geometric input is Maxwell, *Wythoff's Construction for Coxeter Groups*, Proposition
+  5.1: if `i` is not a left descent of `w`, then the `i`-th simple functional is nonnegative on the
+  `w`-translate of the fundamental chamber.  Proposition 5.5 uses this with Propositions 5.2–5.3
+  and Theorem 1.3, all in the standard geometric representation; its `S_w^c` is the centralizer of
+  the reduced-word support, not its complement.
+- **Searched (LC-09):** Mathlib `GroupTheory/Coxeter/*` and `GroupTheory/DoubleCoset` for
+  double-coset minimality, minimal coset representatives, reduced/minimal/Tits chamber galleries,
+  `wordProd`/prefix/descent, and Wythoff.  Formalization-corpus queries included all of those
+  formulations, `pos_of_ascent`, `IsMinimalCosetRep`, `wordProd take`, and Maxwell/Wythoff.  The
+  substantive reusable hits are TauCeti `GroupTheory/Coxeter/{Basic,StrongExchange,Parabolic}` and
+  Atlas `CoxeterGroup/PosOfAscentProof.lean`; the latter is for the canonical coordinate action,
+  not for the abstract `WythoffCoarseningDatum` representation.  AET arXiv:1903.09742v3 Definition
+  4.16/Proposition 4.17 and Maxwell's printed Propositions 5.1–5.5 were read at their hypotheses.
+- **Did instead:** ported the three TauCeti modules with provenance.  Proved arbitrary-double-coset
+  minimization, reduced representatives, the correct translate identity `g(L) = u⁻¹r(L)` when
+  `r = u g v`, and the hereditary one-sided prefix predicate.  Corrected two false old fields:
+  word-reducedness was missing from `ParabolicReduced`, and double-coset minimality is not
+  generally inherited by prefixes.  Removed the old `reduced_gallery` equality, which confused
+  right cosets of maximal cones with double cosets.  Added the negative singleton test and rewired
+  the maximal-intersection proof through the parabolic factor before the outer translate.
+- **Gap and optimal repair:** the exact missing Coxeter/geometric theorem is recorded at
+  `WythoffCoarseningDatum.gallery` as the deliberately red application of
+  `CoxeterSystem.nonneg_simple_apply_of_not_isLeftDescent`: for every non-left-descent `i` of `w`
+  and every chamber point `y`, `0 ≤ φ i (w y)`.  The optimal repair is a standard-geometric Coxeter
+  chamber API proving Maxwell 5.1–5.3, together with an explicit identification of the AET datum
+  with that representation; it must not be introduced as another unproved field.  Until then #181
+  acceptance item 2 remains open and the focused build is intentionally red.  #180 remains open.
+- **Verification:** the algebraic/cosmetic revision compiled before the deliberate red was inserted,
+  and all six algebraic axiom checks returned exactly `[propext, Classical.choice, Quot.sound]`.
+  The final focused build stops at line 619 with `Unknown constant` for the named ascent lemma,
+  followed by the unsolved prefix-nesting goal at line 616;
+  no full suite or CI was run.  This is a reproducible blocked declaration, not a completed fan
+  theorem or a source-fidelity claim about `wall_preserving`.
