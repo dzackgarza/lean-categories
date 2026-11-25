@@ -212,7 +212,7 @@ issue first (Contract F, step 2).
 
 - Phase 1 blocks Phase 2 (rows evaluate classifier totals). Phase 2 blocks Phases 3 and 4.
 - T010 needs 001 T035 and 001 T086; T011 needs 001 T056; T013 needs 001 T005; T019 needs T013.
-- T022 needs T001–T021 and 001 T042; T023 needs 003 T009 and T034.
+- T022 needs T001–T021 and 001 T042; T023 needs 003 T009 and 003 T034.
 - T024 needs the milestones of 001, 003 and 006–009; T025 needs T024.
 
 ## Implementation Strategy

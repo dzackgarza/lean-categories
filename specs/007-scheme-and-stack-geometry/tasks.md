@@ -113,6 +113,7 @@ later ready task of the same phase.
 
 ## Dependencies & Execution Order
 
-- T001 first. T002 needs 001 T023 and T046 and precedes Phases 2–5. T005 needs 002 T029, T030. T008 before T009–T011, T015, T018.
+- T001 first. T002 needs 001 T023 and 001 T046 and precedes Phases 2–5. T005 needs 002 T029 and
+  002 T030. T008 before T009–T011, T015, T018.
 - T013 needs T005, T006; T014 needs T013; T015 needs T008, T014; T016 needs T015.
 - T019 after T002–T018; T020 last.
