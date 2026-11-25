@@ -1117,8 +1117,8 @@ not a decidable quotient equality or a new mathematical comparison.
 
 ### Non-inherited constructions (`Aut`, `Stab`) have no method presentation
 
-- **Need:** the owner's B0 directive, "Group-valued constructions (Aut, subgroups, stabilizers,
-  units) expose group and subgroup interfaces by construction". `Aut_C(X)` is a value of
+- **Need:** the B0 requirement that group-valued constructions (automorphism groups, subgroups,
+  stabilizers, unit groups) have the group and subgroup interfaces by their construction. `Aut_C(X)` is a value of
   `Aut : Core(C) ⥤ Grp` for each category `C`, and the stabilizer of `x ∈ U(X)` a value of
   `Stab : Core(Elements U) ⥤ Subobjects(Grp)`; both are registered as functor rows in
   `Catalogue/Semantics/Algebra/Automorphisms.lean` (on `Core(Sets)`, `Core(Grp)`, `Core(Mod_R)`,
