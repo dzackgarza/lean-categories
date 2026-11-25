@@ -4,7 +4,7 @@ This file is the repository constitution: authority, authorship, intake of work,
 engineering. [FOUNDATIONS.md](../../FOUNDATIONS.md) keeps its authority over *what* the
 mathematics is. [CONTRIBUTING.md](../../CONTRIBUTING.md) keeps the contribution lessons `LC-01`
 to `LC-21`; an article below cites the policy that it makes binding. Where this file and the
-[kernel constitution v4.0.0](https://github.com/dzackgarza/lean-cas-dsl/blob/main/.specify/memory/constitution.md)
+[kernel constitution v4.0.1](https://github.com/dzackgarza/lean-cas-dsl/blob/main/.specify/memory/constitution.md)
 govern the same question, they agree; a governing document of this repository that disagrees
 with either is corrected.
 
@@ -251,7 +251,7 @@ Sources: `AGENTS.md`, "The evidence model"; kernel constitution C2, C10.
 
 ## Governance
 
-This constitution and the kernel constitution v4.0.0 bind every contributor of this repository.
+This constitution and the kernel constitution v4.0.1 bind every contributor of this repository.
 A governing document of this repository (`AGENTS.md`, `CONTRIBUTING.md`, `README.md`, `TODO.md`,
 `docs/agents/*.md`) that conflicts with an article is corrected to agree with it and to point to
 it. `FOUNDATIONS.md` owns the content of the mathematics; this file does not amend it.
@@ -268,4 +268,4 @@ correction that leaves the obligations unchanged.
 Compliance: each feature plan states its check against every article. Review (M10) checks the
 change against the articles that it touches.
 
-**Version**: 1.0.0 | **Ratified**: 2026-11-25 | **Last Amended**: 2026-11-25
+**Version**: 1.0.1 | **Ratified**: 2026-11-25 | **Last Amended**: 2026-11-25

@@ -72,7 +72,8 @@ Rows exist only when the catalogue modules are imported, so a consumer imports
 and resolves everything else by stable ID. No generated Sage mapping, Python seed, hand-authored
 DOT file or research branch artifact is an input to that resolution.
 
-`dzackgarza/lean-cas-dsl#14` is the first consumer of this contract.
+The consumers of this contract are the tasks of the lean-cas-dsl task list
+(`specs/001-categorical-research-language/tasks.md`, "Upstream inputs recorded as missing").
 
 The support directories describe the same mathematical library. They do not define a
 second category system. `Core` and `Model` define the common language. `Realization`

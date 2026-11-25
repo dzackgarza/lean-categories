@@ -18,7 +18,8 @@ defects, never worked around or silently kept.
 
 These invariants bind every repository of the programme. They are stated here in full, not only
 by link, because they have been violated repeatedly by moves that each looked locally reasonable.
-The governing statement is `lean-cas-dsl/specs/architecture.md`, "The evidence model".
+The governing statement is the lean-cas-dsl constitution, C2 and the policy "Computational
+evidence" ([`.specify/memory/constitution.md`](https://github.com/dzackgarza/lean-cas-dsl/blob/main/.specify/memory/constitution.md)).
 
 **The firewall.** The evidence model is a one-way firewall between two sides.
 - *The formal side:* `lean-categories`' formalized mathematics, the kernel's proved contracts, and
@@ -135,9 +136,8 @@ Consequences:
 
 > **You have no memory.** Nothing that exists only in chat survives compaction or the session.
 > Every correction, finding and decision request is committed to its owning document first
-> ([`lean-cas-dsl/AGENTS.md`](https://github.com/dzackgarza/lean-cas-dsl/blob/main/AGENTS.md),
-> "You have no memory"). The orchestrator is inside the threat model
-> (`lean-cas-dsl/specs/architecture.md`).
+> (`~/ai/AGENTS.global.md`, "Handoffs"). The orchestrator's reports are claims like those of any
+> agent (lean-cas-dsl constitution C14, C19).
 
 
 Read [TODO.md](TODO.md) for the execution DAG and existing sweep records,
@@ -410,69 +410,9 @@ agent-memory maintain move <key> --to global/advice
 
 # Goal-integrity routing (always-on)
 
-<!-- Verbatim copy of the global section in ~/ai/AGENTS.md (authoritative); keep in sync. -->
-
-Substituting a proxy for the goal and then optimizing the proxy — the goal
-source, an error count, a reviewer verdict, a "blocked" label, metadata
-self-consistency — is a cognitive failure, not a chosen one: from inside it
-feels like diligence, and introspection does not detect it. So no rule below
-asks you to judge your own intent. Each names an observable condition; when
-the condition holds, perform the reground act — especially when the current
-work feels productive, because the feeling is not evidence. Explaining or
-agreeing with these rules is also not evidence: a condition that fires binds
-regardless of the account you can give of it.
-
-**The reground act:** stop and state (1) the user's original goal in the
-user's own words, (2) the artifact or number the current action improves, and
-(3) whether improving (2) IS (1). If it is not, act on (1), or send the user a
-one-message report explaining exactly why that is impossible.
-
-- **You are about to edit the goal source** (the TODO, plan card, issue body,
-  or acceptance criterion that defines your goal) for any reason other than
-  recording completion the delivered artifact itself proves, or explicit user
-  instruction in the current session. From inside this feels like tidying a
-  stale document; from outside, deferring, relabeling, splitting, or
-  re-scoping an item you were asked to finish changes the problem instead of
-  solving it. The goal source is read-only while you execute it: perform the
-  reground act, then do the work or send the report.
-
-- **A work unit has passed about two review rounds, or an hour, without a
-  landed falsifiable artifact.** From inside, another reviewer, audit, or
-  repair cycle feels like rigor; in cost it is the most expensive failure
-  available, while pausing costs nothing. Stop and report the unit as
-  mispriced instead of adding apparatus.
-
-- **You are about to call an item hard, research-scale, or worth deferring.**
-  A difficulty intuition is a stale prior. First read the repo's recent git
-  log for comparable completed work; if comparable items landed in hours, this
-  item is hours.
-
-- **You re-measured a corpus-wide scalar (total error, test, finding, or
-  checkbox count) a second time inside one work unit.** Whatever the intent,
-  the number is now functioning as the target. Perform the reground act, write down the actual
-  claim the edit makes true, and verify that claim on a concrete specimen. An
-  edit justified only by the number moving is unjustified, and moving a
-  checker's number by asserting something false is strictly worse than the
-  original error. Re-running the specimen's own check to verify the claim is
-  required verification, not a trigger.
-
-- **You are about to declare the goal blocked.** From inside, repeated silence
-  reads as mounting confirmation of an impasse; it is only the absence of a
-  reply, and your own unanswered messages and automatic continuations cannot
-  accumulate into evidence. Re-read the mandate first: authority already
-  delegated IS the approval you are waiting for. Pausing on a genuine question
-  only the user can answer is correct; silence is not such a question.
-
-- **A reviewer finding is about to block work outside its own unit, or a
-  second consecutive review round adds no new falsifiable content.**
-  Acceptance is a falsifiable statement about the work itself, never a
-  verdict. Record and defer out-of-unit findings; on a content-free second
-  round, reground against the unit's own acceptance statement.
-
-- **The previous turn produced only administrative artifacts (plans, audits,
-  status edits, registries, validation of validation) and this turn is about
-  to do the same.** From inside, organizing the work feels like progress on
-  it. Perform the reground act before continuing.
+The goal-integrity rules of every agent on this machine are those of the machine-wide
+instruction file `~/ai/AGENTS.global.md`, which each harness entrypoint loads; this repository
+adds no rule to them.
 
 # Mathematical Simplicity as Architecture
 

@@ -90,7 +90,7 @@ whole index (Mathlib, other Lean 4 libraries, UniMath, 1Lab, agda-categories, th
 Lean hit is imported or ported with provenance; a non-Lean hit is the reference
 implementation. Only the glue between hits and the residue no source supplies is written
 by hand, and the search record ships with the commit
-([lean-cas-dsl specs/computational-core.md](https://github.com/dzackgarza/lean-cas-dsl/blob/main/specs/computational-core.md#cc-reuse--every-obligation-is-first-discharged-by-search-only-glue-and-residue-are-written), CC-REUSE).
+(constitution M8; lean-cas-dsl constitution C17).
 
 ## LC-10 — Work out the general mathematics before any special-case construction
 
@@ -222,7 +222,7 @@ with the units (LC-18), never by a claim from a caller or a leaf; one not establ
 to be invertible cannot even be written as an argument of `⁻¹`.
 
 A row that violates this is ill-defined mathematics, and the registry must refuse it at
-registration (gate owed: `lean-cas-dsl` plan node `gov-registry-gates`). Until that gate exists,
+registration (gate owed here: constitution M7). Until that gate exists,
 a reviewer refuses it.
 
 ## LC-17 — Independent mathematical authority and abstract computational API
@@ -264,7 +264,7 @@ unit is unique, so `Invertible x` is a subsingleton and the admitted unit depend
 
 No consumer supplies that proof: the language and the kernel of `lean-cas-dsl` run the registered
 evidence and nothing else, and their build refuses any reference to mathematics or any tactic
-they could run instead (`lean-cas-dsl/specs/architecture.md`, "What must be impossible"). A
+they could run instead (lean-cas-dsl constitution C22). A
 statement whose evidence does not establish its hypotheses is invalid. The fix is never a proof
 written downstream.
 
