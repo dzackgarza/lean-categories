@@ -3,9 +3,9 @@
 **Feature Branch**: `001-catalogue-inputs-for-the-cas` (work lands on `main`)
 **Created**: 2026-11-25
 **Status**: Draft
-**Input**: The 30 lean-categories issues #182 to #211. Each is a mathematical declaration that a
+**Input**: The 44 lean-categories issues #182 to #225. Each is a mathematical declaration that a
 task of the lean-cas-dsl task list consumes and that `main` (`443fba9`; `f009120` for #201 to
-#211) does not have.
+#211; `fc549ba` for #212 to #225) does not have.
 
 Read with the [constitution](../../.specify/memory/constitution.md), the [plan](plan.md) and the
 [tasks](tasks.md). Paths are relative to `LeanCategories/`. `Sem/` is `Catalogue/Semantics/`.
@@ -128,8 +128,9 @@ declarations only.
 
 ### User Story 5 - The leaf author reads one category for each kind of order (Priority: P3)
 
-The leaf author implements the order categories of the computational milestone "Orders" (kernel T202). Each kind
-of order must be registered once, with its forgetful functors and operations.
+The leaf author implements the order categories that the kernel category tasks reach: Linear
+orders (kernel T207) and Boolean algebras (kernel T249). Each kind of order must be registered
+once, with its forgetful functors and operations.
 
 **Why this priority**: the consumer is after the kernel functionality.
 
@@ -146,11 +147,13 @@ and every pair of parallel routes has its cell.
 
 ### User Story 7 - The leaf author reaches every category from sets (Priority: P3)
 
-The leaf authors of the computational milestones of M4 (kernel T217, T221 to T224) implement a
-category after the categories that its structural functors reach. A category whose objects are
-objects of another category with more data needs the structural functor that forgets the data.
+The leaf author of a kernel category task implements a category after the categories that its
+structural functors reach: Ideals V1 (kernel T252) for #203, and the V3 category tasks of the
+kernel task list for #201, #202 and #204 to #210. A category whose objects are objects of another
+category with more data needs the structural functor that forgets the data.
 
-**Why this priority**: the consumers are the M4 milestones, after the V1 delivery.
+**Why this priority**: the consumers follow the kernel functionality; all except T252 follow the V1
+delivery.
 
 **Independent Test**: following the structural edges of the snapshot, each category of the
 scaffolding table reaches `cat.sets`, or the table states why it needs no such functor.
@@ -164,6 +167,35 @@ scaffolding table reaches `cat.sets`, or the table states why it needs no such f
    result is the integral lattice $L$.
 3. **Given** a scheme, **When** a reader follows its structural edges, **Then** it reaches the
    underlying topological space and then the set of points.
+
+### User Story 8 - The leaf author computes the spike computations through declared rows (Priority: P3)
+
+The leaf author of a kernel category task implements a row that a spike computation needs and that
+the catalogue lacks: a power of cardinals, a rational approximation of a real number, a square
+root in $\mathbb{C}$, the factorization and primality of an integer, the roots of a polynomial
+with multiplicity, the truncation and the coefficient change of a power series, the invertibility
+of a matrix, a linear map given by a formula, the module $\mathbb{Z}/n$, the derivative as a
+linear map, the enumeration of a denumerable set and a principal ideal.
+
+**Why this priority**: the consumers are the V1 category tasks, after the kernel functionality.
+
+**Independent Test**: for each issue #212 to #225, the test module of the requirement elaborates
+the row and its stated value at the example of the issue from the registered declarations.
+
+**Acceptance Scenarios**:
+
+1. **Given** a finite set $A$ with $|A| = 3$, **When** a reader asks for $|\mathcal{P}(A)|$,
+   **Then** the registry gives $2^{|A|} = 8$ through the power of cardinals.
+2. **Given** $-4 \in \mathbb{Q}$, **When** a reader asks for $\sqrt{-4}$ in $\mathbb{C}$,
+   **Then** the registered principal square root gives $2i$.
+3. **Given** $-12 \in \mathbb{Z}$, **When** a reader asks for its factorization, **Then** it
+   finds the unit $-1$ and the factors $2, 2, 3$.
+4. **Given** $x \in \mathbb{R}$ and $\varepsilon \in \mathbb{Q}_{>0}$, **When** a reader asks
+   for an approximation, **Then** the row is a `choice` operation whose fibre is
+   $\{a \in \mathbb{Q} \mid |x - a| < \varepsilon\}$.
+5. **Given** the formula $(x, y) \mapsto (x + y, x - y)$ on $\mathbb{Q}^2$, **When** a reader
+   forms its linear map, **Then** it is a morphism of $\mathbf{Mod}_{\mathbb{Q}}$ with its
+   kernel through the existing kernel row.
 
 ### User Story 6 - The mathematician inspects each definition against its source (Priority: P1)
 
@@ -190,13 +222,18 @@ issue holds the search record.
 - Two refinements of one object along two property classifiers both exist, and their images
   agree.
 - An ellipsis `{1, 2, 4, …}` has no constant difference; it denotes no progression.
+- $\sqrt{-4}$ is $2i$, the principal value, and not $-2i$; both square to $-4$.
+- In $\mathbb{Z}$, $-7$ is prime; $0$ and $1$ are not.
+- $\ker(d/dx)$ on $\mathbb{Q}[x]$ is the constants $\mathbb{Q}$; the root multiset of
+  $(x - 1)^2 (x + 2)$ is $\{1, 1, -2\}$, and its root set is $\{1, -2\}$.
 
 ## Requirements *(mandatory)*
 
 ### Functional Requirements
 
 Each requirement states the declaration, its generality and its standard source. The plan gives
-files, rows, searches and checks. Order: the order of the first consumers in the kernel task list.
+files, rows, searches and checks. The task list orders the work by the first consumers in the
+kernel task list.
 
 - **FR-001 (#193)**: The binary operation $\mu_X : X \times X \to X$, natural in magma
   homomorphisms, MUST be declared once at `cat.magmas`, and the addition once at
@@ -390,6 +427,70 @@ files, rows, searches and checks. Order: the order of the first consumers in the
   $R : \mathbf{Rings}_u$ at every universe $u$, and the scalar action for $R : \mathbf{Ring}_u$ and
   $M : \mathbf{Mod}_v(R)$ in independent universes; the universe-0 uses are instances. Sources:
   Mathlib `RingCat`, `ModuleCat.{v} R`; Bourbaki, *Algèbre*, ch. I, §8, ch. II, §1.
+- **FR-033 (#216)**: The power $\kappa^{\lambda}$ of cardinals MUST be an operation of
+  `cat.cardinals`, with its value $n^m$ on finite cardinals and the theorem
+  $|\mathcal{P}(A)| = 2^{|A|}$ for every set $A$. Sources: Mathlib `Cardinal.power` (the
+  `HPow Cardinal Cardinal` instance), `Cardinal.mk_set`, `Cardinal.natCast_pow`.
+- **FR-034 (#212)**: For $x \in \mathbb{R}$ and $\varepsilon \in \mathbb{Q}_{>0}$, the
+  approximation MUST be a `choice` operation (FR-017) with the fibre
+  $\{a \in \mathbb{Q} \mid |x - a| < \varepsilon\}$, its admissibility condition and the proof that
+  the fibre is inhabited; its result retains $x$, $\varepsilon$ and the chosen $a$. Sources: Mathlib
+  `exists_rat_btwn`, `Rat.cast`, `abs_sub_lt_iff`; #182.
+- **FR-035 (#215)**: The square root on $\mathbb{C}$ MUST be the principal value
+  $\sqrt{z} = z^{1/2} = \exp(\tfrac{1}{2} \log z)$, with $\arg z \in (-\pi, \pi]$, as a `fixed`
+  operation, so that $\sqrt{-4} = 2i$. Decision: research D21. Sources: Mathlib `Complex.cpow`,
+  `Complex.log`, `Complex.arg`.
+- **FR-036 (#213)**: For a commutative ring $R$ that is a unique factorization domain with a
+  normalization, the factorization of $a \neq 0$ MUST be a unit $u$ and the multiset of normalized
+  irreducible factors, with $a = u \cdot \prod$ factors; at $\mathbb{Z}$ the factors are positive
+  primes: $-12 = (-1) \cdot 2^2 \cdot 3$. Decision: research D22. Sources: Mathlib
+  `UniqueFactorizationMonoid`, `UniqueFactorizationMonoid.normalizedFactors`,
+  `NormalizationMonoid`, `Int.instUniqueFactorizationMonoid`.
+- **FR-037 (#214)**: The predicate `Prime` on the elements of a commutative ring ($x \neq 0$, $x$
+  not a unit, $x \mid ab \Rightarrow x \mid a \lor x \mid b$; equivalently $(x)$ a nonzero prime
+  ideal) MUST be a registered predicate $R \to \Omega$, with a procedure that settles it at $\mathbb{Z}$ through
+  $|x| \in \mathbb{N}$: $-7$ is prime, $0$ and $1$ are not. Sources: Mathlib `Prime`,
+  `Int.prime_iff_natAbs_prime`, `Ideal.span_singleton_prime`, `Ideal.IsPrime`.
+- **FR-038 (#218)**: For a commutative domain $R$, the map $R[x] \setminus \{0\} \to
+  \operatorname{Multiset} R$ of the roots with multiplicity MUST be a registered row, with the
+  theorem that the count of $a$ is its root multiplicity and that its underlying set is the root
+  set of `mor.sets.polynomial_roots`. Sources: Mathlib `Polynomial.roots`,
+  `Polynomial.rootMultiplicity`, `Polynomial.count_roots`, `Polynomial.mem_roots`.
+- **FR-039 (#219)**: For a commutative ring $R$ and $n \in \mathbb{N}$, the quotient map
+  $R[[t]] \to R[[t]]/(t^n)$ MUST be a registered morphism of $R$-algebras, with the identification
+  of its target with the polynomials of degree $< n$ by the truncation and the written form
+  $\sum_{k<n} a_k t^k + O(t^n)$. Sources: Mathlib `PowerSeries.trunc`, `PowerSeries.X`,
+  `Ideal.Quotient.mkₐ`, `Ideal.span`.
+- **FR-040 (#220)**: For an injective ring map $f : R \to S$, the induced map $R[[t]] \to S[[t]]$
+  MUST be a registered inclusion, at $\mathbb{Q} \subseteq \mathbb{R}$. Sources: Mathlib
+  `PowerSeries.map`, `algebraMap ℚ ℝ`.
+- **FR-041 (#221)**: For a commutative ring $R$, membership of $M \in \mathrm{Mat}_n(R)$ in its unit
+  group MUST be a decided predicate, with $M$ a unit exactly when $\det M$ is a unit (over a field:
+  $\det M \neq 0$) and a procedure that settles it for a closed matrix over $\mathbb{Q}$. Sources:
+  Mathlib `IsUnit`, `Matrix.isUnit_iff_isUnit_det`, `Matrix.GeneralLinearGroup`.
+- **FR-042 (#217)**: For a commutative ring $R$, a function $R^n \to R^m$ given by a formula in its
+  binders MUST form a morphism of `cat.modules_r` once the proposition that it is linear holds,
+  with that proposition, the procedure that settles it for a formula linear in its binders, and its
+  kernel and image through the existing kernel and image rows. Decision: research D23. Sources:
+  Mathlib `IsLinearMap`, `LinearMap`, `LinearMap.pi`, `Matrix.toLin'`, `LinearMap.ker`,
+  `LinearMap.range`.
+- **FR-043 (#222)**: For $n \in \mathbb{N}$, $\mathbb{Z}/n$ MUST be an object of `cat.modules_r` at
+  $\mathbb{Z}$, with its written form `ℤ/n in Modules(ℤ)` and its underlying set $\mathbb{Z}/n$.
+  Sources: Mathlib `ZMod`, `ModuleCat.of ℤ (ZMod n)`.
+- **FR-044 (#223)**: For a commutative ring $R$, the derivative $d/dx : R[x] \to R[x]$ MUST be a
+  morphism of $R$-modules, with its kernel through the existing kernel row; over $\mathbb{Q}$ the
+  kernel is the constants. Sources: Mathlib `Polynomial.derivative` (an `R[X] →ₗ[R] R[X]`),
+  `LinearMap.ker`.
+- **FR-045 (#224)**: $\mathbb{N}$, $\mathbb{Z}$ and $\mathbb{Q}$ MUST be objects of
+  `cat.enumerated_sets` with the enumeration `Denumerable.ofNat` ($\mathbb{Z}$: $0, -1, 1, -2, 2,
+  \ldots$), the map $k \mapsto X[k] : \mathbb{N} \to X$ of an enumerated set and its value at a
+  numeral; the progressions of FR-018 are objects with their enumeration. Sources: Mathlib
+  `Denumerable`, `Denumerable.ofNat`, `Encodable`, the `Denumerable ℤ` and `Denumerable ℚ`
+  instances.
+- **FR-046 (#225)**: For a commutative ring $R$ and $a \in R$, the principal ideal $(a)$ MUST be an
+  object of `cat.ideals_r`, with its written form `(a)`, so that
+  $\operatorname{Ann}_{\mathbb{Z}}(\mathbb{Z}/4) = (4)$ is a theorem of the registry. Sources:
+  Mathlib `Ideal.span`, `Module.annihilator`, `Submodule.annihilator`.
 - **FR-021 (process)**: Every requirement MUST pass the checks of constitution M2, M3, M8 and
   E1: a search record in its issue, a clause-by-clause source comparison, tier-1 elaboration of
   its modules and test modules, and the full gate `just test` at the milestone.
@@ -447,14 +548,14 @@ functor that sends an object to its underlying object (`Reg/Entry.lean`, `Functo
 
 | ID | Outcome | Measure |
 | --- | --- | --- |
-| SC-001 | Every issue #182 to #211 closes on its own acceptance | 30 of 30 issues closed |
-| SC-002 | Each kernel task T118 to T125, T128 to T138, T146 and T225 to T234 has its input on `main` | 30 of 30 inputs present |
+| SC-001 | Every issue #182 to #225 closes on its own acceptance | 44 of 44 issues closed |
+| SC-002 | Each kernel task T118 to T125, T128 to T138, T146, T225 to T234 and T328 to T341 has its input on `main` | 44 of 44 inputs present |
 | SC-003 | No new `sorry`, axiom or `native_decide` | axiom audit and `lean-no-sorry` report 0 new sites |
 | SC-004 | One owner per operation symbol | 0 symbols with two unrestricted rows on one structural route |
 | SC-005 | Every pair of parallel structural routes has a cell | 0 uncompared pairs among the routes that this feature adds |
 | SC-006 | Categories with no chain to `cat.sets` | 51 at `443fba9`; 0 with an owner in the scaffolding table left without its functor; 0 without an owner or a stated reason |
 | SC-007 | Tier-1 loop of each task | each loop completes in under 300 s on the research image |
-| SC-008 | Search records | 30 of 30 issues hold a reproducible search record |
+| SC-008 | Search records | 44 of 44 issues hold a reproducible search record |
 | SC-009 | Source fidelity | each new declaration cites a source checked clause by clause |
 
 ## Assumptions

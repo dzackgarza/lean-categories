@@ -2,7 +2,7 @@
 
 Each entry gives the decision, the reason from the mathematics and the sources, and the
 alternative that the reason excludes. Evidence of the present state is in the issues #182 to #200
-(read at `main` `443fba9`) and #201 to #211 (read at `f009120`).
+(read at `main` `443fba9`), #201 to #211 (read at `f009120`) and #212 to #225 (read at `fc549ba`).
 
 ## D1 (#193): owners of the arithmetic operations
 
@@ -177,3 +177,35 @@ alternative that the reason excludes. Evidence of the present state is in the is
   missing.
 - **Excluded**: new declarations for these functors.
 
+## D21 (#215): the square root on ℂ is the principal value
+
+- **Decision**: $\sqrt{z} = z^{1/2} = \exp(\tfrac{1}{2} \log z)$ with $\arg z \in (-\pi, \pi]$, a
+  `fixed` operation declared by `Complex.cpow`.
+- **Reason**: the computation that consumes the row states $\sqrt{-4} = 2i$; $\log(-4) = \log 4 +
+  i\pi$ gives $(-4)^{1/2} = 2 e^{i\pi/2} = 2i$, so the principal value is the stated convention.
+  Mathlib defines the principal logarithm and `Complex.cpow` with this branch; a written $\sqrt{z}$
+  with a fixed value is a function, not a choice.
+- **Excluded**: a `choice` operation over the two roots (FR-017), which gives the written $\sqrt{-4}$
+  no value.
+
+## D22 (#213): the factorization uses the normalized factors
+
+- **Decision**: the factorization of $a \neq 0$ in a unique factorization domain with a
+  normalization is the unit $u$ and the multiset `normalizedFactors a`, with $a = u \cdot \prod$.
+- **Reason**: irreducible factors are unique only up to units; the normalization chooses one
+  representative of each class (on $\mathbb{Z}$, $|x|$), so the multiset is a function of $a$ and
+  the unit is determined. This is the form of the polynomial factorization row
+  `mor.sets.polynomial_factorization` (a unit and a multiset of factors).
+- **Excluded**: a multiset of irreducible factors with no normalization, which is defined only up to
+  units and so is no function of $a$.
+
+## D23 (#217): a linear map from a formula is a function with its linearity proof
+
+- **Decision**: the row takes a function $R^n \to R^m$ given by the formula and a proof of
+  `IsLinearMap`, and gives the `LinearMap`; a procedure proves linearity for a formula linear in its
+  binders, and refutes it otherwise or leaves it unsettled.
+- **Reason**: linearity is a property of the function, not of its written form; M5 asks for domain
+  evidence, and `IsLinearMap` is that evidence. The matrix rows (`mor.modules.matrix_linear_map`)
+  stay the owners of a map given by a matrix; `LinearMap.toMatrix'` relates the two.
+- **Excluded**: reading a formula into a matrix by its syntax, which is a second source of meaning
+  for the same map (M7).

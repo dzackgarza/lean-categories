@@ -8,8 +8,8 @@ Paths are relative to `LeanCategories/`. `Sem/` is `Catalogue/Semantics/`. `Reg/
 
 ## Summary
 
-The feature adds to the registry the 30 declarations that the kernel task list consumes
-(issues #182 to #211). Each declaration is stated at its generating category, from its source,
+The feature adds to the registry the 44 declarations that the kernel task list consumes
+(issues #182 to #225). Each declaration is stated at its generating category, from its source,
 and enters through `normalized_registry`. Four schema additions carry them: a computation
 reference for object applications and binder operations, a result kind with choice fibres, a
 structured notation field, and constructor roles. The design decisions are in
@@ -26,7 +26,7 @@ is in [contracts/registry-additions.md](contracts/registry-additions.md).
 **Project Type**: Lean library (formal mathematics and its registry)
 **Performance Goals**: tier-1 loop of each task under 300 s (constitution E1, E4)
 **Constraints**: one Lean process under `flock .tmp/lean.lock` (E10); no `sorry`, no axiom (M3)
-**Scale/Scope**: 30 issues; 100 registered categories; 675 registry rows at `443fba9`
+**Scale/Scope**: 44 issues; 100 registered categories; 675 registry rows at `443fba9`
 
 ## Constitution Check
 
@@ -60,7 +60,7 @@ Every task passes tier 1 at each change. The full gate runs at the end of each p
 ## Search before authoring
 
 The first task of each issue runs this search and writes the record in the issue (constitution
-M8): `python scripts/formalization_corpus.py search '<query>'` under each formulation, Mathlib
+M8); for #212 to #225 the search is the first step of the one task of the issue: `python scripts/formalization_corpus.py search '<query>'` under each formulation, Mathlib
 (Loogle, `#find`, source tree), and the broader ecosystem. The table lists the Mathlib notions to
 look for.
 
@@ -96,6 +96,20 @@ look for.
 | #209 | `ObjectProperty.ι`, `QuadraticForm.PosDef`, signature |
 | #210 | `ObjectProperty.ι`, `Module.Free`, `Module.Finite` |
 | #211 | `RingCat`, `ModuleCat`, universe polymorphism of `NamedRings`, `Operations.scalarAction` |
+| #216 | `Cardinal.power`, `HPow Cardinal Cardinal`, `Cardinal.mk_set`, `Cardinal.natCast_pow` |
+| #212 | `exists_rat_btwn`, `Rat.cast`, `abs_sub_lt_iff`, approximation, `Real` decimal expansion |
+| #215 | `Complex.cpow`, `Complex.log`, `Complex.arg`, square root on `ℂ`, branch cut |
+| #213 | `UniqueFactorizationMonoid`, `UniqueFactorizationMonoid.normalizedFactors`, `NormalizationMonoid`, `Int.instUniqueFactorizationMonoid`, `Int.normalize` |
+| #214 | `Prime`, `Int.prime_iff_natAbs_prime`, `Ideal.span_singleton_prime`, `Ideal.IsPrime`, `Nat.Prime` decidability |
+| #218 | `Polynomial.roots`, `Polynomial.rootMultiplicity`, `Polynomial.count_roots`, `Polynomial.mem_roots`, `Polynomial.rootSet` |
+| #219 | `PowerSeries.trunc`, `PowerSeries.X`, `Ideal.Quotient.mk`, `Ideal.Quotient.mkₐ`, `Ideal.span` |
+| #220 | `PowerSeries.map`, `algebraMap ℚ ℝ`, injectivity of `PowerSeries.map` |
+| #221 | `IsUnit`, `Matrix.isUnit_iff_isUnit_det`, `Matrix.GeneralLinearGroup`, `Matrix.det` |
+| #217 | `LinearMap`, `IsLinearMap`, `LinearMap.pi`, `Matrix.toLin'`, `LinearMap.toMatrix'`, `LinearMap.ker`, `LinearMap.range` |
+| #222 | `ZMod`, `ModuleCat.of ℤ (ZMod n)`, `AddCommGroup.toIntModule` |
+| #223 | `Polynomial.derivative`, `Polynomial.derivative` as `R[X] →ₗ[R] R[X]`, `LinearMap.ker` |
+| #224 | `Denumerable`, `Denumerable.ofNat`, `Encodable`, the `Denumerable ℤ` and `Denumerable ℚ` instances |
+| #225 | `Ideal.span`, `Module.annihilator`, `Submodule.annihilator`, `Ideal.span_singleton` |
 
 ## Files and registry rows per requirement
 
@@ -316,22 +330,48 @@ Each row gives the files to add or change and the registry rows. New modules are
 - Tests: `Sem/Modules/LinearMapsTests.lean` and a universe case in `Reg/OperationBindingTests.lean`.
 - Consumer: lean-cas-dsl T146, before the construction classification T143.
 
+### Rows that the spike computations need (#212 to #225)
+
+Line numbers and the present rows are those of `main` at `fc549ba` (the evidence of each issue).
+The consumer of each row is the lean-cas-dsl category task that implements it (the leaves spec of
+its category holds the row); the kernel upstream task precedes that category task.
+
+| Requirement | Issue | Files and registry rows | Test module | Kernel upstream task, consumer |
+| --- | --- | --- | --- | --- |
+| FR-033 | #216 | `Sem/Foundation/Cardinality.lean`: an operation `op.cardinals.power` at `cat.cardinals` declared by `Cardinal.power`; the theorem $\lvert\mathcal{P}(A)\rvert = 2^{\lvert A \rvert}$ from `Cardinal.mk_set`; the finite value from `Cardinal.natCast_pow` | a new `Sem/Foundation/CardinalArithmeticTests.lean` | T332, Cardinals V1 (T201) |
+| FR-034 | #212 | `Sem/Algebra/NumberSystems.lean`: a `choice` operation `mor.sets.real_approximation` on $\mathbb{R} \times \mathbb{Q}_{>0}$ with its `ChoiceFibre` (FR-017): fibre $\{a \in \mathbb{Q} \mid \lvert x - a \rvert < \varepsilon\}$, admissibility, inhabitation from `exists_rat_btwn`; the result retains $x$, $\varepsilon$ and $a$ | a new `Sem/Algebra/NumberSystemsTests.lean` | T328, Sets V1 (T202) |
+| FR-035 | #215 | `Sem/Algebra/NumberSystems.lean`: a `fixed` morphism `mor.sets.complex_sqrt` $\mathbb{C} \to \mathbb{C}$, $z \mapsto z^{1/2}$ by `Complex.cpow`, next to `mor.sets.real_sqrt`, with the theorem $\sqrt{-4} = 2i$ and the notation of FR-008 (`√`) | `Sem/Algebra/NumberSystemsTests.lean` | T331, Sets V1 (T202) |
+| FR-036 | #213 | `Sem/Algebra/NamedCommutativeRings.lean`: a morphism `mor.sets.ufd_factorization` at the unique factorization domains with a normalization (unit and multiset of normalized factors, `normalizedFactors`); its value at $\mathbb{Z}$ | a new `Sem/Algebra/FactorizationTests.lean` | T329, Commutative rings V1 (T221) |
+| FR-037 | #214 | `Sem/Algebra/NamedCommutativeRings.lean`: a predicate `mor.sets.is_prime` $R \to \Omega$ on the elements of a commutative ring, declared by `Prime`, with the procedure at $\mathbb{Z}$ through `Int.prime_iff_natAbs_prime` and `mor.sets.nat_is_prime` (`Sem/Algebra/Semirings.lean:199`) | `Sem/EvidenceTests.lean` | T330, Commutative rings V1 (T221) |
+| FR-038 | #218 | `Sem/Algebra/Polynomials.lean`: a morphism `mor.sets.polynomial_root_multiset` next to `mor.sets.polynomial_roots` (`:354`), declared by `Polynomial.roots`, with the count and root-set theorems | `Sem/PolynomialContractTests.lean` | T334, Commutative rings V1 (T221) |
+| FR-039 | #219 | `Sem/Algebra/Series.lean`: a morphism `mor.sets.power_series_truncation` $R[[t]] \to R[[t]]/(t^n)$ declared by the $R$-algebra map `Ideal.Quotient.mkₐ R (Ideal.span {X ^ n})`, the identification of the target with `PowerSeries.trunc n`, and the notation $\sum_{k<n} a_k t^k + O(t^n)$ | a new `Sem/Algebra/SeriesTests.lean` | T335, Commutative rings V1 (T221) |
+| FR-040 | #220 | `Sem/Algebra/Series.lean`: an inclusion row `incl.sets.power_series_map` declared by `PowerSeries.map f` for injective $f$, at `algebraMap ℚ ℝ` | `Sem/Algebra/SeriesTests.lean` | T336, Commutative rings V1 (T221) |
+| FR-041 | #221 | `Sem/Algebra/LinearAlgebra.lean`: a predicate `mor.sets.matrix_is_unit` $\mathrm{Mat}_n(R) \to \Omega$ declared by `IsUnit`, with `Matrix.isUnit_iff_isUnit_det` and the procedure that computes $\det M$ of a closed matrix over $\mathbb{Q}$ | `Sem/EvidenceTests.lean` | T337, Commutative rings V1 (T221) |
+| FR-042 | #217 | `Sem/Modules/LinearMaps.lean`, `Sem/Algebra/LinearAlgebra.lean`: a morphism row `mor.modules.formula_linear_map` from a function $R^n \to R^m$ and a proof of `IsLinearMap`, with the procedure that settles linearity for a formula linear in its binders; kernel and image through `mor.sets.matrix_ker` and the image row by `LinearMap.toMatrix'` | `Sem/Modules/LinearMapsTests.lean` | T333, Modules V1 (T224) |
+| FR-043 | #222 | `Sem/Modules/CatalogueRegistration.lean`: an object row `obj.modules.integers_mod` next to `obj.modules.regular` (`:457`), `ModuleCat.of ℤ (ZMod n)`, with its written form | `Sem/Modules/LinearMapsTests.lean` | T338, Modules V1 (T224) |
+| FR-044 | #223 | `Sem/Algebra/Differentials.lean`: a morphism row `mor.modules.polynomial_derivative` next to `mor.sets.polynomial_derivative` (`:172`), declared by `Polynomial.derivative` as a linear map, with the theorem that its underlying map is the set map | `Sem/Modules/LinearMapsTests.lean` | T339, Modules V1 (T224) |
+| FR-045 | #224 | `Sem/Foundation/Catalogue.lean`: object rows `obj.enumerated_sets.naturals`, `obj.enumerated_sets.integers` and `obj.enumerated_sets.rationals` of `cat.enumerated_sets` (`:13`) with `Denumerable.ofNat`; the morphism `mor.sets.enumeration_at` $k \mapsto X[k]$; the progressions of FR-018 as objects | a new `Sem/Foundation/EnumeratedSetsTests.lean` | T340, Enumerated sets V1 (T250) |
+| FR-046 | #225 | `Sem/Modules/Operations.lean`: an object row `obj.ideals.principal` of `cat.ideals_r` (`:53`, `:154-156`) declared by `Ideal.span {a}`, with its written form `(a)`, and the theorem $\operatorname{Ann}_{\mathbb{Z}}(\mathbb{Z}/4) = (4)$ for `fun.modules.annihilator` (`:59`) | a new `Sem/Modules/IdealTests.lean` | T341, Ideals V1 (T252) |
+
+The row identifiers of this table are the catalogue IDs of the rows; the leaves specs of
+lean-cas-dsl-leaves name them.
+
 ## Structural functors of the scaffolding gaps
 
-Each requirement adds a structural edge that the [computational milestones](https://github.com/dzackgarza/lean-cas-dsl/blob/main/specs/001-categorical-research-language/plan.md#computational-milestones) of lean-cas-dsl need: a category is implemented after the categories that its structural functors reach. Line numbers are of `main` at `f009120`. Each row adds its test cases to the new test module `Reg/ScaffoldingReachTests.lean`, which asserts that the category reaches `cat.sets` along structural edges.
+Each requirement adds a structural edge that the [computational milestones](https://github.com/dzackgarza/lean-cas-dsl/blob/main/specs/001-categorical-research-language/plan.md#computational-milestones) of lean-cas-dsl need: a category is implemented after the categories that its structural functors reach. The V3 category tasks of the kernel task list are added when the kernel classification (kernel T141, T143) records the classified statements; each upstream task stands before its first consumer. Line numbers are of `main` at `f009120`. Each row adds its test cases to the new test module `Reg/ScaffoldingReachTests.lean`, which asserts that the category reaches `cat.sets` along structural edges.
 
 | Requirement | Issue | Files and rows | Consumer (lean-cas-dsl) |
 | --- | --- | --- | --- |
-| FR-022 | #201 | `Sem/Exceptional/CatalogueRegistration.lean`: `cat.crystals` with a non-opaque expression; a structural functor row to `cat.sets` declared by `crystalsToSets` (`Exceptional/Mathlib.lean:153`); delete `oport.crystals.sets` | T225, milestone T217 |
-| FR-023 | #202 | `Sem/Foundation/`: `cat.topological_spaces` (Mathlib `TopCat`) with its structural forget; `Sem/Algebra/Schemes.lean`: structural `fun.schemes.space` declared by `Scheme.forgetToTop` | T226, milestone T221 |
-| FR-024 | #203 | `Sem/Modules/Operations.lean`: structural functor from `cat.ideals_r` to `cat.subobjects_modules_r` at the regular module | T227, milestone T222 |
-| FR-025 | #204 | `Reg/Semantic.lean` `SemanticState.structuralEdges` (`:1680-1693`): derive `refine(B, c) → B`; the immediate-functor validation (`validateImmediateFunctor`) refuses a row equal to it | T228, milestone T223 |
-| FR-026 | #205 | `Sem/FibrationRegistration.lean`: structural `fun.bilin_forms.module` from `cat.bilin_forms_over_rings` to `cat.modules_over_rings_ext` | T229, milestone T223 |
-| FR-027 | #206 | `Sem/QuadFibrationRegistration.lean`: structural `fun.quad_forms.module` to `cat.modules_over_rings_ext` | T230, milestone T223 |
-| FR-028 | #207 | `Sem/FibrationRegistration.lean`: structural functor from `cat.modules_over_rings_ext` to `cat.modules_total` over $\mathbf{CRing} \to \mathbf{Ring}$, with the commuting theorem for the two projections | T231, milestone T223 |
-| FR-029 | #208 | `Lattices/Valued/Cusps.lean`: structural functor from `cat.cusps` to `cat.integral_lattice`, declared by `CuspObject.lattice` | T232, milestone T223 |
-| FR-030 | #209 | `Sem/Lattices/Valued/CatalogueRegistration.lean`: structural rows for `definiteForget`, `indefiniteForget` (`Lattices/Valued/DefiniteIndefinite.lean:46`, `:57`) into `cat.finite_projective_lattice` at $(\mathbb{Z}, \mathbb{Z})$ | T233, milestone T224 |
-| FR-031 | #210 | `Sem/Lattices/Valued/CatalogueRegistration.lean`: structural rows for the inclusions of `cat.finite_free_lattice` (`Lattices/Valued/Arithmetic.lean:40-46`), `cat.even_lattice` (`ScaleAndEvenness.lean:265`) and `cat.unimodular_lattice` (`MetricDual.lean:166`) | T234, milestone T224 |
+| FR-022 | #201 | `Sem/Exceptional/CatalogueRegistration.lean`: `cat.crystals` with a non-opaque expression; a structural functor row to `cat.sets` declared by `crystalsToSets` (`Exceptional/Mathlib.lean:153`); delete `oport.crystals.sets` | T225, before the V3 task of `cat.crystals` |
+| FR-023 | #202 | `Sem/Foundation/`: `cat.topological_spaces` (Mathlib `TopCat`) with its structural forget; `Sem/Algebra/Schemes.lean`: structural `fun.schemes.space` declared by `Scheme.forgetToTop` | T226, before the V3 task of `cat.schemes` |
+| FR-024 | #203 | `Sem/Modules/Operations.lean`: structural functor from `cat.ideals_r` to `cat.subobjects_modules_r` at the regular module | T227, before Ideals V1 (T252) |
+| FR-025 | #204 | `Reg/Semantic.lean` `SemanticState.structuralEdges` (`:1680-1693`): derive `refine(B, c) → B`; the immediate-functor validation (`validateImmediateFunctor`) refuses a row equal to it | T228, before the V3 task of the first refined category of forms over rings |
+| FR-026 | #205 | `Sem/FibrationRegistration.lean`: structural `fun.bilin_forms.module` from `cat.bilin_forms_over_rings` to `cat.modules_over_rings_ext` | T229, before the V3 task of `cat.bilin_forms_over_rings` |
+| FR-027 | #206 | `Sem/QuadFibrationRegistration.lean`: structural `fun.quad_forms.module` to `cat.modules_over_rings_ext` | T230, before the V3 task of `cat.quad_forms_over_rings` |
+| FR-028 | #207 | `Sem/FibrationRegistration.lean`: structural functor from `cat.modules_over_rings_ext` to `cat.modules_total` over $\mathbf{CRing} \to \mathbf{Ring}$, with the commuting theorem for the two projections | T231, before the V3 task of `cat.modules_over_rings_ext` |
+| FR-029 | #208 | `Lattices/Valued/Cusps.lean`: structural functor from `cat.cusps` to `cat.integral_lattice`, declared by `CuspObject.lattice` | T232, before the V3 task of `cat.cusps` |
+| FR-030 | #209 | `Sem/Lattices/Valued/CatalogueRegistration.lean`: structural rows for `definiteForget`, `indefiniteForget` (`Lattices/Valued/DefiniteIndefinite.lean:46`, `:57`) into `cat.finite_projective_lattice` at $(\mathbb{Z}, \mathbb{Z})$ | T233, before the V3 tasks of `cat.definite_lattice` and `cat.indefinite_lattice` |
+| FR-031 | #210 | `Sem/Lattices/Valued/CatalogueRegistration.lean`: structural rows for the inclusions of `cat.finite_free_lattice` (`Lattices/Valued/Arithmetic.lean:40-46`), `cat.even_lattice` (`ScaleAndEvenness.lean:265`) and `cat.unimodular_lattice` (`MetricDual.lean:166`) | T234, before the V3 tasks of the finite free, even and unimodular lattice families |
 
 ## Project Structure
 
