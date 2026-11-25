@@ -72,9 +72,9 @@ For every request to continue the TODOs, apply this workflow before selecting or
 resuming mathematical work. These instructions govern execution of the linked sweep
 plans, including plans that describe their input mappings as “verified.”
 
-1. Read `TODO.md`, the current sweep plan, the source manifest, and the whole-source
-   ledger. Resume your claimed source; otherwise claim the first available source in
-   the admitted dependency order. Read its existing handoff and delivered declarations
+1. Read the corpus task list (`specs/002-foundational-corpus-sweeps/tasks.md`) and its
+   plan, the source manifest, and the whole-source ledger. Resume your claimed task;
+   otherwise take the next ready task in document order. Read its existing handoff and delivered declarations
    so you continue from the latest mathematical result rather than repeat a completed
    search, implementation, or integration check.
 2. Establish the source's complete unit population before filtering it for the sweep.

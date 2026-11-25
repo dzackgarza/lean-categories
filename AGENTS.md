@@ -140,7 +140,9 @@ Consequences:
 > agent (lean-cas-dsl constitution C14, C19).
 
 
-Read [TODO.md](TODO.md) for the execution DAG and existing sweep records,
+Read the [corpus task list](specs/002-foundational-corpus-sweeps/tasks.md) for the work order of
+the corpus programme (constitution M11), [TODO.md](TODO.md) for the closed DAG nodes and the
+existing sweep records,
 [CONTRIBUTING.md](CONTRIBUTING.md) for named policies, and
 [COMPLAINTS.md](COMPLAINTS.md) for observed mathematical issues and papercuts.
 Record new issues when encountered under `LC-05`; logging never discharges the
@@ -210,7 +212,7 @@ Before you realize, repair, or select a Sweep-III definition, read [corpus-execu
 
 # Start here: corpus execution
 
-Before you continue the TODOs or resume corpus work, read [corpus-execution.md](docs/agents/corpus-execution.md).
+Before you execute a task of the [corpus task list](specs/002-foundational-corpus-sweeps/tasks.md) or resume corpus work, read [corpus-execution.md](docs/agents/corpus-execution.md).
 
 ## Write Lean sources with the patch tool, not a shell heredoc
 

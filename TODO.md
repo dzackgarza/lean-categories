@@ -1,16 +1,13 @@
 # Active mathematical work
 
-## Current position
+## Work order
 
-The definition mapping convergence gate is closed. Sweep III is active, with
-`realization-stub-audit` first in the ready lane. Run
-`python3 scripts/output_check.py` before selecting another unit, then
-`python3 scripts/stub_population.py` to obtain the current audit population.
-Confirm a row only against the declaration that constructs its source object;
-rebuild supplied-data and candidate stand-ins at their mathematical owners.
-The source workstreams below remain open wherever the whole-source ledger has an
-unticked Definitions cell. After the audit and remaining source realizations,
-complete the source-conformance gate before beginning Sweep IV.
+The work order of the corpus programme is the task list of feature
+[002](specs/002-foundational-corpus-sweeps/tasks.md) (constitution M11). Its table
+"Open nodes of `TODO.md` and their tasks" gives the task of every open node below,
+and its [research.md](specs/002-foundational-corpus-sweeps/research.md) settles the
+questions that this file leaves open. This file records the closed nodes and the
+earlier sweep passes; it orders no work.
 
 The [whole-source ledger](corpus/foundational-corpus-status.md) owns sweep closure;
 the generated [frontier](FOUNDATIONAL_FRONTIER.md) and
@@ -25,8 +22,8 @@ lists immediate prerequisites; an entry `A` on node `B` means `A -> B`.
 These edges express the existing sweep order, not new completion claims.
 The linked whole-source ledger remains the sole source of sweep completion.
 
-This TODO is the sole executable DAG for the foundational programme, including the
-[active definition units](#active-definition-units). The [vault plan](.agents/plans/features/FEATURE-FOUNDATIONAL-CORPUS/plans/PLAN-FOUNDATIONAL-CORPUS-DEFINITION-SWEEP/PLAN-FOUNDATIONAL-CORPUS-DEFINITION-SWEEP.md)
+This table is the record of the foundational DAG, including the
+[active definition units](#active-definition-units); feature 002 orders its open nodes. The [vault plan](.agents/plans/features/FEATURE-FOUNDATIONAL-CORPUS/plans/PLAN-FOUNDATIONAL-CORPUS-DEFINITION-SWEEP/PLAN-FOUNDATIONAL-CORPUS-DEFINITION-SWEEP.md)
 holds the durable programme purpose, phase constraints, and rationale; source clauses,
 mapping evidence, and per-unit acceptance stay under `corpus/`. Before dispatching work, apply the
 [definition execution traps](.agents/traps/wasteful-definition-execution-is-prohibited.md)
@@ -301,14 +298,14 @@ its worklist or completion state.
 
 **Governing rules:** [Definitions are constructed, not deferred](docs/agents/corpus-execution.md#definitions-are-constructed-not-deferred-2026-09-26) in `docs/agents/corpus-execution.md`; where anything in this section conflicts with it, that section wins.
 
-**First ready node — `realization-stub-audit`.** Needs: none. Population: `python3 scripts/stub_population.py` (every `[realized]` row caught by its word net, or carrying a confirmation marker, that is not validly confirmed; 187 rows on 2026-09-26 12:15 — recompute, do not copy). For each row, open the Lean declaration of the row's object. If a declaration constructs that object from the source's inputs, mark the row `[construction-confirmed: Namespace.decl]` naming it; the script rejects predicates (`Is…`), `Prop`-valued declarations and names absent from the row's Lean files, and the named declaration's type must be the row's object itself, not a raw ingredient of it (a restriction map on invariants is not confirmed by the raw polynomial restriction). If the object is present only as a parameter, a hypothesis, a candidate, an `Is…Data` predicate or the graph of a supplied map, build it under the rules above, including the construction proofs its definition needs, and confirm it in the commit that lands the construction. Batch rebuilds by shared scaffolding and use subagents. **Acceptance:** `scripts/stub_population.py` prints nothing.
+**`realization-stub-audit`** (feature 002, T009–T028). Needs: none. Population: `python3 scripts/stub_population.py` (every `[realized]` row caught by its word net, or carrying a confirmation marker, that is not validly confirmed; 187 rows on 2026-09-26 12:15 — recompute, do not copy). For each row, open the Lean declaration of the row's object. If a declaration constructs that object from the source's inputs, mark the row `[construction-confirmed: Namespace.decl]` naming it; the script rejects predicates (`Is…`), `Prop`-valued declarations and names absent from the row's Lean files, and the named declaration's type must be the row's object itself, not a raw ingredient of it (a restriction map on invariants is not confirmed by the raw polynomial restriction). If the object is present only as a parameter, a hypothesis, a candidate, an `Is…Data` predicate or the graph of a supplied map, build it under the rules above, including the construction proofs its definition needs, and confirm it in the commit that lands the construction. Batch rebuilds by shared scaffolding and use subagents. **Acceptance:** `scripts/stub_population.py` prints nothing.
 
-This section refines the source-level nodes above and is the sole executable unit DAG.
-The planner maintains dependencies here; workers select ready nodes here. Vault notes
+This section refines the source-level nodes above. Feature 002's task list orders its
+units; workers select the next ready task there. Vault notes
 supply source evidence and rationale, never another queue or scheduling graph.
 Every unit inherits the completed `definition-mapping-convergence` gate. The table's
 required inputs are mathematical dependencies; source order only breaks ties among
-ready units. After a unit completes, immediately select the next ready unit here.
+ready units.
 
 ### Scope and acceptance
 
@@ -413,8 +410,9 @@ Recompute each bucket's rows from the selector when dispatching; the rows above 
 ## Begin each continuation here
 
 Read [docs/agents/corpus-execution.md — Start here: corpus execution](docs/agents/corpus-execution.md#start-here-corpus-execution)
-before selecting work. Its execution sequence and worked failure cases apply to all
-four sweep plans below. Then:
+before executing a task of [feature 002](specs/002-foundational-corpus-sweeps/tasks.md),
+which selects the work. Its execution sequence and worked failure cases apply to all
+four sweep plans below. Inside a task:
 
 0. Check [§4a](#4a-what-limits-the-rate-and-is-worth-fixing-before-the-next-source) for
    outstanding items before claiming a source. It holds work that is not sweep work and
@@ -484,7 +482,7 @@ The plan tree has three levels:
 To find plans:
 
 - Read [plan-dag.md](.agents/plans/plan-dag.md) for the plan inventory. For the foundational
-  programme, executable dependencies and next-unit selection belong to this TODO only.
+  programme, executable dependencies and next-unit selection belong to feature 002 only.
 - List the features: `ls .agents/plans/features`.
 - Each plan file's frontmatter carries `status`, `dependsOn`, `parents`, and `successCriteria`.
   Status is one of `unstarted`, `in-progress`, or `complete`.
@@ -494,7 +492,7 @@ To find plans:
   agent-memory search --scope project "<plan or subsystem>"
   ```
 
-The foundational programme is scheduled only by this TODO DAG. Definition acceptance
+The foundational programme is scheduled only by the task list of feature 002. Definition acceptance
 is recorded in canonical mapping rows; whole-source sweep completion belongs to the
 [corpus status ledger](corpus/foundational-corpus-status.md). Vault plan metadata is
 organizational context and never selects work or overrides those records.

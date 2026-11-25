@@ -1,6 +1,6 @@
 # Contribution policies
 
-Use [TODO.md](TODO.md) to select work and [docs/agents/corpus-acceptance.md](docs/agents/corpus-acceptance.md) for the detailed
+Use the [corpus task list](specs/002-foundational-corpus-sweeps/tasks.md) to select corpus work and [docs/agents/corpus-acceptance.md](docs/agents/corpus-acceptance.md) for the detailed
 corpus acceptance workflow. [FOUNDATIONS.md](FOUNDATIONS.md) owns the mathematical
 constitution. The identifiers here provide stable names for contribution rules;
 the linked sections retain their full requirements.
@@ -33,7 +33,8 @@ concept.
 
 ## LC-04 — Follow the execution DAG
 
-Use [TODO.md's DAG](TODO.md#execution-dag) and its existing source records.
+Use the [corpus task list](specs/002-foundational-corpus-sweeps/tasks.md) and the existing
+source records.
 Resume valid delivered work and respect active claims. Dependencies name required
 mathematical outputs, not shared filenames or preferred subject order. Preserve
 all unresolved obligations and reject dangling references and cycles.

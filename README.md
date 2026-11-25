@@ -102,11 +102,10 @@ Mathlib and the broader formalization ecosystem; realize the remaining definitio
 categorical owners; then formalize the remaining source lemmas and theorems. Only units that
 survive the mapping sweep as genuinely unmatched are greenfield formalization. The
 definition layer must close before the theorem pass opens; independent ready definitions
-can proceed without waiting for source-order predecessors. [`TODO.md`](TODO.md), the
-[source/snapshot manifest](corpus/foundational-source-corpus.md), the
-[central four-phase status ledger](corpus/foundational-corpus-status.md), and
-[FEATURE-FOUNDATIONAL-CORPUS](.agents/plans/features/FEATURE-FOUNDATIONAL-CORPUS/FEATURE-FOUNDATIONAL-CORPUS.md)
-own the current corpus execution state.
+can proceed without waiting for source-order predecessors. The work order is the task list of
+[feature 002](specs/002-foundational-corpus-sweeps/tasks.md); the
+[source/snapshot manifest](corpus/foundational-source-corpus.md) and the
+[central four-phase status ledger](corpus/foundational-corpus-status.md) own the corpus state.
 
 Definition-layer ecosystem discovery is deliberately bulk rather than source-serial. The generated
 [`FOUNDATIONAL_DEFINITIONS.tsv`](FOUNDATIONAL_DEFINITIONS.tsv) joins every Sweep-III definition,

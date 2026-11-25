@@ -65,7 +65,9 @@ same phase (D12). Before each new unit, run `python3 scripts/output_check.py`
   D2: `CONTRIBUTING.md` LC-03 and LC-20 (each with a defective contribution beside its
   replacement, constitution E3); `docs/agents/corpus-execution.md`, "Start here", step 4, and the
   last paragraphs of "Sweep III construction boundary"; `docs/agents/corpus-acceptance.md`, the
-  paragraph "Descent, closure, representative-independence"; the vault plan
+  paragraph "Descent, closure, representative-independence"; `TODO.md`, the sentence of
+  "Execution DAG" that calls the no-proof boundary superseding, and step 4 of "Begin each
+  continuation here"; the vault plan
   PLAN-FOUNDATIONAL-CORPUS-DEFINITION-SWEEP, "Mathematical boundary", through `agent-memory update`.
   Decision: D2. Check: each text read against D2 states the same boundary.
 

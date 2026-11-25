@@ -66,8 +66,8 @@ Canonical execution records:
   mapping records, provenance contracts, and the source atlas. These are durable mathematical
   project knowledge and must remain versioned. `.agents/` and `.hermes/` are private agent-memory
   symlinks and are not authoritative for corpus state.
-- [.agents/plans/features/FEATURE-FOUNDATIONAL-CORPUS/](../../.agents/plans/features/FEATURE-FOUNDATIONAL-CORPUS/)
-  owns the four sequential plans and their handoff/output conventions. Do not maintain competing
+- [specs/002-foundational-corpus-sweeps/](../../specs/002-foundational-corpus-sweeps/) owns the
+  plan and the task list of the four sweeps (constitution M11). Do not maintain competing
   per-source progress ledgers elsewhere.
 
 ### Corpus acceptance workflow
