@@ -41,7 +41,7 @@ variable {R W}
 /-- Make a quadratic-module object from a quadratic map. -/
 def ofQuadraticMap {M : Type u} [AddCommGroup M] [Module R M]
     (q : QuadraticMap R M W) : QuadModuleCat R W :=
-  op ⟨op (ModuleCat.of R M), q⟩
+  op (Functor.elementsMk _ (op (ModuleCat.of R M)) q)
 
 /-- The underlying `R`-module. -/
 def carrierObj (Q : QuadModuleCat R W) : ModuleCat R :=
@@ -56,18 +56,18 @@ def form (Q : QuadModuleCat R W) : QuadraticMap R Q.carrier W :=
 /-- The underlying linear map of a morphism. -/
 def underlyingMap {Q P : QuadModuleCat R W} (f : Q ⟶ P) :
     Q.carrier →ₗ[R] P.carrier :=
-  f.unop.val.unop.hom
+  f.unop.hom.unop.hom
 
 /-- Morphisms preserve the quadratic map. -/
 theorem map_form {Q P : QuadModuleCat R W} (f : Q ⟶ P) (x : Q.carrier) :
     P.form (underlyingMap f x) = Q.form x := by
-  have h := f.unop.property
+  have h := f.unop.map_val
   exact QuadraticMap.congr_fun h x
 
 /-- Build a quadratic-module morphism from a form-preserving linear map. -/
 def homMk {Q P : QuadModuleCat R W} (f : Q.carrier →ₗ[R] P.carrier)
     (h : ∀ x, P.form (f x) = Q.form x) : Q ⟶ P := by
-  refine Quiver.Hom.op (CategoryOfElements.homMk _ _
+  refine Quiver.Hom.op (Functor.Elements.homMk
     (op (ModuleCat.ofHom f)) ?_)
   dsimp [quadraticMaps]
   ext x

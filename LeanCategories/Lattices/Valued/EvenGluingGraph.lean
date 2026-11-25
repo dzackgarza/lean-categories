@@ -1,0 +1,301 @@
+/-
+Copyright (c) 2026 Dzack Garza. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+-/
+module
+
+public import LeanCategories.Lattices.Valued.EvenGluing
+public import LeanCategories.Modules.Quadratic.Valued.Graph
+
+/-!
+# The orthogonal-sum discriminant splitting for the graph of an anti-isometry (#26)
+
+For even lattices `S` and `K`, the discriminant group of the orthogonal sum `S ⊥ K`
+splits as the product `A_S × A_K` of the two discriminant groups: a functional on the
+product carrier restricts along the two coordinate inclusions. This file constructs the
+two restriction maps and proves the adjoint laws they satisfy — the adjoint of the
+orthogonal sum restricts, along each coordinate inclusion, to the adjoint of the
+corresponding factor — and defines the graph of an anti-isometry between the quadratic
+discriminant forms as a submodule of the product of the two defect quotients.
+
+What this file proves:
+
+* the two restriction laws of the defect splitting (`evenDiscriminantFstRestriction`,
+  `evenDiscriminantSndRestriction`, `evenDiscriminantRestrictions_adjoint`) and the descended
+  map `evenDiscriminantDefectMap` on the defect of the orthogonal sum;
+* `evenDiscriminantSubgroupGraph_isTotallyIsotropic_iff`: for a subgroup `H ⊆ A_S` and a linear
+  map `γ : H → A_K`, the graph `Γ_γ ⊆ A_S × A_K` is totally isotropic for `q_S ⊕ q_K` exactly
+  when `q_K ∘ γ = -q_S|H` (Nikulin, Prop. 1.5.1, p. 111), from
+  `Modules/Quadratic/Valued/Graph.lean`;
+* `exists_evenDiscriminantSubgroupGraph_eq`: conversely, a totally isotropic subgroup of
+  `A_S × A_K` whose two projections are injective is the graph of an injective such `γ`
+  (Nikulin, §1.5, p. 111).
+
+Not proved here, and not claimed by this module: that `evenDiscriminantDefectMap` is an
+isomorphism (the defect-quotient equivalence), the transport of the quadratic discriminant form
+along it (the total isotropy of the graph inside the discriminant form of `S ⊥ K`), the
+overlattice the graph determines, its discriminant form `Γ^⊥/Γ`, and the primitive embedding of
+the two factors with `K = S^⊥`. Those are the remaining results of #26.
+
+Source: V. V. Nikulin, *Integral symmetric bilinear forms and some of their
+applications*, Math. USSR Izv. 14 (1980), §1.5, Prop. 1.5.1, p. 111.
+
+## Port provenance
+
+Ported, with the definitions and proofs adapted to this repository's carriers, from
+`TauCetiProject/TauCeti` (Apache 2.0, © The Tau Ceti contributors):
+
+* `TauCeti/LinearAlgebra/IntegralLattice/Overlattice/Graph.lean`
+  (`TauCeti.IntegralLattice.discriminantGraph`, `mem_discriminantGraph_iff`): the graph
+  of an isometry between the discriminant form of an even lattice and the negative
+  discriminant form of another, transported to the discriminant group of the orthogonal
+  sum along TauCeti's `discriminantGroupOrthogonalSumEquiv`. The port replaces TauCeti's
+  carrier hierarchy (`IntegralLattice V` over a rational space `V`, with dual-carrier
+  submodules and `Lᵛ`-indexed intermediate carriers) by this repository's
+  `IntegralLatticeCat R` (a `BilinModuleCat R R` whose defect is the cokernel of the
+  adjoint `L.carrier →ₗ Hom(L.carrier, R)`), and TauCeti's `discriminantGraph` transport
+  by the splitting constructed here.
+
+## LC-09 search record
+
+Queries over the formalization corpus (`scripts/formalization_corpus.py`):
+`file:Overlattice/Graph.lean repo:TauCeti`, `file:Overlattice/Isotropic.lean repo:TauCeti`,
+`file:Overlattice/Basic.lean repo:TauCeti`, `file:Overlattice/Dual.lean repo:TauCeti`,
+`file:Overlattice/OrthogonalQuotient/OrthogonalSum.lean repo:TauCeti`,
+`file:Overlattice/OrthogonalQuotient/Quadratic.lean repo:TauCeti`.
+
+Hits: the six files of `TauCeti/LinearAlgebra/IntegralLattice/Overlattice/` hold the
+whole reference theory — the graph (`Graph.lean`), the isotropic-subgroup overlattice
+correspondence (`Isotropic.lean`), the intermediate-carrier machinery (`Basic.lean`),
+the dual-carrier splitting (`Dual.lean`), and the orthogonal-quotient comparison
+`A_(P ⊕ Q) ≅ (H⊥ / H) ⊥ (K⊥ / K)` (`OrthogonalQuotient/OrthogonalSum.lean`,
+`OrthogonalQuotient/Quadratic.lean`). The reference implementation is ported above at
+the level this repository's carriers support: the graph subgroup and the defect
+splitting. The residue the carriers do not yet supply — the quadratic-form transport
+along the splitting, which the total-isotropy, overlattice, discriminant-form and
+primitive-embedding results all need — is recorded here and remains open; no result of
+#26 is claimed for it.
+-/
+
+@[expose] public section
+
+open LeanCategories.Modules.Bilinear.Valued
+open LeanCategories.Modules.Quadratic.Valued
+
+namespace LeanCategories.Lattices.Valued
+
+universe u
+
+variable {R : Type u} [CommRing R] [IsDomain R]
+
+variable (L M : IntegralLatticeCat R)
+
+/-- The first-coordinate restriction of a functional on the orthogonal-sum carrier:
+the map `f ↦ f ∘ inl` into the value dual of the first factor. -/
+def evenDiscriminantFstRestriction :
+    (orthogonalSum L M).obj.valueDual →ₗ[R] L.obj.valueDual where
+  toFun f := f.comp (LinearMap.inl R L.obj.carrier M.obj.carrier)
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+
+/-- The second-coordinate restriction of a functional on the orthogonal-sum carrier:
+the map `f ↦ f ∘ inr` into the value dual of the second factor. -/
+def evenDiscriminantSndRestriction :
+    (orthogonalSum L M).obj.valueDual →ₗ[R] M.obj.valueDual where
+  toFun f := f.comp (LinearMap.inr R L.obj.carrier M.obj.carrier)
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+
+omit [IsDomain R] in
+/-- The adjoint of the orthogonal sum restricts to the adjoint on the first coordinate:
+a functional of the form `z ↦ S.pairing a z₁ + K.pairing b z₂` restricts along the first
+coordinate inclusion to `x ↦ S.pairing a x`, the adjoint of `a`. -/
+theorem evenDiscriminantFstRestriction_adjoint
+    (a : L.obj.carrier) (b : M.obj.carrier) :
+    evenDiscriminantFstRestriction L M ((orthogonalSum L M).obj.adjoint (a, b)) =
+      L.obj.adjoint a := by
+  ext x
+  change (orthogonalSum L M).obj.pairing (a, b) (x, 0) = L.obj.pairing a x
+  rw [orthogonalSum_pairing]
+  simp
+
+omit [IsDomain R] in
+/-- The adjoint of the orthogonal sum restricts to the adjoint on the second coordinate:
+the same functional restricts along the second coordinate inclusion to
+`y ↦ K.pairing b y`, the adjoint of `b`. -/
+theorem evenDiscriminantSndRestriction_adjoint
+    (a : L.obj.carrier) (b : M.obj.carrier) :
+    evenDiscriminantSndRestriction L M ((orthogonalSum L M).obj.adjoint (a, b)) =
+      M.obj.adjoint b := by
+  ext x
+  change (orthogonalSum L M).obj.pairing (a, b) (0, x) = M.obj.pairing b x
+  rw [orthogonalSum_pairing]
+  simp
+
+/-- The graph of an anti-isometry between the quadratic discriminant forms of two
+even lattices, as a submodule of the product of their discriminant groups. -/
+noncomputable def evenDiscriminantAntiIsometryGraph
+    (hL : IsFractionFieldPerfect R L) (hM : IsFractionFieldPerfect R M)
+    (hEvenL : IsEven L) (hEvenM : IsEven M)
+    (γ : EvenDiscriminantAntiIsometry L M hL hM hEvenL hEvenM) :
+    Submodule R (L.obj.defect × M.obj.defect) :=
+  LinearMap.range
+    (LinearMap.prod (LinearMap.id : L.obj.defect →ₗ[R] L.obj.defect)
+      γ.toLinearEquiv.toLinearMap)
+
+/-! ## The defect splitting of the orthogonal sum
+
+Ported from `TauCeti/LinearAlgebra/IntegralLattice/Overlattice/Graph.lean`
+(`TauCeti.IntegralLattice.discriminantGraph`): the transport of the graph along the
+orthogonal-sum splitting of the discriminant groups. The splitting is built here from
+the two coordinate restrictions and the adjoint laws above, which play the role of
+TauCeti's `discriminantGroupOrthogonalSumEquiv`. -/
+
+/-- The map on the two defect quotients induced by the coordinate restrictions: a
+functional on the orthogonal-sum carrier is sent to the pair of its two coordinate
+classes. -/
+def evenDiscriminantRestrictionMap :
+    (orthogonalSum L M).obj.valueDual →ₗ[R] L.obj.defect × M.obj.defect :=
+  LinearMap.prod
+    (L.obj.defectProjection.comp (evenDiscriminantFstRestriction L M))
+    (M.obj.defectProjection.comp (evenDiscriminantSndRestriction L M))
+
+omit [IsDomain R] in
+/-- The adjoint range of the orthogonal sum lies in the kernel of the restriction map:
+each coordinate class of an adjoint functional is zero, by the two adjoint laws and the
+quotient projections killing their own submodules. -/
+theorem evenDiscriminantRestrictionMap_adjointRange_le_ker :
+    LinearMap.range (orthogonalSum L M).obj.adjoint ≤
+      LinearMap.ker (evenDiscriminantRestrictionMap L M) := by
+  rintro f ⟨⟨a, b⟩, rfl⟩
+  rw [LinearMap.mem_ker]
+  have h1 : L.obj.defectProjection (L.obj.adjoint a) = 0 := by
+    change Submodule.Quotient.mk (L.obj.adjoint a) = 0
+    rw [Submodule.Quotient.mk_eq_zero]
+    exact LinearMap.mem_range_self _ _
+  have h2 : M.obj.defectProjection (M.obj.adjoint b) = 0 := by
+    change Submodule.Quotient.mk (M.obj.adjoint b) = 0
+    rw [Submodule.Quotient.mk_eq_zero]
+    exact LinearMap.mem_range_self _ _
+  have hmap : (evenDiscriminantRestrictionMap L M) ((orthogonalSum L M).obj.adjoint (a, b)) =
+      (L.obj.defectProjection (evenDiscriminantFstRestriction L M ((orthogonalSum L M).obj.adjoint (a, b))),
+       M.obj.defectProjection (evenDiscriminantSndRestriction L M ((orthogonalSum L M).obj.adjoint (a, b)))) := rfl
+  rw [hmap, evenDiscriminantFstRestriction_adjoint L M, evenDiscriminantSndRestriction_adjoint L M]
+  exact Prod.ext h1 h2
+
+/-! ## The transported adjoint
+
+The pair of the two coordinate restrictions of the orthogonal-sum adjoint is the pair of
+the two adjoints — the statement that the adjoint of the orthogonal sum, transported
+along the product-dual splitting `Module.dualProdDualEquivDual` of Mathlib, is the
+product of the two adjoints. This is the input the defect-quotient equivalence needs:
+it says the adjoint range of the orthogonal sum is the product of the two adjoint
+ranges, so the quotient the defect of the orthogonal sum splits into is the product of
+the two defects. -/
+
+omit [IsDomain R] in
+/-- The pair of the two coordinate restrictions of the orthogonal-sum adjoint is the pair
+of the two adjoints. This combines the two adjoint laws above into the single statement
+that the transported adjoint is the product of the two adjoints. -/
+theorem evenDiscriminantRestrictions_adjoint
+    (a : L.obj.carrier) (b : M.obj.carrier) :
+    (evenDiscriminantFstRestriction L M
+        ((orthogonalSum L M).obj.adjoint (a, b)),
+      evenDiscriminantSndRestriction L M
+        ((orthogonalSum L M).obj.adjoint (a, b))) =
+      (L.obj.adjoint a, M.obj.adjoint b) :=
+  Prod.ext (evenDiscriminantFstRestriction_adjoint L M a b)
+    (evenDiscriminantSndRestriction_adjoint L M a b)
+
+/-! ## The induced map on the defect
+
+The restriction map kills the adjoint range, so it descends to the quotient by it: the
+defect of the orthogonal sum maps to the product of the two defects. This is the map
+the defect-quotient equivalence is made of; the equivalence itself — the proof that
+this map is an isomorphism — needs the kernel equality and is not claimed here. -/
+
+/-- The induced map on the defect of the orthogonal sum: the restriction map descends
+to the quotient by the adjoint range, giving a linear map from the defect of the
+orthogonal sum to the product of the two defects. This is the map the defect-quotient
+equivalence is made of. -/
+noncomputable def evenDiscriminantDefectMap :
+    (orthogonalSum L M).obj.defect →ₗ[R] L.obj.defect × M.obj.defect :=
+  (LinearMap.range (orthogonalSum L M).obj.adjoint).liftQ
+    (evenDiscriminantRestrictionMap L M)
+    (evenDiscriminantRestrictionMap_adjointRange_le_ker L M)
+
+@[simp]
+theorem evenDiscriminantDefectMap_mk
+    (f : (orthogonalSum L M).obj.valueDual) :
+    evenDiscriminantDefectMap L M
+        ((orthogonalSum L M).obj.defectProjection f) =
+      evenDiscriminantRestrictionMap L M f :=
+  rfl
+
+/-! ## The graph of an anti-isometry of subgroups of discriminant forms
+
+Nikulin, §1.5, p. 111. For even lattices `S` and `K`, a subgroup `H ⊆ A_S` and a linear map
+`γ : H → A_K` with `q_K ∘ γ = -q_S|H`, the graph `Γ_γ ⊆ A_S ⊕ A_K` is isotropic for
+`q_S ⊕ q_K`; conversely a totally isotropic subgroup of `A_S ⊕ A_K` whose two projections are
+injective is such a graph. The two facts are the instances at `evenDiscriminantQuadraticMap` of
+`isTotallyIsotropic_quadraticGraph_iff` and
+`exists_quadraticGraph_eq_of_isTotallyIsotropic` of
+`Modules/Quadratic/Valued/Graph.lean`. -/
+
+variable (S K : IntegralLatticeCat R)
+
+/-- The orthogonal sum `q_S ⊕ q_K` of the two quadratic discriminant forms, as a quadratic
+module on the product of the two discriminant groups. -/
+noncomputable def evenDiscriminantOrthogonalSumQuadModule
+    (hS : IsFractionFieldPerfect R S) (hK : IsFractionFieldPerfect R K)
+    (hEvenS : IsEven S) (hEvenK : IsEven K) :
+    QuadModuleCat R (DoubleFractionValueQuotient R) :=
+  QuadModuleCat.ofQuadraticMap
+    (QuadraticMap.prod (evenDiscriminantQuadraticMap (L := S) hS hEvenS)
+      (evenDiscriminantQuadraticMap (L := K) hK hEvenK))
+
+/-- The graph `Γ_γ ⊆ A_S × A_K` of a linear map `γ` out of a subgroup `H ⊆ A_S`. -/
+noncomputable def evenDiscriminantSubgroupGraph
+    (H : Submodule R S.obj.defect) (γ : H →ₗ[R] K.obj.defect) :
+    Submodule R (S.obj.defect × K.obj.defect) :=
+  quadraticGraph H γ
+
+/-- A class lies in the graph exactly when it is `(x, γ x)`. -/
+theorem mem_evenDiscriminantSubgroupGraph_iff
+    {H : Submodule R S.obj.defect} {γ : H →ₗ[R] K.obj.defect}
+    {x : S.obj.defect} {y : K.obj.defect} :
+    (x, y) ∈ evenDiscriminantSubgroupGraph S K H γ ↔ ∃ hx : x ∈ H, γ ⟨x, hx⟩ = y :=
+  mem_quadraticGraph_iff
+
+/-- **The graph of an anti-isometry is isotropic** (Nikulin, Prop. 1.5.1, p. 111). The graph of
+`γ : H → A_K` is totally isotropic for `q_S ⊕ q_K` exactly when `γ` reverses the quadratic
+discriminant forms: `q_K (γ x) = -q_S x` for all `x ∈ H`. -/
+theorem evenDiscriminantSubgroupGraph_isTotallyIsotropic_iff
+    (hS : IsFractionFieldPerfect R S) (hK : IsFractionFieldPerfect R K)
+    (hEvenS : IsEven S) (hEvenK : IsEven K)
+    (H : Submodule R S.obj.defect) (γ : H →ₗ[R] K.obj.defect) :
+    (evenDiscriminantOrthogonalSumQuadModule (S := S) (K := K) hS hK hEvenS hEvenK).IsTotallyIsotropic
+        (evenDiscriminantSubgroupGraph S K H γ) ↔
+      ∀ x : H, evenDiscriminantQuadraticMap (L := K) hK hEvenK (γ x) =
+        -evenDiscriminantQuadraticMap (L := S) hS hEvenS ((x : H) : S.obj.defect) :=
+  isTotallyIsotropic_quadraticGraph_iff _ _ H γ
+
+/-- **Every isotropic subgroup with injective projections is such a graph** (Nikulin, §1.5,
+p. 111). A totally isotropic subgroup `N ≤ A_S × A_K` whose two projections to `A_S` and `A_K`
+are injective is the graph of an injective `γ : H → A_K` reversing the quadratic discriminant
+forms. -/
+theorem exists_evenDiscriminantSubgroupGraph_eq
+    (hS : IsFractionFieldPerfect R S) (hK : IsFractionFieldPerfect R K)
+    (hEvenS : IsEven S) (hEvenK : IsEven K)
+    (N : Submodule R (S.obj.defect × K.obj.defect))
+    (hN : (evenDiscriminantOrthogonalSumQuadModule (S := S) (K := K) hS hK hEvenS hEvenK).IsTotallyIsotropic N)
+    (h₁ : Function.Injective fun x : N => ((x : S.obj.defect × K.obj.defect)).1)
+    (h₂ : Function.Injective fun x : N => ((x : S.obj.defect × K.obj.defect)).2) :
+    ∃ (H : Submodule R S.obj.defect) (γ : H →ₗ[R] K.obj.defect),
+      Function.Injective γ ∧
+        (∀ x : H, evenDiscriminantQuadraticMap (L := K) hK hEvenK (γ x) =
+          -evenDiscriminantQuadraticMap (L := S) hS hEvenS ((x : H) : S.obj.defect)) ∧
+        N = evenDiscriminantSubgroupGraph S K H γ :=
+  exists_quadraticGraph_eq_of_isTotallyIsotropic _ _ N hN h₁ h₂
+
+end LeanCategories.Lattices.Valued

@@ -5,6 +5,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import LeanCategories.Homological.CWPrespectrum
+public import LeanCategories.Topology.SingularRealization
 public import LeanCategories.Topology.MappingTelescopeData
 
 /-!
@@ -84,9 +85,20 @@ structure BasedCWApproximationCandidateData (X : BasedTop.{u}) where
   source : BasedTop.{u}
   map : source ⟶ X
 
-instance (X : BasedTop.{u}) :
-    Nonempty (BasedCWApproximationCandidateData X) :=
-  ⟨⟨X, 𝟙 X⟩⟩
+open LeanCategories.Topology
+
+/-- The singular-realization candidate source: `|Sing X|` with the point coming from the
+adjunction counit, and the counit as the structure map. Its CW and weak-equivalence
+obligations are not claimed here. -/
+def singularRealizationCWApproximationCandidateData (X : BasedTop.{u}) :
+    BasedCWApproximationCandidateData X where
+  source := basedSingularRealizationSource X
+  map := basedSingularRealizationCounit X
+
+/-- The packaged candidate is surjective on points. -/
+theorem singularRealizationCWApproximationCandidateData_surjective (X : BasedTop.{u}) :
+    Function.Surjective (singularRealizationCWApproximationCandidateData X).map.right.hom :=
+  basedSingularRealizationCounit_surjective X
 
 /-- Exact source specification for a based CW approximation. -/
 def IsBasedCWApproximationData
@@ -95,27 +107,13 @@ def IsBasedCWApproximationData
   Nonempty (Topology.CWComplex (Set.univ : Set A.source.right)) ∧
     IsWeakHomotopyEquivalence A.map.right.hom
 
-/-- The CW-approximation datum used for Hatcher's `K'ₙ`, selected from the
-exact U023/U024 source specification.
-
-Existence of an approximation satisfying the specification is U024 and is not
-proved in Sweep III. -/
-def associatedOmegaCWApproximationData
-    (K : CWPrespectrum.{u}) (n : ℕ) :
-    BasedCWApproximationCandidateData (associatedOmegaTelescope K n) :=
-  Classical.epsilon
-    (IsBasedCWApproximationData (associatedOmegaTelescope K n))
-
-/-- Hatcher's associated level `K'ₙ` at the construction-data layer. -/
-abbrev associatedOmegaLevelData
-    (K : CWPrespectrum.{u}) (n : ℕ) : BasedTop.{u} :=
-  (associatedOmegaCWApproximationData K n).source
-
-/-- The specified CW-approximation map `K'ₙ → Tel(ΩⁱKₙ₊ᵢ)`. -/
-def associatedOmegaLevelToTelescopeData
-    (K : CWPrespectrum.{u}) (n : ℕ) :
-    associatedOmegaLevelData K n ⟶ associatedOmegaTelescope K n :=
-  (associatedOmegaCWApproximationData K n).map
+/- The CW-approximation layer of Hatcher's `K'ₙ` is not part of this file: producing a based
+CW approximation of `Tel(ΩⁱKₙ₊ᵢ)` with a weak homotopy equivalence is the open source obligation
+U023/U024, which is not proved here. `BasedCWApproximationCandidateData` and its predicate
+`IsBasedCWApproximationData` remain declared above as the exact specification that work must
+satisfy; the vacuous zero/identity witness for them was deleted, along with the data that
+selected it (`associatedOmegaCWApproximationData`, `associatedOmegaLevelData`,
+`associatedOmegaLevelToTelescopeData`, `associatedOmegaRepresentedCohomologyData`). -/
 
 /-- Based homotopy of based maps, written as a raw relation so no
 equivalence-relation theorem is needed in Sweep III. -/
@@ -131,12 +129,6 @@ relation directly; proving its equivalence properties is result-layer work. -/
 abbrev BasedHomotopyClassData
     (X Y : BasedTop.{u}) :=
   Quot (fun f g : X ⟶ Y => BasedMapHomotopicData f g)
-
-/-- Hatcher's represented cohomology carrier
-`hⁿ(X) = [X,K'ₙ]` attached to the associated level. -/
-abbrev associatedOmegaRepresentedCohomologyData
-    (K : CWPrespectrum.{u}) (n : ℕ) (X : BasedTop.{u}) :=
-  BasedHomotopyClassData X (associatedOmegaLevelData K n)
 
 /-- Iterated reduced suspension `ΣⁿX`. -/
 def iteratedSuspensionObjData

@@ -31,7 +31,7 @@ variable {σ R : Type*} [CommRing R]
 theorem mem_idealOfVars_iff_constantCoeff_eq_zero (p : MvPolynomial σ R) :
     p ∈ idealOfVars σ R ↔ constantCoeff p = 0 := by
   rw [← pow_one (idealOfVars σ R), mem_pow_idealOfVars_iff']
-  change (∀ d : σ →₀ ℕ, Finsupp.degree d < 1 → coeff d p = 0) ↔ coeff 0 p = 0
+  change (∀ d : σ →₀ ℕ, Finsupp.degree d < 1 → p.coeff d = 0) ↔ p.coeff 0 = 0
   simp only [Nat.lt_one_iff, Finsupp.degree_eq_zero_iff, forall_eq]
 
 /-- The ideal of the origin is the kernel of evaluation at the origin. -/

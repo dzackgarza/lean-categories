@@ -6,6 +6,7 @@ module
 
 public import LeanCategories.Lattices.Valued.Spinor
 public import Mathlib.LinearAlgebra.CliffordAlgebra.SpinGroup
+public import Mathlib.LinearAlgebra.CliffordAlgebra.Inversion
 
 @[expose] public section
 

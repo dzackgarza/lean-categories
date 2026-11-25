@@ -69,26 +69,24 @@ structure DivisionPartData
 attribute [instance] DivisionPartData.instDivisionRing
   DivisionPartData.instAlgebra
 
-/-- The proved Artin--Wedderburn theorem supplies complete division-part data
-for every central simple algebra. -/
-theorem nonemptyDivisionPartData (F : Type u) [Field F] (A : CSA F) :
-    Nonempty (DivisionPartData F A) := by
-  let _ : IsArtinianRing A := IsArtinianRing.of_finite F A
-  obtain ⟨n, hn, D, hD, hAlg, ⟨e⟩⟩ :=
-    IsSimpleRing.exists_algEquiv_matrix_divisionRing F A
-  exact ⟨
-    { n := n
-      hn := hn.out
-      divisionRing := D
-      instDivisionRing := hD
-      instAlgebra := hAlg
-      matrixEquiv := e }⟩
-
-/-- Construct the Wedderburn division-ring part of a central simple algebra
-using Mathlib's proved Artin--Wedderburn decomposition
-(Dummit--Foote FC01-C17-U082). -/
+/-- The Wedderburn division-ring part of a central simple algebra, constructed from Mathlib's
+proved Artin--Wedderburn decomposition `IsSimpleRing.exists_algEquiv_matrix_divisionRing`
+(Dummit--Foote FC01-C17-U082). The data is supplied directly; the existence step is local to
+the construction and is not part of the public surface. -/
 noncomputable def divisionPartData (F : Type u) [Field F] (A : CSA F) :
-    DivisionPartData F A :=
-  Classical.choice (nonemptyDivisionPartData F A)
+    DivisionPartData F A := by
+  classical
+  let h : Nonempty (DivisionPartData F A) := by
+    let _ : IsArtinianRing A := IsArtinianRing.of_finite F A
+    obtain ⟨n, hn, D, hD, hAlg, ⟨e⟩⟩ :=
+      IsSimpleRing.exists_algEquiv_matrix_divisionRing F A
+    exact ⟨
+      { n := n
+        hn := hn.out
+        divisionRing := D
+        instDivisionRing := hD
+        instAlgebra := hAlg
+        matrixEquiv := e }⟩
+  exact Classical.choice h
 
 end LeanCategories.Algebra

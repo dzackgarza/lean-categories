@@ -1,5 +1,6 @@
 .lake/
 .tmp-*
+/build-timings/
 __pycache__/
 /.agents
 /.hermes

@@ -49,8 +49,9 @@ theorem denseRange_algebraMap_adicCompletionIntegers :
     have h := MonoidWithZeroHom.ValueGroup₀.embedding_strictMono.monotone
       (show δ.1 ≤ (1 : MonoidWithZeroHom.ValueGroup₀
         (MonoidWithZeroHom.ofClass
-          (Valued.v : Valuation (v.adicCompletion K) ℤᵐ⁰))) by simp [δ, Units.min_val])
-    simpa using h
+          (Valued.v : Valuation (v.adicCompletion K) ℤᵐ⁰))) by
+        exact Units.val_le_val.mpr (min_le_right γ 1))
+    exact h.trans (map_one _).le
   have hx_integer : v.valuation K x ≤ 1 := by
     rw [← valuedAdicCompletion_eq_valuation' (v := v)]
     calc

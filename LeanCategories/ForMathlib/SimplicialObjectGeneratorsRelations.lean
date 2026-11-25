@@ -103,7 +103,7 @@ up to isomorphism. -/
 noncomputable def ofGeneratorsAndRelationsObjMkIso (n : ℕ) :
     (ofGeneratorsAndRelations X σ δ s1 s2 s3₁ s3₂ s4 s5).obj (.mk n) ≅ X n := by
   dsimp only [ofGeneratorsAndRelations, Functor.comp_obj]
-  exact ((_ : SimplexCategoryGenRel ⥤ C).mapIso (equivSimplexCategory_inverse_objIsoMk n)).trans
+  exact ((_ : SimplexCategoryGenRel ⥤ C).mapIso (equivSimplexCategoryInverseObjIsoMk n)).trans
     (Iso.refl _)
 
 set_option backward.isDefEq.respectTransparency false in
@@ -191,9 +191,9 @@ lemma mkNatTrans_app (Δ : SimplexCategory) : (mkNatTrans X Y app hδ hσ).app �
     Quotient.natTransLift _
       { app n := app (.mk n)
         naturality := p}
-  have h_nat := this.naturality (equivSimplexCategory_inverse_objIsoMk Δ.len).hom
+  have h_nat := this.naturality (equivSimplexCategoryInverseObjIsoMk Δ.len).hom
   simp only [Functor.comp_obj, equivSimplexCategory_functor_obj_mk,
-    equivSimplexCategory_inverse_objIsoMk, Functor.id_obj, Iso.symm_hom, Iso.app_inv,
+    equivSimplexCategoryInverseObjIsoMk, Functor.id_obj, Iso.symm_hom, Iso.app_inv,
     Functor.comp_map] at h_nat
   have h :
       equivSimplexCategory.counit.app (.mk Δ.len) =

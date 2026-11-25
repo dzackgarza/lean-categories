@@ -1,5 +1,4 @@
 name = "lean_categories"
-packagesDir = "../../.local/share/lean/v4.33.0/packages"
 version = "0.1.0"
 keywords = ["math"]
 defaultTargets = ["LeanCategories"]
@@ -13,15 +12,48 @@ weak.linter.mathlibStandardSet = true
 weak.linter.style.header = false
 maxSynthPendingDepth = 3
 
-[[require]]
-name = "mathlib"
-scope = "leanprover-community"
-rev = "v4.33.0"
-
+# `BrauerGroup` publishes one tag per Mathlib release and is imported by
+# `LeanCategories.Algebra.{CrossedProduct,BrauerGroup}Data`, so its pin has to be a
+# commit that compiles against the Mathlib head below. The tag `v4.36.0-rc2` names
+# the Lean release the toolchain comes from but not that head: Mathlib master moved
+# on, and at `048fffa1` the tag fails on `Unknown identifier ext_iff`
+# (`CSA/ReducedCharPoly.lean:254`), `Unknown constant Module.Projective.tensorProduct`
+# (`Azumaya/Mul.lean:349`) and two `rewrite`s in `ToSecond.lean`. `bb53b6f` is the
+# upstream commit that bumps the package to the Mathlib revision which separated that
+# constant (`089be9f`, an ancestor of the head below), and the package compiles there.
+# A new Mathlib release breaks this package first, which is what the scheduled run
+# reports; moving this pin is then part of moving the Mathlib head.
 [[require]]
 name = "BrauerGroup"
 git = "https://github.com/Whysoserioushah/BrauerGroup.git"
-rev = "v4.33.0"
+rev = "bb53b6f9b8cc007204fc852f53bf04da498ae555"
+
+# Mathlib tracks `master` (lean-categories#118): the research image carries one shared
+# Lean project, always on the latest Mathlib, and this repository follows it. The exact
+# head is pinned by `lake-manifest.json` (which `lake build` resolves from), and moving
+# it to a new master head is `just update` plus the dependency pins that head breaks.
+# Requiring `mathlib` last
+# makes Mathlib's own dependency pins take precedence over the other packages' pins, so
+# `lake exe cache get` computes the hashes the build files are keyed to.
+#
+# Each worktree resolves its own package checkouts (lean-categories#143): with no
+# `packagesDir` set, Lake materializes every dependency in this workspace's own
+# `.lake/packages`, so a `lake update` or a build in one worktree cannot change or
+# delete the packages or `.olean` files another worktree is building against. The
+# compressed Mathlib cache in `~/.cache/mathlib` is shared by design, and
+# `lake exe cache get` decompresses it into the checkout of the project that runs it,
+# so what each worktree holds is its own *source* checkout of the one Mathlib head.
+# The decompressed build tree is shared on top of that (lean-categories#148):
+# `scripts/cache-get.sh` keeps one build tree per package, revision and toolchain --
+# Mathlib and every dependency, since a missing dependency tree makes a worktree
+# rebuild hundreds of Mathlib modules -- in the repository's git directory, and hands
+# each worktree a tree of hardlinks into it, which is what keeps four concurrent
+# worktrees inside one disk. See `docs/mathlib-build-store.md` for the measurement
+# and the rejected alternatives.
+[[require]]
+name = "mathlib"
+scope = "leanprover-community"
+rev = "master"
 
 [[lean_lib]]
 name = "LeanCategories"
@@ -30,4 +62,9 @@ name = "LeanCategories"
 [[lean_exe]]
 name = "lean-categories-axiom-audit"
 root = "LeanCategories.Tools.AxiomAuditMain"
+supportInterpreter = true
+
+[[lean_exe]]
+name = "lean-categories-reference-graph"
+root = "LeanCategories.Tools.ReferenceGraphMain"
 supportInterpreter = true

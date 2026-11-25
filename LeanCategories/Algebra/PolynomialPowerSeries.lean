@@ -37,7 +37,7 @@ noncomputable def polynomialFamily : CommRingCat.{u} ⥤ Cat.{u, u} where
     · intro p Y f
       rcases p with ⟨p⟩
       rcases Y with ⟨Y⟩
-      rcases f with ⟨⟨h⟩⟩
+      rcases f with ⟨h⟩
       cases h
       cat_disch
     · intro p
@@ -48,7 +48,7 @@ noncomputable def polynomialFamily : CommRingCat.{u} ⥤ Cat.{u, u} where
     · intro p Y f
       rcases p with ⟨p⟩
       rcases Y with ⟨Y⟩
-      rcases f with ⟨⟨h⟩⟩
+      rcases f with ⟨h⟩
       cases h
       cat_disch
     · intro p
@@ -107,7 +107,7 @@ noncomputable def polynomialDerivativeNatTrans : polynomialFamily ⟶ polynomial
     · intro p Y f
       rcases p with ⟨p⟩
       rcases Y with ⟨Y⟩
-      rcases f with ⟨⟨h⟩⟩
+      rcases f with ⟨h⟩
       cases h
       cat_disch
     · intro p
@@ -136,7 +136,7 @@ noncomputable def powerSeriesFamily : CommRingCat.{u} ⥤ Cat.{u, u} where
     · intro p Y f
       rcases p with ⟨p⟩
       rcases Y with ⟨Y⟩
-      rcases f with ⟨⟨h⟩⟩
+      rcases f with ⟨h⟩
       cases h
       cat_disch
     · intro p
@@ -148,7 +148,7 @@ noncomputable def powerSeriesFamily : CommRingCat.{u} ⥤ Cat.{u, u} where
     · intro p Y f
       rcases p with ⟨p⟩
       rcases Y with ⟨Y⟩
-      rcases f with ⟨⟨h⟩⟩
+      rcases f with ⟨h⟩
       cases h
       cat_disch
     · intro p

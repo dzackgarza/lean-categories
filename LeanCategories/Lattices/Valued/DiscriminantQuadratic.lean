@@ -247,4 +247,27 @@ def HasEvenDiscriminantAntiIsometry
     (hEvenL : IsEven L) (hEvenM : IsEven M) : Prop :=
   Nonempty (EvenDiscriminantAntiIsometry L M hL hM hEvenL hEvenM)
 
+/-- The double-fraction projection vanishes exactly on `2R`. -/
+theorem doubleFractionValueProjection_eq_zero_iff (z : FractionRing R) :
+    doubleFractionValueProjection R z = 0 ↔
+      z ∈ LinearMap.range (doubleAlgebraMap R) := by
+  rw [doubleFractionValueProjection, Submodule.mkQ_apply,
+    Submodule.Quotient.mk_eq_zero]
+
+/-- The quadratic discriminant form of a metric-dual element is its rationalized self-pairing,
+reduced modulo `2R` — the quadratic analogue of `discriminant_pairing_metricDualToDiscriminant`. -/
+theorem evenDiscriminantQuadraticMap_metricDualToDiscriminant
+    (hL : IsFractionFieldPerfect R L) (hEven : IsEven L)
+    (x : metricDual R L) :
+    evenDiscriminantQuadraticMap L hL hEven (metricDualToDiscriminant R L x) =
+      doubleFractionValueProjection R
+        (rationalizedForm R L (x : RationalSpan R L) (x : RationalSpan R L)) := by
+  change evenDiscriminantQuadraticMap L hL hEven
+      (Submodule.Quotient.mk (metricDualToValueDual R L x)) = _
+  rw [evenDiscriminantQuadraticMap_mk]
+  change doubleFractionValueProjection R
+      (rationalizedForm R L (rieszEmbedding R L hL (metricDualToValueDual R L x))
+        (rieszEmbedding R L hL (metricDualToValueDual R L x))) = _
+  rw [← rieszToMetricDual_coe, rieszToMetricDual_metricDualToValueDual]
+
 end LeanCategories.Lattices.Valued

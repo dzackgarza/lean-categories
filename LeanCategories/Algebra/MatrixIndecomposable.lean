@@ -48,7 +48,7 @@ def IsDecomposable [Zero α] (A : Matrix n n α) : Prop :=
       A (e.symm (Sum.inr j)) (e.symm (Sum.inl i)) = 0
 
 /-- Indecomposability, the condition on a `C⁺`-matrix. -/
-def IsIndecomposable [Zero α] (A : Matrix n n α) : Prop :=
+def IsSupportIndecomposable [Zero α] (A : Matrix n n α) : Prop :=
   ¬ A.IsDecomposable
 
 /-- The support graph: distinct indices are adjacent when either entry between them is
@@ -100,8 +100,8 @@ theorem isDecomposable_iff_not_preconnected [Zero α] (A : Matrix n n α) :
       ⟨hne, by rcases not_and_or.mp hnz with h' | h' <;> [exact .inl h'; exact .inr h']⟩))
 
 /-- A matrix is indecomposable exactly when its support graph is preconnected. -/
-theorem isIndecomposable_iff_preconnected [Zero α] (A : Matrix n n α) :
-    A.IsIndecomposable ↔ A.supportGraph.Preconnected := by
-  rw [IsIndecomposable, isDecomposable_iff_not_preconnected, not_not]
+theorem isSupportIndecomposable_iff_preconnected [Zero α] (A : Matrix n n α) :
+    A.IsSupportIndecomposable ↔ A.supportGraph.Preconnected := by
+  rw [IsSupportIndecomposable, isDecomposable_iff_not_preconnected, not_not]
 
 end Matrix

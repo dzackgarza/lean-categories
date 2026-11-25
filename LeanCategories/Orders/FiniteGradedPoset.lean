@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 -/
 module
 
+public import Mathlib.Data.Fintype.Defs
 public import Mathlib.Order.Category.PartOrd
 public import Mathlib.Order.Grade
 

@@ -1,0 +1,56 @@
+/-
+Copyright (c) 2026 The Tau Ceti contributors. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: The Tau Ceti contributors
+-/
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Pushforward
+
+/-!
+# Components of pushforwards of morphisms of presheaves of modules
+
+## Provenance (lean-categories#22)
+
+Ported from `TauCeti/Algebra/Category/ModuleCat/Presheaf/Pushforward.lean` (The Tau Ceti contributors, Apache 2.0), commit
+`ca32605ff53921fa0689dd312618b7cfaafa7e43`, namespaces renamed `TauCeti` →
+`LeanCategories`. The unit's provenance and search record is in
+`LeanCategories/AlgebraicGeometry/RelativeSpec/Basic.lean`.
+
+
+Mathlib's `PresheafOfModules.pushforward₀ F R` reindexes a presheaf of `R`-modules along a functor
+`F`. On morphisms it keeps the components: `LeanCategories.PresheafOfModules.pushforward₀_map_app_apply`
+records that the component at `X` of the pushforward of `α` is the component of `α` at the image of
+`X`.
+-/
+
+public section
+
+open CategoryTheory Opposite
+
+universe v v₁ v₂ u₁ u₂ u
+
+namespace LeanCategories.PresheafOfModules
+
+open _root_.PresheafOfModules
+
+variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D] (F : C ⥤ D)
+  {R : Dᵒᵖ ⥤ RingCat.{u}}
+
+/-- The pushforward along `F` of a morphism `α` of presheaves of modules has, at `X`, the
+component of `α` at the image of `X`.
+
+The element is taken in the domain of the pushed-forward component, so that the lemma rewrites
+goals about components of pushed-forward morphisms; an element of `M.obj (op (F.obj X.unop))` may
+be passed as well, since the two modules are definitionally equal.
+
+The `simp↓` attribute rewrites the component before simp normalizes its base ring
+`(F.op ⋙ R).obj X` inside the implicit arguments of the coercion; ordinary `simp` would
+normalize that ring first and prevent this lemma from matching. -/
+@[simp↓]
+theorem pushforward₀_map_app_apply {M N : PresheafOfModules.{v} R} (α : M ⟶ N) (X : Cᵒᵖ)
+    (m : ((pushforward₀ F R).obj M).obj X) :
+    ((pushforward₀ F R).map α).app X m = α.app (op (F.obj X.unop)) m :=
+  rfl
+
+end LeanCategories.PresheafOfModules

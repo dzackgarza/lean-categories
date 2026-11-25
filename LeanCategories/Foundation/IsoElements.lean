@@ -99,20 +99,20 @@ def isoNatural (U : C ⥤ Type w) (G : Core C ⥤ Type w') (f : ∀ X, U.obj X �
     (h : ∀ {X Y : Core C} (φ : X ⟶ Y) (x : U.obj X.of),
       f Y.of (U.map φ.iso.hom x) = G.map φ (f X.of x)) :
     IsoElements U ⥤ G.Elements where
-  obj p := ⟨p.1, f p.1.of p.2⟩
+  obj p := ⟨f p.1.of p.2⟩
   map {p q} g := ⟨g.1, (h g.1 p.2).symm.trans (congrArg (f q.1.of) (map_snd g))⟩
 
 @[simp] theorem isoNatural_obj (U : C ⥤ Type w) (G : Core C ⥤ Type w')
     (f : ∀ X, U.obj X → G.obj ⟨X⟩)
     (h : ∀ {X Y : Core C} (φ : X ⟶ Y) (x : U.obj X.of),
       f Y.of (U.map φ.iso.hom x) = G.map φ (f X.of x))
-    (p : IsoElements U) : (isoNatural U G f h).obj p = ⟨p.1, f p.1.of p.2⟩ := rfl
+    (p : IsoElements U) : (isoNatural U G f h).obj p = ⟨f p.1.of p.2⟩ := rfl
 
 variable {D : Type u'} [Category.{v'} D]
 
 /-- Points along a functor `F : C ⥤ D`: `(X, x) ↦ (F X, x)`. -/
 def restrict (F : C ⥤ D) (U : D ⥤ Type w) : IsoElements (F ⋙ U) ⥤ IsoElements U where
-  obj p := ⟨⟨F.obj p.1.of⟩, p.2⟩
+  obj p := ⟨p.2⟩
   map g := ⟨F.core.map g.1, g.2⟩
 
 end IsoElements

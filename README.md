@@ -7,7 +7,7 @@ The repository owns as little Lean as possible. It uses Mathlib directly, import
 libraries as Lake dependencies, and ports reference implementations with provenance when no
 package exists. It authors new Lean only for mathematics that a documented search has shown to
 exist nowhere else. A shorter repository that imports more is the better repository.
-[AGENTS.md](AGENTS.md) owns the reuse gate and the formalization source registry.
+[docs/agents/reuse-gate.md](docs/agents/reuse-gate.md) owns the reuse gate and the formalization source registry.
 
 `LeanCategories` is one category-theory library and one Lean namespace. The source tree
 uses mathematical owners and support roles:
@@ -42,6 +42,37 @@ implementation supplies is consulted for meaning; its answers are judged only by
 `lean-cas-dsl` acceptance suite. The semantic registry it reads, the catalogue, is here
 (`LeanCategories/Catalogue/`, namespace `CasCatalogue`). The contract is
 [`lean-cas-dsl/specs/architecture.md`](https://github.com/dzackgarza/lean-cas-dsl/blob/main/specs/architecture.md).
+
+## Consuming the registry (#49)
+
+A downstream package depends on a pinned revision of this repository — the release tag when one
+is published, otherwise an explicit `rev` — and reads the checked catalogue at elaboration time.
+[`Integration/RegistryConsumer/`](Integration/RegistryConsumer/) is the minimal worked example:
+it requires this package as a Lake dependency on the same toolchain and Mathlib pin, and fails
+loudly if a row it needs is missing.
+
+Consumption is staged, and each release names the stages it supports:
+
+| Stage | Surface it exposes | Owned by |
+| --- | --- | --- |
+| 1 | registry rows resolved by stable ID (`cat.`, `fun.`, `cell.`, `obj.`, `op.`, `mor.`, …) | this repository |
+| 2 | typed category and functor expressions | #31, #54 |
+| 3 | operation declarations and inherited-method resolution inputs | #28, #53 |
+
+`CasCatalogue.RegistrySnapshot.snapshot` returns the rows of the current environment;
+`findEntry?`, `hasEntry` and `declarationNames?` resolve one row and the Lean declarations it
+names; `idsWithPrefix` selects a layer. A consumer that re-registers or derives rows folds them
+through `RegistrySnapshot.validateDerived`, which is fail-loud: a stable ID that already exists,
+and any unresolved registry reference, are refused. A consumer row never overwrites a checked
+row, and a derived row acquires no meaning from the consumer that wrote it.
+
+Rows exist only when the catalogue modules are imported, so a consumer imports
+`LeanCategories.Catalogue` (the rows) together with
+`LeanCategories.Catalogue.Registry.Snapshot` (the read surface, re-exported by the catalogue),
+and resolves everything else by stable ID. No generated Sage mapping, Python seed, hand-authored
+DOT file or research branch artifact is an input to that resolution.
+
+`dzackgarza/lean-cas-dsl#14` is the first consumer of this contract.
 
 The support directories describe the same mathematical library. They do not define a
 second category system. `Core` and `Model` define the common language. `Realization`
@@ -89,7 +120,7 @@ python scripts/foundational_definition_candidates.py
 The second command uses the live Formalization Corpus batch operation resolved from its OpenAPI
 document and writes resumable candidate checkpoints under `.tmp/`. Candidate hits are discovery
 evidence only; canonical semantic routes remain in `corpus/` mapping records. A greenfield
-`unmatched` disposition requires the finite negative-search gate recorded in `AGENTS.md`.
+`unmatched` disposition requires the finite negative-search gate recorded in `docs/agents/corpus-acceptance.md`.
 
 Method exposure, backend routing and the execution of registered implementations belong to
 [`dzackgarza/lean-cas-dsl`](https://github.com/dzackgarza/lean-cas-dsl). Sage labels, category
@@ -99,6 +130,12 @@ graphs and implementation details do not define this library.
 just cache
 just build
 ```
+
+Both entry points keep Lake's own per-module elaboration times in `build-timings/` (a `.log`
+and a `.tsv` per build step, named by commit and start time, outside the build tree; the
+`just test` step that builds `LeanCategories.All` records the whole library) -- see
+[`docs/build-timings.md`](docs/build-timings.md), which also carries the CI artifact step
+(retention 90 days) that still has to be added to `.github/workflows/ci.yml`.
 
 ## The foundational corpus
 
@@ -142,8 +179,9 @@ standard mathematics auditable by a working mathematician, such that later domai
 (monoidal categories, stacks, spectra, derived objects, general limits) become instances
 rather than refactors.
 
-The full orientation — including the anatomy of agent drift and the alignment lens every
-task should pass through — is [AGENTS.md](AGENTS.md). The **mathematical constitution** —
+The full orientation — including the anatomy of agent drift — is
+[docs/agents/mathematical-simplicity.md](docs/agents/mathematical-simplicity.md). The alignment lens every task should pass through
+stays in [AGENTS.md](AGENTS.md). The **mathematical constitution** —
 the definitions, variance conventions, truncations, exact sequences, and settled
 conventions this repository formalizes — is [FOUNDATIONS.md](FOUNDATIONS.md)
 ("Mathematical Foundations of the Categorical Research Language", 66 sections: the

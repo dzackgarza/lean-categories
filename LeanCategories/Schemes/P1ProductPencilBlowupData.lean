@@ -103,6 +103,7 @@ def IsEightPointBlowupData
 /-- Candidate data for the Peters--Sterk `(2,2)` elliptic-pencil example. -/
 structure P1ProductPencilBlowupCandidateData where
   base : SmoothProjectiveComplexSurface
+  [standing : DivisorStandingHypothesis base.scheme]
   baseIso : base.scheme ≅ complexProjectiveLineProductData
   curves : Fin 2 → P1ProductEllipticCurveData
   divisorClass : WeilDivisor base.scheme

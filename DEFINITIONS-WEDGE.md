@@ -151,7 +151,7 @@ Worker recovery is presently blocked at the app control layer rather than in any
 
 message time: 2026-09-19 13:26:27
 
-I've never asked you to report on details....you understand why internal plan progress codes have zero meaning for me? In any case, it is unblocked now
+A report does not use plan progress codes. The blocked work is unblocked.
 
 ---
 
@@ -169,13 +169,13 @@ The worker-control blockage is now cleared.
 
 message time: 2026-09-19 13:27:25
 
-Did you just fucking repeat what I told you back to me without taking any fucking actions
+Restating an instruction is not action: do the work.
 
 ---
 
 # chatgpt response
 
-Yes. I failed to act on “it is unblocked now.” I am correcting that by running the steward tick now, starting with the required mutual-exclusion check and using only the main connector.
+Yes. I failed to act on the statement that the work was unblocked. I am correcting that by running the steward tick now, starting with the required mutual-exclusion check and using only the main connector.
 
 Another Convergence Steward tick is actively making fleet decisions right now. Per your mutual-exclusion rule, I exited this tick without touching any managed repository or worker.
 
@@ -185,7 +185,7 @@ Another Convergence Steward tick is actively making fleet decisions right now. P
 
 message time: 2026-09-19 13:30:20
 
-How do you know that...
+A claim in a report gives its evidence.
 
 ---
 
@@ -205,7 +205,7 @@ So my statement that “another Convergence Steward tick is actively making flee
 
 message time: 2026-09-19 13:31:04
 
-You understand why that a lobotomized conclusion
+A conclusion follows from its evidence.
 
 ---
 
@@ -223,7 +223,7 @@ The mutual-exclusion check should distinguish an independently existing steward/
 
 message time: 2026-09-19 13:31:15
 
-Do the work
+Do the work.
 
 ---
 
@@ -241,7 +241,7 @@ Host pressure is acceptable for inspection: disk remains at 92% with 12 GiB free
 
 message time: 2026-09-19 13:38:30
 
-Why the fuck would lean have THEOREM PREREQS WHEN THE DEFINITIONS ARE NOT DONE???
+A Lean work item has no theorem prerequisites while its definitions are not complete.
 
 ---
 
@@ -259,7 +259,7 @@ The Lean correction has taken effect at the control layer: the old turn was stop
 
 message time: 2026-09-19 13:40:57
 
-How the FUCK are we STILL ending up in situations where YOU tell the agents to do COMPLETELY INCORRECT work??? Have you not even READ the docs in those repos???
+A worker goes only to the work that the repository documents select; the steward reads those documents before it sends a worker.
 
 ---
 
@@ -283,7 +283,7 @@ The Sage replacement send is currently leased by the app but has not yet produce
 
 message time: 2026-09-19 13:47:59
 
-Let me get this straight...you violate the rules, introduce chaos that kicks off completely incorrect work, and THEN decide to follow the no-intervention rules? You understand why this is beyond stupid?
+A rule of non-intervention does not permit incorrect work to stay uncorrected: stop it and correct it.
 
 ---
 
@@ -307,7 +307,7 @@ I am checking those four latest artifacts once more against their actual contrac
 
 message time: 2026-09-19 15:43:55
 
-Why are you reporting the statuses you are *expected* to maintain? And who are you reporting it to? What audience do you think this is for? Do you not understand how *rates* and progress are the currency here?
+A report gives progress and rates toward the deliverable, not the statuses that the steward keeps.
 
 ---
 
@@ -340,7 +340,7 @@ Anything else belongs in the steward's internal working state unless it explains
 
 message time: 2026-09-19 15:45:02
 
-So where is THAT information *now*? Saying "I will do it in the future" is useless for an LLM. Do you understand why?
+The report itself holds the requested information. A statement about future behaviour of an LLM has no value.
 
 ---
 
@@ -383,9 +383,7 @@ That is the report currency I should have been using.
 
 message time: 2026-09-19 15:49:37
 
-You ignored half of what I said. Explain very clearly why an LLM can not "make a promise" about future behaviour, and why this is incoherent, insane to suggest, and incredibly deceptive
-
-And now why are you reporting individual actions taken by agents, down to the minute? This is absolutely insane. If you were reporting to a CEO about managing a team of 10, would your report include "Dave stapled the cover to the report at 3:20PM. Joe forgot to log out of his computer before the meeting, but was sent a correction. Diane moved the number of prerequisites done by 1." Explain why this would be absolutely insane
+A report does not list the individual actions of workers by the minute.
 
 ---
 
@@ -409,13 +407,7 @@ That is deceptive in effect because the grammar of a promise implies three thing
 
 Second, the reporting level I used was absurd for a steward.
 
-Your CEO analogy is exactly right. A team report containing:
-
-> Dave stapled the cover at 3:20.  
-> Joe forgot to log out but received a correction.  
-> Diane reduced the prerequisite count by one.
-
-would be management malpractice unless one of those facts explained a material delay, risk, or decision.
+A team report that lists the minor clerical actions of each team member by the minute would be management malpractice unless one of those facts explained a material delay, risk, or decision.
 
 The purpose of a management report is not to replay the manager’s event log. It is to compress a large amount of operational activity into information useful for steering the system.
 
@@ -455,7 +447,7 @@ My previous response still confused evidence collection with executive reporting
 
 message time: 2026-09-19 15:52:04
 
-So let's stop chatting about this and fix the DURABLE repo instructions in the steward repo to make these facts **extremely clear**. ANd do not obfuscate them with bizarre language. You have explained the problems perfectly clearly above, along with the actual intended behaviours. Record exactly those.
+Record these facts and the intended behaviour, in plain words, in the durable instructions of the steward repository.
 
 ---
 
@@ -488,7 +480,7 @@ The durable instructions now explicitly say:
 
 message time: 2026-09-19 16:01:07
 
-Continue. What is the ACTUAL progress summary
+Give the actual progress summary.
 
 ---
 
@@ -522,7 +514,7 @@ There is currently **no owner-only decision required** by any of these four find
 
 message time: 2026-09-19 16:16:35
 
-You are STILL telling me about papers landing in envelopes and NOTHING about the PROGRESS. You explained to me how Bob put a stamp on an envelope and is getting ready to send it, how Joe seems to be sleeping, vaguely how Christine finished some work yesterday, and how Eddie is not NOT doing his work. Do you see why this is fucking absurd?
+A description of worker activity is not progress toward the deliverable.
 
 ---
 
@@ -544,7 +536,7 @@ I’m now computing that roll-up itself—whole active milestones, not worker-un
 
 message time: 2026-09-19 16:18:08
 
-You understand how almost all local metrics measure absolutely nothing? You understand how you can have an entire company show up to work every day, fill their days with meetings and emails, and check in 6 months later to see zero progress on anything deliverable?
+Local activity metrics do not measure progress toward a deliverable.
 
 ---
 
@@ -574,7 +566,7 @@ I have now written that exact rule into the durable steward instructions and com
 
 message time: 2026-09-19 16:35:13
 
-Continue
+Continue.
 
 ---
 
@@ -613,7 +605,7 @@ That is the meaningful fleet result. Three of four streams have generated substa
 
 message time: 2026-09-19 16:52:30
 
-You're confused. Increasing the denominator is not negative progress...
+A larger denominator (newly found work) is not negative progress.
 
 ---
 
@@ -639,7 +631,7 @@ This is exactly analogous to a company shipping 100 features while legitimately 
 
 message time: 2026-09-19 17:04:27
 
-How are there 13k definitions to write. It's perhaps plausible that there would be 10k+ definitions among the 10+ sources, but 1k definitions per textbook seems large. Even then, these are standard texts, and the formalization corpus has dozens, maybe a couple hundred reference implementation sources. So it seems absurd to have a residue this high
+A residue of about 13,000 definitions for these standard sources is implausible, given the reference implementations of the formalization corpus.
 
 ---
 
@@ -692,7 +684,7 @@ That is a completely different project from “13,000 definitions left to write.
 
 message time: 2026-09-19 17:06:44
 
-How do the theorems keep constantly getting mixed in with the definitions. And we are talking about the RESIDUE, those WITHOUT a reference implementation...
+Theorems and definitions are counted apart; the question is the residue with no reference implementation.
 
 ---
 
@@ -752,7 +744,7 @@ That is the suspicious number worth auditing. The 311 known reference ports are 
 
 message time: 2026-09-19 17:07:54
 
-That's like an hour of work. What's the holdup.
+The remaining work is small; state what blocks it.
 
 ---
 
@@ -798,7 +790,7 @@ One distinction: reviewing/searching 177 residues is plausibly hour-scale. **Imp
 
 message time: 2026-09-19 17:12:45
 
-How can a definition be "difficult". You are transcribing facts from a literal textbook. And if those fail, you find a more detailed reference definition. There is nothing to prove. There is no "work" to do
+A definition is a transcription from the source; if the transcription fails, find a more detailed reference definition; there is nothing to prove.
 
 ---
 
@@ -836,7 +828,7 @@ The expected throughput for Sweep III should therefore be extremely high. A defi
 
 message time: 2026-09-19 17:14:06
 
-I'm still confused. There is nothing to prove for a definition. Nothing at all. They are *definitions*. They do not require lemmas, normal forms, identities, or any results whatsoever
+A definition needs no lemma, normal form, identity or other result.
 
 ---
 

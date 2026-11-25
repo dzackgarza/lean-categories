@@ -52,7 +52,7 @@ namespace QuadModuleCat
 theorem hom_ext {Q P : QuadModuleCat R W} {f g : Q ⟶ P}
     (h : underlyingMap f = underlyingMap g) : f = g := by
   apply Quiver.Hom.unop_inj
-  apply Subtype.ext
+  apply Functor.Elements.hom_ext
   apply Quiver.Hom.unop_inj
   exact ModuleCat.hom_ext h
 

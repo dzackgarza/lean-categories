@@ -266,7 +266,8 @@ proved by `pairedSource_first`. There are no object parameters. -/
 noncomputable abbrev pairedSource : BilinModuleCat ℚ (ℚ × ℚ) :=
   let b : TensorProduct ℚ (Fin 2 → ℚ) (Fin 2 → ℚ) →ₗ[ℚ] ℚ := source.form
   let d : TensorProduct ℚ (Fin 2 → ℚ) (Fin 2 → ℚ) →ₗ[ℚ] ℚ := dotSource.form
-  Opposite.op ⟨Opposite.op (ModuleCat.of ℚ (Fin 2 → ℚ)), b.prod d⟩
+  Opposite.op (Functor.elementsMk _ (Opposite.op (ModuleCat.of ℚ (Fin 2 → ℚ)))
+    (b.prod d))
 
 /-- Forgetting the second value recovers exactly the original selected formed source. -/
 theorem pairedSource_first :

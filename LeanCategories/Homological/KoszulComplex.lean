@@ -15,6 +15,7 @@ public import Mathlib.LinearAlgebra.TensorProduct.Map
 
 Weibel, *An Introduction to Homological Algebra* (1994), §4.5, pp. 111--114
 (FC05-C04-U068).
+source: Weibel, *An Introduction to Homological Algebra* (1994), §4.5, pp. 111--114 (FC05-C04-U068).
 
 For a finite central sequence `x₁,…,xₙ` in an associative ring, the degree-`p`
 Koszul module is free on `p`-element subsets.  On the basis symbol `e_I` the

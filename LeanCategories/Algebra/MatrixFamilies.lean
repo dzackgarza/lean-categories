@@ -129,17 +129,17 @@ abbrev familyFiber (F : CommRingCat.{u} ⥤ Type w) (R : CommRingCat) :=
 /-- Include a fixed-ring fiber into the total category. -/
 def familyFiberInclusion (F : CommRingCat.{u} ⥤ Type w) (R : CommRingCat) :
     familyFiber F R ⥤ F.Elements where
-  obj X := ⟨R, X.as⟩
-  map {X Y} f := ⟨𝟙 R, by
+  obj X := Functor.elementsMk _ R X.as
+  map {X Y} f := Functor.Elements.homMk (𝟙 R) (by
     rw [F.map_id]
-    exact Discrete.eq_of_hom f⟩
+    exact Discrete.eq_of_hom f)
   map_id := by
     intro X
-    apply CategoryOfElements.ext
+    apply Functor.Elements.hom_ext
     rfl
   map_comp := by
     intro X Y Z f g
-    apply CategoryOfElements.ext
+    apply Functor.Elements.hom_ext
     rfl
 
 /-- Base change of a fixed-ring fiber along a commutative-ring morphism. -/
@@ -157,17 +157,17 @@ def familyFiberBaseChange {R S : CommRingCat} (f : R ⟶ S)
 
 /-- The canonical morphism from a family element to its transport along a base map. -/
 def familyBaseChangeHom (F : CommRingCat.{u} ⥤ Type w) (X : F.Elements)
-    {S : CommRingCat} (f : X.1 ⟶ S) : X ⟶ ⟨S, F.map f X.2⟩ :=
-  CategoryOfElements.homMk _ _ f rfl
+    {S : CommRingCat} (f : X.1 ⟶ S) :
+    X ⟶ Functor.elementsMk _ S (F.map f X.2) :=
+  Functor.Elements.homMk f rfl
 
 /-- The canonical family base-change morphism is strongly co-Cartesian over its base map. -/
 instance familyBaseChangeHom_isStronglyCocartesian (F : CommRingCat.{u} ⥤ Type w)
     (X : F.Elements) {S : CommRingCat} (f : X.1 ⟶ S) :
     Functor.IsStronglyCocartesian (CategoryOfElements.π F) f
       (familyBaseChangeHom F X f) := by
-  rcases X with ⟨R, x⟩
+  rcases X with @⟨R, x⟩
   exact CategoryOfElements.homMk_map_isStronglyCocartesian F x f
-
 abbrev matrixFiber (R : CommRingCat) (ι κ : Type u) [Fintype ι] [Fintype κ] :=
   familyFiber (matrixFamily ι κ) R
 
@@ -207,19 +207,21 @@ abbrev generalLinearBaseChange {R S : CommRingCat} (f : R ⟶ S) (ι : Type u)
 /-- The canonical matrix-family base-change morphism. -/
 abbrev matrixBaseChangeHom {ι κ : Type u} [Fintype ι] [Fintype κ]
     (X : MatrixFamilyCat ι κ)
-    {S : CommRingCat} (f : X.1 ⟶ S) : X ⟶ ⟨S, matrixFamily ι κ |>.map f X.2⟩ :=
+    {S : CommRingCat} (f : X.1 ⟶ S) :
+    X ⟶ Functor.elementsMk _ S (matrixFamily ι κ |>.map f X.2) :=
   familyBaseChangeHom (matrixFamily ι κ) X f
 
 /-- The canonical vector-family base-change morphism. -/
 abbrev vectorBaseChangeHom {ι : Type u} [Fintype ι] (X : VectorFamilyCat ι)
-    {S : CommRingCat} (f : X.1 ⟶ S) : X ⟶ ⟨S, vectorFamily ι |>.map f X.2⟩ :=
+    {S : CommRingCat} (f : X.1 ⟶ S) :
+    X ⟶ Functor.elementsMk _ S (vectorFamily ι |>.map f X.2) :=
   familyBaseChangeHom (vectorFamily ι) X f
 
 /-- The canonical general-linear base-change morphism. -/
 abbrev generalLinearBaseChangeHom {ι : Type u} [Fintype ι] [DecidableEq ι]
     (X : GeneralLinearFamilyCat ι)
     {S : CommRingCat} (f : X.1 ⟶ S) :
-    X ⟶ ⟨S, generalLinearFamily ι |>.map f X.2⟩ :=
+    X ⟶ Functor.elementsMk _ S (generalLinearFamily ι |>.map f X.2) :=
   familyBaseChangeHom (generalLinearFamily ι) X f
 
 /-! ## The general-linear subfamily -/

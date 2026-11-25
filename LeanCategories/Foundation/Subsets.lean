@@ -17,6 +17,8 @@ public import LeanCategories.CategoryTheory.OneCat.KernelFunctor
 /-!
 # Subsets as subobjects, and the set-level operations on them
 
+source: Riehl, *Category Theory in Context*, chapter 2 (the category of elements and the subobject ordering of a comma category), realized as Mathlib's `CategoryTheory.Elements` and `CategoryTheory.Comma.Arrow` at the pinned revision: a subset of `X` is a monomorphism `A ↪ X`, i.e. an object of `Subobjects(Set)`.
+
 A subset of a set `X` is a subobject `i : A ↪ X`: an object of `Subobjects(Set)`, the full
 subcategory of `Arr(Set)` on monomorphisms (`LeanCategories.isMonoArrow`). Two functors connect it
 with `Set`:
@@ -56,7 +58,7 @@ def naturalSection (G : C ⥤ Type w) (s : ∀ X, G.obj X)
 
 /-- Every object is the unique element of the terminal functor over it. -/
 def toTerminalElements : C ⥤ ((Functor.const C).obj PUnit.{w + 1}).Elements where
-  obj X := ⟨X, PUnit.unit⟩
+  obj X := Functor.elementsMk _ X PUnit.unit
   map f := ⟨f, rfl⟩
 
 /-- A natural section of `G`, as a functor `C ⥤ ∫G` over `C`. -/
@@ -66,7 +68,7 @@ def sectionFunctor (G : C ⥤ Type w) (s : ∀ X, G.obj X)
 
 @[simp] theorem sectionFunctor_obj (G : C ⥤ Type w) (s : ∀ X, G.obj X)
     (h : ∀ {X Y : C} (f : X ⟶ Y), G.map f (s X) = s Y) (X : C) :
-    (sectionFunctor G s h).obj X = ⟨X, s X⟩ := rfl
+    (sectionFunctor G s h).obj X = Functor.elementsMk _ X (s X) := rfl
 
 end Sections
 
@@ -102,6 +104,7 @@ theorem Subsets.ambientEquiv_symm_apply {S T : Core Subsets.{u}} (f : S ⟶ T)
     (Subsets.ambientEquiv f).symm (T.of.obj.hom b) = S.of.obj.hom (f.iso.inv.hom.left b) :=
   (ConcreteCategory.congr_hom f.iso.inv.hom.w b).symm
 
+/-- For a morphism `f : S ⟶ T` in the core of subsets, the image of the range of `S` under the induced equivalence on ambient sets is the range of `T`. -/
 theorem Subsets.range_ambientEquiv {S T : Core Subsets.{u}} (f : S ⟶ T) :
     (Subsets.ambientEquiv f) '' S.of.range = T.of.range := by
   ext y

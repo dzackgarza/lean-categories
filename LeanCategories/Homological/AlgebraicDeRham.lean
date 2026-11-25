@@ -80,7 +80,6 @@ theorem algebraicDeRhamComplex_d (n : ℕ) :
   simp [algebraicDeRhamComplex]
 
 /-- The differential of the algebraic de Rham complex has Weibel's defining pure-form value. -/
-@[simp]
 theorem algebraicDeRhamComplex_d_pure {n : ℕ} (r₀ : R) (a : Fin n → R) :
     (algebraicDeRhamComplex k R).d n (n + 1) (deRhamPureForm k R r₀ a) =
       deRhamDifferentialPure k R r₀ a := by

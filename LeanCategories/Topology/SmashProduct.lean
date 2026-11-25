@@ -138,7 +138,10 @@ def smashMap {X X' Y Y' : BasedTop.{u}} (f : X ⟶ X') (g : Y ⟶ Y') :
         rfl)
 
 /-- Riehl's smash product bifunctor
-`Top_* × Top_* ⟶ Top_*` (FC03-C04-U037). -/
+`Top_* × Top_* ⟶ Top_*` (FC03-C04-U037).
+
+source: Riehl, *Category Theory in Context*, §4.4 (FC03-C04-U037): the based smash product
+`Top_* × Top_* ⟶ Top_*`, recorded in `corpus/foundational-corpus-mapping-fc03-riehl-category-theory-in-context.md`. -/
 def smashFunctor : (BasedTop.{u} × BasedTop.{u}) ⥤ BasedTop.{u} where
   obj XY := smashObj XY.1 XY.2
   map {XY X'Y'} fg := smashMap fg.1 fg.2

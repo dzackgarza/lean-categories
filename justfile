@@ -17,14 +17,40 @@ ai_review_ci := env_var("HOME") / "ai-review-ci"
 default:
     @just --list
 
-# Build the library on Mathlib's prebuilt cache (machine-wide in ~/.cache/mathlib)
-build:
-    @lake exe cache get
-    @lake build
+# Move this worktree to the Mathlib master head without decompressing its build
+# tree here. Mathlib's own lakefile fetches the cache at the end of `lake update`
+# (lakefile.lean:193-197, the `post_update` hook) and writes it into this
+# worktree's tree -- that hook is what put four copies of Mathlib on the VM's
+# disk, because it runs before scripts/cache-get.sh can hand out the one shared
+# tree. MATHLIB_NO_CACHE_ON_UPDATE=1 turns it off, so the cache step below runs
+# instead, once per revision for every worktree. Use `just update`, not a bare
+# `lake update`, then `just cache` (or `just build`, which runs the cache step).
+update:
+    @MATHLIB_NO_CACHE_ON_UPDATE=1 lake update
 
-# Fetch Mathlib's prebuilt compilation cache
+# Build the library on Mathlib's prebuilt cache (machine-wide in ~/.cache/mathlib).
+# scripts/cache-get.sh gives this worktree a tree of hardlinks into the one build
+# the repository keeps of each package per (revision, toolchain) -- Mathlib's and
+# every dependency's (see docs/mathlib-build-store.md) -- so four worktrees cost
+# one copy of them all, and a head move still cannot leave stale traces hiding the
+# gap behind a fresh `lake build`.
+#
+# The build runs through `scripts/build-timing.sh`, which keeps Lake's own per-module
+# timing report in `build-timings/<commit>-<start time>.{log,tsv}` -- one file per run,
+# outside the build tree, so that "which module is slow" is answered from the record and
+# not by a second build (`docs/build-timings.md`; lean-categories#160). `test` depends on
+# this recipe, so every `just test` leaves that record too. A bare `lake build` does not:
+# Lake has no post-build hook, and this repository's builds go through `just`.
+
+# Build, keeping this run's per-module elaboration times (docs/build-timings.md).
+build:
+    @scripts/cache-get.sh
+    @scripts/build-timing.sh
+
+# Fetch the prebuilt compilation cache of every package (linking this worktree to the
+# repository's shared build trees)
 cache:
-    @lake exe cache get
+    @scripts/cache-get.sh
 
 # Run the complete repository quality gate
 test: build
@@ -41,6 +67,17 @@ test-commit:
 
 # Run the CI quality gate
 test-ci: test
+
+# Emit the in-repository reference graph to LeanCategories/Tools/reference-graph.json (#59).
+reference-graph:
+    @lake env lean scripts/reference_graph.lean
+
+# Emit LeanCategories modules as Prove2Me definition payloads (#59).
+#   just publish-prove2me --dry-run          # write payloads, no network
+#   just publish-prove2me --layer 0          # one import layer
+#   just publish-prove2me --private          # stage privately on the platform
+publish-prove2me *ARGS:
+    @python3 scripts/publish_prove2me.py {{ARGS}}
 
 # Regenerate the derived foundational-corpus scheduling frontier. The canonical
 # whole-source status ledger remains the sole sweep-completion authority.
@@ -59,10 +96,12 @@ _lean-axiom-audit:
 # back a plain compiled executable. Building the module is enough — `run_cmd
 # audit` inside it fires at elaboration time. Run directly in `test` rather
 # than through the global gate, unlike axiom-audit, since no shared gate
-# target for this check exists yet.
+# target for this check exists yet. Unlike the `build` step it elaborates
+# `LeanCategories.All`, so it is run through `scripts/build-timing.sh` too: its
+# record is the one that covers the whole library (docs/build-timings.md).
 [private]
 _lean-vacuity-audit:
-    @lake build LeanCategories.Tools.VacuityAudit
+    @scripts/build-timing.sh LeanCategories.Tools.VacuityAudit
 
 # Repo-supplied standard Batteries/Mathlib `#lint` battery, minus `docBlame`
 # (later work, see the files' module docs) and `unusedArguments` (demonstrated

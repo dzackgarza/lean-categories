@@ -105,7 +105,7 @@ def IsLocalCoefficientCoboundaryData
           (∀ i,
             IsLocalCoefficientCofaceExtensionData D i
               (φ ((localCoefficientSSet X).δ i σ)) (extensions i)) ∧
-          ∀ t : stdSimplex ℝ (Fin (n + 2)),
+          ∀ t : Convexity.StdSimplex ℝ (Fin (n + 2)),
             localCoefficientLiftCoordinateData D (ψ σ) t =
               ∑ i : Fin (n + 2),
                 (-1 : ℤ) ^ i.val •

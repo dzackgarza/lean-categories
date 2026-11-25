@@ -99,7 +99,7 @@ def IsThetaSpace (X : Type u) [TopologicalSpace X] : Prop :=
     A ∩ B = {p, q} ∧ A ∩ C = {p, q} ∧ B ∩ C = {p, q}
 
 /-- The standard topological circle. -/
-abbrev UnitCircle := Metric.sphere (0 : ℂ) 1
+noncomputable abbrev UnitCircle := Metric.sphere (0 : ℂ) 1
 
 /-- A subspace is a circle when it is homeomorphic to the standard unit circle. -/
 def IsCircle (A : Set X) : Prop :=

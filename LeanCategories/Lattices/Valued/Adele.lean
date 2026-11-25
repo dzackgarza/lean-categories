@@ -11,6 +11,7 @@ public import LeanCategories.Lattices.Valued.OrthogonalGroup
 public import LeanCategories.Modules.Pi
 public import LeanCategories.Modules.ProdRing
 public import Mathlib.RingTheory.Flat.Equalizer
+public import Mathlib.LinearAlgebra.TensorProduct.Prod
 
 /-!
 # Adelic scalar extension of integral lattices

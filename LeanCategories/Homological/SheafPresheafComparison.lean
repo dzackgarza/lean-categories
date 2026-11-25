@@ -5,6 +5,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import Mathlib.Topology.ContinuousMap.Algebra
+public import Mathlib.Topology.Algebra.Group.Units
 public import Mathlib.Topology.Sheaves.PresheafOfFunctions
 public import Mathlib.Topology.Sheaves.LocalPredicate
 public import Mathlib.Topology.Sheaves.AddCommGrpCat
@@ -18,6 +19,7 @@ public import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
 
 Weibel, *An Introduction to Homological Algebra* (1994), §1.6,
 FC05-C01-U057.
+source: Weibel, *An Introduction to Homological Algebra* (1994), §1.6 (FC05-C01-U057).
 
 Sheaves of abelian groups form an abelian category, but the inclusion into
 presheaves is not an abelian subcategory: epimorphisms of sheaves need only be

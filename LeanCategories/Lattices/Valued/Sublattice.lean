@@ -153,6 +153,94 @@ theorem isPrimitiveSubmodule_iff_saturation_eq
   rw [isPrimitiveSubmodule_iff_saturation_le]
   exact ⟨fun h ↦ le_antisymm h (le_saturation P), fun h ↦ h.le⟩
 
+/-- Torsion-freeness is invariant under a linear equivalence. -/
+theorem isTorsionFree_linearEquiv_iff {M N : Type u} [AddCommGroup M] [Module R M]
+    [AddCommGroup N] [Module R N] (e : M ≃ₗ[R] N) :
+    Module.IsTorsionFree R M ↔ Module.IsTorsionFree R N where
+  mp h := by
+    refine ⟨fun r hr a b hab => ?_⟩
+    obtain ⟨a', rfl⟩ := e.surjective a
+    obtain ⟨b', rfl⟩ := e.surjective b
+    have hab' : r • a' = r • b' := by simpa using congrArg e.symm hab
+    rw [h.isSMulRegular hr hab']
+  mpr h := by
+    refine ⟨fun r hr a b hab => ?_⟩
+    refine e.injective ?_
+    refine h.isSMulRegular hr ?_
+    simpa using congrArg e hab
+
+/-- Primitivity of a submodule is invariant under a linear equivalence of the ambient module. -/
+theorem IsPrimitiveSubmodule.map_equiv_iff {M N : Type u} [AddCommGroup M] [Module R M]
+    [AddCommGroup N] [Module R N] (e : M ≃ₗ[R] N) (P : Submodule R M) :
+    IsPrimitiveSubmodule (P.map (e : M →ₗ[R] N)) ↔ IsPrimitiveSubmodule P :=
+  (isTorsionFree_linearEquiv_iff
+    (Submodule.Quotient.equiv P (P.map (e : M →ₗ[R] N)) e rfl)).symm
+
+/-- The image of a primitive submodule under a primitive embedding is primitive. If `f : M → N` is
+injective with torsion-free cokernel, then `N ⧸ f(P)` is an extension of the torsion-free
+`N ⧸ f(M)` by the torsion-free `M ⧸ P`, hence torsion-free. -/
+theorem IsPrimitiveSubmodule.map_of_primitiveEmbedding {M N : Type u} [AddCommGroup M]
+    [Module R M] [AddCommGroup N] [Module R N] (f : M →ₗ[R] N) (hf : Function.Injective f)
+    (hcoker : Module.IsTorsionFree R (N ⧸ LinearMap.range f)) {P : Submodule R M}
+    (hP : IsPrimitiveSubmodule P) : IsPrimitiveSubmodule (P.map f) := by
+  refine ⟨fun r hr a b hab => ?_⟩
+  induction a using Quotient.inductionOn with
+  | _ a =>
+  induction b using Quotient.inductionOn with
+  | _ b =>
+  refine (Submodule.Quotient.eq (P.map f)).mpr ?_
+  have hab' : r • Submodule.Quotient.mk a = r • Submodule.Quotient.mk b := hab
+  have hmem : r • (a - b) ∈ P.map f := by
+    have h1 : Submodule.Quotient.mk (r • a - r • b) = (0 : N ⧸ P.map f) := by
+      simp only [Submodule.Quotient.mk_sub, Submodule.Quotient.mk_smul, hab', sub_self]
+    rwa [← smul_sub, Submodule.Quotient.mk_eq_zero] at h1
+  obtain ⟨m, hmP, hfm⟩ := Submodule.mem_map.mp hmem
+  have hz : Submodule.Quotient.mk (a - b) = (0 : N ⧸ LinearMap.range f) := by
+    have h0 : r • Submodule.Quotient.mk (a - b) = (0 : N ⧸ LinearMap.range f) := by
+      rw [← Submodule.Quotient.mk_smul, Submodule.Quotient.mk_eq_zero]
+      exact ⟨m, hfm⟩
+    have h1 : r • Submodule.Quotient.mk (a - b)
+        = r • (0 : N ⧸ LinearMap.range f) := by
+      rw [h0, smul_zero]
+    exact hcoker.isSMulRegular hr h1
+  rw [Submodule.Quotient.mk_eq_zero] at hz
+  obtain ⟨x, hx⟩ := hz
+  have hrx : r • x = m := by
+    apply hf
+    rw [map_smul, hx, ← hfm]
+  have hxP : x ∈ P := by
+    have h0 : r • Submodule.Quotient.mk x = (0 : M ⧸ P) := by
+      rw [← Submodule.Quotient.mk_smul, Submodule.Quotient.mk_eq_zero, hrx]
+      exact hmP
+    have h1 : Submodule.Quotient.mk x = (0 : M ⧸ P) := by
+      have h2 : r • Submodule.Quotient.mk x = r • (0 : M ⧸ P) := by
+        rw [h0, smul_zero]
+      exact hP.isSMulRegular hr h2
+    rwa [Submodule.Quotient.mk_eq_zero] at h1
+  exact Submodule.mem_map.mpr ⟨x, hxP, hx⟩
+
+/-- The identity is a primitive embedding. -/
+theorem isPrimitiveEmbedding_id (L : BilinModuleCat R W) :
+    BilinModuleCat.IsPrimitiveEmbedding (𝟙 L) := by
+  constructor
+  · rw [BilinModuleCat.underlyingMap_id]
+    exact fun _ _ h => h
+  · rw [BilinModuleCat.underlyingMap_id, LinearMap.range_id]
+    haveI : Subsingleton (L.carrier ⧸ (⊤ : Submodule R L.carrier)) := by
+      rw [Submodule.Quotient.subsingleton_iff]
+    exact inferInstance
+
+/-- Primitive embeddings are closed under composition. -/
+theorem isPrimitiveEmbedding_comp {L M N : BilinModuleCat R W} (f : L ⟶ M) (g : M ⟶ N)
+    (hf : BilinModuleCat.IsPrimitiveEmbedding f) (hg : BilinModuleCat.IsPrimitiveEmbedding g) :
+    BilinModuleCat.IsPrimitiveEmbedding (f ≫ g) := by
+  constructor
+  · rw [BilinModuleCat.underlyingMap_comp]
+    exact hg.1.comp hf.1
+  · rw [BilinModuleCat.underlyingMap_comp, LinearMap.range_comp]
+    exact IsPrimitiveSubmodule.map_of_primitiveEmbedding (BilinModuleCat.underlyingMap g)
+      hg.1 hg.2 hf.2
+
 /-- A projective submodule with the restricted form. -/
 def formedSublattice (L : LatticeCat R W) (P : Submodule R L.obj.carrier)
     [Module.Projective R P] : LatticeCat R W := by

@@ -118,7 +118,6 @@ lemma moduleCatOfHom_add_hom_eq
     (R : Type) [CommRing R] (f g : R →ₗ[R] R) :
     (ModuleCat.ofHom f + ModuleCat.ofHom g).hom = f + g := rfl
 
-@[simp]
 lemma singularCochainSigmaDesc_eval
     (R : Type) [CommRing R] (X : TopCat.{0}) (n : ℕ)
     (F : ((TopCat.toSSet.obj X).obj

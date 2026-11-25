@@ -50,13 +50,14 @@ def baseChangeForm (L : BilinModuleCat R W) :
 
 /-- Scalar extension of a bilinear module. -/
 def baseChangeObject (L : BilinModuleCat R W) : BilinModuleCat S (TensorProduct R S W) :=
-  op ⟨op (ModuleCat.of S (TensorProduct R S L.carrier)), baseChangeForm R W S L⟩
+  op (Functor.elementsMk _ (op (ModuleCat.of S (TensorProduct R S L.carrier)))
+    (baseChangeForm R W S L))
 
 /-- Scalar extension on the category of bilinear modules. -/
 def baseChangeBilin : BilinModuleCat R W ⥤ BilinModuleCat S (TensorProduct R S W) where
   obj := baseChangeObject R W S
   map {L M} f := by
-    refine Quiver.Hom.op (CategoryOfElements.homMk _ _
+    refine Quiver.Hom.op (Functor.Elements.homMk
       (op (ModuleCat.ofHom (LinearMap.baseChange S (BilinModuleCat.underlyingMap f)))) ?_)
     dsimp [bilinearForms]
     apply LinearMap.ext
@@ -80,7 +81,7 @@ def baseChangeBilin : BilinModuleCat R W ⥤ BilinModuleCat S (TensorProduct R S
     | add z₁ z₂ hz₁ hz₂ => simp [hz₁, hz₂]
   map_id L := by
     apply Quiver.Hom.unop_inj
-    apply CategoryOfElements.ext
+    apply Functor.Elements.hom_ext
     apply Quiver.Hom.unop_inj
     apply ModuleCat.hom_ext
     apply LinearMap.ext
@@ -90,7 +91,7 @@ def baseChangeBilin : BilinModuleCat R W ⥤ BilinModuleCat S (TensorProduct R S
     rfl
   map_comp f g := by
     apply Quiver.Hom.unop_inj
-    apply CategoryOfElements.ext
+    apply Functor.Elements.hom_ext
     apply Quiver.Hom.unop_inj
     apply ModuleCat.hom_ext
     apply LinearMap.ext

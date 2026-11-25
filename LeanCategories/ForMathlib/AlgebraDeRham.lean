@@ -514,11 +514,11 @@ def extAlgMap : ExtAlg R A →ₐ[A] ExtAlg R B :=
       ExteriorAlgebra.ι B (KaehlerDifferential.map R R A B ω) :=
   ExteriorAlgebra.lift_ι_apply A _ _ ω
 
-@[simp] lemma extAlgMap_algebraMap (a : A) :
+lemma extAlgMap_algebraMap (a : A) :
     extAlgMap R A B (algebraMap A (ExtAlg R A) a) =
       algebraMap B (ExtAlg R B) (algebraMap A B a) := by aesop
 
-@[simp] lemma extAlgMap_algebraMap_base (r : R) :
+lemma extAlgMap_algebraMap_base (r : R) :
     extAlgMap R A B (algebraMap R (ExtAlg R A) r) = algebraMap R (ExtAlg R B) r := by simp
 
 private lemma extAlgMap_ιMulti (p : ℕ) (w : Fin p → Ω[A⁄R]) :

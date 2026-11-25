@@ -32,7 +32,7 @@ mapping evidence, and per-unit acceptance stay under `corpus/`. Before dispatchi
 [definition execution traps](.agents/traps/wasteful-definition-execution-is-prohibited.md)
 only where they agree with this repository's current controls. In particular, any older trap
 wording that permits a proof as a definition prerequisite is superseded by the no-proof
-Sweep-III boundary in `AGENTS.md` and this TODO.
+Sweep-III boundary in `docs/agents/corpus-execution.md` and this TODO.
 
 | ID | Obligation | Needs |
 | --- | --- | --- |
@@ -119,7 +119,7 @@ theorem/remark/example rows.
 
 | `refactor-audit` | Make one corpus-wide pass for duplicated Lean, parallel near-definitions, local restatements of existing corpus mathematics, and misplaced ownership, then repair each concrete defect at its actual owner while preserving the realized mathematics and public names unless the correction itself requires a change. Small and single-owner findings are repaired directly; create a separate DAG child only for a genuinely substantive cross-owner repair whose work cannot be completed coherently in this pass. Do not create report-, inventory-, approval-, or audit-receipt-only nodes. **Acceptance:** every concrete finding from the pass is repaired or has a precise unresolved mathematical/technical blocker, and a final read finds no remaining identified duplication or ownership defect. A no-finding pass closes this node without manufacturing work | `arithmetic-lattice-foundations` |
 | `lint-paydown` | Pay down the linter obligations where reasonable and no further: mathlib's `#lint` suite, unused arguments, simp-normal-form, vacuity and axiom audits. Every change must improve the legibility of the statement, the ability to understand what it says, and the ability to check statically that it is the source's statement. Contorting a definition or proof only to quiet a linter is the failure mode; where it is genuinely warranted it must be judged as significantly serving that goal and the argument recorded explicitly in the commit message | `refactor-audit` |
-| `computational-core` | Executed in [`lean-cas-dsl`](https://github.com/dzackgarza/lean-cas-dsl), which owns the CAS machinery (its `specs/computational-core-plan.md` and `specs/computational-core.md`); this repository owns the semantic registry (`LeanCategories/Catalogue/`) and the mathematics it denotes into: Lean here owns every user-visible category, functor, operation and structural route, and what holds of them; a leaf registers an opaque implementation for a catalogue operation, ships no Lean and no mathematics, and nothing it supplies is consulted for meaning or correctness; `x.f` elaborates to `f(F(x))` over composite structural functors with registered comparisons, never priorities; varying categories are stated fibrations (the module fibration over `Ring`, FOUNDATIONS §13.2), never parameterized families. Refines #53 and #54 and replaces the dynamic-inheritance core of `sage-categories`. The plan's own DAG orders its nodes, starting with `cc-p0-denotation-audit`. **Acceptance:** every plan node's acceptance holds and `cc-probe-corpus` runs through public DSL syntax only. Independent of the corpus sweeps; it does not authorize authoring definitions ahead of their sweep, and any new mathematical declaration it needs goes through the Definitions sweep's mapping-first rule. | none |
+| `computational-core` | Executed in [`lean-cas-dsl`](https://github.com/dzackgarza/lean-cas-dsl), which owns the CAS machinery (its `specs/computational-core-plan.md` and `specs/computational-core.md`); this repository owns the semantic registry (`LeanCategories/Catalogue/`) and the mathematics it denotes into: Lean here owns every user-visible category, functor, operation and structural route, and what holds of them; a leaf registers an opaque implementation for a catalogue operation, ships no Lean and no mathematics, and nothing it supplies is consulted for meaning or correctness; `x.f` elaborates to `f(F(x))` over composite structural functors with registered comparisons, never priorities; varying categories are stated fibrations (the module fibration over `Ring`, FOUNDATIONS §13.2), never parameterized families. Refines #53 and #54 and replaces the dynamic-inheritance core of `sage-categories`. The plan's own DAG orders its nodes, starting with `cc-p0-denotation-audit`. **Acceptance:** every plan node's acceptance holds and `cc-probe-corpus` runs through public DSL syntax only. Independent of the corpus sweeps. A mathematical declaration that a consumer needs is a task of a Spec Kit feature (`specs/001-catalogue-inputs-for-the-cas/tasks.md`); it is taken in at once, does not wait for its sweep, and keeps the LC-09 search ([constitution M9](.specify/memory/constitution.md#m9-authorship-permitted-inputs-and-immediate-intake), M11). | none |
 
 **B0 chosen-structure interface completion (2026-10-03).** The source-level review of
 the existing typed constructors, module/algebra fibres, named coefficient maps,
@@ -299,7 +299,7 @@ its worklist or completion state.
 
 ## Active definition units
 
-**Governing rules:** [Definitions are constructed, not deferred](AGENTS.md#definitions-are-constructed-not-deferred-2026-09-26) in `AGENTS.md`; where anything in this section conflicts with it, that section wins.
+**Governing rules:** [Definitions are constructed, not deferred](docs/agents/corpus-execution.md#definitions-are-constructed-not-deferred-2026-09-26) in `docs/agents/corpus-execution.md`; where anything in this section conflicts with it, that section wins.
 
 **First ready node — `realization-stub-audit`.** Needs: none. Population: `python3 scripts/stub_population.py` (every `[realized]` row caught by its word net, or carrying a confirmation marker, that is not validly confirmed; 187 rows on 2026-09-26 12:15 — recompute, do not copy). For each row, open the Lean declaration of the row's object. If a declaration constructs that object from the source's inputs, mark the row `[construction-confirmed: Namespace.decl]` naming it; the script rejects predicates (`Is…`), `Prop`-valued declarations and names absent from the row's Lean files, and the named declaration's type must be the row's object itself, not a raw ingredient of it (a restriction map on invariants is not confirmed by the raw polynomial restriction). If the object is present only as a parameter, a hypothesis, a candidate, an `Is…Data` predicate or the graph of a supplied map, build it under the rules above, including the construction proofs its definition needs, and confirm it in the commit that lands the construction. Batch rebuilds by shared scaffolding and use subagents. **Acceptance:** `scripts/stub_population.py` prints nothing.
 
@@ -312,7 +312,7 @@ ready units. After a unit completes, immediately select the next ready unit here
 
 ### Scope and acceptance
 
-Realize every admitted definitional clause, preserving its source inputs and generality. Reuse the mapped declaration, import the mapped package, port the located implementation, or transcribe the located source construction. **A definition is realized only when the object itself exists.** Proofs the construction's own data require — gluing cocycle and overlap compatibility, quotient descent, well-definedness of the defining map, the laws a structure's fields demand — are part of realizing it, exactly as `AGENTS.md` admits "proof support absolutely required to formalize that definition". Reuse or port such support first; otherwise write it. Building only a specification predicate or candidate data and marking the row `[sweep-iii-blocked]` does not realize the definition and is not a valid stopping point. Classification, comparison, independence and every other result *about* an already constructed object remain Sweep IV; a definition is never blocked on those.
+Realize every admitted definitional clause, preserving its source inputs and generality. Reuse the mapped declaration, import the mapped package, port the located implementation, or transcribe the located source construction. **A definition is realized only when the object itself exists.** Proofs the construction's own data require — gluing cocycle and overlap compatibility, quotient descent, well-definedness of the defining map, the laws a structure's fields demand — are part of realizing it, exactly as `docs/agents/corpus-acceptance.md` admits "proof support absolutely required to formalize that definition". Reuse or port such support first; otherwise write it. Building only a specification predicate or candidate data and marking the row `[sweep-iii-blocked]` does not realize the definition and is not a valid stopping point. Classification, comparison, independence and every other result *about* an already constructed object remain Sweep IV; a definition is never blocked on those.
 
 Top-level unmatched status does not authorize a locally invented support stack. During
 realization, every substantial supporting mathematical owner newly required by the selected
@@ -412,7 +412,7 @@ Recompute each bucket's rows from the selector when dispatching; the rows above 
 
 ## Begin each continuation here
 
-Read [AGENTS.md — Start here: corpus execution](AGENTS.md#start-here-corpus-execution)
+Read [docs/agents/corpus-execution.md — Start here: corpus execution](docs/agents/corpus-execution.md#start-here-corpus-execution)
 before selecting work. Its execution sequence and worked failure cases apply to all
 four sweep plans below. Then:
 
@@ -449,7 +449,7 @@ four sweep plans below. Then:
    owns the repair.
 5. Commit coherent work through the existing repository checks and continue through the
    source. Before ticking its box, return to every source unit required by this sweep,
-   using the phase-specific closure rules in `AGENTS.md`. Record completion in the
+   using the phase-specific closure rules in `docs/agents/corpus-acceptance.md`. Record completion in the
    existing ledger and handoff, then take the next source without waiting for another prompt.
 
 If an omitted unit exposes a faulty selector, revisit the coverage claims made with
@@ -732,7 +732,7 @@ work.
   fields, notation, maps, variance, and claimed generality. Do not infer fidelity from a familiar
   name or successful build.
 
-Apply [AGENTS.md's construction boundary](AGENTS.md#sweep-iii-construction-boundary): produce
+Apply [the construction boundary in docs/agents/corpus-execution.md](docs/agents/corpus-execution.md#sweep-iii-construction-boundary): produce
 only the specified definitions and constructions from the source's allowed inputs. Proof
 work is admitted only when absolutely required to formalize the exact source definition,
 after seeking an existing formalization or a simpler source-faithful representation. Reuse

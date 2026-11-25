@@ -1,0 +1,383 @@
+#!/usr/bin/env python3
+"""Emit #59 cards as published copies inside the repository.
+
+A card is a *copy* of a cross-module-referenced theorem, published alongside its definition
+module — the definition module keeps its API and the result also publishes as a card, which is
+the FLT-export precedent the issue adopts. Nothing is removed from any definition module, so the
+module tree is unchanged and no import can cycle.
+
+In-repo form: ``LeanCategories/<owner>/Cards/<Name>.lean`` imports the definition module and
+restates the result under its card name, delegating the proof to the original declaration:
+
+    theorem <card name> := Subsets.range_ambientEquiv
+
+which is the same statement with the proof delegated, needs no ``sorry``, and keeps repository QC
+green. The platform form (``import Definitions.Def_<module>``) is derived from this by the
+publisher, per decision 3.
+
+The card set is the graph's ``theorem``-kind declarations referenced from a module other than
+their own, minus **generated companions**. The companion test is by source, not by name: a
+declaration is a companion when its module contains no `theorem`/`lemma` declaration of that name —
+that is, when it is produced by a `class`/`structure`/`instance` command, an `@[ext]` derivation or
+a tactic block. Companions leave the population; the ones excluded are printed so the list can be
+checked.
+
+With that test the population is 394 cards, down from 460.
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import re
+import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent
+GRAPH = ROOT / "LeanCategories/Tools/reference-graph.json"
+
+# Generated companions of other declarations: tactic-proof auxiliaries and equation lemmas.
+# A `source:` citation line in a module docstring — not the `source :=` field of a structure.
+SOURCE_LINE = re.compile(r"^\s*source\s*:\s*(?!:?=)(\S.*)$", re.M | re.I)
+
+GENERATED = re.compile(r"(_proof_\d+|_eq_\d+|match_\d+|_sunfold|_unfold|\.eq_\d+|\.match_|\.injEq|\.inj$|_cstage|_fstage)")
+
+def SRC_OPEN(module: str) -> str:
+    return f"open {module.rsplit('.', 1)[0]}\n\n" if False else ""
+
+
+HEADER = """/-
+Copyright (c) 2026 Dzack Garza. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+-/
+module
+
+"""
+
+
+def load() -> tuple[list[dict], dict[str, set[str]]]:
+    rows = json.loads(GRAPH.read_text(encoding="utf-8"))
+    refs_from: dict[str, set[str]] = {}
+    for r in rows:
+        for c in r["refs"]:
+            refs_from.setdefault(c, set()).add(r["module"])
+    return rows, refs_from
+
+
+SIMPLIKE = re.compile(r"@\[\s*(?:[^\]]*\b)?(?:simp|ext)\b")
+
+
+def is_simp_or_ext(path: Path, short: str) -> bool:
+    """True when the declaration carries @[simp] or @[ext] — those stay in the definition file."""
+    lines = path.read_text(encoding="utf-8").splitlines()
+    pat = re.compile(rf"^(?:theorem|lemma)\s+(?:\w+\.)*{re.escape(short)}\b")
+    for i, l in enumerate(lines):
+        if pat.match(l):
+            j = i - 1
+            while j >= 0 and (lines[j].startswith("@[") or lines[j].lstrip().startswith("--")):
+                if SIMPLIKE.search(lines[j]):
+                    return True
+                j -= 1
+            return False
+    return False
+
+
+def is_companion(row: dict) -> bool:
+    """True when no `theorem`/`lemma` declaration of this name exists in its module."""
+    short = row["name"].rsplit(".", 1)[-1]
+    return signature_text(module_path(row["module"]), short) is None
+
+
+def card_set(rows: list[dict], refs_from: dict[str, set[str]],
+             report: bool = False) -> list[dict]:
+    out, companions = [], []
+    for r in rows:
+        if r["kind"] != "theorem" or GENERATED.search(r["name"]):
+            continue
+        others = refs_from.get(r["name"], set()) - {r["module"]}
+        if not others:
+            continue
+        p = module_path(r["module"])
+        if is_companion(r) or is_simp_or_ext(p, r["name"].rsplit(".", 1)[-1]):
+            companions.append(r)
+            continue
+        out.append({**r, "referenced_by": sorted(others)})
+    if report:
+        print(f"companions excluded (generated, no source declaration): {len(companions)}")
+        for r in sorted(companions, key=lambda x: x["name"]):
+            print(f"  companion  {r['name']}  ({r['module']})")
+        print()
+    return out
+
+
+def module_path(module: str) -> Path:
+    return ROOT / (module.replace(".", "/") + ".lean")
+
+
+def source_name(path: Path, short: str) -> str | None:
+    """The declaration as written in its module (may be namespace-qualified)."""
+    pat = re.compile(rf"^(?:theorem|lemma)\s+((?:\w+\.)*{re.escape(short)})\b", re.M)
+    m = pat.search(path.read_text(encoding="utf-8"))
+    return m.group(1) if m else None
+
+
+DEPTH_PAIRS = {"(": ")", "[": "]", "{": "}", "⦃": "⦄", "⟨": "⟩"}
+
+
+def signature_text(path: Path, short: str) -> str | None:
+    """The declaration's binders and type: everything from the keyword to the first depth-0 `:=`.
+
+    Delimiters `( ) [ ] { } ⦃ ⦄ ⟨ ⟩` are balanced across lines, so a signature that spans several
+    lines — with instance binders or λ-expressions — is cut where Lean cuts it. A declaration with
+    no depth-0 `:=` before `where`, a `|` equation line, or end of file is refused (returns None);
+    nothing is guessed.
+    """
+    text = path.read_text(encoding="utf-8")
+    m = re.search(rf"^(theorem|lemma)\s+(?:\w+\.)*{re.escape(short)}\b",
+                  text, re.M)
+    if not m:
+        return None
+    body = text[m.start():]
+    keyword = m.group(1)
+    depth = 0
+    i = len(keyword)
+    while i < len(body):
+        ch = body[i]
+        if ch in DEPTH_PAIRS:
+            depth += 1
+        elif ch in DEPTH_PAIRS.values():
+            depth -= 1
+        elif depth == 0:
+            if body.startswith(":=", i):
+                return body[len(keyword):i].rstrip()
+            if body.startswith(" where", i) or body.startswith("\n| ", i) or body.startswith("\n  | ", i):
+                return None
+        i += 1
+    return None
+
+
+def docstring_of(path: Path, short: str, full: str) -> tuple[str, bool]:
+    """The original's docstring if it has one, else an authored one. Second component: authored?"""
+    lines = path.read_text(encoding="utf-8").splitlines()
+    pat = re.compile(rf"^(?:theorem|lemma)\s+(?:\w+\.)*{re.escape(short)}\b")
+    for i, l in enumerate(lines):
+        if pat.match(l):
+            j = i - 1
+            block: list[str] = []
+            while j >= 0 and lines[j].strip():
+                block.insert(0, lines[j])
+                j -= 1
+            text = "\n".join(block)
+            if "/--" in text and "-/" in text:
+                start = text.rindex("/--")
+                end = text.rindex("-/") + 2
+                return text[start:end], False
+            return (f"/-- A published result of `{full.rsplit('.', 1)[0]}`, restated here under its "
+                    f"platform card name with the proof delegated to the original declaration. -/",
+                    True)
+    return (f"/-- `{full}`, published as a card. -/", True)
+
+
+SCOPE_OPEN = re.compile(r"^\s*(namespace\s+\S+|section(?:\s+\S+)?)\s*$")
+SCOPE_INNER = re.compile(r"^\s*(open\s|variable\s|universe\s|attribute\s*\[|set_option\s|local\s)")
+
+
+def full_declaration(path: Path, short: str, new_name: str) -> str | None:
+    """The declaration copied verbatim with its name replaced."""
+    lines = path.read_text(encoding="utf-8").splitlines()
+    pat = re.compile(rf"^(theorem|lemma)\s+((?:\w+\.)*){re.escape(short)}\b")
+    for i, l in enumerate(lines):
+        if pat.match(l):
+            outs = [pat.sub(lambda mm: f"{mm.group(1)} {mm.group(2)}{new_name}", l)]
+            j = i + 1
+            while j < len(lines) and (lines[j].startswith(" ") or lines[j].startswith("\t")):
+                outs.append(lines[j]); j += 1
+            return "\n".join(outs)
+    return None
+
+
+def split_binders(stmt: str) -> tuple[str, str] | None:
+    """`(binders, type)` split at the top-level `:` that separates them."""
+    depth, i = 0, 0
+    while i < len(stmt):
+        ch = stmt[i]
+        if ch in DEPTH_PAIRS:
+            depth += 1
+        elif ch in DEPTH_PAIRS.values():
+            depth -= 1
+        elif ch == ":" and depth == 0 and not stmt.startswith(":=", i):
+            return stmt[:i].rstrip(), stmt[i + 1:].lstrip()
+        i += 1
+    return None
+
+
+def scope_context(path: Path, decl_line: int) -> tuple[str, str]:
+    """The scope in force at `decl_line`: scope lines with their indented continuations, in order.
+
+    A `namespace`, `section`, `open`, `variable` or `universe` line in scope is reproduced together
+    with every following line indented more than it, up to the first line at its indentation or
+    less — that is a multi-line `variable` block or `open` list taken whole. An in-scope
+    `namespace X` becomes `open X`, so the card does not nest a second copy of the namespace.
+    """
+    lines = path.read_text(encoding="utf-8").splitlines()
+    depth = 0
+    active: list[tuple[int, list[str]]] = []
+    opener_names: list[str] = []
+    i = 0
+    while i < decl_line:
+        line = lines[i]
+        stripped = line.strip()
+        indent = len(line) - len(line.lstrip())
+        is_opener = SCOPE_OPEN.match(line) is not None
+        is_inner = SCOPE_INNER.match(line) is not None
+        if is_opener:
+            block = [stripped.startswith("namespace") and
+                     ("open " + stripped.split(None, 1)[1].strip()) or line.rstrip()]
+            j = i + 1
+            while j < decl_line and lines[j].strip() and                     (len(lines[j]) - len(lines[j].lstrip())) > indent:
+                block.append(lines[j].rstrip())
+                j += 1
+            depth += 1
+            opener_names.append(stripped)
+            active.append((depth, block))
+            i = j
+            continue
+        if stripped == "end" or re.match(r"^end\s+\S+$", stripped):
+            if depth > 0:
+                active = [a for a in active if a[0] < depth]
+                depth -= 1
+                if opener_names:
+                    opener_names.pop()
+            i += 1
+            continue
+        if is_inner:
+            block = [line.rstrip()]
+            j = i + 1
+            while j < decl_line and lines[j].strip() and \
+                    (len(lines[j]) - len(lines[j].lstrip())) > indent:
+                block.append(lines[j].rstrip())
+                j += 1
+            active.append((depth, block))
+            i = j
+            continue
+        i += 1
+    text = "\n".join("\n".join(b) for _, b in active)
+    closers = ["end" if not o.startswith("namespace") else None for o in opener_names]
+    closers = [c for c in closers if c]
+    return (text + "\n\n" if text else ""), "\n".join(closers)
+
+
+def source_of(module: str) -> str | None:
+    """The `source:` paragraph a card inherits: from `source:` to the next blank line or `-/`."""
+    p = module_path(module)
+    if not p.exists():
+        return None
+    lines = p.read_text(encoding="utf-8").splitlines()
+    for i, line in enumerate(lines):
+        if SOURCE_LINE.match(line):
+            first = re.sub(r"^\s*source\s*:\s*", "", line.strip(), flags=re.I)
+            if "-/" in first:
+                return first.split("-/")[0].strip()
+            para = [first]
+            for nxt in lines[i + 1:]:
+                if not nxt.strip():
+                    break
+                if "-/" in nxt:
+                    para.append(nxt.split("-/")[0].strip())
+                    break
+                para.append(nxt.strip())
+            return re.sub(r"\s*-/\s*$", "", " ".join(para)).strip()
+    return None
+
+
+def render(module: str, name: str, card_name: str, stmt: str, doc: str) -> str | None:
+    """The card file: module header, source paragraph, Π-type statement, delegated proof."""
+    src_text = source_of(module)
+    if src_text is None:
+        return None
+    parts = split_binders(stmt)
+    if parts is None:
+        return None
+    binders, ty = parts
+    if binders.strip():
+        thm = f"theorem {card_name} : ∀{binders},\n    {ty} :=\n  {name}"
+    else:
+        thm = f"theorem {card_name} : {ty} :=\n  {name}"
+    return (
+        HEADER
+        + f"public import {module}\n\n"
+        + f"/-! # Card: `{name}`\n\nsource: {src_text}\n\n"
+        + f"Published copy of a result of `{module}`. The definition module keeps the original "
+          f"declaration; this file states it and delegates the proof, and the platform submission "
+          f"replaces that proof term with `by sorry`.\n-/\n\n"
+        + "namespace LeanCategories.Cards\n\n"
+        + f"open {module.rsplit('.', 1)[0]}\n\n"
+        + scope_of(module, name)
+        + doc + "\n"
+        + thm + "\n\n"
+        + "end LeanCategories.Cards\n"
+    )
+
+
+def scope_of(module: str, name: str) -> str:
+    p = module_path(module)
+    lines = p.read_text(encoding="utf-8").splitlines()
+    short = name.rsplit(".", 1)[-1]
+    pat = re.compile(rf"^(?:theorem|lemma)\s+(?:\w+\.)*{re.escape(short)}\b")
+    decl = next(i for i, l in enumerate(lines) if pat.match(l))
+    text, _ = scope_context(p, decl)
+    # the module's own namespace is opened by `render`; drop a duplicate of it
+    dup = f"open {module.rsplit('.', 1)[0]}\n"
+    return text.replace(dup, "")
+
+
+def emit(owner: str, apply: bool) -> int:
+    rows, refs_from = load()
+    sel = [c for c in card_set(rows, refs_from) if c["module"].split(".")[1] == owner]
+    if not sel:
+        print(f"no cards in owner directory {owner}")
+        return 0
+    print(f"owner directory {owner}: {len(sel)} card(s)\n")
+    written = 0
+    for c in sorted(sel, key=lambda r: r["name"]):
+        short = c["name"].rsplit(".", 1)[-1]
+        src = module_path(c["module"])
+        stmt = signature_text(src, short)
+        if stmt is None:
+            print(f"  REFUSED  {c['name']}: no top-level `:=` in its signature")
+            continue
+        stmt = re.sub(rf"^\s*(?:\w+\.)*{re.escape(short)}\b", "", stmt, count=1)
+        if source_of(c["module"]) is None:
+            print(f"  REFUSED  {c['name']}: definition module has no `source:` line")
+            continue
+        doc, authored = docstring_of(src, short, c["name"])
+        if authored:
+            print(f"  REFUSED  {c['name']}: no docstring on the declaration")
+            continue
+        card_name = c["name"].replace(".", "_")
+        body = render(c["module"], c["name"], card_name, stmt, doc)
+        if body is None:
+            print(f"  REFUSED  {c['name']}: cannot render")
+            continue
+        target = ROOT / f"LeanCategories/{owner}/Cards/{short}.lean"
+        print(f"  CARD     {c['name']}\n           -> {target.relative_to(ROOT)}")
+        if apply:
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_text(body, encoding="utf-8")
+            written += 1
+    if apply:
+        print(f"\n{owner}: wrote {written} card file(s)")
+    return 0
+
+
+def main() -> int:
+    ap = argparse.ArgumentParser(description=__doc__,
+                                 formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("--owner", required=True)
+    ap.add_argument("--apply", action="store_true")
+    args = ap.parse_args()
+    return emit(args.owner, args.apply)
+
+
+if __name__ == "__main__":
+    sys.exit(main())

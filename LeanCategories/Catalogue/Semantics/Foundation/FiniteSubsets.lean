@@ -20,6 +20,19 @@ public meta import LeanCategories.Catalogue.Semantics.Algebra.PolynomialEvidence
 
 `𝒫_fin(X)` (Mathlib `Finset X`), the finite subsets of `X`, a subobject of `𝒫(X)` (`Finset.coe`,
 injective); sums and products over a subset are defined on it, where they are defined at all.
+
+`𝒫_fin` is a functor `Sets ⥤ Sets` whose action is direct image `f ↦ Finset.image f`
+(`fun.sets.finite_subsets.direct_image`), with laws `map_id` and `map_comp`. It includes
+naturally into the covariant power-set endofunctor `𝒫` (`PowerSets.powerSetFunctor`,
+`fun.sets.power_set`): `inclusionCell : directImage ⟶ powerSetFunctor`, natural by
+`inclusion_natural`, registered as `cell.sets.finite_subsets.inclusion`. Both functors are
+covariant, which is the variance in which the inclusion is natural — a finite subset is a subset,
+and direct image preserves that inclusion.
+
+Neither functor is `structural`: a finite subset of `X` is not an element of `X`, so nothing is
+inherited along it (CC-UNIFORM). The direct-image functor is a construction endofunctor, not a
+forgetful one, so it is not a resolution edge for any other object; the "selected structural
+routes" of lean-categories#95 therefore have no content beyond the inclusion cell registered here.
 -/
 
 open CategoryTheory
@@ -60,6 +73,15 @@ theorem inclusion_natural {X Y : SetsCat.{0}} (f : X ⟶ Y) :
   change Finset X at A
   change (↑(A.image (fun x => f x)) : Set Y) = (fun x => f x) '' (A : Set X)
   exact Finset.coe_image
+
+/-- `𝒫_fin ⟶ 𝒫`: the natural inclusion of finite subsets into the full powerset, whose
+component at `X` is `inclusion X`. Naturality is `inclusion_natural` — the direct image of a
+finite subset agrees with the direct image of its extent — so the covariant action on finite
+subsets lands in the covariant action on all subsets. Registered as
+`cell.sets.finite_subsets.inclusion`. -/
+def inclusionCell : directImage ⟶ PowerSets.powerSetFunctor where
+  app X := inclusion X
+  naturality {X Y} f := inclusion_natural (X := X) (Y := Y) f
 
 /-- Admit the actual finite subset, keeping its extent rather than replacing it by
 an independently chosen list. Mathlib's `Set.Finite.toFinset` is inverse to coercion. -/
@@ -123,6 +145,11 @@ namespace FunctorId
 def finiteSubsetsDirectImage : FunctorId := ⟨"fun.sets.finite_subsets.direct_image"⟩
 end FunctorId
 
+namespace NaturalTransformationId
+def finiteSubsetsInclusion : NaturalTransformationId :=
+  ⟨"cell.sets.finite_subsets.inclusion"⟩
+end NaturalTransformationId
+
 def finiteSubsetsDirectImageExpr : FunctorExpr Foundation.Sets Foundation.Sets :=
   .atomic FunctorId.finiteSubsetsDirectImage
 
@@ -140,6 +167,13 @@ normalized_registry .functor
     declaration := `CasCatalogue.Foundation.FiniteSubsets.directImage
     realization := `CasCatalogue.finiteSubsetsDirectImageRealization
     expression := finiteSubsetsDirectImageExpr }
+
+normalized_registry .cell
+  { id := NaturalTransformationId.finiteSubsetsInclusion
+    source := Foundation.Sets, target := Foundation.Sets
+    left := #[.functor FunctorId.finiteSubsetsDirectImage]
+    right := #[.functor FunctorId.setsPowerSet]
+    declaration := `CasCatalogue.Foundation.FiniteSubsets.inclusionCell }
 
 normalized_registry .object
   { id := ⟨"obj.sets.finite_subsets"⟩, category := CategoryId.sets, name := "𝒫_fin"

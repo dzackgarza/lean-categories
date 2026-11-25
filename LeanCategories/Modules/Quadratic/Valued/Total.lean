@@ -86,7 +86,7 @@ abbrev carrierMap {X Y : QuadWFormCat R} (f : X ⟶ Y) : X.carrier ⟶ Y.carrier
 def of (M W : ModuleCat.{u} R)
     (q : QuadraticMap R (M : Type u) W) : QuadWFormCat R where
   base := W
-  fiber := op ⟨op M, q⟩
+  fiber := op (Functor.elementsMk _ (op M) q)
 
 /-- Build a total morphism from compatible carrier and value maps. -/
 def homMk {X Y : QuadWFormCat R}
@@ -94,7 +94,7 @@ def homMk {X Y : QuadWFormCat R}
     (h : ∀ x, α (X.form x) = Y.form (f x)) : X ⟶ Y where
   base := ModuleCat.ofHom α
   fiber := by
-    refine Quiver.Hom.op (CategoryOfElements.homMk _ _
+    refine Quiver.Hom.op (Functor.Elements.homMk
       (op (ModuleCat.ofHom f)) ?_)
     dsimp [quadraticMaps]
     ext x
@@ -112,7 +112,7 @@ theorem hom_ext {X Y : QuadWFormCat R} (f g : X ⟶ Y)
       subst gBase
       congr
       apply Quiver.Hom.unop_inj
-      apply CategoryOfElements.ext
+      apply Functor.Elements.hom_ext
       apply Quiver.Hom.unop_inj
       apply ModuleCat.hom_ext
       exact congrArg ModuleCat.Hom.hom hCarrier

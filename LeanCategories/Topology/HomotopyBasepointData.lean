@@ -110,7 +110,7 @@ def homotopyPiOneClassData
     {X : Type u} [TopologicalSpace X] {x : X}
     (γ : Path x x) : HomotopyGroup.Pi 1 X x :=
   (HomotopyGroup.pi1EquivFundamentalGroup (X := X) (x := x)).symm
-    (Path.Homotopic.Quotient.mk γ)
+    (CategoryTheory.End.of (Path.Homotopic.Quotient.mk γ))
 
 /-- Raw carrier of Hatcher's `π₁` action on `π_n`, before asserting that
 the action maps are automorphisms or that the assignment is a homomorphism. -/

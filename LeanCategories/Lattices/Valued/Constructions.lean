@@ -49,6 +49,12 @@ def oppositeFiniteProjectiveLattice (L : FiniteProjectiveLatticeCat R W) :
     FiniteProjectiveLatticeCat R W :=
   ⟨oppositeLattice L.obj, L.property⟩
 
+/-- The pairing of a scaled lattice is the scaled pairing. -/
+theorem scaleLattice_pairing (L : LatticeCat R W) (a : R)
+    (x y : L.obj.carrier) :
+    (scaleLattice L a).obj.pairing x y = a • L.obj.pairing x y :=
+  rfl
+
 @[simp]
 theorem oppositeLattice_pairing (L : LatticeCat R W) (x y : L.obj.carrier) :
     (oppositeLattice L).obj.pairing x y = -L.obj.pairing x y := by
@@ -111,6 +117,18 @@ theorem gramMatrix_opposite {I : Type*} [Fintype I] [DecidableEq I]
   ext i j
   simp [gramMatrix, LinearMap.BilinForm.toMatrix_apply]
   rfl
+
+set_option backward.isDefEq.respectTransparency.types false in
+/-- The Gram matrix of a scaled lattice in a basis is the scaled Gram matrix. -/
+theorem gramMatrix_scaleLattice {I : Type*} [Fintype I] [DecidableEq I]
+    (L : IntegralLatticeCat R) (b : Module.Basis I R L.obj.carrier) (a : R) :
+    gramMatrix (scaleLattice L a) b = a • gramMatrix L b := by
+  ext i j
+  rw [Matrix.smul_apply, smul_eq_mul]
+  unfold gramMatrix
+  rw [LinearMap.BilinForm.toMatrix_apply, LinearMap.BilinForm.toMatrix_apply]
+  change (scaleLattice L a).obj.pairing (b i) (b j) = a * L.obj.pairing (b i) (b j)
+  exact scaleLattice_pairing L a (b i) (b j)
 
 /-- The determinant of a finite Gram matrix. -/
 noncomputable def determinant {I : Type*} [Fintype I] [DecidableEq I]

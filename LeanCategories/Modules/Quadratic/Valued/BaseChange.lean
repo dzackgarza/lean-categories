@@ -35,7 +35,8 @@ noncomputable def baseChangeForm (Q : QuadModuleCat R W) :
 /-- Scalar extension of one fixed-value quadratic module. -/
 noncomputable def baseChangeObject (Q : QuadModuleCat R W) :
     QuadModuleCat S (TensorProduct R S W) :=
-  op ⟨op (ModuleCat.of S (TensorProduct R S Q.carrier)), baseChangeForm R W S Q⟩
+  op (Functor.elementsMk _ (op (ModuleCat.of S (TensorProduct R S Q.carrier)))
+    (baseChangeForm R W S Q))
 
 /-- Scalar extension on the category of fixed-value quadratic modules. -/
 noncomputable def baseChangeQuadModule :
@@ -55,13 +56,13 @@ noncomputable def baseChangeQuadModule :
     exact fun x => QuadraticMap.congr_fun hq x
   map_id Q := by
     apply Quiver.Hom.unop_inj
-    apply CategoryOfElements.ext
+    apply Functor.Elements.hom_ext
     apply Quiver.Hom.unop_inj
     apply ModuleCat.hom_ext
     exact LinearMap.baseChange_id
   map_comp f g := by
     apply Quiver.Hom.unop_inj
-    apply CategoryOfElements.ext
+    apply Functor.Elements.hom_ext
     apply Quiver.Hom.unop_inj
     apply ModuleCat.hom_ext
     change LinearMap.baseChange S

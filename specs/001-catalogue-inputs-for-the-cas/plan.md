@@ -1,0 +1,355 @@
+# Implementation Plan: Catalogue inputs for the computer-algebra roadmap
+
+**Branch**: `001-catalogue-inputs-for-the-cas` (work lands on `main`) | **Date**: 2026-11-25 | **Spec**: [spec.md](spec.md)
+**Input**: Feature specification from `specs/001-catalogue-inputs-for-the-cas/spec.md`
+
+Paths are relative to `LeanCategories/`. `Sem/` is `Catalogue/Semantics/`. `Reg/` is
+`Catalogue/Registry/`. Line numbers are of `main` at `443fba9`.
+
+## Summary
+
+The feature adds to the registry the 19 declarations that the kernel task list consumes
+(issues #182 to #200). Each declaration is stated at its generating category, from its source,
+and enters through `normalized_registry`. Four schema additions carry them: a computation
+reference for object applications and binder operations, a result kind with choice fibres, a
+structured notation field, and constructor roles. The design decisions are in
+[research.md](research.md); the schema is in [data-model.md](data-model.md); the read surface
+is in [contracts/registry-additions.md](contracts/registry-additions.md).
+
+## Technical Context
+
+**Language/Version**: Lean 4, toolchain of `lean-toolchain` (`leanprover/lean4:v4.36.0`)
+**Primary Dependencies**: Mathlib (`rev = "master"` in `lakefile.toml`, locked in `lake-manifest.json`), BrauerGroup
+**Storage**: Lean source files; registry rows through `normalized_registry`
+**Testing**: Lean test modules with `example`, `#guard_msgs` and theorems (`Reg/*Tests.lean`, `Reg/*Probes.lean`, `Sem/*Tests.lean`); `just test`
+**Target Platform**: Linux, research image `ghcr.io/dzackgarza/sage:develop` (constitution E5)
+**Project Type**: Lean library (formal mathematics and its registry)
+**Performance Goals**: tier-1 loop of each task under 300 s (constitution E1, E4)
+**Constraints**: one Lean process under `flock .tmp/lean.lock` (E10); no `sorry`, no axiom (M3)
+**Scale/Scope**: 19 issues; 100 registered categories; 675 registry rows at `443fba9`
+
+## Constitution Check
+
+| Article | Check for this feature | Status |
+| --- | --- | --- |
+| M1 | Every declaration is mathematics of this repository; no kernel input shapes it | pass: requirements come from the issues and their sources |
+| M2 | Each FR cites its source; each task compares clause by clause | pass by task acceptance |
+| M3 | No `sorry`, axiom or `native_decide`; `just test` at the milestone | pass by task acceptance; `main` has four `native_decide` sites outside this feature (`COMPLAINTS.md`, issue #99) |
+| M4 | Each operation at its generating category; rows above it are restrictions | FR-001, FR-006, FR-007, FR-018, FR-019 |
+| M5 | Total operations; domain evidence; numerals as universal images | FR-004, FR-006, FR-007, FR-018 (ℕ subtraction on $b \le a$) |
+| M6 | A cell for every parallel route; chosen data never from existence | FR-001, FR-002, FR-015, FR-017, FR-019 |
+| M7 | One field per meaning; schema changes owned here | data-model.md: references by existing rows; notation migrates `name` |
+| M8 | Search record per issue | first task of each issue |
+| M9 | Consumer workstream works here from the issue and sources | tasks name no kernel file as an input |
+| M10 | Independent review of each change | task acceptance includes review by an author who did not write the change |
+| M11 | This task list in document order; the corpus DAG of `TODO.md` does not order it | pass |
+| E1-E9 | Tier-1 loop, durable logs, timing records | Phase 1 tasks T001-T003 |
+
+Gate result: pass. No violation is justified in Complexity Tracking.
+
+## Checks of this repository
+
+| Tier | Command | Source |
+| --- | --- | --- |
+| Tier 1 | `flock .tmp/lean.lock lake env lean <changed module>` for each changed module and each test module of the changed mechanism; after T001, `just loop <modules>` | `TODO.md` "One Lean process"; constitution E1 |
+| Full gate | `just test` (build, `lean-no-sorry`, vacuity audit, Mathlib lint audit, unused-variable check, axiom audit) | `justfile` |
+| CI | `just test-ci` on push | `.github/workflows/ci.yml` |
+
+Every task passes tier 1 at each change. The full gate runs at the end of each phase.
+
+## Search before authoring
+
+The first task of each issue runs this search and writes the record in the issue (constitution
+M8): `python scripts/formalization_corpus.py search '<query>'` under each formulation, Mathlib
+(Loogle, `#find`, source tree), and the broader ecosystem. The table lists the Mathlib notions to
+look for.
+
+| Issue | Mathlib notions and queries |
+| --- | --- |
+| #193 | `MagmaCat`, `AddMagmaCat`, `Semigrp`, `AddSemigrp`, `MonCat`, `AddMonCat`, `forget₂ SemiRingCat AddCommMonCat`, `Mul`, `Add`, `npow` |
+| #200 | `Subobject`, `MonoOver`, `Subobject.underlying`, `Subobject.mk`, `Subobject.underlyingIso` |
+| #185 | `CartesianClosed`, `exp.ev`, `Polynomial.eval₂`, `Matrix.mulVec` |
+| #183 | `ZMod.natCast_self`, `Fin.mk`, `Nat.decLt`, `Fintype.decidableForallFintype`, `DecidableEq` |
+| #191 | `Set.image`, `Set.preimage`, `Set.range`, `Set.image_subset_iff`, `Set.mem_def`, `CategoryTheory.Subobject`, `Topos` (any power-object formalization) |
+| #186 | `AddMonCat`, `Limits.IsInitial`, `Zero` |
+| #194 | `AddMonoidWithOne`, `Nat.cast`, `Nat.castAddMonoidHom`, `Int.cast_natCast`, `Under`, `Nat.cast_zero`, `Nat.cast_one` |
+| #184 | Mathlib notation classes (`abs` notation `|a|`, `HDiv`, `Finset.card` notation) |
+| #189 | `MvPolynomial`, `MvPolynomial.instCommRing`, `CommRingCat.of`, `ringKrullDim`, `MvPolynomial.ringKrullDim` |
+| #198 | `Opposite`, `CategoryTheory.op`, `AlgebraicGeometry.Scheme.Spec`, `Spec.map`, `Over.mk`, `Over.forget`, `nonZeroDivisors`, `Set.compl` |
+| #188 | `Polynomial.eval`, `Polynomial.aeval`, `Under.mk`, `Set.range`, `Function.Injective` |
+| #190 | `Finset.sum`, `Finset.prod`, `tsum`, `Summable`, `intervalIntegral`, `Filter.Tendsto`, `tendsto_nhds_unique`, `PowerSeries` |
+| #192 | `ModuleCat.ofHom`, `ModuleCat.Hom.hom`, `LinearMap.compr₂`, `LinearMap.BilinForm`, `QuadraticForm.comp` |
+| #187 | `WalkingPair`, `WalkingCospan`, `WalkingSpan`, `WalkingParallelPair`, `Limits.Fan.proj` |
+| #197 | `ObjectProperty.FullSubcategory`, `Functor.Fiber`, `FullSubcategory.lift` |
+| #196 | `Arrow`, `Arrow.leftFunc`, `Arrow.rightFunc`, `Core`, `Core.inclusion`, `Over.forget`, `Under.forget`, `CategoryOfElements.π`, `Subobject.underlying`, `evaluation`, `opOp` |
+| #182 | `Basis`, `Module.Finite`, `Module.Free`, `Module.rank`, `Submodule.span`, `Function.Surjective`, `Classical.choice` |
+| #199 | `nsmul`, `Set.range`, `sub_eq_add_neg`, `Nat.sub`, `tsub` |
+| #195 | `Preord`, `PartOrd`, `LinOrd`, `SemilatSupCat`, `SemilatInfCat`, `Lat`, `BddLat`, `BoolAlg`, `SupHom`, `InfHom`, `LatticeHom` |
+
+## Files and registry rows per requirement
+
+Each row gives the files to add or change and the registry rows. New modules are imported in
+`LeanCategories/All.lean` by the same task (constitution M9).
+
+### FR-001 (#193): one multiplication, one addition
+
+- `Sem/Algebra/Catalogue/Magmas.lean`, `Sem/Algebra/CatalogueRegistration.lean`: add
+  `op.magmas.mul` (`·`) at `cat.magmas` and `op.additive_magmas.add` (`+`) at
+  `cat.additive_magmas`.
+- `Sem/Algebra/MonoidOperations.lean` (`op.monoids.mul`, `op.monoids.one`),
+  `Sem/Algebra/AdditiveOperations.lean` (`op.additive_monoids.add`), `Sem/Algebra/Semirings.lean`
+  (`op.semirings.mul`, `op.semirings.add`, `op.semirings.pow`), `Sem/Algebra/NamedRings.lean`
+  (`op.rings.mul`, `op.rings.add`, `op.rings.neg`, `op.rings.pow`): set `refines` to the owner
+  along the stated route (`Reg/Entry.lean` `OperationEntry.refines`), with the agreement theorem.
+  `op.groups.inverse` stays the owner of the inverse; `op.rings.neg` refines the negation of
+  additive groups, which is added at `cat.additive_groups`.
+- `Sem/Algebra/MonoidOperationAgreement.lean`: the agreement theorems for whole families
+  (extend `ring_mul`).
+- `Sem/Algebra/Ports.lean`: add structural `fun.additive_monoids.semigroup`,
+  `fun.additive_semigroups.magma`, `fun.additive_magmas.sets`; add structural
+  `fun.semirings.additive_commutative_monoid`; set `fun.additive_groups.to_groups` to
+  `structural := false`.
+- `Sem/Algebra/ComputationDerivations.lean`: cell `cell.rings.additive_monoid.routes` for the two
+  routes $\mathbf{Ring} \to \mathbf{AddMon}$.
+- `Sem/Algebra/...` row of `cat.magmaswithtwooperations`: its two magmas as structural functors.
+  The category is opaque today; the task replaces the opaque expression by the atom of Mathlib's
+  ring-like structure with two operations (`Mul`, `Add` on one carrier) so that the functors are
+  rows.
+- Tests: `Reg/OperationBindingTests.lean` (one binding per symbol on each route).
+
+### FR-002 (#200): the cycle through `Subobjects(Sets)`
+
+- `Sem/Foundation/Subsets.lean`: cell `cell.sets.whole_subset.domain` ($\mathrm{dom} \circ
+  \mathrm{whole} \cong 1$, identity components); theorem that $\mathrm{whole} \circ \mathrm{dom}$
+  is not isomorphic to the identity (counterexample: $\emptyset \subseteq \{0\}$ has domain
+  $\emptyset$, while the identity keeps the ambient $\{0\}$).
+- `Reg/Semantic.lean`: validation that each structural cycle carries a cell to the identity.
+- Tests: `Reg/RouteSearchCompleteness.lean`, `Reg/RouteDiscovery.lean`.
+
+### FR-003 (#185): computation reference of an application
+
+- `Reg/Computation.lean`: constructor `ComputationRef.application (object : ObjectId)`; resolution
+  to `ObjectEntry.application`.
+- `Reg/Semantic.lean`: validation of the new reference in derivations.
+- Tests: `Reg/ComputationProbes.lean` (a derivation with target
+  `obj.sets.polynomials#application`).
+
+### FR-004 (#183): proof procedures of literal obligations
+
+- `Reg/Entry.lean`: `NumeralEntry.evidence : Option Name` for each explicit proposition parameter;
+  `GraphLiteralEntry.evidence : Name`; `LiteralEntry.closing : Name`.
+- `Sem/Foundation/Morphisms.lean` (`num.sets.fin`): evidence `k < n` by decision on ℕ.
+- Graph-literal rows: evidence of totality and distinct arguments by decision over the finite
+  domain with decidable equality.
+- Literal rows: closing procedure by the decidable equality of the literal type.
+- `Sem/EvidenceTests.lean`: the numeral `7` of `ZMod 7` is accepted and equals `0`; the position
+  `7` of `Fin 7` is refuted; `7 < 12` is proved; a graph literal on `Fin 3` is settled; an open
+  statement stays unsettled.
+
+### FR-005 (#191): power-object maps
+
+- `Sem/Foundation/PowerSets.lean`: morphism rows `mor.sets.member`, `mor.sets.extent`,
+  `mor.sets.image`, `mor.sets.inverse_image`; the transpose at every stage
+  `transposeAt (Y : Sets) : (Y ⊗ X ⟶ Ω) ≃ (Y ⟶ 𝒫 X)` with both inverse laws; the present
+  `transpose` becomes its case `Y = 1`; adjunction of direct and inverse image.
+- `Reg/Entry.lean` `PowerObjectEntry`: fields keep the declarations; each field also names its
+  morphism row (one authority: the row; the field points to it).
+- `Sem/Foundation/Subsets.lean`: theorem relating `member` to `fun.subsets.contains`.
+- Tests: `Reg/LiteralDomainProbes.lean`, `Sem/FiniteSubsetLiteralTests.lean`.
+
+### FR-006 (#186): the numeral of additive monoids
+
+- `Sem/Algebra/AdditiveOperations.lean`: row `num.additive_monoids` with declaration
+  $0 : 1 \to A$, the image of the unique map from the zero monoid.
+- Tests: `Sem/EvidenceTests.lean` (`0` in $\mathbb{Q}^n$ reads as the zero vector).
+
+### FR-007 (#194): numerals of semirings and rings
+
+- `Sem/Algebra/AdditiveOperations.lean`: object `obj.additive_monoids.naturals` ($\mathbb{N}$);
+  category row `cat.additive_monoids_with_one` = `coslice(cat.additive_monoids,
+  obj.additive_monoids.naturals)`; numeral row `num.additive_monoids_with_one` (image of $k$ under
+  the unique map $\mathbb{N} \to A$ that sends $1$ to the chosen element).
+- `Sem/ConstructorRegistration.lean`: structural coslice forget for `ctor.coslice`.
+- `Sem/Algebra/Semirings.lean`: functor $S \mapsto (U_+(S), 1)$; `num.semirings` as restriction.
+- `Sem/Algebra/NamedRings.lean`: `num.rings` restriction theorem for $k \in \mathbb{N}$
+  (`Int.cast_natCast`); theorems for $0$ and $1$.
+- Tests: `Sem/EvidenceTests.lean`.
+
+### FR-008 (#184): written forms of morphisms and methods
+
+- `Reg/Entry.lean`: `NotationForm` (prefix, infix, postfix, delimited with open and close
+  tokens) and `notation : Option NotationForm` on `MorphismEntry` and `MethodEntry`.
+- `Reg/Semantic.lean`: the projected index from written form to rows; refusal of two rows with one
+  form at one owner; refusal of a notation equal to the function-call form of `name`.
+- Rows: absolute value (`|x|`) and square root in `Sem/Algebra/NumberSystems.lean`; cardinality
+  (`|X|`), `image`, `coefficient` and `derivative` (`Sem/Algebra/Differentials.lean`); division
+  (`/`).
+- Tests: `Reg/PresentationProbes.lean`.
+
+### FR-009 (#189): multivariate polynomial rings as commutative rings
+
+- `Sem/Algebra/Polynomials.lean`: `obj.commutative_rings.mv_polynomials` for $(R, \sigma)$ with
+  `refines` to `obj.rings.mv_polynomials`, and the comparison to the base ring of
+  `obj.algebras.mv_polynomials`.
+- Tests: `Sem/PolynomialContractTests.lean` (Krull dimension applies to $\mathbb{Q}[x, y]$).
+
+### FR-010 (#198): Spec, complements of zero, objects of a slice
+
+- `Catalogue/Constructors.lean`, `Sem/ConstructorRegistration.lean`: `ctor.opposite` with
+  signature `#[.category]` and its functorial action.
+- `Sem/Algebra/Schemes.lean`: functor rows `fun.commutative_rings.spec` on
+  `opposite(cat.commutative_rings)` to `cat.schemes`, and the relative Spec to
+  `cat.schemes_over`; `functorPresentation` of `obj.schemes_over.spec_polynomials` and
+  `obj.schemes_over.spec_mv_polynomials`; notation `Spec`.
+- `Sem/ConstructorRegistration.lean`: structural slice forget for `ctor.slice`; object
+  constructor `Over.mk` of a slice with notation `X in C/Y`.
+- `family.schemes_over_ring`: structural fibre inclusion.
+- `Sem/Algebra/Polynomials.lean`: construction `nonzero` of an object with zero, with inclusion
+  and admission; `obj.sets.nonzero_polynomials` as its value; notation `X ∖ 0`.
+- Tests: `Sem/PolynomialPresentationEvidenceTests.lean`, `Reg/PresentationProbes.lean`.
+
+### FR-011 (#188): reading rules
+
+- `Reg/Entry.lean`: `ReadingEntry` with `source`, `target`, `map` (a selected morphism, route or
+  inclusion row) and `identification` (theorem).
+- Rows: `read.global_point` (uses `pow.sets.terminal`), `read.carrier` (selected structural
+  route), `read.whole_subset` (requires an `InclusionEntry`), `read.own_evaluation`
+  (`evaluation_own`, `Sem/Algebra/Polynomials.lean:71-93`).
+- Tests: `Reg/AcceptanceProbes.lean`: the inclusions $i_0, i_1 : 1 \to \{0, 1\}$ give $\{0\}$ and
+  $\{1\}$; with no declared inclusion no reading applies.
+
+### FR-012 (#190): binder operations
+
+- `Reg/Computation.lean`: constructor `ComputationRef.binder (id : BinderId)` naming the
+  `operation` of the binder row.
+- `Sem/Algebra/FiniteSums.lean`, `Calculus.lean`, `Series.lean`, `RealLimits.lean`: derivation
+  rows for `sumOver_eq_sum`, `prodOver_eq_prod`, `realSeriesSum_eq`, `complexSeriesSum_eq`,
+  `powerSeriesSum_eq`, `limit_eq`; uniqueness theorem of the limit.
+- Tests: `Reg/BinderProbes.lean`, `Sem/BinderTests.lean`.
+
+### FR-013 (#192): change of values at module morphisms
+
+- `Sem/Modules/Bilinear/Valued/CatalogueRegistration.lean`, `ChangeValueLifts.lean`,
+  `Sem/Modules/Quadratic/Valued/CatalogueRegistration.lean`,
+  `Sem/Lattices/Valued/CatalogueRegistration.lean`: parameter `f : W ⟶ W'` in `ModuleCat R`;
+  functors $\mathbf{Mod}_R \to \mathbf{Cat}$ with `changeValue_id`, `changeValue_comp`.
+- `Sem/Modules/LinearMaps.lean`: the admission `admitLinear` serves the parameter.
+- Tests: a test module `Sem/Modules/Bilinear/Valued/ChangeValueTests.lean`.
+
+### FR-014 (#187): names of the objects of a shape
+
+- `Reg/Entry.lean`: `LimitEntry.objectNames : Array (String × Name)`.
+- Limit rows of pairs, pullbacks, pushouts, equalizers and finite products: names from Mathlib.
+- Tests: `Reg/IsoCommaExample.lean` or a new `Reg/LimitShapeNameTests.lean`.
+
+### FR-015 (#197): refinement along a classifier
+
+- `Catalogue/Holds.lean`: `refineAlong (p) (X) (h : Holds p X)`, the comparison and the
+  uniqueness, for property classifiers (`ObjectProperty.FullSubcategory`).
+- `Reg/Entry.lean`: `PropertyEntry.evidence : Name`.
+- `Reg/Semantic.lean`: refusal of a refinement row for a structure classifier.
+- Property rows `is_finite`, `is_commutative`, `is_abelian`, `is_lattice`, `is_alternating`: their
+  procedures.
+- Tests: `Reg/PropertySubcategoryAtomTests.lean`.
+
+### FR-016 (#196): universal data of the constructors
+
+- `Reg/Entry.lean`: `ConstructorRole` and `ConstructorEntry.role`.
+- `Sem/ConstructorRegistration.lean`: roles and data of `ctor.arrow`, `ctor.core`, `ctor.slice`,
+  `ctor.coslice`, `ctor.elements`, `ctor.subobjects`, `ctor.functor_category`, `ctor.opposite`;
+  the core inclusion as a structural functor with its naturality cell.
+- `Reg/Semantic.lean:2797-2815`: find the core row by role; delete the name test.
+- Tests: `Reg/ComparisonProbes.lean`.
+
+### FR-017 (#182): choice-producing operations
+
+- `Reg/Entry.lean`: `ResultKind` (`fixed`, `choice`) on operation, functor-method and morphism
+  rows; `ChoiceFibre` with fibre family, admissibility and dependent continuation type.
+- `Catalogue/Lift.lean`, `Modules/TruncatedResolutions.lean`, `Modules/Bilinear/Valued/Based.lean`:
+  the fibres of generators, bases and free covers; structural fibre inclusions of
+  `fam.based_module`, `fam.free_cover`, `fam.coord_indexed`.
+- `Sem/Modules/Rank.lean`: `fun.modules.rank` kind `fixed`; `#print axioms` in its test shows
+  `Classical.choice`.
+- Tests: a test module `Reg/ChoiceFibreTests.lean`.
+
+### FR-018 (#199): progressions and subtraction
+
+- `Sem/Algebra/AdditiveOperations.lean`: `progression a d`, its finite sections, its enumeration;
+  `op.additive_groups.sub`; `op.naturals.sub` with domain $b \le a$ and its admission.
+- The ellipsis proposition and its procedure.
+- Tests: `Sem/FiniteSubsetLiteralTests.lean`.
+
+### FR-019 (#195): one category for each kind of order
+
+- `Sem/Foundation/PowerSets.lean`: keep `cat.partial_orders`, `cat.linear_orders`; add
+  `cat.preorders`, `cat.join_semilattices`, `cat.meet_semilattices`, `cat.order_lattices`,
+  `cat.bounded_order_lattices`; structural functors of the tower; cells for parallel routes;
+  operations `≤`, `<` at preorders, `⊔`, `⊓` at the semilattices, `min`, `max`, `⊥`, `⊤`; delete
+  `fun.linear_orders.to_partial_orders` when it becomes a composite.
+- `ForMathlib/Order/Category/`: categories of join- and meet-semilattices without bounds
+  (Mathlib `SemilatSupCat` and `SemilatInfCat` are the bounded cases), after the search.
+- `Sem/Foundation/CatalogueRegistration.lean`, `Foundation/Sets.lean`: delete
+  `cat.partially_ordered_sets`, `cat.totally_ordered_sets` and their functors.
+- `Sem/Foundation/WellOrderedSetsRegistration.lean`, `Foundation/WellOrderedSets.lean`: host
+  `cat.linear_orders`; delete the second definition of $\mathbf{LinOrd} \to \mathbf{PartOrd}$;
+  `cat.enumerated_monotone_sets` functors structural with their cell.
+- `cat.boolean_algebras`: structural functor to `cat.bounded_order_lattices`; its functor to sets
+  is deleted when it becomes a composite.
+- Tests: a test module `Sem/Foundation/OrderTowerTests.lean`.
+
+## Scaffolding gaps with no issue
+
+Each line names the exact missing structural functor. No issue of lean-categories owns it at
+`443fba9`; the change that does one of them files its issue first.
+
+| Category | Missing structural functor |
+| --- | --- |
+| `cat.lattices_over_rings`, `cat.finite_projective_lattices_over_rings`, `cat.finite_free_lattices_over_rings`, `cat.unimodular_lattices_over_rings`, `cat.integral_lattices`, `cat.even_integral_lattices` | the inclusion of `refine(base, c)` into `base`; the registry derives no edge from a `refine` expression (`Reg/Semantic.lean:1681-1693`) |
+| `cat.integral_forms` | none of its own: `fun.integral_forms.to_bil` is structural; its target `cat.bilin_forms_over_rings` has no chain |
+| `cat.bilin_forms_over_rings` | the underlying module, to `cat.modules_over_rings_ext` (`fun.bilin_forms.values` is the fibration projection) |
+| `cat.quad_forms_over_rings` | the underlying module, to `cat.modules_over_rings_ext` |
+| `cat.modules_over_rings_ext` | to `cat.modules_total`, along $\mathbf{CRing} \to \mathbf{Ring}$ |
+| `cat.ideals_r` | an ideal as a submodule of the regular module, to `cat.subobjects_modules_r` |
+| `cat.definite_lattice`, `cat.indefinite_lattice` | the inclusion into the registered category of lattices (`cat.lattice`); they have no functor row |
+| `cat.even_lattice`, `cat.finite_free_lattice`, `cat.unimodular_lattice` | the fibre inclusion of their family into its total category |
+| `cat.schemes` | the underlying set of the underlying space, $\mathbf{Sch} \to \mathbf{Set}$ (Mathlib `Scheme.forgetToTop`, then `forget TopCat`); no category of topological spaces is registered |
+| `cat.cusps` | the forget $(L, \Gamma) \mapsto L$ to the registered category of integral lattices (`CuspObject.lattice`, `Lattices/Valued/Cusps.lean`) |
+| `cat.crystals` | an underlying-set functor; the category is opaque and its map to sets is the opaque port `oport.crystals.sets`, which is not an edge |
+
+## Project Structure
+
+### Documentation (this feature)
+
+```text
+specs/001-catalogue-inputs-for-the-cas/
+├── plan.md
+├── spec.md
+├── research.md
+├── data-model.md
+├── quickstart.md
+├── contracts/registry-additions.md
+├── checklists/requirements.md
+└── tasks.md
+```
+
+### Source Code (repository root)
+
+```text
+LeanCategories/
+├── Catalogue/
+│   ├── Registry/        # schema (Entry, Computation), validators (Semantic), tests and probes
+│   ├── Semantics/       # rows: Algebra/, Foundation/, Modules/, Lattices/, ConstructorRegistration
+│   ├── Holds.lean       # classifier inhabitation and refinement
+│   └── Constructors.lean
+├── Foundation/          # Sets, Subsets, WellOrderedSets
+├── Modules/             # TruncatedResolutions, Bilinear/Valued
+├── ForMathlib/          # notions that Mathlib lacks (unbounded semilattice categories)
+└── All.lean             # imports every module with a row
+```
+
+**Structure Decision**: the existing library layout. Rows stay with the module of their
+mathematics; schema changes are in `Catalogue/Registry/`.
+
+## Complexity Tracking
+
+No constitution violation is justified.

@@ -21,7 +21,7 @@ namespace LeanCategories.Topology
 open Metric
 
 /-- The unit two-sphere in `ℝ³`. -/
-abbrev Sphere2 := sphere (0 : EuclideanSpace ℝ (Fin 3)) 1
+noncomputable abbrev Sphere2 := sphere (0 : EuclideanSpace ℝ (Fin 3)) 1
 
 /-- The antipodal involution of the two-sphere. -/
 def sphere2Antipodal (x : Sphere2) : Sphere2 :=

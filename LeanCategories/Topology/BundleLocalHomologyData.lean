@@ -8,6 +8,7 @@ public import Mathlib.Algebra.DirectSum.Basic
 public import Mathlib.AlgebraicTopology.SingularHomology.Basic
 public import Mathlib.Topology.Covering.Basic
 public import Mathlib.Topology.FiberBundle.Basic
+public import Mathlib.Analysis.Convex.StdSimplex
 
 /-!
 # Homology with coefficients in a bundle of abelian groups
@@ -94,7 +95,7 @@ def localCoefficientLiftCoordinateData
     {σ : (localCoefficientSSet X).obj
       (Opposite.op (SimplexCategory.mk n))}
     (l : LocalCoefficientLiftData D σ)
-    (t : stdSimplex ℝ (Fin (n + 1))) : D.G :=
+    (t : Convexity.StdSimplex ℝ (Fin (n + 1))) : D.G :=
   let σc := TopCat.toSSetObjEquiv (TopCat.of X)
     (Opposite.op (SimplexCategory.mk n)) σ
   let lc := TopCat.toSSetObjEquiv (TopCat.of E)

@@ -630,12 +630,12 @@ theorem le_naturalProductList_of_mem {as : List Ordinal.{u}}
     rcases List.mem_cons.mp h with heq | h
     · subst a
       have ht : 1 ≤ naturalProductList bs :=
-        (Ordinal.one_le_iff_ne_zero).2
+        (Order.one_le_iff_ne_zero).2
           (((naturalProductList_pos_iff bs).2
             (fun x hx => hp x (List.mem_cons_of_mem b hx))).ne')
       simpa [naturalProductList, naturalProduct_one] using
         (naturalProduct_mono_right (a := b) ht)
-    · have hb : 1 ≤ b := (Ordinal.one_le_iff_ne_zero).2
+    · have hb : 1 ≤ b := (Order.one_le_iff_ne_zero).2
         ((hp b (List.mem_cons_self ..)).ne')
       exact (ih h (fun x hx => hp x (List.mem_cons_of_mem b hx))).trans
         (by simpa [naturalProductList, naturalProduct_one_left] using
