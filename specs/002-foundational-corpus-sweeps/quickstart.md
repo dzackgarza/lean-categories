@@ -20,9 +20,9 @@ grep -P '^FC06-C02-U231\t' FOUNDATIONAL_DEFINITIONS.tsv | cut -f1,7,8,11
 grep -h '^| `FC06-C02-U231`' corpus/chapter-2-schemes-fc06.md
 ```
 
-Expected after T031: the row carries `[realized]` and names the constructing declaration in
-`LeanCategories/Schemes/RelativeProjData.lean`; the index gives route `unmatched` and action
-`reuse`.
+Expected after T031: the row carries `[realized]` and names the constructing declaration
+`CategoryTheory.CommMon.relativeProj` in `LeanCategories/AlgebraicGeometry/RelativeProj/Basic.lean`;
+the index gives route `reference-port` and action `reuse`.
 
 ## 3. No stub remains (US1)
 

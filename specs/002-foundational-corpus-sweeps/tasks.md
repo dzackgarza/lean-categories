@@ -36,13 +36,16 @@ same phase (D12). Before each new unit, run `python3 scripts/output_check.py`
 | Sweep II remainder (`mapping` for FC16, FC17) | T087–T089 |
 | `theorems` | T090–T106 |
 | `orthogonal-group-direct-sum-structure` | T004–T008 (D9) |
-| `arithmetic-lattice-foundations` | T107: feature 003 T001–T049 (D22) |
+| `arithmetic-lattice-foundations` | T107: the tasks of feature 003 (D22) |
 | `refactor-audit` | T108 |
 | `lint-paydown` | T109 |
 | `bloat-audit-loop` | T110 |
 | `abelian-projectivity` | T111: feature 004 T001–T010 (D22) |
 | Open formalization requests of COMPLAINTS.md | T112–T125 (D23) |
 | Gate, contribution-rule and tooling defects of COMPLAINTS.md | T126–T129 (D23) |
+| Gate and environment issues #144, #118 | T130, T131 (D24) |
+| Consumer requests #89, #178 | T132, T133 (D24) |
+| #157 (frontier and relative Proj) | T001, T031 (D7) |
 | `computational-core` | none: feature 001 and `lean-cas-dsl` (D10) |
 | §4a items (tiers, root set, granularity, statement/proof split) | none: settled by D13, D14, D15 |
 
@@ -70,12 +73,18 @@ same phase (D12). Before each new unit, run `python3 scripts/output_check.py`
   paragraph "Descent, closure, representative-independence"; `TODO.md`, the sentence of
   "Execution DAG" that calls the no-proof boundary superseding, and step 4 of "Begin each
   continuation here". Decision: D2. Check: each text read against D2 states the same boundary.
-- [ ] T129 Run `just test` on `main` and repair each red step before more authoring (LC-07): the
-  axiom audit's `native_decide` proofs in `LeanCategories/Catalogue/Registry/PresentationProbes.lean`
-  and `ComparisonProbes.lean` (COMPLAINTS.md, "`native_decide` in the registry probes"; the registry
-  part is feature 001's owner surface, the green gate is this task's), and any vacuity-audit failure
-  that COMPLAINTS.md, "V1 mathematical source reconciliation", records and the run still shows.
-  Decision: D23. Check: `just test` exits 0 with its log (constitution E6).
+- [ ] T130 #144: make the gate build every module under `LeanCategories/`: the `[[lean_lib]]
+  LeanCategories` entry of `lakefile.toml` takes `globs = ["LeanCategories.+"]`, and
+  `LeanCategories/All.lean` imports every module (constitution M9), including the 352 modules that
+  #144 lists outside its closure. Decision: D24. Check: a module that does not compile fails
+  `just test`; the build log names every module.
+- [ ] T129 Run `just test` on `main` and repair each red step before more authoring (LC-07),
+  including the modules that T130 adds to the gate: replace the `native_decide` proofs of
+  `LeanCategories/Catalogue/Registry/PresentationProbes.lean` and `ComparisonProbes.lean` by
+  kernel-checked proofs (COMPLAINTS.md, "`native_decide` in the registry probes"), and repair any
+  vacuity-audit failure that COMPLAINTS.md, "V1 mathematical source reconciliation", records and the
+  run still shows. Inputs: T130. Decision: D23. Check: `just test` exits 0 with its log
+  (constitution E6).
 - [ ] T126 [P] Correct `CONTRIBUTING.md` LC-06 (it names a prose-only commit route that does not
   exist; the commit hook runs `just test-commit`, which runs no check) and LC-07 (its blocker record
   needs the red gate to pass), and add the lesson of COMPLAINTS.md, "#95 — a completed unit's commits
@@ -92,10 +101,15 @@ same phase (D12). Before each new unit, run `python3 scripts/output_check.py`
   and an explicit report of `ENOSPC` (COMPLAINTS.md, "Full host volume can kill Lean gates and strand
   otherwise-green staged work"; GitHub #150). Decision: D23. Check: a run below the threshold stops
   before the step with the diagnostic.
+- [ ] T131 [P] #118: run `.github/workflows/ci.yml` in the research image container with no
+  installation of Lean, elan, uv or ripgrep and no Mathlib cache fetch; keep `lean-toolchain` and
+  `lake-manifest.json` at the revisions that the image records, with the lakefile requiring
+  Mathlib at `master`. Decision: D24. Check: `just test` passes inside the published image on the
+  Mathlib revision that it records, and the workflow runs in that image.
 
 ## Phase 2: Consumer intake (US5, constitution M9)
 
-Each consumer request is taken in at once (D9, D23). A task of this phase first compares its
+Each consumer request is taken in at once (D9, D23, D24). A task of this phase first compares its
 COMPLAINTS.md entry with the source at its own revision; a repair that has landed closes the entry
 with its evidence (LC-05, "On resolution"). The task then delivers what remains, with the search of
 plan.md "Search before authoring", the source statements read from the library, Contract D for a
@@ -206,11 +220,26 @@ definition and Contract T for a theorem.
   integral-affine objects with their regular-locus inclusion (FOUNDATIONS Def. 62.6). Entries:
   "Manifold categories need fixed dimension, degree and realification maps", "Integral-affine atlases
   and singular integral-affine spaces need category owners".
+- [ ] T132 [US5] #89: the presentation $\mathrm{SL}_2(\mathbb Z) \cong \langle S, T \mid S^4, (TS)^3 = S^2 \rangle$
+  (the amalgam $\mathbb Z/4 *_{\mathbb Z/2} \mathbb Z/6$) as an isomorphism from Mathlib's
+  `PresentedGroup`, and $\mathrm{GL}_2(\mathbb Z) = \mathrm{SL}_2(\mathbb Z) \rtimes \langle e \rangle$,
+  $e = \operatorname{diag}(1, -1)$, presented by adjoining $e$ with $e^2 = 1$ and the conjugates of
+  the generators. Search first (#89: TauCeti `closure_S_T_mul_S`, `T_mul_S_pow_three`; Serre,
+  *Trees*, and Diamond–Shurman still to open through the library). Files: a new
+  `Algebra/Group/ModularGroupPresentation.lean`. Consumer: the coset enumeration of the research
+  preamble. Check: tier 1; Contract R.
+- [ ] T133 [US5] #178: $\operatorname{Tor}_1(A, B) = 0$ for a torsion-free abelian group $A$ that is
+  not finitely generated and every $B$, by `Tor` commuting with filtered colimits (Hatcher §3.A,
+  exercise 4) or a resolution argument, extending `isZero_torOne_of_finite_torsionFree`
+  (`LeanCategories/Homological/TorFreeResolution.lean`). Consumer: card E-HAT-3.A-2 (new-qual-site#111). Check: the
+  statement has exactly the hypotheses its proof uses; `#print axioms` is
+  `[propext, Classical.choice, Quot.sound]`; the card names the declaration.
 - [ ] T125 [US5] Complex analytic spaces: the structure sheaf of an analytic subset as a sheaf of
   local rings, analytic spaces as locally ringed spaces locally isomorphic to it, the germ ring as
   its stalk, and normality; compare with `Analytic/LocalModel.lean` and delete
   `IsLocallyAnalyticSpace` once its consumers use the owner. Entry: "Missing definitions: complex
-  analytic spaces". Consumers: the Baily–Borel stratification of the entry, feature 004 T008.
+  analytic spaces". Consumers: the Baily–Borel stratification of the entry, feature 004 T008, feature 008 T003
+  and T012.
 
 ## Phase 3: Sweep III, the realization-stub audit (US1)
 
@@ -259,9 +288,14 @@ exits 0 and the unit leaves the pending population; Contract R.
   $\operatorname{Cl} X = \operatorname{Div} X / \text{principal divisors}$; `reference-port`. Lean:
   `LeanCategories/Schemes/WeilDivisorClassGroupData.lean`. Inputs: T029. Decision: D7.
 - [ ] T031 [P] [US1] `FC06-C02-U231` relative $\operatorname{Proj}$ and $\mathcal O(1)$, glued from
-  $\operatorname{Proj} \Gamma(U, \mathcal S)$ over affine opens; author. Lean:
-  `LeanCategories/Schemes/RelativeProjData.lean` (owner `relativeProjData`, `TODO.md`
-  `relative-proj-owner`).
+  $\operatorname{Proj} \Gamma(U, \mathcal S)$ over affine opens. The construction
+  `CategoryTheory.CommMon.relativeProj` with `relativeProjToBase`, its affine charts and
+  `relativeProjIsoProj` is on `main` (`LeanCategories/AlgebraicGeometry/RelativeProj/`, ported from
+  Tau Ceti at `ca32605f`, #22); port `RelativeProj/TwistingSheaf.lean` of that revision for
+  $\mathcal O(1)$; set the route to `reference-port` with that provenance (D4), compare with the
+  source clause (Contract R) and append `[realized]`. The candidate data `RelativeProjPresentationData`
+  of `LeanCategories/Schemes/RelativeProjData.lean` is no realization (FR-009); its consumers move
+  to the construction. Decisions: D4, D7. Closes #157 with T001.
 - [ ] T032 [US1] `FC06-C02-U236` the projective bundle $\mathbb P(\mathcal E) = \operatorname{Proj}
   \operatorname{Sym}(\mathcal E)$; author. Lean: `LeanCategories/Schemes/ProjectiveBundleData.lean`.
   Inputs: T031.
@@ -433,7 +467,7 @@ closure.
 
 ## Phase 9: Continuations of the corpus
 
-- [ ] T107 [US5] `arithmetic-lattice-foundations`: execute the tasks T001–T049 of feature
+- [ ] T107 [US5] `arithmetic-lattice-foundations`: execute the tasks of feature
   [003](../003-arithmetic-lattice-foundations/tasks.md) in their document order. Acceptance: 003
   T049 (every owner row of 003 data-model.md closed, the four theorem programmes' success criteria
   met, `just test` green). Inputs: T086 and the exact theorem units that a 003 task names (D11,
@@ -457,7 +491,8 @@ closure.
 ## Dependencies & Execution Order
 
 - Phase 1 blocks every later phase (T001: the selector; T002: the source locators; T003: the
-  acceptance rules that reviewers apply; T129: a green full gate). T126–T128 block nothing.
+  acceptance rules that reviewers apply; T130 then T129: a green full gate over every module).
+  T126–T128 and T131 block nothing.
 - Phase 2 (M9 intake) depends only on Phase 1. T113 and T114 share `Cusp*.lean` with T112 and run
   after it; the other intake tasks are independent.
 - Phases 3 and 4 produce the Definitions cells; Phase 5 needs all of them; Phase 6 needs Phase 5;

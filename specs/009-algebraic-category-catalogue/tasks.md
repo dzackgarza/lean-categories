@@ -100,5 +100,5 @@ back a later ready task of the same phase. Each task records its search in its i
 
 ## Dependencies & Execution Order
 
-- T001 first (001 T068, T069 take it at once). T004 before T005. T006 needs 001 T086; T009 needs
+- T001 first (001 T068 takes it at once). T004 before T005. T006 needs 001 T086; T009 needs
   001 T037; T012 needs 005 T017. T013 after T001–T012; T014 last.

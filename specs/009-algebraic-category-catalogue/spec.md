@@ -27,8 +27,8 @@ factorization domain and an integral domain through registered structural functo
 as a unique factorization domain that is not a principal ideal domain; $\mathbb Q[x]$ and
 $\mathbb C[x]$ as Euclidean domains.
 
-**Why this priority**: factorization, gcd and primality are methods of these categories (#55;
-feature 001 FR-036, FR-037).
+**Why this priority**: factorization and gcd are methods of these categories (#55; feature 001
+FR-036).
 
 **Independent Test**: the tower test module elaborates the objects and the functors; $\mathbb Z[x]$
 is refused as a principal ideal domain by the ideal $(2, x)$.
@@ -172,4 +172,4 @@ splitting with $T = 0$.
   (005 T017); this feature registers its categories through them.
 - Feature 002 owns the corpus units of these subjects (FC01, FC04, FC05, FC13); this feature
   registers their owners and adds no second declaration.
-- Feature 001 T068 and T069 consume the tower of FR-001.
+- Feature 001 T068 consumes the tower of FR-001.

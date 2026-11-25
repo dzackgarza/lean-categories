@@ -9,7 +9,11 @@
 **Input**: The vault feature FEATURE-ARITHMETIC-LATTICE-FOUNDATIONS: the plan
 PLAN-ARITHMETIC-LATTICE-FOUNDATIONS (8 phases, 27 tasks) and its four theorem programmes
 PLAN-ADE-REALIZATION-UNIQUENESS, PLAN-INDEFINITE-LATTICE-CLASSIFICATION, PLAN-SIEGEL-MASS-FORMULA
-and PLAN-THETA-SERIES-MODULARITY, planned only in Spec Kit, with every open point settled in
+and PLAN-THETA-SERIES-MODULARITY; the open lattice issues: the roadmap of lattice algebra and
+discriminant theory (#7), form categories and intrinsic lattices (#33), duals and discriminant
+forms (#34), named lattices and arithmetic invariants (#35), the milestone Lattice arithmetic 0.2
+(#51), finite projective modules over Dedekind domains (#105) and the lattice part of finitely
+generated groups (#106). Planned only in Spec Kit, with every open point settled in
 [research.md](research.md).
 
 Let $R$ be an arithmetic base with fraction field $K$ ([FOUNDATIONS.md](../../FOUNDATIONS.md)
@@ -172,7 +176,7 @@ its hypotheses are explicit.
 - The integral correlation map $L \to L^*$ becomes an isomorphism over $K$. It has torsion
   cokernel, so it is a full-rank embedding; it is primitive only when it is an isomorphism.
 - A consumer needs one of these notions before this feature's position in the work order. The
-  request is taken in at once under constitution M9 as a task of feature 002 Phase 2 (research D2).
+  consumer does the task of this feature that owns it at once, under constitution M9 (research D2).
 
 ## Requirements *(mandatory)*
 
@@ -216,7 +220,9 @@ its hypotheses are explicit.
   module MUST have intrinsic owners. Theorems MUST give their localization, orthogonal-sum
   behaviour, the comparison of the class group with the Picard group, and the recovery of the Gram
   determinant ideal after a basis is chosen. The Steinitz classification MUST be stated with its
-  hypotheses [@Rot15, Thm. 11.117].
+  hypotheses [@Rot15, Thm. 11.117], with the Steinitz form $P \cong R^{n-1} \oplus I$, the class laws
+  of direct sum, dual, tensor product, Hom and base change, and a witness with a nonprincipal
+  ideal class (research D30).
 - **FR-008**: The PID structure theorem, Smith normal form and Dedekind torsion primary
   decomposition MUST stay with their Mathlib owners; theorems MUST connect them to lattice rank,
   elementary divisors and discriminant modules. No statement MUST assert a global basis of a
@@ -289,10 +295,12 @@ its hypotheses are explicit.
   classification MUST be restricted to the definite root-lattice locus, with the project's
   negative-definite convention (research D4).
 - **FR-022**: The hyperbolic plane $U$, finite orthogonal powers $U^{\perp n}$, $E_8$ (negative
-  definite), $E_8^{\perp n}$ and $\Lambda_{K3} = U^{\perp 3} \perp E_8^{\perp 2}$ MUST be built by the
-  generic operations; their rank, signature, parity and discriminant MUST follow from generic
-  theorems. Named ADE lattices MUST come from cited root realizations in the order of
-  [FOUNDATIONS.md](../../FOUNDATIONS.md) Conv. 72.3.
+  definite), $E_8^{\perp n}$, $\Lambda_{K3} = U^{\perp 3} \perp E_8^{\perp 2}$ and the even unimodular
+  lattices $\mathrm{II}_{s,t}$ for $s, t \geq 1$, $s \equiv t \pmod 8$ MUST be built by the generic
+  operations; their rank, signature, parity and discriminant MUST follow from generic theorems, and
+  an even unimodular lattice of signature $(s, t)$ MUST be proved to have $s \equiv t \pmod 8$
+  ([FOUNDATIONS.md](../../FOUNDATIONS.md) Def. 23.3; research D26). Named ADE lattices MUST come from
+  cited root realizations in the order of [FOUNDATIONS.md](../../FOUNDATIONS.md) Conv. 72.3.
 - **FR-023**: The comparison $(L, b) \mapsto L \hookrightarrow L_{\mathbb R}$ MUST state its
   finite-rank, embedding and positivity hypotheses and relate determinant ideals to covolumes. The
   quotient $V_{\mathbb C}/L$ MUST be constructed only from complex or Hodge data, and MUST stay
@@ -322,6 +330,45 @@ its hypotheses are explicit.
 - **FR-029**: Each named ADE lattice MUST have an ordered simple-root basis from diagram
   enumeration, a derived Gram comparison, and realization independence and uniqueness up to
   isometry from the finite root-system classification.
+
+**Form invariants, discriminant functors and Nikulin theory (#33, #34, #35, #105, #106)**
+
+- **FR-034**: The scale $\mathfrak s(b)$, the norm $\mathfrak n(b)$ and the volume $\mathfrak v(L)$
+  MUST be functors into the submodules of $W$ (ideals of $R$ for $\mathfrak v$), with the theorems
+  $2\mathfrak s \subseteq \mathfrak n \subseteq \mathfrak s$, isometry invariance, integrality as
+  $\mathfrak s \subseteq R$, evenness of an integral form as $\mathfrak n \subseteq 2R$, and
+  $\mathfrak a$-modularity as $\mathfrak a L^{\#} = L$; the twist $L(a)$ and the ideal multiple
+  $\mathfrak a L$ MUST be distinct operations with $\mathfrak s(L(a)) = a\,\mathfrak s(L)$,
+  $\mathfrak s(\mathfrak a L) = \mathfrak a^2 \mathfrak s(L)$, $(\mathfrak a L)^{\#} = \mathfrak a^{-1} L^{\#}$ and
+  $L \otimes_R \mathfrak a \cong \mathfrak a L$ for invertible $\mathfrak a$ (research D27).
+- **FR-035**: The diagonal $D(b)(x) = b(x, x)$ and the polarization $P(q) = \partial q$ MUST be
+  natural in the value module with $P \circ D = 2$ on symmetric forms and $D \circ P = 2$; the even
+  forms MUST be $\operatorname{im}(P)$ with the refinement fibre $\operatorname{Ref}(b) = P^{-1}(b)$
+  and the theorem $\operatorname{im}(P) \subseteq \{b : b(x, x) \in 2W\}$ with equality for
+  2-torsion-free $W$; skew-symmetric, alternating and symmetric forms MUST be separate classifiers
+  with the implications that depend on the 2-torsion of $W$ ([FOUNDATIONS.md](../../FOUNDATIONS.md)
+  §§16–17).
+- **FR-036**: The invariant $\ell(A) = \max_{\mathfrak p} \dim_{R/\mathfrak p} A/\mathfrak p A$ of a
+  finite-length torsion module MUST be declared with $\ell(A) = \max_{\mathfrak p} \ell(A_{\mathfrak p})$,
+  its subadditivity, and its monotonicity along monomorphisms and epimorphisms; the invariant
+  $(r, a, \delta)$ MUST be declared on even $p$-elementary lattices (research D28).
+- **FR-037**: The discriminant functors $\operatorname{disc}_b : \operatorname{Core}(\mathbf{Lat}_{\mathbb Z}) \to \operatorname{Core}(\mathbf{DiscBil})$
+  and $\operatorname{disc}_q : \operatorname{Core}(\mathbf{EvenLat}_{\mathbb Z}) \to \operatorname{Core}(\mathbf{DiscQuad})$,
+  the polarization $\mathbf{DiscQuad} \to \mathbf{DiscBil}$ through $\mathbb Q/2\mathbb Z \cong \mathbb Q/\mathbb Z$
+  and the commuting square MUST be declared; the embedding $\langle 2 \rangle \hookrightarrow
+  \begin{pmatrix} 2 & 1 \\ 1 & 2 \end{pmatrix}$ MUST be a test that no covariant map of discriminant
+  groups exists ([FOUNDATIONS.md](../../FOUNDATIONS.md) §26).
+- **FR-038**: Nikulin's results MUST be proved as read from [@Nik80]: Cor. 1.9.4 (signature and
+  discriminant quadratic form determine the genus of an even lattice), Thm. 1.10.1 and Cor. 1.10.2
+  (existence), Thm. 1.13.2, Cor. 1.13.3 and Cor. 1.13.4 (uniqueness in the genus), Thm. 1.14.2
+  ($O(L) \to O(q_L)$ surjective for an even indefinite $L$ with $\operatorname{rk} L \geq \ell(A_L) + 2$),
+  with signature and discriminant form as monoid homomorphisms on genera under $\perp$
+  (research D29).
+- **FR-039**: The subgroups $SO(L)$, $\widetilde O(L) = \ker(O(L) \to O(A_L, q_L))$ with the image of
+  that map, $O^+(L)$ by the real spinor norm, $SO^+(L)$, $\widetilde{SO}(L)$ and $\widetilde{SO}^+(L)$
+  MUST be declared from the generic constructions; the positive-cone description of $O^+(L)$ MUST
+  be a theorem under its hyperbolic hypotheses; generators of a subgroup MUST be given only when
+  constructed (#106).
 
 **Surface, records and checks**
 
@@ -363,6 +410,7 @@ its hypotheses are explicit.
 | Public root-imported lattice declarations without owner or comparison | not counted | 0 |
 | Chosen-data owners of invariants (diagonal Hasse value, chosen spinor norm) | 2 | 0 |
 | Theorem programmes with their success criteria met | 0 of 4 | 4 of 4 |
+| Nikulin results of FR-038 proved | not counted | 7 of 7 |
 | `sorry` and project axioms in the library | 0 | 0 |
 
 - **SC-001**: For every notion of the owner table, a mathematician finds its owner and every

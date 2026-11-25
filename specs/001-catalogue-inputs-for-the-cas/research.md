@@ -32,13 +32,15 @@ alternative that the reason excludes. Evidence of the present state is in the is
 - **Reason**: constitution M7 keeps one field per meaning. A second morphism row would copy the
   declaration that `ObjectEntry.application` and `BinderEntry.operation` hold.
 
-## D4 (#183): which numerals carry evidence
+## D4 (#183): which written elements carry evidence
 
-- **Decision**: only an explicit proposition parameter of the numeral declaration carries
-  evidence. `num.sets.fin` ($k < n$) does; ring numerals do not.
+- **Decision**: a numeral carries no evidence; an admission into a domain does. The position
+  $k$ of $\operatorname{Fin} n$ is an admission with evidence $k < n$ (D24); ring numerals carry
+  none.
 - **Reason**: the numeral $k$ of $\mathbb{Z}/n$ is the image of $k$ under $\mathbb{Z} \to
-  \mathbb{Z}/n$, total (Mathlib `ZMod.natCast_self`); `finPoint (n k) (h : k < n)` has the
-  parameter (`Sem/Foundation/Morphisms.lean:30`). Audit LC-183-F01.
+  \mathbb{Z}/n$, total (Mathlib `ZMod.natCast_self`); `finPoint (n k) (h : k < n)`
+  (`Sem/Foundation/Morphisms.lean:30`) is an element of a subobject of $\mathbb N$. Audit
+  LC-183-F01.
 - **Procedures**: decision procedures of this library (`meta` procedures, LC-18): $<$ on
   $\mathbb{N}$ by `Nat.decLt`; totality and distinct arguments of a graph literal by decidable
   quantification over a `Fintype` domain; closing of a literal statement by `DecidableEq` of the
@@ -209,3 +211,76 @@ alternative that the reason excludes. Evidence of the present state is in the is
   stay the owners of a map given by a matrix; `LinearMap.toMatrix'` relates the two.
 - **Excluded**: reading a formula into a matrix by its syntax, which is a second source of meaning
   for the same map (M7).
+
+## D24 (FR-004, FR-051): the position of `Fin n` is an admission, not a numeral
+
+- **Decision**: `obj.sets.fin` carries the inclusion $\operatorname{Fin} n \hookrightarrow
+  \mathbb N$ (`Fin.val`), the admission `finPoint n k h` and the evidence procedure for $k < n$
+  (`ObjectEntry.inclusion`, `.admission`, `.evidence`). The numeral row `num.sets.fin` is deleted.
+  The numeral kind names only images of the map out of an initial object; the clause of the
+  `NumeralEntry` docstring that calls the points of `Fin n` numerals is deleted.
+- **Reason**: LC-15 gives an object numerals only through the unique map out of the initial
+  object of its category, and $\operatorname{Fin} n$ in $\mathbf{Set}$ has none; LC-14 forms an
+  element of a domain by its admission with evidence. The schema already holds the three fields.
+- **Excluded**: widening the numeral kind to named points with evidence, which would give
+  `Fin n` a meaning of numerals that LC-15 denies it.
+- **Source**: COMPLAINTS.md, "Catalogue review of bd31fe3", item 2; `CONTRIBUTING.md` LC-14,
+  LC-15; `Reg/Entry.lean`, `ObjectEntry`.
+
+## D25 (FR-051): constructions generic in the category
+
+- **Decision**: $\operatorname{Aut} : \operatorname{Core}(\mathcal C) \to \mathbf{Grp}$ and
+  $\operatorname{Stab}_U : \operatorname{Core}(\int U) \to \operatorname{Sub}(\mathbf{Grp})$ are
+  registered once as constructions with a category parameter (a `ConstructionEntry` whose
+  parameter kind is a category), with a method shape that resolves at the receiver's own category
+  and is never pulled back along a structural functor. The per-category functor rows of
+  `Sem/Algebra/Automorphisms.lean` become applications of the one construction.
+- **Reason**: for a group $G$, $\operatorname{Aut}_{\mathbf{Grp}}(G) \neq \operatorname{Aut}_{\mathbf{Set}}(UG)$,
+  and $O(L) \neq GL(L)$ for a lattice; inheritance along a structural functor changes the
+  construction. [FOUNDATIONS.md](../../FOUNDATIONS.md) Def. 2.4 defines the automorphism object for
+  every category.
+- **Source**: COMPLAINTS.md, "Non-inherited constructions (`Aut`, `Stab`) have no method
+  presentation"; [FOUNDATIONS.md](../../FOUNDATIONS.md) Def. 2.4, 2.5.
+
+## D26 (FR-051): an object row identified with a functor value
+
+- **Decision**: `obj.sets.units` cites, in `ObjectEntry.functorPresentation`, the identification
+  `Automorphisms.units_underlying` of $M^\times$ with the underlying set of
+  $(-)^\times(M)$ along `fun.monoids.units`; `mor.sets.units_inverse` cites `units_inverse` as its
+  comparison with group inversion. Where `ObjectFunctorPresentation` does not admit a value under a
+  composite $U \circ F$, the field is extended to it; no second field is added.
+- **Source**: COMPLAINTS.md, "An object row cannot be identified with a functor value (`Units` and
+  `(−)ˣ`)"; constitution M7.
+
+## D27 (FR-051): the scope of the totality gate
+
+- **Decision**: `Reg/Totality.lean` keeps its check of this repository's definitions and adds a
+  registered table of Mathlib functions that totalize off their domain, seeded with
+  `Polynomial.roots` (at $0$), `UniqueFactorizationMonoid.normalizedFactors` (at $0$),
+  `Nat.primeFactors` (at $0$), `Nat.factorization` (at $0$), `Matrix.rank` (over the zero ring) and
+  `taylorCoeffWithin` (its field inverse). A row whose declaration unfolds to a function of the
+  table on a domain wider than its domain is refused. Every review that finds a further one adds it
+  to the table. The gate's docstring states what it does not check; reviewers check the rest
+  (constitution M10).
+- **Source**: COMPLAINTS.md, "Catalogue review of bd31fe3", item 3; `CONTRIBUTING.md` LC-14;
+  constitution M5, M7.
+
+## D28 (FR-049): the evidence procedures added
+
+- **Decision**: primes by a Pratt certificate (factor $p - 1$, a witness $a$, Mathlib
+  `lucas_primality`, powers by `Nat.pow_mod`); units by the characterizations of Mathlib
+  (`Polynomial.isUnit_iff_coeff_isUnit_isNilpotent`, `Prod.isUnit_iff`, `Pi.isUnit_iff`, the norm
+  of $\mathbb Z[i]$, `Matrix.isUnit_iff_isUnit_det` after transposes, products and diagonals);
+  real nonzero values by certified interval bounds after the search of constitution M8 for an
+  existing interval procedure; polynomial expressions by `polynomial_nf` and by the leading
+  coefficient outside $\ker f$ (`Polynomial.degree_map_eq_of_leadingCoeff_ne_zero`); piecewise
+  continuity by the pasting lemma `Continuous.if_le` and removable quotients by their extension,
+  with $\log$, $\sqrt{\ }$ and $\arctan$ added to the registered class on their domains.
+- **Source**: COMPLAINTS.md, "Membership evidence (LC-18)", items 1–5.
+
+## D29 (FR-047 to FR-052): position in the task list
+
+- **Decision**: the import of the two test modules (FR-052) is in Phase 1, because a test module
+  outside the build is no evidence for any later task. The other COMPLAINTS.md items have no
+  kernel upstream task; their phases follow the scaffolding phases and precede the milestone.
+- **Source**: constitution E2, M3; the execution-order rule of [tasks.md](tasks.md).

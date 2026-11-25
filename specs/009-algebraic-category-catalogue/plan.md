@@ -37,7 +37,7 @@ the milestone.
 | M5, M6 | Total operations; chosen normalizations, Euclidean structures and splittings are data | D2, D3 |
 | M7 | One registry row per category; corpus owners reused | FR-008, FR-010 |
 | M8 | Search before authoring, recorded in the issue | Contract F |
-| M9 | Feature 001 tasks take T001 at once | D1 |
+| M9 | Feature 001 T068 takes T001 at once | D1 |
 | M10–M13 | Independent review; records | Contract F |
 | E1–E10 | Tier 1 per change; logs and timing of feature 001 T001–T003 | Checks |
 

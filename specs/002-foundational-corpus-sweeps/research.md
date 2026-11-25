@@ -89,8 +89,11 @@ corpus-execution.md, "Not realizations".
 
 ## D7. The immediate nodes of `TODO.md`
 
-**Decision**: `padic-realization-acceptance`, `poset-path-lax-functor` and `relative-proj-owner`
-are complete as `TODO.md` records. The units listed in `small-reference-ports` are complete: each
+**Decision**: `padic-realization-acceptance` and `poset-path-lax-functor` are complete as `TODO.md`
+records. `relative-proj-owner` is not: its record calls `relativeProjData` the glued scheme, but
+that declaration returns the supplied candidate of `RelativeProjPresentationData` (its module
+docstring and definition at `a3a66fba`); the glued construction is `CommMon.relativeProj` of #22,
+and task T031 realizes `FC06-C02-U231` with it. The units listed in `small-reference-ports` are complete: each
 mapping row carries `[realized]` and "target-pin acceptance 2026-09-20" (`FC09-C04-U080` and
 `FC10-C08-U018` carry `[realized]`). Its continuation is the three pending `reference-port` rows
 `FC06-C02-U156`, `FC06-C02-U157`, `FC11-C20-U037`. `lower-ramification-owner` is not Sweep-III
@@ -265,7 +268,7 @@ and format.
 
 **Decision**: `arithmetic-lattice-foundations` is feature
 [003](../003-arithmetic-lattice-foundations/spec.md) and `abelian-projectivity` is feature
-[004](../004-abelian-projectivity/spec.md). Task T107 executes 003 T001–T049 and task T111 executes
+[004](../004-abelian-projectivity/spec.md). Task T107 executes the tasks of 003 and task T111 executes
 004 T001–T010, each in its own document order, at the position that D11 gives them. Feature 003 also
 carries the four theorem programmes of the vault feature FEATURE-ARITHMETIC-LATTICE-FOUNDATIONS
 (ADE realization, indefinite classification, Siegel mass formula, theta modularity).
@@ -288,3 +291,16 @@ can lag a repair (for example the gallery bridge of #181 is now proved in
 **Source**: constitution M9, M12; LC-05 ("On resolution, verify the full unmet requirement");
 LC-11; COMPLAINTS.md, read in full at `533e9259`; the closed GitHub issues #26, #27, #37, #88,
 #91, #141, #162, #167, #171, whose residual items live only in COMPLAINTS.md.
+
+## D24. Gate, environment and consumer issues outside COMPLAINTS.md
+
+**Decision**: #144 (the gate builds only the import closure of the root module) and #118 (build
+and test inside the research image on its shared Mathlib) are gate and environment defects and are
+Phase 1 tasks (T130, T131); T130 precedes T129 so that the green gate covers every module. #89 (the
+presentations of $\mathrm{SL}_2(\mathbb Z)$ and $\mathrm{GL}_2(\mathbb Z)$ for the research preamble)
+and #178 (Tor one for arbitrary $A$ for a qualifying-exam card) are consumer requests and are Phase 2
+tasks (T132, T133), taken in at once (constitution M9). The repository pin follows the research
+image's Mathlib at `master`; a Mathlib change that breaks the build is repaired in source.
+
+**Source**: #144 and its comment of 2026-11-15; #118, body and the owner decisions of 2026-11-10 and
+2026-11-11 recorded there; #89; #178; constitution M3, M9, E5.

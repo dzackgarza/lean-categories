@@ -20,9 +20,11 @@ Tasks are executed in document order. The issue phases follow the document order
 kernel upstream tasks in the kernel task list: T123, T131, T138, T121, T119, T129, T122, T132,
 T120, T125, T124, T137, T136, T128, T130, T135, T134, T118, T133, T332, T328, T331, T329, T330,
 T334, T335, T336, T337, T333, T338, T339, T340, T341, T227, T146, T225, T226, T228, T229, T230,
-T231, T232, T233, T234; each kernel upstream task stands before its first consumer. Within an
-issue, the search task comes before the declaration task; the one task of each of #212 to #225
-runs its search first. Every declaration task also passes tier 1 at each change, adds its
+T231, T232, T233, T234; each kernel upstream task stands before its first consumer. The phases
+of the COMPLAINTS.md entries (Phases 46–49, FR-047 to FR-051) follow, since no kernel task is
+their upstream; the import of the two catalogue test modules (T084, FR-052) is in Phase 1
+(research D29). Within an issue, the search task comes before the declaration task; the one task
+of each of #212 to #225 runs its search first. Every declaration task also passes tier 1 at each change, adds its
 new modules to `LeanCategories/All.lean`, and is reviewed by an author who did not write it
 (constitution M10). A task closes its issue when its acceptance holds on `main`.
 
@@ -40,6 +42,12 @@ new modules to `LeanCategories/All.lean`, and is reviewed by an author who did n
   runs as well, and track `build-timings/` in Git by removing `/build-timings/` from `.gitignore`;
   update `docs/build-timings.md`. Constitution E7. Acceptance: one committed record per run with
   run, revision, environment and input. Unblocks: timing triage (E8).
+- [ ] T084 [US9] FR-052: import `Sem/Foundation/PowerSetsTests.lean` and
+  `Sem/Foundation/FiniteOrdersTests.lean` from `Catalogue.lean` and repair what they then report.
+  Files: `Catalogue.lean`, the rows the two modules cover. Decision: research D29. Acceptance: both
+  modules elaborate in `just test`; the COMPLAINTS.md entry "#95 — two catalogue test modules in
+  `Foundation/` are outside the build" closes with its evidence. Unblocks: every later task whose
+  evidence these modules give.
 
 ## Phase 2: #187, names of shape objects (US3, unblocks kernel T123 and T308)
 
@@ -93,16 +101,18 @@ new modules to `LeanCategories/All.lean`, and is reviewed by an author who did n
 ## Phase 6: #183, proof procedures of literal obligations (US2, unblocks kernel T119 and T113)
 
 - [ ] T010 [US2] #183: record the search (plan.md row #183) in the issue.
-- [ ] T011 [US2] #183: add `NumeralEntry.evidence`, `GraphLiteralEntry.evidence`,
-  `LiteralEntry.closing` and their procedures; `num.sets.fin` names the procedure for $k < n$;
-  ring numerals name none (`data-model.md` `NumeralEntry.evidence`, `GraphLiteralEntry.evidence`,
-  `LiteralEntry.closing`). Files: `Reg/Entry.lean`, `Reg/Semantic.lean`,
-  `Sem/Foundation/Morphisms.lean`, `Sem/Foundation/Cardinality.lean`, `Sem/Foundation/FiniteObjects.lean`
-  (the graph-literal and literal rows). Decision: research D4.
+- [ ] T011 [US2] #183: replace the numeral row `num.sets.fin` by the inclusion
+  $\operatorname{Fin} n \hookrightarrow \mathbb N$, the admission `finPoint` and its evidence
+  procedure for $k < n$ on `obj.sets.fin` (`data-model.md` `obj.sets.fin` rows, `NumeralEntry`
+  docstring); add `GraphLiteralEntry.evidence`, `LiteralEntry.closing` and their procedures; ring
+  numerals name none (`data-model.md` `GraphLiteralEntry.evidence`, `LiteralEntry.closing`).
+  Files: `Reg/Entry.lean`, `Reg/Semantic.lean`, `Sem/Foundation/Morphisms.lean`,
+  `Sem/Foundation/Cardinality.lean`, `Sem/Foundation/FiniteObjects.lean` (the graph-literal and
+  literal rows). Decisions: research D4, D24.
   Acceptance in `Sem/EvidenceTests.lean`: the numeral $7$ of $\mathbb{Z}/7$ is accepted and equals
-  $0$; the position $7$ of `Fin 7` is refuted; `7 < 12` is proved; a graph literal on `Fin 3` is
-  settled both ways; a statement with a free variable stays unsettled. Unblocks: kernel T113, T034,
-  T035.
+  $0$; the admission of $7$ into `Fin 7` is refuted; `7 < 12` is proved; a graph literal on `Fin 3`
+  is settled both ways; a statement with a free variable stays unsettled; no numeral row of the
+  snapshot has a proposition parameter. Unblocks: kernel T113, T034, T035.
 
 ## Phase 7: #191, power-object maps (US2, unblocks kernel T129 and T113)
 
@@ -311,7 +321,9 @@ new modules to `LeanCategories/All.lean`, and is reviewed by an author who did n
 - [ ] T068 [US8] #213 (FR-036): run and record the search (plan.md row #213); then add the
   morphism `mor.sets.ufd_factorization`: for a unique factorization domain with a normalization
   and $a \neq 0$, the unit $u$ and the multiset `normalizedFactors a` with $a = u \cdot \prod$.
-  File: `Sem/Algebra/NamedCommutativeRings.lean`. Decision: research D22. Acceptance in a new
+  File: `Sem/Algebra/NamedCommutativeRings.lean`. Inputs: 009 T001 (the category of unique
+  factorization domains with a normalization), done at once when it is not on `main`
+  (constitution M9). Decision: research D22. Acceptance in a new
   `Sem/Algebra/FactorizationTests.lean`: at $\mathbb{Z}$, $-12$ gives the unit $-1$ and the
   factors $\{2, 2, 3\}$; the product theorem holds for the family; the issue holds the search
   record. Unblocks: kernel T221.
@@ -482,7 +494,61 @@ new modules to `LeanCategories/All.lean`, and is reviewed by an author who did n
   authoring" (row #210). Acceptance: the record names each query, each surface and each hit.
 - [ ] T062 [US7] #210 (FR-031): register the three full-subcategory inclusions (`Lattices/Valued/Arithmetic.lean:40-46`, `ScaleAndEvenness.lean:265`, `MetricDual.lean:166`) as structural rows at the parameters of each family. Files: `Sem/Lattices/Valued/CatalogueRegistration.lean`. Decision: research D20. Acceptance in a new `Reg/ScaffoldingReachTests.lean`: `cat.finite_free_lattice`, `cat.even_lattice` and `cat.unimodular_lattice` reach `cat.sets`. Unblocks: the V3 tasks of the finite free, even and unimodular lattice families (kernel T234).
 
-## Phase 46: Milestone
+## Phase 46: Catalogue rows in their categorical form (US9, FR-047, FR-048)
+
+- [ ] T079 [US9] FR-047, FR-048: find every catalogue declaration that takes a bare carrier with an
+  instance argument (a binder `(X : Type …) [inst]`) and move it onto an object of the category
+  that carries the structure, with its units and operations along the structural routes; confirm
+  at the task revision that each row of the COMPLAINTS.md entry "Catalogue rows in violation of
+  LC-13, LC-14 and LC-15" is total out of its domain object and repair any that is not. Files:
+  plan.md "Catalogue defects recorded in COMPLAINTS.md", rows FR-047 and FR-048. Acceptance in
+  `Sem/BinderTests.lean` and `Sem/TotalityProbes.lean`: no catalogue declaration has a bare-carrier
+  binder; both entries close with their evidence.
+
+## Phase 47: Membership evidence (US9, FR-049)
+
+- [ ] T080 [US9] FR-049 (a), (b): the Pratt-certificate procedure for primes and the unit
+  characterizations of research D28. Files: `Sem/Algebra/{Semirings,Units,LinearAlgebra}.lean`.
+  Decision: D28. Acceptance in `Sem/EvidenceTests.lean`: $2^{31} - 1$ is proved prime at the default
+  recursion depth; $1 + 2x \in (\mathbb Z/4)[x]$, $(u, v) \in M \times N$ for units $u, v$, $i \in \mathbb Z[i]$
+  and the transpose of a unit matrix are units; $2x$ is refused over $\mathbb Z$.
+- [ ] T081 [US9] FR-049 (c), (d), (e): certified interval bounds for real nonzero values after the
+  search of constitution M8, the polynomial expressions and non-injective images of research D28,
+  and the piecewise and removable continuity and smoothness cases. Files:
+  `Sem/Algebra/{PolynomialEvidence,LinearAlgebra,Calculus}.lean`. Decision: D28. Acceptance in
+  `Sem/EvidenceTests.lean` and `Sem/PolynomialContractTests.lean`: $\pi - 3 \neq 0$;
+  $(x^2 + 5) \mapsto \mathbb Z/5$ is nonzero; $(6x^2 + x) \mapsto \mathbb Z/5$ is monic of degree
+  $2$; $x \mapsto |x|$ written by cases is continuous; the COMPLAINTS.md entry "Membership evidence
+  (LC-18)" closes with its evidence.
+
+## Phase 48: The product of groups (US9, FR-050)
+
+- [ ] T082 [US9] FR-050: register `lim.groups.product` with `standardization := diagramIsoPair` and
+  `dataConstructor := BinaryFan.mk` from `groupProductFan` and `groupProductIsLimit`. Files:
+  `Sem/Limits/Registration.lean`. Acceptance in `Algebra/GroupProductTests.lean`: the product of
+  $\mathbb Z/2$ and $\mathbb Z/3$ through the row is $\mathbb Z/2 \times \mathbb Z/3$ with its universal
+  property; the COMPLAINTS.md entry closes with its evidence.
+
+## Phase 49: Registry gates (US9, FR-051)
+
+- [ ] T083 [US9] FR-051 (d): the totality table of research D27 in `Reg/Totality.lean` and the
+  refusal it drives; the gate's docstring states its scope. Files: `Reg/Totality.lean`. Decision:
+  D27. Acceptance in `Sem/TotalityProbes.lean`: a row declaring `Polynomial.roots` on all of $R[x]$
+  is refused and the registered row on $R[x] \setminus \{0\}$ is accepted.
+- [ ] T085 [US9] FR-051 (b): `obj.sets.units` and `mor.sets.units_inverse` cite their
+  identifications with the units functor (`data-model.md` `ObjectFunctorPresentation`). Files:
+  `Reg/Entry.lean`, `Sem/Algebra/Units.lean`. Decision: D26. Acceptance in
+  `Sem/UnitInverseTests.lean`: a reader finds the identification of `Units` with the underlying set
+  of $(-)^\times(M)$ through the row; the COMPLAINTS.md entry closes with its evidence.
+- [ ] T086 [US9] FR-051 (a): $\operatorname{Aut}$ and $\operatorname{Stab}$ as constructions generic in
+  the category (`data-model.md` `ConstructionEntry` category parameter); the per-category rows
+  become its applications. Files: `Reg/Entry.lean`, `Reg/Semantic.lean`,
+  `Sem/Algebra/Automorphisms.lean`. Decision: D25. Acceptance in a new
+  `Reg/GenericConstructionTests.lean`: $\operatorname{Aut}_{\mathbf{Grp}}(\mathbb Z/3) \cong \mathbb Z/2$ while
+  $\operatorname{Aut}_{\mathbf{Set}}$ of its underlying set is $\mathbf{Sym}(3)$; no structural route
+  transports the construction; the COMPLAINTS.md entry closes with its evidence.
+
+## Phase 50: Milestone
 
 - [ ] T042 Run `just test` on `main` with all tasks above landed; record its log and timing (T002,
   T003). Acceptance: the gate is green for every file of this feature, and the axiom audit shows
@@ -498,6 +564,9 @@ new modules to `LeanCategories/All.lean`, and is reviewed by an author who did n
   #206) reach `cat.sets` through it, and the refinements of T050 (#204) reach it through them.
 - The phase order is the order of the kernel consumers; it is not a dependency order between
   issues.
+- T068 needs 009 T001 (the divisibility tower). Every task of this feature writes its new
+  rows in the LC-13 form; T079 moves the rows that are already on `main`.
+- T084 is in Phase 1; T080–T086 follow the scaffolding phases (research D29).
 
 ## Implementation Strategy
 

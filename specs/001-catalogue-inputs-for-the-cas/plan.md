@@ -26,7 +26,7 @@ is in [contracts/registry-additions.md](contracts/registry-additions.md).
 **Project Type**: Lean library (formal mathematics and its registry)
 **Performance Goals**: tier-1 loop of each task under 300 s (constitution E1, E4)
 **Constraints**: one Lean process under `flock .tmp/lean.lock` (E10); no `sorry`, no axiom (M3)
-**Scale/Scope**: 44 issues; 100 registered categories; 675 registry rows at `443fba9`
+**Scale/Scope**: 44 issues and 7 COMPLAINTS.md entries; 100 registered categories; 675 registry rows at `443fba9`
 
 ## Constitution Check
 
@@ -34,7 +34,7 @@ is in [contracts/registry-additions.md](contracts/registry-additions.md).
 | --- | --- | --- |
 | M1 | Every declaration is mathematics of this repository; no kernel input shapes it | pass: requirements come from the issues and their sources |
 | M2 | Each FR cites its source; each task compares clause by clause | pass by task acceptance |
-| M3 | No `sorry`, axiom or `native_decide`; `just test` at the milestone | pass by task acceptance; `main` has four `native_decide` sites outside this feature (`COMPLAINTS.md`, issue #99) |
+| M3 | No `sorry`, axiom or `native_decide`; `just test` at the milestone | pass by task acceptance; the `native_decide` sites of `Reg/PresentationProbes.lean` and `Reg/ComparisonProbes.lean` are removed by feature 002 T129 |
 | M4 | Each operation at its generating category; rows above it are restrictions | FR-001, FR-006, FR-007, FR-018, FR-019 |
 | M5 | Total operations; domain evidence; numerals as universal images | FR-004, FR-006, FR-007, FR-018 (ℕ subtraction on $b \le a$) |
 | M6 | A cell for every parallel route; chosen data never from existence | FR-001, FR-002, FR-015, FR-017, FR-019 |
@@ -161,9 +161,10 @@ Each row gives the files to add or change and the registry rows. New modules are
 
 ### FR-004 (#183): proof procedures of literal obligations
 
-- `Reg/Entry.lean`: `NumeralEntry.evidence : Option Name` for each explicit proposition parameter;
-  `GraphLiteralEntry.evidence : Name`; `LiteralEntry.closing : Name`.
-- `Sem/Foundation/Morphisms.lean` (`num.sets.fin`): evidence `k < n` by decision on ℕ.
+- `Reg/Entry.lean`: `GraphLiteralEntry.evidence : Name`; `LiteralEntry.closing : Name`; the
+  `NumeralEntry` docstring states that numerals are images of initial maps only (research D24).
+- `Sem/Foundation/Morphisms.lean`: delete the numeral row `num.sets.fin`; give `obj.sets.fin` the
+  inclusion `Fin.val` into ℕ, the admission `finPoint` and the evidence `k < n` by decision on ℕ.
 - Graph-literal rows: evidence of totality and distinct arguments by decision over the finite
   domain with decidable equality.
 - Literal rows: closing procedure by the decidable equality of the literal type.
@@ -355,6 +356,22 @@ its category holds the row); the kernel upstream task precedes that category tas
 
 The row identifiers of this table are the catalogue IDs of the rows; the leaves specs of
 lean-cas-dsl-leaves name them.
+
+## Catalogue defects recorded in COMPLAINTS.md (FR-047 to FR-052)
+
+Read at `a3a66fba`. Each task starts from the source at its revision and closes its COMPLAINTS.md
+entry with its evidence (LC-05, "On resolution").
+
+| Requirement | Entry | Files and rows | Test module |
+| --- | --- | --- | --- |
+| FR-052 | #95, two test modules outside the build | `Catalogue.lean` imports `Sem/Foundation/{PowerSetsTests,FiniteOrdersTests}.lean`; the rows they report are repaired | the two modules |
+| FR-047 | Catalogue review of bd31fe3, item 1 | every catalogue declaration with a binder `(X : Type …) [inst]`: at `a3a66fba` `Sem/Algebra/Automorphisms.lean` (`actionHom`), `Sem/Lattices/Valued/CatalogueRegistration.lean` and `Property.lean` (`(R : Type u) [CommRing R]` family parameters), and the rows of the entry still of that shape | `Sem/BinderTests.lean` |
+| FR-048 | Catalogue rows in violation of LC-13, LC-14 and LC-15 | at `a3a66fba` `LinearAlgebra.companion` is defined on `monics`, no `Option`-valued row was found in `Sem/Algebra/{LinearAlgebra,FiniteSums,Calculus,Series}.lean`, and the `Fractions`, `PartialMaps` and element-literal declarations of the entry are absent; the task confirms each row of the entry at its revision and repairs any that remain | `Sem/TotalityProbes.lean` |
+| FR-049 | Membership evidence (LC-18) | `Sem/Algebra/{Semirings,Units,PolynomialEvidence,LinearAlgebra,Calculus}.lean` | `Sem/EvidenceTests.lean`, `Sem/PolynomialContractTests.lean` |
+| FR-050 | No registered binary product in the category of groups | `Sem/Limits/Registration.lean`: `lim.groups.product` from `Algebra/GroupProduct.lean` | `Algebra/GroupProductTests.lean` |
+| FR-051 (a) | Non-inherited constructions (`Aut`, `Stab`) | `Reg/Entry.lean` (`ConstructionEntry`, method shape), `Sem/Algebra/Automorphisms.lean` | a new `Reg/GenericConstructionTests.lean` |
+| FR-051 (b) | An object row cannot be identified with a functor value | `Reg/Entry.lean` (`ObjectFunctorPresentation`), `Sem/Algebra/Units.lean` | `Sem/UnitInverseTests.lean` |
+| FR-051 (d) | Catalogue review of bd31fe3, item 3 | `Reg/Totality.lean` | `Sem/TotalityProbes.lean` |
 
 ## Structural functors of the scaffolding gaps
 

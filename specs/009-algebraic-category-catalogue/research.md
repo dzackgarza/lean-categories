@@ -6,10 +6,10 @@ Each decision settles a point that #55 or #101–#108 leaves open, and names its
 
 **Decision**: The feature is catalogue work and runs in its own document order beside features 001
 and 005 (constitution M11). A task of feature 001 that needs one of its categories names the task
-here as an input and, when it reaches it, does that task at once (constitution M9): 001 T068 and
-T069 take T001.
+here as an input and, when it reaches it, does that task at once (constitution M9): 001 T068 takes
+T001.
 
-**Source**: constitution M9, M11; feature 001 FR-036, FR-037.
+**Source**: constitution M9, M11; feature 001 FR-036.
 
 ## D2. The divisibility tower
 

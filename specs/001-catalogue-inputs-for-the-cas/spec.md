@@ -5,7 +5,9 @@
 **Status**: Draft
 **Input**: The 44 lean-categories issues #182 to #225. Each is a mathematical declaration that a
 task of the lean-cas-dsl task list consumes and that `main` (`443fba9`; `f009120` for #201 to
-#211; `fc549ba` for #212 to #225) does not have.
+#211; `fc549ba` for #212 to #225) does not have. In addition, the registry and catalogue defects
+that [COMPLAINTS.md](../../COMPLAINTS.md) records against the rows that the language reads
+(FR-047 to FR-052; read at `a3a66fba`).
 
 Read with the [constitution](../../.specify/memory/constitution.md), the [plan](plan.md) and the
 [tasks](tasks.md). Paths are relative to `LeanCategories/`. `Sem/` is `Catalogue/Semantics/`.
@@ -197,6 +199,29 @@ the row and its stated value at the example of the issue from the registered dec
    forms its linear map, **Then** it is a morphism of $\mathbf{Mod}_{\mathbb{Q}}$ with its
    kernel through the existing kernel row.
 
+### User Story 9 - The language reads every catalogue row in its categorical form (Priority: P2)
+
+The language reads `/`, `M⁻¹`, `∑`, `lim`, numerals, units, products of groups, automorphism
+groups and the membership of a written element in a domain. Each row takes its object in the
+category that carries its structure, is total on its domain, establishes membership by its own
+evidence, and is checked by a test module that the gate builds.
+
+**Why this priority**: the rows are on `main` and in use; the defects that COMPLAINTS.md records
+against them give the language a reading that the constitution forbids (M4, M5, M7).
+
+**Independent Test**: for each entry of FR-047 to FR-052, the test module named by its task
+elaborates the repaired row at the example of the entry.
+
+**Acceptance Scenarios**:
+
+1. **Given** $p = 2^{31} - 1$, **When** the language asks whether $p$ is prime, **Then** the
+   registered procedure proves it by a Pratt certificate at the default recursion depth.
+2. **Given** two groups $G$, $H$, **When** a reader asks for their product, **Then** it finds
+   `lim.groups.product` with its cone and universal property.
+3. **Given** a group $G$, **When** a reader asks for its automorphism group, **Then** it finds
+   $\operatorname{Aut}_{\mathbf{Grp}}(G)$, not $\operatorname{Aut}_{\mathbf{Set}}$ of its
+   underlying set.
+
 ### User Story 6 - The mathematician inspects each definition against its source (Priority: P1)
 
 The mathematician opens any declaration of this feature and finds its source, its generality and
@@ -215,7 +240,8 @@ issue holds the search record.
 ### Edge Cases
 
 - The numeral `7` of $\mathbb{Z}/7$ is the class $0$; the position `7` of `Fin 7` is invalid.
-  The numeral procedure must accept the first and refute the second.
+  The numeral `7` of $\mathbb{Z}/7$ needs no evidence; the admission of `7` into
+  $\operatorname{Fin} 7 \hookrightarrow \mathbb N$ is refuted by its evidence procedure.
 - `whole ∘ dom` on `Subobjects(Sets)` sends $A \subseteq X$ to $A \subseteq A$; it is not the
   identity, and no cell may say so.
 - The subtraction `2 - 5` in $\mathbb{N}$ is outside the domain $b \le a$; it has no value.
@@ -260,12 +286,15 @@ kernel task list.
   computation that `ComputationRef` names by its object row, with no second row. A checked
   derivation MUST accept it as target or prerequisite. Source: the evaluation map
   $\mathrm{ev} : Y^X \times X \to Y$ of a cartesian closed category (Mac Lane, *CWM*, IV.6).
-- **FR-004 (#183)**: The registry MUST name a proof procedure for: (a) each explicit proposition
-  parameter of a numeral declaration (for example $k < n$ of `finPoint`); (b) totality and
-  distinct arguments of a graph literal on a finite domain; (c) the closed statement between
-  literals that a literal evaluation leaves. A ring numeral has no domain condition: the numeral
-  $k$ of $\mathbb{Z}/n$ is total. A procedure that does not settle an instance leaves it
-  unsettled. Sources: Mathlib `ZMod.natCast_self`, `Fin`, `Decidable`; audit LC-183-F01 on #183.
+- **FR-004 (#183)**: The registry MUST name a proof procedure for: (a) the hypothesis of each
+  admission into a domain that a written element needs; the position $k$ of $\operatorname{Fin} n$
+  is the element $k \in \mathbb N$ admitted into $\operatorname{Fin} n \hookrightarrow \mathbb N$
+  with evidence $k < n$, and the numeral row `num.sets.fin` is replaced by that admission
+  (research D24); (b) totality and distinct arguments of a graph literal on a finite domain;
+  (c) the closed statement between literals that a literal evaluation leaves. A ring numeral has
+  no domain condition: the numeral $k$ of $\mathbb{Z}/n$ is total. A procedure that does not
+  settle an instance leaves it unsettled. Sources: Mathlib `ZMod.natCast_self`, `Fin`,
+  `Decidable`; `CONTRIBUTING.md` LC-14, LC-15; audit LC-183-F01 on #183.
 - **FR-005 (#191)**: For every set $X$: membership $\in_X : X \times \mathcal{P}X \to \Omega$,
   natural in $X$; for every stage $Y$ the bijection $\operatorname{Hom}(Y \times X, \Omega)
   \cong \operatorname{Hom}(Y, \mathcal{P}X)$ with its two inverse laws, of which the present
@@ -491,6 +520,46 @@ kernel task list.
   object of `cat.ideals_r`, with its written form `(a)`, so that
   $\operatorname{Ann}_{\mathbb{Z}}(\mathbb{Z}/4) = (4)$ is a theorem of the registry. Sources:
   Mathlib `Ideal.span`, `Module.annihilator`, `Submodule.annihilator`.
+- **FR-047 (LC-13)**: Every catalogue declaration MUST take its object in the category that
+  carries the structure it uses (an object of `MonCat`, `CommRingCat`, $\operatorname{Mod}(R)$),
+  never a bare carrier with an instance argument; the rows that COMPLAINTS.md, "Catalogue review
+  of bd31fe3", item 1, lists as open and every later row of that shape MUST be moved. Source:
+  `CONTRIBUTING.md` LC-13; constitution M4.
+- **FR-048 (LC-14, LC-15)**: Every partial operation that COMPLAINTS.md, "Catalogue rows in
+  violation of LC-13, LC-14 and LC-15", lists MUST be a total morphism out of its domain
+  subobject ($\mathrm{GL}_n \hookrightarrow \operatorname{Mat}_n$, $K^\times \hookrightarrow K$,
+  the finite subsets, the convergent, integrable or smooth maps); $K \setminus \{0\}$ MUST be the
+  units $K^\times$; the element-literal rows $\mathbb N \to \operatorname{Option} X$ MUST be
+  replaced by numerals as images of the initial map. Sources: `CONTRIBUTING.md` LC-14, LC-15;
+  constitution M5.
+- **FR-049 (LC-18)**: The evidence procedures MUST establish, beyond their present cases:
+  (a) primality of $p$ by a Pratt certificate through Mathlib `lucas_primality`; (b) units of
+  polynomial rings with nilpotent coefficients, of products $M \times N$ and $\Pi$-types, of
+  rings of integers such as $\mathbb Z[i]$, and of matrices given by transposes, products or
+  diagonals; (c) nonzero real values that are neither evaluable nor of known sign, by certified
+  interval bounds; (d) nonvanishing and monicity of polynomials built by composition, derivative,
+  evaluation-built coefficients and finite sums, and of images under non-injective maps; (e)
+  continuity and smoothness of piecewise maps whose pieces agree on the boundary, of removable
+  quotients, and of $\log$, $\sqrt{\ }$ away from $0$ and $\arctan$ (research D28). Source:
+  COMPLAINTS.md, "Membership evidence (LC-18)"; `CONTRIBUTING.md` LC-18.
+- **FR-050**: The binary product of groups MUST be the registered limit row `lim.groups.product`
+  declared by `groupProductFan` and `groupProductIsLimit` (`Algebra/GroupProduct.lean`). Source:
+  COMPLAINTS.md, "Missing construction: no registered binary product in the category of groups";
+  Mathlib `BinaryFan`.
+- **FR-051 (registry gates)**: (a) $\operatorname{Aut}_{\mathcal C}$ and
+  $\operatorname{Stab}_U$ MUST be registered once as constructions generic in the category and
+  not inherited along structural functors (research D25); (b) the object row `obj.sets.units` MUST
+  cite its identification with the underlying set of the value of `fun.monoids.units`, and
+  `mor.sets.units_inverse` its identification with group inversion (research D26); (c) the
+  numeral kind MUST mean only images of initial maps (FR-004, research D24); (d) the totality gate
+  MUST refuse a row whose declaration unfolds to a registered totalized Mathlib function on a
+  domain wider than that function's domain (research D27). Source: COMPLAINTS.md, "Non-inherited
+  constructions (`Aut`, `Stab`) have no method presentation", "An object row cannot be identified
+  with a functor value", "Catalogue review of bd31fe3", items 2 and 3.
+- **FR-052 (#95)**: Every catalogue test module MUST be elaborated by `just test`; the modules
+  `Sem/Foundation/PowerSetsTests.lean` and `Sem/Foundation/FiniteOrdersTests.lean` MUST be
+  imported and their failures repaired. Source: COMPLAINTS.md, "#95 — two catalogue test modules
+  in `Foundation/` are outside the build".
 - **FR-021 (process)**: Every requirement MUST pass the checks of constitution M2, M3, M8 and
   E1: a search record in its issue, a clause-by-clause source comparison, tier-1 elaboration of
   its modules and test modules, and the full gate `just test` at the milestone.
@@ -557,6 +626,7 @@ functor that sends an object to its underlying object (`Reg/Entry.lean`, `Functo
 | SC-007 | Tier-1 loop of each task | each loop completes in under 300 s on the research image |
 | SC-008 | Search records | 44 of 44 issues hold a reproducible search record |
 | SC-009 | Source fidelity | each new declaration cites a source checked clause by clause |
+| SC-010 | COMPLAINTS.md registry and catalogue entries of FR-047 to FR-052 | 7 of 7 closed with their evidence |
 
 ## Assumptions
 

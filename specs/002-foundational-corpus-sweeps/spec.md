@@ -273,8 +273,8 @@ definition is duplicated.
   defect that
   [COMPLAINTS.md](../../COMPLAINTS.md) records for this repository MUST have a task: a consumer
   request in Phase 2 of this feature, a gate, rule or tooling defect in Phase 1, a foundation item
-  of the arithmetic lattice theory in feature 003, a registry or catalogue item in feature 001
-  (research D23).
+  of the arithmetic lattice theory in feature 003, a registry or catalogue item in feature 001,
+  and an item of a body of work that features 005–009 hold in that feature (research D23, D24).
 
 ### Key Entities
 

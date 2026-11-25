@@ -18,6 +18,10 @@ surfaces. Each is a projection of rows; no consumer keeps its own table.
 | Is an answer prescribed or chosen? | `result` and its `ChoiceFibre` | FR-017 |
 | Which constructor is the arrow (core, slice, ...) constructor? | `ConstructorEntry.role` | FR-016 |
 | Which categories must be implemented before a category? | the categories that its structural edges reach, with the derived edges of refinements | FR-022 to FR-031 |
+| What is the automorphism group of an object of $\mathcal C$? | the one generic construction $\operatorname{Aut}$ at $\mathcal C$, never the one of an underlying object | FR-051 |
+| Is `Units` the underlying set of the units functor's value? | the identification that `obj.sets.units` cites | FR-051 |
+| Which procedure admits a written element into a domain? | the `evidence` of the domain's object row | FR-004, FR-049 |
+| What is the product of two groups? | `lim.groups.product` | FR-050 |
 
 Outcomes that a consumer must not infer: a reading with no `ReadingEntry`; a point of a structure
 classifier from `Holds`; an equality of routes with no cell; a value of a `choice` operation fixed

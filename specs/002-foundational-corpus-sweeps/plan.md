@@ -3,7 +3,7 @@
 **Branch**: `002-foundational-corpus-sweeps` (work lands on `main`) | **Date**: 2026-11-25 | **Spec**: [spec.md](spec.md)
 **Input**: Feature specification from `specs/002-foundational-corpus-sweeps/spec.md`
 
-Revision of record: `fc549baa`. The decisions D1–D23 are in [research.md](research.md); the
+Revision of record: `fc549baa`. The decisions D1–D24 are in [research.md](research.md); the
 record formats in [data-model.md](data-model.md); the unit populations in [units.md](units.md);
 the validation runs in [quickstart.md](quickstart.md).
 
@@ -43,7 +43,7 @@ abelian projectivity are features 003 and 004.
 | M6 | Typed identity; comparison cells; chosen structure as data | Contract D |
 | M7 | Registry rows name the corpus declaration | FR-024; Contract D |
 | M8 | Search record before authoring, in the mapping row | Search before authoring; D4 |
-| M9 | Consumer requests taken in at once | T004–T008 (D9), T112–T125 (D23) |
+| M9 | Consumer requests taken in at once | T004–T008 (D9), T112–T125 (D23), T132, T133 (D24) |
 | M10 | Independent review; content changes go to the mathematician | Contract R; D17 |
 | M11 | This task list in document order; `TODO.md` orders nothing | D1; constitution 2.0.0 |
 | M12 | Issues in COMPLAINTS.md; workarounds with the five fields of LC-12 | FR-020; every contract |
@@ -229,7 +229,7 @@ order. No tool input moves, so no task moves one.
 specs/002-foundational-corpus-sweeps/
 ├── spec.md              # requirements, user stories, success criteria
 ├── plan.md              # this file
-├── research.md          # decisions D1–D23 with their sources
+├── research.md          # decisions D1–D24 with their sources
 ├── data-model.md        # formats of the corpus record
 ├── quickstart.md        # validation runs
 ├── units.md             # unit populations at fc549baa

@@ -38,12 +38,25 @@ does not hold back a later ready task of the same phase. Inputs from feature 002
   orthogonal sums and finite orthogonal powers on the existing form, tensor, base-change and
   orthogonal-sum operations. Inputs: T001. Decisions: D5, D9. Vault:
   TASK-ARITHMETIC-FORMED-LATTICE-INTERFACES.
+- [ ] T050 [US1] N28 (FR-034): the scale, norm and volume functors with their theorems, the twist
+  and the ideal multiple with the laws of D27, and $L \otimes_R \mathfrak a \cong \mathfrak a L$.
+  Files: `Lattices/Valued/{Constructions,Arithmetic}.lean`. Inputs: T002. Source: O'Meara §82.
+  Decision: D27. Separating example: $A_1 = \langle 2 \rangle$ is even with $\mathfrak n = \mathfrak s = 2\mathbb Z$;
+  $U(\tfrac12)$ is not integral.
+- [ ] T051 [P] [US1] N29 (FR-035): $D$ and $P$ natural in the value module with $P \circ D = 2$ on
+  symmetric forms and $D \circ P = 2$, $\operatorname{im}(P)$ and $\operatorname{Ref}(b)$, the
+  comparison with $b(x, x) \in 2W$, and the symmetric, alternating and skew-symmetric classifiers
+  with their implications. Files: `Modules/{Bilinear,Quadratic}/Valued/`. Inputs: T001.
+  Source: [FOUNDATIONS.md](../../FOUNDATIONS.md) §§16–17. Separating example: $b(x, y) = x_1 y_2$ on
+  $R^2$ has $P(D(b)) \neq 2b$; at $W = \mathbb Q/\mathbb Z$ the form with $b(x, x) = \tfrac12$ is
+  skew-symmetric and not alternating.
 - [ ] T003 [P] [US1] N03: construct the fibre comparison between the fixed-value category
   $(M, b : M \otimes M \to W)$ and the variable-value category $(M, W, b)$, the scalar-extension and
   value-change functors and their composition laws; the arithmetic lattice locus; the framed and
   coordinate presentations, the generating-frame and basis-frame lattice pullbacks of FOUNDATIONS
   Def. 21.1, the arbitrary-index coordinate lattice category, $\mathbf{SymMat}_n(R)$, the Gram
-  constructor $\operatorname{Gram}_n$ and the equivalence theorem of FOUNDATIONS Def. 21.3. Files:
+  constructor $\operatorname{Gram}_n$ and the equivalence theorem of FOUNDATIONS Def. 21.3, and the
+  symmetry of the form induced by a finite basis (`Basis.toDual`, if Mathlib lacks it; #33). Files:
   `Lattices/Valued/{Basic,Arithmetic,Based}.lean`, `Modules/TruncatedResolutions.lean`. Source:
   [@MH73, §§I.1–I.2]. Vault: TASK-CANONICAL-FORMED-CATEGORY-COMPARISONS.
 - [ ] T004 [P] [US1] N08: connect Mathlib's PID structure theorem, `Basis.SmithNormalForm` and the
@@ -55,9 +68,11 @@ does not hold back a later ready task of the same phase. Inputs from feature 002
   domain, invertibility of $\bigwedge^n P$ for $P$ projective of constant rank $n$, the Steinitz
   classification with its hypotheses, the comparison of the discriminant ideal through the
   determinant map with $\operatorname{Fitt}_0(\operatorname{coker} \operatorname{ad}_b)$, localization,
-  orthogonal-sum behaviour and recovery of the Gram determinant ideal after a basis. Files:
+  orthogonal-sum behaviour and recovery of the Gram determinant ideal after a basis; the Steinitz
+  form $P \cong R^{n-1} \oplus I$ and the class laws of D30 with the witness
+  $(2, 1 + \sqrt{-5}) \subset \mathbb Z[\sqrt{-5}]$ (#105). Files:
   `Lattices/Valued/{DeterminantLine,FittingIdeal}.lean`. Inputs: T004. Source: [@Rot15, Thm. 11.117];
-  [@MH73, §I.2]. Decision: D10. Vault: TASK-DETERMINANT-STEINITZ-DISCRIMINANT-IDEAL.
+  [@MH73, §I.2]. Decisions: D10, D30. Vault: TASK-DETERMINANT-STEINITZ-DISCRIMINANT-IDEAL.
 - [ ] T006 [US1] N04, N05: prove that `metricDual` is `fractionalIdealDual` at $I = R$ and
   `idealDual` its integral-ideal case, with membership and equality at arbitrary points of the
   rational span; attach the $K/I$-valued bilinear form to $A_L^I$ and, under the evenness and
@@ -66,6 +81,15 @@ does not hold back a later ready task of the same phase. Inputs from feature 002
   Fitting and discriminant ideals. Files: `Lattices/Valued/{IdealDual,Discriminant,DiscriminantQuadratic}.lean`.
   Inputs: T002, T005. Source: [@MH73, §I.1]; [@Nik80, §§2°–4°]. Decisions: D7, D8. Vault:
   TASK-IDEAL-DUAL-DISCRIMINANT-COMPARISON.
+- [ ] T052 [US1] N30 (FR-036): $\ell$ with $\ell(A) = \max_{\mathfrak p} \ell(A_{\mathfrak p})$, its
+  subadditivity and monotonicity, and $(r, a, \delta)$ on even $p$-elementary lattices. Files:
+  `Lattices/Valued/Discriminant.lean`. Inputs: T006. Decision: D28. Separating example:
+  $\ell(\mathbb Z/2 \oplus \mathbb Z/3) = 1$; $E_8$ and $U^{\perp 4}$ share $(8, 0, 0)$ and differ in signature.
+- [ ] T053 [US1] N31 (FR-037): $\operatorname{disc}_b$ and $\operatorname{disc}_q$ on isometry cores, the
+  polarization $\mathbf{DiscQuad} \to \mathbf{DiscBil}$ and the commuting square, with the
+  $\langle 2 \rangle \hookrightarrow \begin{pmatrix} 2 & 1 \\ 1 & 2 \end{pmatrix}$ test. Files:
+  `Lattices/Valued/DiscriminantFunctor.lean`. Inputs: T006. Source: [FOUNDATIONS.md](../../FOUNDATIONS.md)
+  §26.
 - [ ] T007 [US1] N09: one formed-module theory of primitive embeddings, orthogonal complements,
   saturation, discriminant forms, isotropic subgroups and overlattices: construction and recovery in
   both directions and the extension criterion for isometries; the equivariant and nonequivariant
@@ -80,7 +104,8 @@ does not hold back a later ready task of the same phase. Inputs from feature 002
   `Modules/Quadratic/Valued/IsometryClasses.lean`, `ForMathlib/QuadraticBaseChange.lean`,
   `ForMathlib/GrothendieckCocartesian.lean`. Source: FOUNDATIONS Def. 15.6; Roby 1963, Thm. III.3.
   Each closes its COMPLAINTS.md entry and its `TODO(LC-12)`.
-- [ ] T009 Phase gate: `just test` passes; rows N01–N09 have every comparison named in data-model.md.
+- [ ] T009 Phase gate: `just test` passes; rows N01–N09 and N28–N31 have every comparison named in
+  data-model.md.
 
 ## Phase 2: Equivariant lattice arithmetic (US1)
 
@@ -127,7 +152,12 @@ does not hold back a later ready task of the same phase. Inputs from feature 002
   local and adelic forms; turn `Spinor.lean`'s `SpinorNorm` into the characterization theorem of the
   canonical map. Files: `Lattices/Valued/{CanonicalSpinorNorm,Spinor,AdelicSpinorNorm}.lean`. Inputs:
   T009. Source: [@Cas08a, §10.3]. Decision: D14. Vault: TASK-CANONICAL-CLIFFORD-SPINOR-NORM.
-- [ ] T019 Phase gate: `just test`; rows N16, N17 (except the spinor-genus laws of T025) closed.
+- [ ] T054 [US3] N32 (FR-039): $SO(L)$, $\widetilde O(L)$ with the image of $O(L) \to O(A_L, q_L)$,
+  $O^+(L)$ by the real spinor norm, $SO^+(L)$, $\widetilde{SO}(L)$, $\widetilde{SO}^+(L)$, and the theorem
+  that $O^+$ of a Lorentzian lattice is the subgroup preserving the positive cone. Files:
+  `Lattices/Valued/{OrthogonalGroup,CanonicalSpinorNorm}.lean`. Inputs: T018, T010. Decision: D31.
+- [ ] T019 Phase gate: `just test`; rows N16, N17 (except the spinor-genus laws of T025) and the
+  subgroup tower of N32 closed.
 
 ## Phase 5: Ring and field adeles (US2)
 
@@ -203,8 +233,10 @@ does not hold back a later ready task of the same phase. Inputs from feature 002
 - [ ] T034 [US4] N21: the hyperbolic plane from its form, $U^{\perp n}$ by finite orthogonal powers,
   $E_8^{\perp n}$ and $\Lambda_{K3} = U^{\perp 3} \perp E_8^{\perp 2}$ by the generic operations; rank,
   signature, parity and discriminant from generic theorems; no matrix-first hierarchy. Files:
-  `Lattices/Valued/{Standard,U2Lattice,Constructions}.lean`. Inputs: T030. Source: [@Nik80, §1°];
-  [@Tel22, §2.1]; [@LZ16, §1.3]. Decision: D4. Vault: TASK-STANDARD-LATTICES-GENERIC-CONSTRUCTIONS.
+  `Lattices/Valued/{Standard,U2Lattice,Constructions}.lean`; $\mathrm{II}_{s,t}$ by D26 and the
+  theorem $s \equiv t \pmod 8$ for even unimodular lattices. Inputs: T030. Source: [@Nik80, §1°];
+  [@Tel22, §2.1]; [@LZ16, §1.3]; Serre, *A Course in Arithmetic*, ch. V. Decisions: D4, D26. Vault:
+  TASK-STANDARD-LATTICES-GENERIC-CONSTRUCTIONS.
 - [ ] T035 [P] [US4] N22: the comparison $(L, b) \mapsto L \hookrightarrow L_{\mathbb R}$ with its
   finite-rank, embedding and positivity hypotheses, compared with Mathlib `ZLattice` and
   `ZLattice.covolume`, relating determinant ideals to covolumes. Files: `Lattices/Valued/{Topological,RealTorus}.lean`.
@@ -273,6 +305,13 @@ does not hold back a later ready task of the same phase. Inputs from feature 002
   `Lattices/Valued/SplitBinaryLattice.lean`. Inputs: T044. Source: O'Sullivan, arXiv:2408.14405v3,
   §8.1. Decision: D21.
 
+- [ ] T055 [US5] N32 (FR-038): Nikulin's Cor. 1.9.4, Thm. 1.10.1 and Cor. 1.10.2, with signature and
+  discriminant form as monoid homomorphisms on genera. Files: `Lattices/Valued/GenusInvariants.lean`.
+  Inputs: T023, T027, T052. Source: [@Nik80, §§1.9–1.10]. Decision: D29.
+- [ ] T056 [US5] N32 (FR-038): Nikulin's Thm. 1.13.2, Cor. 1.13.3, Cor. 1.13.4 and Thm. 1.14.2.
+  Files: `Lattices/Valued/{GenusInvariants,OrthogonalGroup}.lean`. Inputs: T055, T045. Source:
+  [@Nik80, §§1.13–1.14]. Decision: D29. Check: $U \perp U \perp E_8$ is unique in its genus.
+
 ## Phase 12: The Siegel mass formula (US5)
 
 - [ ] T047 [US5] N26: define the real-place factor and compare it with the finite adelic density
@@ -297,6 +336,8 @@ does not hold back a later ready task of the same phase. Inputs from feature 002
 - Phase 5 needs T014; Phase 6 needs Phase 5 and T018; Phase 7 needs T006, T014, T015, T017.
 - Phase 8 needs T021 (T030) and T005 (T035); T038 needs T001–T037.
 - Phase 9 needs Phase 6 and T030, T035; Phases 10–13 follow Phase 9 in document order (D1).
+- T050 and T051 follow T002 and T001; T052 and T053 follow T006; T054 follows T018 and T010;
+  T055 follows T023, T027, T052; T056 follows T055 and T045.
 - External inputs: 002 T086 (Milestone 2) before T001; 002 T112 before T007.
 
 ## Implementation Strategy

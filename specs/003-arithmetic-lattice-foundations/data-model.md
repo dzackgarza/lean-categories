@@ -34,6 +34,11 @@ the owner exists and every specialization has its comparison theorem (plan.md Co
 | N25 | theta series and modularity | `Theta.lean` | positive definite lattices | Mathlib analytic theta | partial |
 | N26 | local densities and Siegel formula | `LocalDensity.lean`, `DensityProduct.lean` | finite adelic groups | real factor; volume comparison | partial (formula absent) |
 | N27 | indefinite theory | `IsotropicReduction*.lean`, `PositiveCone*.lean` | indefinite loci | strong approximation; Eichler | partial (absent: strong approximation, Eichler) |
+| N28 | scale, norm, volume; twist and ideal multiple | `Lattices/Valued/{Constructions,Arithmetic}.lean` | forms over a Dedekind domain | O'Meara 82:12, 82:14 laws | partial |
+| N29 | diagonal, polarization, refinement fibre, symmetry classes | `Modules/Quadratic/Valued/`, `Modules/Bilinear/Valued/` | $W$-valued forms | im$(P)$ against $b(x, x) \in 2W$ | partial |
+| N30 | $\ell$ and $(r, a, \delta)$ | `Lattices/Valued/Discriminant.lean` | finite-length torsion modules; $p$-elementary lattices | $\ell(A) = \max \ell(A_{\mathfrak p})$ | absent |
+| N31 | discriminant functors on cores | `Lattices/Valued/DiscriminantFunctor.lean` | isometry cores | polarization square; $\langle 2 \rangle$ test | partial |
+| N32 | Nikulin theory; subgroup tower of $O(L)$ | `Lattices/Valued/{GenusInvariants,OrthogonalGroup}.lean` | even lattices | Cor. 1.9.4–Thm. 1.14.2; $O^+$ by cone | partial |
 
 "Present" means the owner exists at `533e9259`; "partial" means the owner or some comparisons
 are missing; the task of the row starts from the source at its own revision (Contract O).

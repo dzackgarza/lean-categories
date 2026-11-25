@@ -3,8 +3,8 @@
 **Branch**: `003-arithmetic-lattice-foundations` (work lands on `main`) | **Date**: 2026-11-25 | **Spec**: [spec.md](spec.md)
 **Input**: Feature specification from `specs/003-arithmetic-lattice-foundations/spec.md`
 
-Revision of record: `533e9259`. Decisions D1–D25 are in [research.md](research.md); the owner table
-N01–N27 in [data-model.md](data-model.md); the validation runs in [quickstart.md](quickstart.md).
+Revision of record: `533e9259`; rows N28–N32 and decisions D26–D31 at `a3a66fba`. Decisions D1–D31
+are in [research.md](research.md); the owner table N01–N32 in [data-model.md](data-model.md); the validation runs in [quickstart.md](quickstart.md).
 
 ## Summary
 
@@ -34,7 +34,7 @@ owner; `just test` at the end of each phase; CI `just test-ci`
 **Performance Goals**: tier-1 loop of each change under 300 s (constitution E1, E4)
 **Constraints**: one Lean process under `flock .tmp/lean.lock` (E10); no `sorry`, no project axiom
 (M3); source statements read from the live library (002 research D16)
-**Scale/Scope**: 27 owner rows; 8 foundation phases and 4 theorem programmes
+**Scale/Scope**: 32 owner rows; 9 foundation phases and 4 theorem programmes
 
 ## Constitution Check
 
@@ -48,7 +48,7 @@ owner; `just test` at the end of each phase; CI `just test-ci`
 | M6 | Chosen structures (bases, frames, diagonalizations, homomorphisms) are data, never owners of invariants | FR-017, FR-018; D13, D14 |
 | M7 | Registry rows of lattice loci are feature 001's; no duplicate row | D16 |
 | M8 | Search before authoring; reference ports with provenance | Contract O; D24 |
-| M9 | Consumer requests are 002 Phase 2 tasks, taken in at once | D2 |
+| M9 | A consumer does the owning task of this feature at once; other requests are 002 Phase 2 tasks | D2 |
 | M10 | FOUNDATIONS content changes go to the mathematician | D6 |
 | M11 | Executed as 002 T107, in document order | D2 |
 | M12 | Missing theorems and workarounds recorded under LC-05, LC-11, LC-12 | FR-031 |
@@ -96,16 +96,16 @@ The subtraction of the vault plan from the source at `533e9259`. Evidence is the
 
 | Phase of tasks.md | Content | Owner rows | Gate to leave |
 | --- | --- | --- | --- |
-| 1 | projective formed arithmetic | N01–N09 | every comparison of the rows proved; `just test` |
+| 1 | projective formed arithmetic | N01–N09, N28–N31 | every comparison of the rows proved; `just test` |
 | 2 | equivariant arithmetic | N10, N11 | same |
 | 3 | places and completions | N12, N13 | same |
-| 4 | canonical local invariants | N16, N17 | same |
+| 4 | canonical local invariants | N16, N17, N32 (subgroup tower) | same |
 | 5 | ring and field adeles | N14 | same |
 | 6 | genus | N15 | same |
 | 7 | local classification | N18 | same |
 | 8 | signatures, reflections, named lattices, analytic and Hodge realization, surface | N19–N23 | same |
 | 9 | definite theory | N24, N25 | same |
-| 10–13 | theorem programmes: ADE, indefinite, Siegel, theta modularity | N20, N21, N24–N27 | each programme's success criteria |
+| 10–13 | theorem programmes: ADE, indefinite with Nikulin theory, Siegel, theta modularity | N20, N21, N24–N27, N32 | each programme's success criteria |
 
 Phase order follows the vault dependency spine (formed and projective semantics; duality; completions
 and equivariance; adeles; genus; Hasse and spinor; classification; consumers). Phases 2 and 4 need only
@@ -133,7 +133,9 @@ owner or comparison:
 5. Add one positive example and one separating example at the owner, and apply the wrong-model,
    target-exclusion, theorem-survival and unfolding tests of mathematical-simplicity.md to each new
    theorem; a theorem that only unfolds its definitions is named as an interface lemma.
-6. Update the "Lean realization status" paragraph of FOUNDATIONS that the work changes (D6).
+6. Update the "Lean realization status" paragraph of FOUNDATIONS that the work changes (D6). When a
+   declaration realizes a corpus unit, add the unit's mapping row with `[realized]` and regenerate
+   the definition index and the frontier in the same commit (constitution M11; 002 Contract D).
 7. Check: tier 1 on the changed modules; the row's comparisons named in the commit; the axiom
    audit admits only the standard axioms at the phase gate.
 8. Review: a reviewer who did not write the change compares the statements with the sources
@@ -147,8 +149,8 @@ owner or comparison:
 specs/003-arithmetic-lattice-foundations/
 ├── spec.md              # requirements, user stories, success criteria
 ├── plan.md              # this file
-├── research.md          # decisions D1–D25 with their sources
-├── data-model.md        # owner table N01–N27
+├── research.md          # decisions D1–D31 with their sources
+├── data-model.md        # owner table N01–N32
 ├── quickstart.md        # validation runs
 ├── checklists/
 │   └── requirements.md  # spec quality checklist

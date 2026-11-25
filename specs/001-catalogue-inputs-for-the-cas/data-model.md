@@ -9,7 +9,8 @@ addition extends an existing entry or adds one; no field copies a meaning that a
 | `ComputationRef` | two constructors | `application (object : ObjectId)`, `binder (id : BinderId)` | the object row has `application`; the binder row exists | FR-003, FR-012 |
 | `OperationEntry`, method and morphism rows | new field | `result : ResultKind` | `choice` requires a `ChoiceFibre` | FR-017 |
 | `ChoiceFibre` | new | `family` (a family or classifier $p : E \to C$), `admissible` (proposition on a candidate), `continuation` (dependent type of later constructions) | the family is registered; the input lies in its base | FR-017 |
-| `NumeralEntry` | new field | `evidence : Option Name` | present exactly when the declaration has a proposition parameter | FR-004 |
+| `obj.sets.fin` | rows of existing fields | `inclusion` ($\operatorname{Fin} n \hookrightarrow \mathbb N$), `admission` (`finPoint`), `evidence` ($k < n$); the numeral row `num.sets.fin` is deleted | the evidence is a registered procedure | FR-004 |
+| `NumeralEntry` | docstring | numerals are images of initial maps only | no numeral row has a proposition parameter | FR-004, FR-051 |
 | `GraphLiteralEntry` | new field | `evidence : Name` | a registered procedure | FR-004 |
 | `LiteralEntry` | new field | `closing : Name` | a registered procedure | FR-004 |
 | `PropertyEntry` | new field | `evidence : Name` | a registered procedure | FR-015 |
@@ -23,3 +24,6 @@ addition extends an existing entry or adds one; no field copies a meaning that a
 | structural edges | derived edge | $\mathrm{refine}(B, c) \to B$ for each category row with a `refine` expression | a functor row equal to a derived edge is refused | FR-025 |
 | functor rows | new structural rows | the underlying set of crystals and of topological spaces, schemes to spaces, ideals to submodules, forms to their modules, modules over commutative rings to modules over rings, cusps to their lattices, the lattice inclusions | each sends an object to its underlying object | FR-022 to FR-024, FR-026 to FR-031 |
 | `PowerObjectEntry` | fields point to morphism rows | `member`, `extent`, `image`, `inverseImage`, `transposeAt` | each names a row | FR-005 |
+| `ConstructionEntry` | new parameter kind | a category parameter $\mathcal C$; method shape `intrinsic` (resolved at the receiver's category) | never inherited along a structural functor | FR-051 |
+| `ObjectFunctorPresentation` | extension | a value under a composite $U \circ F$ with its identification theorem | cites a proved declaration | FR-051 |
+| totality table | new (`Reg/Totality.lean`) | the Mathlib functions that totalize off their domain, with their domains | a row unfolding to one on a wider domain is refused | FR-051 |
