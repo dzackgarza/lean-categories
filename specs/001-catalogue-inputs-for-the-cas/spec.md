@@ -3,9 +3,9 @@
 **Feature Branch**: `001-catalogue-inputs-for-the-cas` (work lands on `main`)
 **Created**: 2026-11-25
 **Status**: Draft
-**Input**: The 29 lean-categories issues #182 to #210. Each is a mathematical declaration that a
+**Input**: The 30 lean-categories issues #182 to #211. Each is a mathematical declaration that a
 task of the lean-cas-dsl task list consumes and that `main` (`443fba9`; `f009120` for #201 to
-#210) does not have.
+#211) does not have.
 
 Read with the [constitution](../../.specify/memory/constitution.md), the [plan](plan.md) and the
 [tasks](tasks.md). Paths are relative to `LeanCategories/`. `Sem/` is `Catalogue/Semantics/`.
@@ -386,6 +386,10 @@ files, rows, searches and checks. Order: the order of the first consumers in the
   $\mathrm{EvenLat}_{R} \to \mathrm{IntLat}_{R}$ and $\mathrm{UnimodLat}_{R} \to$ the fraction-field
   perfect finite projective lattices MUST be structural functor rows at the parameters of each
   family. Source: Milnor and Husemoller, *Symmetric Bilinear Forms*, ch. I-II.
+- **FR-032 (#211)**: The ring operations `+`, `·`, negation and powers MUST be declared for
+  $R : \mathbf{Rings}_u$ at every universe $u$, and the scalar action for $R : \mathbf{Ring}_u$ and
+  $M : \mathbf{Mod}_v(R)$ in independent universes; the universe-0 uses are instances. Sources:
+  Mathlib `RingCat`, `ModuleCat.{v} R`; Bourbaki, *Algèbre*, ch. I, §8, ch. II, §1.
 - **FR-021 (process)**: Every requirement MUST pass the checks of constitution M2, M3, M8 and
   E1: a search record in its issue, a clause-by-clause source comparison, tier-1 elaboration of
   its modules and test modules, and the full gate `just test` at the milestone.
@@ -443,14 +447,14 @@ functor that sends an object to its underlying object (`Reg/Entry.lean`, `Functo
 
 | ID | Outcome | Measure |
 | --- | --- | --- |
-| SC-001 | Every issue #182 to #210 closes on its own acceptance | 29 of 29 issues closed |
-| SC-002 | Each kernel task T118 to T125, T128 to T138 and T225 to T234 has its input on `main` | 29 of 29 inputs present |
+| SC-001 | Every issue #182 to #211 closes on its own acceptance | 30 of 30 issues closed |
+| SC-002 | Each kernel task T118 to T125, T128 to T138, T146 and T225 to T234 has its input on `main` | 30 of 30 inputs present |
 | SC-003 | No new `sorry`, axiom or `native_decide` | axiom audit and `lean-no-sorry` report 0 new sites |
 | SC-004 | One owner per operation symbol | 0 symbols with two unrestricted rows on one structural route |
 | SC-005 | Every pair of parallel structural routes has a cell | 0 uncompared pairs among the routes that this feature adds |
 | SC-006 | Categories with no chain to `cat.sets` | 51 at `443fba9`; 0 with an owner in the scaffolding table left without its functor; 0 without an owner or a stated reason |
 | SC-007 | Tier-1 loop of each task | each loop completes in under 300 s on the research image |
-| SC-008 | Search records | 29 of 29 issues hold a reproducible search record |
+| SC-008 | Search records | 30 of 30 issues hold a reproducible search record |
 | SC-009 | Source fidelity | each new declaration cites a source checked clause by clause |
 
 ## Assumptions

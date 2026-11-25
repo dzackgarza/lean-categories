@@ -2,7 +2,7 @@
 
 Each entry gives the decision, the reason from the mathematics and the sources, and the
 alternative that the reason excludes. Evidence of the present state is in the issues #182 to #200
-(read at `main` `443fba9`) and #201 to #210 (read at `f009120`).
+(read at `main` `443fba9`) and #201 to #211 (read at `f009120`).
 
 ## D1 (#193): owners of the arithmetic operations
 

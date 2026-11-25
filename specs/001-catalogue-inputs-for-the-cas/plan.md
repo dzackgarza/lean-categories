@@ -8,8 +8,8 @@ Paths are relative to `LeanCategories/`. `Sem/` is `Catalogue/Semantics/`. `Reg/
 
 ## Summary
 
-The feature adds to the registry the 29 declarations that the kernel task list consumes
-(issues #182 to #210). Each declaration is stated at its generating category, from its source,
+The feature adds to the registry the 30 declarations that the kernel task list consumes
+(issues #182 to #211). Each declaration is stated at its generating category, from its source,
 and enters through `normalized_registry`. Four schema additions carry them: a computation
 reference for object applications and binder operations, a result kind with choice fibres, a
 structured notation field, and constructor roles. The design decisions are in
@@ -26,7 +26,7 @@ is in [contracts/registry-additions.md](contracts/registry-additions.md).
 **Project Type**: Lean library (formal mathematics and its registry)
 **Performance Goals**: tier-1 loop of each task under 300 s (constitution E1, E4)
 **Constraints**: one Lean process under `flock .tmp/lean.lock` (E10); no `sorry`, no axiom (M3)
-**Scale/Scope**: 29 issues; 100 registered categories; 675 registry rows at `443fba9`
+**Scale/Scope**: 30 issues; 100 registered categories; 675 registry rows at `443fba9`
 
 ## Constitution Check
 
@@ -95,6 +95,7 @@ look for.
 | #208 | `CuspObject`, `Subgroup.FiniteIndex` |
 | #209 | `ObjectProperty.ι`, `QuadraticForm.PosDef`, signature |
 | #210 | `ObjectProperty.ι`, `Module.Free`, `Module.Finite` |
+| #211 | `RingCat`, `ModuleCat`, universe polymorphism of `NamedRings`, `Operations.scalarAction` |
 
 ## Files and registry rows per requirement
 
@@ -306,6 +307,14 @@ Each row gives the files to add or change and the registry rows. New modules are
 - `cat.boolean_algebras`: structural functor to `cat.bounded_order_lattices`; its functor to sets
   is deleted when it becomes a composite.
 - Tests: a test module `Sem/Foundation/OrderTowerTests.lean`.
+
+### FR-032 (#211): ring operations and the scalar action at every universe
+
+- `Sem/Algebra/NamedRings.lean` (`:73-97`): `add`, `mul`, `neg`, `pow` for `R : Rings.{u}`; the
+  rows of `op.rings.*` at that generality.
+- `Sem/Modules/Operations.lean` (`:99`): `scalarAction` for `R : RingCat.{u}`, `M : ModuleCat.{v} R`.
+- Tests: `Sem/Modules/LinearMapsTests.lean` and a universe case in `Reg/OperationBindingTests.lean`.
+- Consumer: lean-cas-dsl T146, before the construction classification T143.
 
 ## Structural functors of the scaffolding gaps
 

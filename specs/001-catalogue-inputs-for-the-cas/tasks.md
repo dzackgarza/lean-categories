@@ -19,7 +19,7 @@ lean-cas-dsl task list, "Upstream inputs recorded as missing").
 Tasks are executed in document order. The issue phases follow the document order of their first
 consumers in the kernel task list: T131, T138, T121, T119, T129, T122, T132, T120, T125, T136,
 T124, T128, T130, T123, T135, T134, T118, T137, T133, T225, T226, T227, T228, T229, T230, T231,
-T232, T233, T234. Within an issue, the search task comes
+T232, T233, T234, T146. Within an issue, the search task comes
 before the declaration task. Every declaration task also passes tier 1 at each change, adds its
 new modules to `LeanCategories/All.lean`, and is reviewed by an author who did not write it
 (constitution M10). A task closes its issue when its acceptance holds on `main`.
@@ -334,11 +334,22 @@ new modules to `LeanCategories/All.lean`, and is reviewed by an author who did n
   authoring" (row #210). Acceptance: the record names each query, each surface and each hit.
 - [ ] T062 [US7] #210 (FR-031): register the three full-subcategory inclusions (`Lattices/Valued/Arithmetic.lean:40-46`, `ScaleAndEvenness.lean:265`, `MetricDual.lean:166`) as structural rows at the parameters of each family. Files: `Sem/Lattices/Valued/CatalogueRegistration.lean`. Decision: research D20. Acceptance in a new `Reg/ScaffoldingReachTests.lean`: `cat.finite_free_lattice`, `cat.even_lattice` and `cat.unimodular_lattice` reach `cat.sets`. Unblocks: kernel T224.
 
-## Phase 31: Milestone
+## Phase 31: #211, ring operations and the scalar action at every universe (US1, unblocks kernel T146 and T143)
+
+- [ ] T063 [US1] #211: run and record in the issue the search of plan.md "Search before
+  authoring" (row #211). Acceptance: the record names each query, each surface and each hit.
+- [ ] T064 [US1] #211 (FR-032): declare `NamedRings.add`, `mul`, `neg`, `pow` for `R : Rings.{u}`
+  and `Operations.scalarAction` for `R : RingCat.{u}`, `M : ModuleCat.{v} R`, with the rows at that
+  generality. Files: `Sem/Algebra/NamedRings.lean`, `Sem/Modules/Operations.lean`. Acceptance in
+  `Reg/OperationBindingTests.lean`: `·` on a ring of universe 1 resolves to the ring row, and the
+  scalar action of a module of another universe than its ring is the registered one. Unblocks:
+  kernel T143.
+
+## Phase 32: Milestone
 
 - [ ] T042 Run `just test` on `main` with all tasks above landed; record its log and timing (T002,
   T003). Acceptance: the gate is green for every file of this feature, and the axiom audit shows
-  no new site. Unblocks: the kernel pin of a lean-categories revision that holds the 29 inputs.
+  no new site. Unblocks: the kernel pin of a lean-categories revision that holds the 30 inputs.
 
 ## Dependencies & Execution Order
 
