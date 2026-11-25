@@ -151,7 +151,7 @@ Worker recovery is presently blocked at the app control layer rather than in any
 
 message time: 2026-09-19 13:26:27
 
-The owner said that plan progress codes have no meaning for the owner, and that the blocked work was now unblocked.
+A report does not use plan progress codes. The blocked work is unblocked.
 
 ---
 
@@ -169,7 +169,7 @@ The worker-control blockage is now cleared.
 
 message time: 2026-09-19 13:27:25
 
-The owner said that the assistant had restated the instruction and taken no action.
+Restating an instruction is not action: do the work.
 
 ---
 
@@ -185,7 +185,7 @@ Another Convergence Steward tick is actively making fleet decisions right now. P
 
 message time: 2026-09-19 13:30:20
 
-The owner asked for the evidence of the assistant's last claim.
+A claim in a report gives its evidence.
 
 ---
 
@@ -205,7 +205,7 @@ So my statement that “another Convergence Steward tick is actively making flee
 
 message time: 2026-09-19 13:31:04
 
-The owner said that the assistant's conclusion did not follow from the evidence.
+A conclusion follows from its evidence.
 
 ---
 
@@ -223,7 +223,7 @@ The mutual-exclusion check should distinguish an independently existing steward/
 
 message time: 2026-09-19 13:31:15
 
-The owner told the assistant to do the work.
+Do the work.
 
 ---
 
@@ -241,7 +241,7 @@ Host pressure is acceptable for inspection: disk remains at 92% with 12 GiB free
 
 message time: 2026-09-19 13:38:30
 
-The owner said that a Lean work item must not have theorem prerequisites while its definitions are not complete.
+A Lean work item has no theorem prerequisites while its definitions are not complete.
 
 ---
 
@@ -259,7 +259,7 @@ The Lean correction has taken effect at the control layer: the old turn was stop
 
 message time: 2026-09-19 13:40:57
 
-The owner said that the assistant had sent workers to incorrect work and asked whether it had read the repository documents.
+A worker goes only to the work that the repository documents select; the steward reads those documents before it sends a worker.
 
 ---
 
@@ -283,7 +283,7 @@ The Sage replacement send is currently leased by the app but has not yet produce
 
 message time: 2026-09-19 13:47:59
 
-The owner said that the assistant had broken the rules, started incorrect work, and then used the non-intervention rule to leave it uncorrected.
+A rule of non-intervention does not permit incorrect work to stay uncorrected: stop it and correct it.
 
 ---
 
@@ -307,7 +307,7 @@ I am checking those four latest artifacts once more against their actual contrac
 
 message time: 2026-09-19 15:43:55
 
-The owner said that a report must give progress and rates, not the statuses that the assistant is expected to keep.
+A report gives progress and rates toward the deliverable, not the statuses that the steward keeps.
 
 ---
 
@@ -340,7 +340,7 @@ Anything else belongs in the steward's internal working state unless it explains
 
 message time: 2026-09-19 15:45:02
 
-The owner asked where the requested information is now, and said that a statement about future behaviour has no value from an LLM.
+The report itself holds the requested information. A statement about future behaviour of an LLM has no value.
 
 ---
 
@@ -383,7 +383,7 @@ That is the report currency I should have been using.
 
 message time: 2026-09-19 15:49:37
 
-The owner asked why an LLM cannot promise future behaviour, and said that a report must not list the individual actions of workers by the minute.
+A report does not list the individual actions of workers by the minute.
 
 ---
 
@@ -447,7 +447,7 @@ My previous response still confused evidence collection with executive reporting
 
 message time: 2026-09-19 15:52:04
 
-The owner told the assistant to record these facts and the intended behaviour, in plain words, in the durable instructions of the steward repository.
+Record these facts and the intended behaviour, in plain words, in the durable instructions of the steward repository.
 
 ---
 
@@ -480,7 +480,7 @@ The durable instructions now explicitly say:
 
 message time: 2026-09-19 16:01:07
 
-The owner told the assistant to continue and asked for the actual progress summary.
+Give the actual progress summary.
 
 ---
 
@@ -514,7 +514,7 @@ There is currently **no owner-only decision required** by any of these four find
 
 message time: 2026-09-19 16:16:35
 
-The owner said that the report still described worker activity and not progress toward the deliverable.
+A description of worker activity is not progress toward the deliverable.
 
 ---
 
@@ -536,7 +536,7 @@ I’m now computing that roll-up itself—whole active milestones, not worker-un
 
 message time: 2026-09-19 16:18:08
 
-The owner said that local activity metrics do not measure progress toward a deliverable.
+Local activity metrics do not measure progress toward a deliverable.
 
 ---
 
@@ -566,7 +566,7 @@ I have now written that exact rule into the durable steward instructions and com
 
 message time: 2026-09-19 16:35:13
 
-The owner told the assistant to continue.
+Continue.
 
 ---
 
@@ -605,7 +605,7 @@ That is the meaningful fleet result. Three of four streams have generated substa
 
 message time: 2026-09-19 16:52:30
 
-The owner said that a larger denominator (newly found work) is not negative progress.
+A larger denominator (newly found work) is not negative progress.
 
 ---
 
@@ -631,7 +631,7 @@ This is exactly analogous to a company shipping 100 features while legitimately 
 
 message time: 2026-09-19 17:04:27
 
-The owner said that a residue of about 13,000 definitions for these standard sources is implausible, given the reference implementations of the formalization corpus.
+A residue of about 13,000 definitions for these standard sources is implausible, given the reference implementations of the formalization corpus.
 
 ---
 
@@ -684,7 +684,7 @@ That is a completely different project from “13,000 definitions left to write.
 
 message time: 2026-09-19 17:06:44
 
-The owner asked why theorems are mixed with definitions, and said that the question concerns the residue with no reference implementation.
+Theorems and definitions are counted apart; the question is the residue with no reference implementation.
 
 ---
 
@@ -744,7 +744,7 @@ That is the suspicious number worth auditing. The 311 known reference ports are 
 
 message time: 2026-09-19 17:07:54
 
-The owner said that the remaining work is small and asked what blocks it.
+The remaining work is small; state what blocks it.
 
 ---
 
@@ -790,7 +790,7 @@ One distinction: reviewing/searching 177 residues is plausibly hour-scale. **Imp
 
 message time: 2026-09-19 17:12:45
 
-The owner said that a definition is a transcription from the source; if the transcription fails, a more detailed reference definition is found; there is nothing to prove.
+A definition is a transcription from the source; if the transcription fails, find a more detailed reference definition; there is nothing to prove.
 
 ---
 
@@ -828,7 +828,7 @@ The expected throughput for Sweep III should therefore be extremely high. A defi
 
 message time: 2026-09-19 17:14:06
 
-The owner said that a definition needs no lemma, normal form, identity or other result.
+A definition needs no lemma, normal form, identity or other result.
 
 ---
 
