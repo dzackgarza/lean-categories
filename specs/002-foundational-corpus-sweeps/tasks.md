@@ -21,7 +21,7 @@ ready when its inputs are delivered; a blocked task does not hold back a later r
 same phase (D12). Before each new unit, run `python3 scripts/output_check.py`
 (corpus-execution.md, "Check output before choosing more work").
 
-## Open nodes of `TODO.md` and their tasks
+## Open nodes of `TODO.md`, open COMPLAINTS.md items and their tasks
 
 | `TODO.md` node | Tasks |
 | --- | --- |

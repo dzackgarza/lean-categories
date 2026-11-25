@@ -35,12 +35,18 @@ a projective variety.
 | M3 | No `sorry`, no project axiom | milestone gate |
 | M4 | Line bundles on complex manifolds at their owner; tori and projective space as instances | D5 |
 | M5, M6 | Total constructions; the chosen polarization and semicharacter are data | FR-003 |
+| M7 | No registry row is added by this feature | none |
 | M8 | Search before authoring; Mathlib vector bundles first | D5 |
 | M9 | No consumer request is waiting on this feature | none |
 | M10 | Content changes to FOUNDATIONS go to the mathematician | none planned |
 | M11 | Executed as 002 T111 | D2 |
 | M12, M13 | Records under LC-05, LC-11, LC-12; independent review | Contract O |
 | E1, E2, E4, E10 | Tier 1 per change; positive and separating examples; one Lean process | Contract O |
+| E3 | No contribution policy changes in this feature | none |
+| E5 | One platform: Linux and the research image | Technical Context |
+| E6, E7 | Durable logs and timing records | feature 001 T002, T003 |
+| E8 | No optimization without a triage table | none |
+| E9 | Construction of a torus, a bundle or an embedding close to instant | Contract O |
 
 Gate result: pass.
 

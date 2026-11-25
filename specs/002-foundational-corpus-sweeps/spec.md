@@ -269,10 +269,12 @@ definition is duplicated.
   that unit's mapping row (constitution M7).
 - **FR-025**: [tasks.md](tasks.md) MUST be the work order of the programme, executed in document
   order (constitution M11). `TODO.md` MUST NOT order work.
-- **FR-026**: Every open formalization request, gate defect and contribution-rule defect that
+- **FR-026**: Every open formalization request, gate defect, contribution-rule defect and tooling
+  defect that
   [COMPLAINTS.md](../../COMPLAINTS.md) records for this repository MUST have a task: a consumer
-  request in Phase 2 of this feature, a foundation item of the arithmetic lattice theory in feature
-  003, a registry or catalogue item in feature 001 (research D23).
+  request in Phase 2 of this feature, a gate, rule or tooling defect in Phase 1, a foundation item
+  of the arithmetic lattice theory in feature 003, a registry or catalogue item in feature 001
+  (research D23).
 
 ### Key Entities
 

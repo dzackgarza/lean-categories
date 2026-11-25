@@ -58,8 +58,9 @@ statements of a source are compared through $L \mapsto L(-1)$.
 here".
 
 **Supersedes**: TASK-STANDARD-LATTICES-GENERIC-CONSTRUCTIONS ("Build $E_8(-1)^n$", "Define
-$L_{K3} = U^3 \perp E_8(-1)^2$"); TASK-REFLECTION-ROOT-CLASSIFICATION and FR-021's wording
-"positive-definite root-lattice locus", which become "the definite root-lattice locus".
+$L_{K3} = U^3 \perp E_8(-1)^2$"); the wording
+"positive-definite root-lattice locus" of TASK-REFLECTION-ROOT-CLASSIFICATION, which becomes "the
+definite root-lattice locus".
 
 ## D5. Separation, perfection and the lattice category
 

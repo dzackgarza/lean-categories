@@ -187,6 +187,9 @@ its hypotheses are explicit.
 - **FR-002**: Perfection MUST mean that the correlation maps are isomorphisms. Fraction-field
   nondegeneracy and fraction-field perfection MUST be separate predicates; their equivalence for
   scalar-valued symmetric forms on finite projective modules over a domain MUST be a theorem.
+  Radical-freeness, perfection and the defect module MUST be positions in the defect package
+  $0 \to \operatorname{rad} \to M \to \operatorname{Hom}(M, W) \to \operatorname{Def} \to 0$
+  ([FOUNDATIONS.md](../../FOUNDATIONS.md) Def. 54.2, Ex. 54.3, Conv. 64.12).
 - **FR-003**: The category of intrinsic $R$-lattices MUST be the locus of finite projectivity,
   integrality, symmetry and fraction-field nondegeneracy in the formed-module category
   ([FOUNDATIONS.md](../../FOUNDATIONS.md) Def. 19.2). The fixed-value category, the variable-value
@@ -330,6 +333,13 @@ its hypotheses are explicit.
   five fields of LC-12, and every missing theorem MUST be filed under LC-11.
 - **FR-032**: Each change MUST pass tier 1; each phase MUST end with `just test`; the library MUST
   hold no `sorry` and no project axiom (constitution M3, E1).
+- **FR-033**: The open lattice and form items of research D25 MUST be closed at their owners:
+  the orthogonal-sum symmetric monoidal structure on quadratic modules, the $\Gamma_2$
+  representability of quadratic maps and Roby's base change, the characterization of cocartesian
+  morphisms in a Grothendieck construction by invertible fibre parts, the argument half of Milgram's
+  formula, the transport of $O(L)$ along the sign twist $L \mapsto L(-1)$, the coordinate-free
+  Lorentz cone, and the infinitude of $O(L)$ for indefinite lattices from a read source (research
+  D21).
 
 ### Key Entities
 
@@ -370,5 +380,6 @@ its hypotheses are explicit.
 - Feature 001 registers the semantic-registry rows of the lattice loci (001 T057–T062); this
   feature owns their mathematics and registers no row that 001 owns.
 - The live library holds the cited sources ([@MH73], [@Nik80], [@Rot15], [@Wei82], [@Ger08],
-  [@Jac85], [@Cas08a], [@Hum90], [@Sch21], [@Mor19], [@LZ16], [@PK16], [@CS88], [@Ros21], [@Tel22]);
+  [@Jac85], [@Cas08a], [@Hum90], [@Bou08], [@Sch21], [@Mor19], [@LZ16], [@PK16], [@CS88], [@Ros21],
+  [@Tel22]) and the sources that tasks T036, T043 and T046 name;
   a source that a worker cannot reach leaves its task open.

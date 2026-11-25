@@ -55,6 +55,7 @@ owner; `just test` at the end of each phase; CI `just test-ci`
 | M13 | No artifact certifies itself; review is independent | Contract O review step |
 | E1, E4 | Tier 1 per change; `just test` per phase | Checks |
 | E2 | Mathematical assertions at the owners: positive and separating examples | Contract O |
+| E5 | One platform: Linux and the research image | Technical Context |
 | E3 | No policy change in this feature | none |
 | E6, E7 | Durable logs and timing records | feature 001 T002, T003 |
 | E8 | No optimization in this feature without a triage table | none |
@@ -107,8 +108,8 @@ The subtraction of the vault plan from the source at `533e9259`. Evidence is the
 | 10–13 | theorem programmes: ADE, indefinite, Siegel, theta modularity | N20, N21, N24–N27 | each programme's success criteria |
 
 Phase order follows the vault dependency spine (formed and projective semantics; duality; completions
-and equivariance; adeles; genus; Hasse and spinor; classification; consumers). Phases 2, 3 and 4 need
-only Phase 1; a blocked task does not hold back an independent ready task of the same phase.
+and equivariance; adeles; genus; Hasse and spinor; classification; consumers). Phases 2 and 4 need only
+Phase 1, and Phase 3 needs Phase 1 and T010; a blocked task does not hold back an independent ready task of the same phase.
 
 ## Unit contract
 
@@ -116,8 +117,11 @@ only Phase 1; a blocked task does not hold back an independent ready task of the
 revision; record which comparisons are present (by declaration) and which are not. For each missing
 owner or comparison:
 
-1. Read the defining statement from its source in the library (002 research D16) and record the
-   item key and locator in the commit.
+1. Read the defining statement from its source in the library (002 research D16) and record, in
+   the commit, the item key, the locator and the source record of mathematical-simplicity.md,
+   "Source the definition before proving its theorems" (authority, exact definition, defining data
+   and axioms, ambient category, morphisms, hypotheses, later results, Lean representation,
+   comparison with existing formalizations).
 2. Search under constitution M8 (Mathlib, the formalization corpus, the references of D24); record
    the queries in the commit or the owning COMPLAINTS.md entry.
 3. Write the owner at its generating category (M4), with only the hypotheses the construction uses;
@@ -126,8 +130,9 @@ owner or comparison:
 4. Prove each comparison theorem with its exact hypotheses. A specialization keeps its old name
    only when a comparison theorem identifies it with the owner; otherwise it is renamed to state its
    restricted meaning or removed from the root surface (D23).
-5. Add one positive example and one separating example at the owner (mathematical-simplicity.md,
-   "Require one positive and one separating example").
+5. Add one positive example and one separating example at the owner, and apply the wrong-model,
+   target-exclusion, theorem-survival and unfolding tests of mathematical-simplicity.md to each new
+   theorem; a theorem that only unfolds its definitions is named as an interface lemma.
 6. Update the "Lean realization status" paragraph of FOUNDATIONS that the work changes (D6).
 7. Check: tier 1 on the changed modules; the row's comparisons named in the commit; the axiom
    audit admits only the standard axioms at the phase gate.

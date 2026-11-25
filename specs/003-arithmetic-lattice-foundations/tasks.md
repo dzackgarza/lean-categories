@@ -292,7 +292,8 @@ does not hold back a later ready task of the same phase. Inputs from feature 002
 
 ## Dependencies & Execution Order
 
-- Phase 1 blocks every later phase. Phases 2, 3 and 4 need only Phase 1.
+- Phase 1 blocks every later phase. Phases 2 and 4 need only Phase 1; Phase 3 needs Phase 1 and
+  T010 (T014).
 - Phase 5 needs T014; Phase 6 needs Phase 5 and T018; Phase 7 needs T006, T014, T015, T017.
 - Phase 8 needs T021 (T030) and T005 (T035); T038 needs T001–T037.
 - Phase 9 needs Phase 6 and T030, T035; Phases 10–13 follow Phase 9 in document order (D1).

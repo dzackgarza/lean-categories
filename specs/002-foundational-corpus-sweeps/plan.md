@@ -50,6 +50,7 @@ abelian projectivity are features 003 and 004.
 | M13 | No artifact certifies itself; a worker's report is evidence only | Contract R |
 | E1, E4 | Tier 1 per change, under 300 s; long runs at milestones | Checks of this repository |
 | E2 | Tests through the public declarations; no stand-in rows | Contracts D, T |
+| E5 | One platform: Linux and the research image | Technical Context |
 | E3 | Policy corrections show a defective contribution beside its replacement | T003 |
 | E6, E7 | Durable logs and timing records | feature 001 T002, T003; `scripts/build-timing.sh` |
 | E8 | Optimization only from a timing triage table | D14 |
@@ -154,7 +155,9 @@ build the object under Contract D and confirm it in the commit that lands the co
 rebuild of a row of a ticked source follows D6. Check: the row is absent from
 `python3 scripts/stub_population.py`; tier 1 on each changed module.
 
-**Contract D (definition unit).** Read the source clause from the library (D16) and the row. Split
+**Contract D (definition unit).** Read the source clause from the library (D16) and the row, and
+write the source record of mathematical-simplicity.md, "Source the definition before proving its
+theorems", in the row. Split
 the definitional clause from the result clauses. For `reference-port`, port the recorded reference
 with its provenance; for `package-import`, import the package; for `unmatched`
 `[residue-search-audited]`, author. Place the declaration at its generating category (M4); obtain
@@ -181,7 +184,8 @@ regenerate the frontier in that commit.
 **Contract R (review).** A reviewer who did not write the change compares the source clause with
 the declaration: data, constructors, fields, hypotheses, quantified parameters, variance,
 universes and generality, quotient or representative data, notation. The reviewer reads the
-meaning of each project-owned premise. A mismatch removes `[realized]`, is recorded under LC-05,
+meaning of each project-owned premise and applies the unfolding and theorem-survival tests of
+mathematical-simplicity.md. A mismatch removes `[realized]`, is recorded under LC-05,
 and reopens the owner and every dependent realization (corpus-acceptance.md, "Repair the defeated
 assumption"). A change of mathematical content goes to the mathematician (M10).
 
