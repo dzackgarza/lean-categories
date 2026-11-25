@@ -18,7 +18,8 @@ lean-cas-dsl task list, "Upstream inputs recorded as missing").
 
 Tasks are executed in document order. The issue phases follow the document order of their first
 consumers in the kernel task list: T131, T138, T121, T119, T129, T122, T132, T120, T125, T136,
-T124, T128, T130, T123, T135, T134, T118, T137, T133. Within an issue, the search task comes
+T124, T128, T130, T123, T135, T134, T118, T137, T133, T225, T226, T227, T228, T229, T230, T231,
+T232, T233, T234. Within an issue, the search task comes
 before the declaration task. Every declaration task also passes tier 1 at each change, adds its
 new modules to `LeanCategories/All.lean`, and is reviewed by an author who did not write it
 (constitution M10). A task closes its issue when its acceptance holds on `main`.
@@ -257,7 +258,7 @@ new modules to `LeanCategories/All.lean`, and is reviewed by an author who did n
   $k \mapsto 1 + 2k$; `{1, 2, 4, …}` is refuted; `2 - 5` in $\mathbb{N}$ is outside the domain.
   Unblocks: kernel T068.
 
-## Phase 20: #195, one category for each kind of order (US5, unblocks kernel T133 and T104)
+## Phase 20: #195, one category for each kind of order (US5, unblocks kernel T133 and T202)
 
 - [ ] T040 [US5] #195: record the search (plan.md row #195) in the issue, including the search
   for unbounded semilattice categories.
@@ -271,13 +272,73 @@ new modules to `LeanCategories/All.lean`, and is reviewed by an author who did n
   research D16. Acceptance in a new `Sem/Foundation/OrderTowerTests.lean`: `0 ≤ 1 in FinOrder(5)`
   reads the relation of preorders; $(\mathbb{Z}, \max)$ is a join-semilattice; every pair of
   parallel routes has its cell; `cat.well_ordered_sets` and `cat.enumerated_monotone_sets` reach
-  `cat.sets`. Unblocks: kernel T104.
+  `cat.sets`. Unblocks: kernel T202.
 
-## Phase 21: Milestone
+## Phase 21: #201, crystals as a registered category with its underlying set (US7, unblocks kernel T225 and T217)
+
+- [ ] T043 [US7] #201: run and record in the issue the search of plan.md "Search before
+  authoring" (row #201). Acceptance: the record names each query, each surface and each hit.
+- [ ] T044 [US7] #201 (FR-022): replace the opaque expression of `cat.crystals` by a registered category; add the structural functor row to `cat.sets` declared by `crystalsToSets` (`Exceptional/Mathlib.lean:153`); delete `oport.crystals.sets` and its realization. Files: `Sem/Exceptional/Catalogue.lean`, `Sem/Exceptional/CatalogueRegistration.lean`. Decision: research D20. Acceptance in a new `Reg/ScaffoldingReachTests.lean`: `cat.crystals` reaches `cat.sets`; no opaque port of crystals remains. Unblocks: kernel T217.
+
+## Phase 22: #202, the underlying set of a scheme (US7, unblocks kernel T226 and T221)
+
+- [ ] T045 [US7] #202: run and record in the issue the search of plan.md "Search before
+  authoring" (row #202). Acceptance: the record names each query, each surface and each hit.
+- [ ] T046 [US7] #202 (FR-023): register the category of topological spaces (`TopCat`) with its structural forget to `cat.sets`, and `Scheme.forgetToTop` as the structural row from `cat.schemes`. Files: a new `Sem/Foundation/TopologicalSpaces.lean`, `Sem/Algebra/Schemes.lean`. Decision: research D18. Acceptance in a new `Reg/ScaffoldingReachTests.lean`: `cat.schemes` reaches `cat.sets` through the category of topological spaces; `cat.schemes_over` reaches it through the slice forget of #198. Unblocks: kernel T221.
+
+## Phase 23: #203, an ideal as a submodule of the regular module (US7, unblocks kernel T227 and T222)
+
+- [ ] T047 [US7] #203: run and record in the issue the search of plan.md "Search before
+  authoring" (row #203). Acceptance: the record names each query, each surface and each hit.
+- [ ] T048 [US7] #203 (FR-024): add the structural functor from `cat.ideals_r` to `cat.subobjects_modules_r`, $I \mapsto (I \hookrightarrow R)$, from `Ideal R = Submodule R R`. Files: `Sem/Modules/Operations.lean`. Acceptance in a new `Reg/ScaffoldingReachTests.lean`: `cat.ideals_r` reaches `cat.sets`; the image of an ideal is a subobject of the regular module. Unblocks: kernel T222.
+
+## Phase 24: #204, the inclusion of a refinement into its base (US7, unblocks kernel T228 and T223)
+
+- [ ] T049 [US7] #204: run and record in the issue the search of plan.md "Search before
+  authoring" (row #204). Acceptance: the record names each query, each surface and each hit.
+- [ ] T050 [US7] #204 (FR-025): derive the edge $\mathrm{refine}(B, c) \to B$ in `SemanticState.structuralEdges` (`Reg/Semantic.lean:1680-1693`) and refuse a functor row equal to it in the immediate-functor validation. Files: `Reg/Semantic.lean`. Decision: research D17. Acceptance in a new `Reg/ScaffoldingReachTests.lean`: each of the seven refinement categories has the derived edge to its base; a row that restates one is refused. Unblocks: kernel T223.
+
+## Phase 25: #205, the underlying module of a bilinear form (US7, unblocks kernel T229 and T223)
+
+- [ ] T051 [US7] #205: run and record in the issue the search of plan.md "Search before
+  authoring" (row #205). Acceptance: the record names each query, each surface and each hit.
+- [ ] T052 [US7] #205 (FR-026): add the structural functor $(R, M, W, b) \mapsto (R, M)$ from `cat.bilin_forms_over_rings` to `cat.modules_over_rings_ext`. Files: `Sem/FibrationRegistration.lean`. Acceptance in a new `Reg/ScaffoldingReachTests.lean`: the new row is structural and differs from `fun.bilin_forms.values`. Unblocks: kernel T223.
+
+## Phase 26: #206, the underlying module of a quadratic form (US7, unblocks kernel T230 and T223)
+
+- [ ] T053 [US7] #206: run and record in the issue the search of plan.md "Search before
+  authoring" (row #206). Acceptance: the record names each query, each surface and each hit.
+- [ ] T054 [US7] #206 (FR-027): add the structural functor from `cat.quad_forms_over_rings` to `cat.modules_over_rings_ext`. Files: `Sem/QuadFibrationRegistration.lean`. Acceptance in a new `Reg/ScaffoldingReachTests.lean`: the new row is structural and differs from `fun.quad_forms.ring`. Unblocks: kernel T223.
+
+## Phase 27: #207, modules over commutative rings as modules over rings (US7, unblocks kernel T231 and T223)
+
+- [ ] T055 [US7] #207: run and record in the issue the search of plan.md "Search before
+  authoring" (row #207). Acceptance: the record names each query, each surface and each hit.
+- [ ] T056 [US7] #207 (FR-028): add the structural functor from `cat.modules_over_rings_ext` to `cat.modules_total` over $\mathbf{CRing} \to \mathbf{Ring}$, acting on maps through `ModuleCat.extendRestrictScalarsAdj`, with the theorem that it commutes with `fun.modules_ext.ring` and `fun.modules.projection`. Files: `Sem/FibrationRegistration.lean`. Decision: research D19. Acceptance in a new `Reg/ScaffoldingReachTests.lean`: `cat.modules_over_rings_ext`, `cat.bilin_forms_over_rings` and `cat.quad_forms_over_rings` reach `cat.sets`; the commuting theorem holds. Unblocks: kernel T223.
+
+## Phase 28: #208, the lattice of a cusp (US7, unblocks kernel T232 and T223)
+
+- [ ] T057 [US7] #208: run and record in the issue the search of plan.md "Search before
+  authoring" (row #208). Acceptance: the record names each query, each surface and each hit.
+- [ ] T058 [US7] #208 (FR-029): add the structural functor from `cat.cusps` to `cat.integral_lattice`, declared by `CuspObject.lattice` and the embedding of a cusp morphism. Files: `Lattices/Valued/Cusps.lean`. Decision: research D20. Acceptance in a new `Reg/ScaffoldingReachTests.lean`: `cat.cusps` reaches `cat.sets`; the image of $(L, \Gamma)$ is $L$. Unblocks: kernel T223.
+
+## Phase 29: #209, definite and indefinite lattices as finite projective lattices (US7, unblocks kernel T233 and T224)
+
+- [ ] T059 [US7] #209: run and record in the issue the search of plan.md "Search before
+  authoring" (row #209). Acceptance: the record names each query, each surface and each hit.
+- [ ] T060 [US7] #209 (FR-030): register `definiteForget` and `indefiniteForget` (`Lattices/Valued/DefiniteIndefinite.lean:46`, `:57`) as structural rows into `cat.finite_projective_lattice` at $(\mathbb{Z}, \mathbb{Z})$. Files: `Sem/Lattices/Valued/CatalogueRegistration.lean`. Decision: research D20. Acceptance in a new `Reg/ScaffoldingReachTests.lean`: both categories reach `cat.sets`. Unblocks: kernel T224.
+
+## Phase 30: #210, the inclusions of the finite free, even and unimodular lattice families (US7, unblocks kernel T234 and T224)
+
+- [ ] T061 [US7] #210: run and record in the issue the search of plan.md "Search before
+  authoring" (row #210). Acceptance: the record names each query, each surface and each hit.
+- [ ] T062 [US7] #210 (FR-031): register the three full-subcategory inclusions (`Lattices/Valued/Arithmetic.lean:40-46`, `ScaleAndEvenness.lean:265`, `MetricDual.lean:166`) as structural rows at the parameters of each family. Files: `Sem/Lattices/Valued/CatalogueRegistration.lean`. Decision: research D20. Acceptance in a new `Reg/ScaffoldingReachTests.lean`: `cat.finite_free_lattice`, `cat.even_lattice` and `cat.unimodular_lattice` reach `cat.sets`. Unblocks: kernel T224.
+
+## Phase 31: Milestone
 
 - [ ] T042 Run `just test` on `main` with all tasks above landed; record its log and timing (T002,
   T003). Acceptance: the gate is green for every file of this feature, and the axiom audit shows
-  no new site. Unblocks: the kernel pin of a lean-categories revision that holds the 19 inputs.
+  no new site. Unblocks: the kernel pin of a lean-categories revision that holds the 29 inputs.
 
 ## Dependencies & Execution Order
 
@@ -285,6 +346,8 @@ new modules to `LeanCategories/All.lean`, and is reviewed by an author who did n
 - Each issue phase depends on Phase 1 only, except: T017 uses `ctor.coslice` rows that T035 later
   gives a role; T035 gives roles to `ctor.opposite` (T023) and the slice and coslice forgets (T017,
   T023); T039 uses the additive owners of T005.
+- T056 (#207) gives `cat.modules_over_rings_ext` its chain; the rows of T052 and T054 (#205,
+  #206) reach `cat.sets` through it, and the refinements of T050 (#204) reach it through them.
 - The phase order is the order of the kernel consumers; it is not a dependency order between
   issues.
 

@@ -17,6 +17,7 @@ surfaces. Each is a projection of rows; no consumer keeps its own table.
 | Which object of a shape has a written name? | `LimitEntry.objectNames` | FR-014 |
 | Is an answer prescribed or chosen? | `result` and its `ChoiceFibre` | FR-017 |
 | Which constructor is the arrow (core, slice, ...) constructor? | `ConstructorEntry.role` | FR-016 |
+| Which categories must be implemented before a category? | the categories that its structural edges reach, with the derived edges of refinements | FR-022 to FR-031 |
 
 Outcomes that a consumer must not infer: a reading with no `ReadingEntry`; a point of a structure
 classifier from `Holds`; an equality of routes with no cell; a value of a `choice` operation fixed

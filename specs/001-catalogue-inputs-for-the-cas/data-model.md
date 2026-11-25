@@ -20,4 +20,6 @@ addition extends an existing entry or adds one; no field copies a meaning that a
 | `ConstructorRole` | new | `arrow`, `core`, `slice`, `coslice`, `elements`, `subobjects`, `functorCategory`, `opposite`, each with its universal data | data natural in $C$ | FR-016 |
 | `ReadingEntry` | new | `source`, `target`, `map`, `identification` | the map is a registered row or route | FR-011 |
 | cells | new rows | `cell.sets.whole_subset.domain`, `cell.rings.additive_monoid.routes`, the order cells, the core naturality cell | invertible where stated | FR-001, FR-002, FR-016, FR-019 |
+| structural edges | derived edge | $\mathrm{refine}(B, c) \to B$ for each category row with a `refine` expression | a functor row equal to a derived edge is refused | FR-025 |
+| functor rows | new structural rows | the underlying set of crystals and of topological spaces, schemes to spaces, ideals to submodules, forms to their modules, modules over commutative rings to modules over rings, cusps to their lattices, the lattice inclusions | each sends an object to its underlying object | FR-022 to FR-024, FR-026 to FR-031 |
 | `PowerObjectEntry` | fields point to morphism rows | `member`, `extent`, `image`, `inverseImage`, `transposeAt` | each names a row | FR-005 |

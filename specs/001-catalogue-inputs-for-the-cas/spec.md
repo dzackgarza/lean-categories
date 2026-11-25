@@ -3,8 +3,9 @@
 **Feature Branch**: `001-catalogue-inputs-for-the-cas` (work lands on `main`)
 **Created**: 2026-11-25
 **Status**: Draft
-**Input**: The 19 lean-categories issues #182 to #200. Each is a mathematical declaration that a
-task of the lean-cas-dsl task list consumes and that `main` (`443fba9`) does not have.
+**Input**: The 29 lean-categories issues #182 to #210. Each is a mathematical declaration that a
+task of the lean-cas-dsl task list consumes and that `main` (`443fba9`; `f009120` for #201 to
+#210) does not have.
 
 Read with the [constitution](../../.specify/memory/constitution.md), the [plan](plan.md) and the
 [tasks](tasks.md). Paths are relative to `LeanCategories/`. `Sem/` is `Catalogue/Semantics/`.
@@ -127,7 +128,7 @@ declarations only.
 
 ### User Story 5 - The leaf author reads one category for each kind of order (Priority: P3)
 
-The leaf author implements the order categories of milestone Leaves 0.3 (kernel T104). Each kind
+The leaf author implements the order categories of the computational milestone "Orders" (kernel T202). Each kind
 of order must be registered once, with its forgetful functors and operations.
 
 **Why this priority**: the consumer is after the kernel functionality.
@@ -142,6 +143,27 @@ and every pair of parallel routes has its cell.
    of preorders and its restriction to linear orders.
 2. **Given** $(\mathbb{Z}, \max)$, **When** a reader asks whether it is a join-semilattice,
    **Then** it is an object of the registered category, with no bottom element required.
+
+### User Story 7 - The leaf author reaches every category from sets (Priority: P3)
+
+The leaf authors of the computational milestones of M4 (kernel T217, T221 to T224) implement a
+category after the categories that its structural functors reach. A category whose objects are
+objects of another category with more data needs the structural functor that forgets the data.
+
+**Why this priority**: the consumers are the M4 milestones, after the V1 delivery.
+
+**Independent Test**: following the structural edges of the snapshot, each category of the
+scaffolding table reaches `cat.sets`, or the table states why it needs no such functor.
+
+**Acceptance Scenarios**:
+
+1. **Given** `cat.lattices_over_rings`, a refinement of `cat.bilin_forms_over_rings`, **When** a
+   reader follows its structural edges, **Then** it reaches the forms, their underlying modules,
+   the modules over rings and `cat.sets`.
+2. **Given** a cusp $(L, \Gamma)$, **When** a reader applies the structural functor, **Then** the
+   result is the integral lattice $L$.
+3. **Given** a scheme, **When** a reader follows its structural edges, **Then** it reaches the
+   underlying topological space and then the set of points.
 
 ### User Story 6 - The mathematician inspects each definition against its source (Priority: P1)
 
@@ -322,8 +344,48 @@ files, rows, searches and checks. Order: the order of the first consumers in the
   Mathlib `Order/Category/{Preord,PartOrd,LinOrd,Semilat,Lat,BddLat,BoolAlg}`.
 - **FR-020 (scaffolding)**: Each of the 51 categories with no structural chain to `cat.sets` at
   `443fba9` MUST either receive its missing structural functor from the requirement that owns it
-  (table below) or need none for the stated reason. The gaps with no issue are listed in the
-  plan.
+  (table below) or need none for the stated reason.
+- **FR-022 (#201)**: `cat.crystals` MUST be a registered category that is not opaque, with its
+  underlying-set functor $\mathbf{Crys} \to \mathbf{Set}$ as a structural functor row; the opaque
+  port `oport.crystals.sets` MUST be deleted when the row replaces it. Sources: Kashiwara, *On
+  crystal bases* (1995); Hong and Kang, *Introduction to Quantum Groups and Crystal Bases*, ch. 4.
+- **FR-023 (#202)**: The category of topological spaces MUST be registered with its structural
+  forget to `cat.sets`, and $\mathbf{Sch} \to \mathbf{Top}$, $X \mapsto |X|$, MUST be a structural
+  functor row. Sources: Hartshorne, *Algebraic Geometry*, II.2; Mathlib
+  `AlgebraicGeometry.Scheme.forgetToTop`.
+- **FR-024 (#203)**: The inclusion $I \mapsto (I \hookrightarrow R)$ of the ideals of $R$ into the
+  submodules of the regular module MUST be a structural functor row from `cat.ideals_r` to
+  `cat.subobjects_modules_r`. Sources: Atiyah and Macdonald, ch. 1-2; Mathlib
+  `Ideal R = Submodule R R`.
+- **FR-025 (#204)**: For each category row whose expression is $\mathrm{refine}(B, c)$, the registry
+  MUST derive the structural edge $\mathrm{refine}(B, c) \to B$ that forgets the evidence, as it
+  derives the forget of a classifier total, and MUST refuse a structural functor row equal to such
+  an edge. Sources: Mac Lane, *Categories for the Working Mathematician*, I.3; Mathlib
+  `ObjectProperty.ι`.
+- **FR-026 (#205)**: The functor $(R, M, W, b) \mapsto (R, M)$ from `cat.bilin_forms_over_rings` to
+  `cat.modules_over_rings_ext` MUST be a structural functor row, distinct from the fibration
+  projection `fun.bilin_forms.values`. Source: Bourbaki, *Algèbre*, ch. IX, §1.
+- **FR-027 (#206)**: The functor from `cat.quad_forms_over_rings` to `cat.modules_over_rings_ext`
+  that sends a quadratic form to its module MUST be a structural functor row. Source: Bourbaki,
+  *Algèbre*, ch. IX, §3.
+- **FR-028 (#207)**: The functor $(R, M) \mapsto (R, M)$ from `cat.modules_over_rings_ext`
+  ($\int \mathbf{Mod}$ over $\mathbf{CRing}$, extension of scalars) to `cat.modules_total`
+  ($\int^{c} \mathbf{Mod}$ over $\mathbf{Ring}$, restriction of scalars) over
+  $\mathbf{CRing} \to \mathbf{Ring}$, acting on maps by the transpose of
+  $S \otimes_R - \dashv f^{*}$, MUST be a structural functor row with the theorem that it commutes
+  with the two projections. Sources: Bourbaki, *Algèbre*, ch. II, §5; Mathlib
+  `ModuleCat.extendRestrictScalarsAdj`.
+- **FR-029 (#208)**: The functor $(L, \Gamma) \mapsto L$ from `cat.cusps` to `cat.integral_lattice`
+  MUST be a structural functor row. Source: the declaration `CuspObject`
+  (`LeanCategories/Lattices/Valued/Cusps.lean`).
+- **FR-030 (#209)**: The inclusions of `cat.definite_lattice` and `cat.indefinite_lattice` into
+  `cat.finite_projective_lattice` at $R = W = \mathbb{Z}$ MUST be structural functor rows,
+  declared by `definiteForget` and `indefiniteForget`. Source: Serre, *A Course in Arithmetic*,
+  ch. V.
+- **FR-031 (#210)**: The full-subcategory inclusions $\mathrm{FinFreeLat}_{R,W} \to \mathrm{Lat}_{R,W}$,
+  $\mathrm{EvenLat}_{R} \to \mathrm{IntLat}_{R}$ and $\mathrm{UnimodLat}_{R} \to$ the fraction-field
+  perfect finite projective lattices MUST be structural functor rows at the parameters of each
+  family. Source: Milnor and Husemoller, *Symmetric Bilinear Forms*, ch. I-II.
 - **FR-021 (process)**: Every requirement MUST pass the checks of constitution M2, M3, M8 and
   E1: a search record in its issue, a clause-by-clause source comparison, tier-1 elaboration of
   its modules and test modules, and the full gate `just test` at the milestone.
@@ -350,9 +412,16 @@ functor that sends an object to its underlying object (`Reg/Entry.lean`, `Functo
 | `cat.subsets.point_predicates`, `cat.subsets.subset_predicates` | 2 | none needed | categories of elements; the projection is the projection of a fibration, which `FunctorEntry.structural` excludes |
 | `cat.walking_pair` | 1 | none needed | an index shape; FR-014 names its objects |
 | `cat.cardinals`, `cat.cardinalities`, `cat.ordinals` | 3 | none needed | codomains of invariants; an object is a value, not a structured set |
-| the refinements `cat.even_integral_lattices`, `cat.finite_free_lattices_over_rings`, `cat.finite_projective_lattices_over_rings`, `cat.integral_forms`, `cat.integral_lattices`, `cat.lattices_over_rings`, `cat.unimodular_lattices_over_rings` | 7 | no issue | plan, "Scaffolding gaps with no issue" |
-| `cat.bilin_forms_over_rings`, `cat.quad_forms_over_rings`, `cat.modules_over_rings_ext`, `cat.ideals_r`, `cat.definite_lattice`, `cat.indefinite_lattice`, `cat.schemes`, `cat.cusps`, `cat.crystals` | 9 | no issue | plan, "Scaffolding gaps with no issue" |
-| the fibres `cat.even_lattice`, `cat.finite_free_lattice`, `cat.unimodular_lattice` | 3 | no issue | plan, "Scaffolding gaps with no issue" |
+| the refinements `cat.even_integral_lattices`, `cat.finite_free_lattices_over_rings`, `cat.finite_projective_lattices_over_rings`, `cat.integral_forms`, `cat.integral_lattices`, `cat.lattices_over_rings`, `cat.unimodular_lattices_over_rings` | 7 | FR-025 (#204); FR-026 (#205) and FR-028 (#207) for their bases | the inclusion $\mathrm{refine}(B, c) \to B$ |
+| `cat.bilin_forms_over_rings` | 1 | FR-026 (#205), FR-028 (#207) | the underlying module, then modules over rings |
+| `cat.quad_forms_over_rings` | 1 | FR-027 (#206), FR-028 (#207) | the underlying module, then modules over rings |
+| `cat.modules_over_rings_ext` | 1 | FR-028 (#207) | $(R, M) \mapsto (R, M)$ to `cat.modules_total` |
+| `cat.ideals_r` | 1 | FR-024 (#203) | an ideal as a submodule of the regular module |
+| `cat.definite_lattice`, `cat.indefinite_lattice` | 2 | FR-030 (#209) | the inclusion into `cat.finite_projective_lattice` |
+| `cat.schemes` | 1 | FR-023 (#202) | $\mathbf{Sch} \to \mathbf{Top} \to \mathbf{Set}$ |
+| `cat.cusps` | 1 | FR-029 (#208) | $(L, \Gamma) \mapsto L$ to `cat.integral_lattice` |
+| `cat.crystals` | 1 | FR-022 (#201) | the underlying set |
+| the fibres `cat.even_lattice`, `cat.finite_free_lattice`, `cat.unimodular_lattice` | 3 | FR-031 (#210) | the full-subcategory inclusion of each family |
 | **Total** | **51** | | |
 
 ### Key Entities
@@ -374,14 +443,14 @@ functor that sends an object to its underlying object (`Reg/Entry.lean`, `Functo
 
 | ID | Outcome | Measure |
 | --- | --- | --- |
-| SC-001 | Every issue #182 to #200 closes on its own acceptance | 19 of 19 issues closed |
-| SC-002 | Each kernel task T118 to T125, T128 to T138 has its input on `main` | 19 of 19 inputs present |
+| SC-001 | Every issue #182 to #210 closes on its own acceptance | 29 of 29 issues closed |
+| SC-002 | Each kernel task T118 to T125, T128 to T138 and T225 to T234 has its input on `main` | 29 of 29 inputs present |
 | SC-003 | No new `sorry`, axiom or `native_decide` | axiom audit and `lean-no-sorry` report 0 new sites |
 | SC-004 | One owner per operation symbol | 0 symbols with two unrestricted rows on one structural route |
 | SC-005 | Every pair of parallel structural routes has a cell | 0 uncompared pairs among the routes that this feature adds |
-| SC-006 | Categories with no chain to `cat.sets` | 51 at `443fba9`; 0 with an owner in the scaffolding table left without the functor |
+| SC-006 | Categories with no chain to `cat.sets` | 51 at `443fba9`; 0 with an owner in the scaffolding table left without its functor; 0 without an owner or a stated reason |
 | SC-007 | Tier-1 loop of each task | each loop completes in under 300 s on the research image |
-| SC-008 | Search records | 19 of 19 issues hold a reproducible search record |
+| SC-008 | Search records | 29 of 29 issues hold a reproducible search record |
 | SC-009 | Source fidelity | each new declaration cites a source checked clause by clause |
 
 ## Assumptions

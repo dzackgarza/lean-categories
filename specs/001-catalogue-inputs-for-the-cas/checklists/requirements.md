@@ -18,7 +18,7 @@
 - [x] Success criteria are measurable
 - [x] All acceptance scenarios are defined
 - [x] Edge cases are identified
-- [x] Scope is bounded: issues #182 to #200 and the scaffolding of the 51 categories
+- [x] Scope is bounded: issues #182 to #210 and the scaffolding of the 51 categories
 - [x] Dependencies and assumptions identified
 
 ## Feature Readiness

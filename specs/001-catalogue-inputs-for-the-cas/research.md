@@ -2,7 +2,7 @@
 
 Each entry gives the decision, the reason from the mathematics and the sources, and the
 alternative that the reason excludes. Evidence of the present state is in the issues #182 to #200
-(read at `main` `443fba9`).
+(read at `main` `443fba9`) and #201 to #210 (read at `f009120`).
 
 ## D1 (#193): owners of the arithmetic operations
 
@@ -137,3 +137,43 @@ alternative that the reason excludes. Evidence of the present state is in the is
   not contain it. Mathlib `Lat` is already unbounded. The prefix `order_` keeps "lattice" for the
   form lattices of this library. The pair `cat.partial_orders`, `cat.linear_orders` has the
   structural functors, the relations and the named orders (#195).
+
+## D17 (#204): the inclusion of a refinement is derived
+
+- **Decision**: `SemanticState.structuralEdges` derives the edge $\mathrm{refine}(B, c) \to B$ from
+  each category row with a `refine` expression, as it derives the forget of a classifier total;
+  a functor row equal to it is refused.
+- **Reason**: a refinement is a full subcategory of its base (objects of $B$ with evidence for
+  $c$), so its inclusion is determined by the expression. One rule covers the seven refinements
+  and every later one.
+- **Excluded**: one functor row for each refinement, which states again what the expression says.
+
+## D18 (#202): schemes reach sets through topological spaces
+
+- **Decision**: register the category of topological spaces (Mathlib `TopCat`) with its structural
+  forget, and $\mathbf{Sch} \to \mathbf{Top}$ as a structural row.
+- **Reason**: the underlying set of a scheme is the set of points of its underlying space; a
+  structural row is immediate, so the composite is not one row.
+- **Excluded**: one row $\mathbf{Sch} \to \mathbf{Set}$, which hides the topological space that a
+  later operation on schemes reads.
+
+## D19 (#207): modules over commutative rings as modules over rings
+
+- **Decision**: one structural row from `cat.modules_over_rings_ext` to `cat.modules_total` over
+  $\mathbf{CRing} \to \mathbf{Ring}$, acting on maps by the transpose of the
+  extension-restriction adjunction.
+- **Reason**: the two Grothendieck constructions have the same objects over a commutative ring,
+  and the adjunction $S \otimes_R - \dashv f^{*}$ identifies their maps; the functor keeps the
+  underlying module.
+- **Excluded**: a second registration of modules over commutative rings with restriction of
+  scalars, which would give one object two categories with no comparison.
+
+## D20 (#201, #208, #209, #210): forgetful functors that Lean already declares
+
+- **Decision**: register the existing declarations `crystalsToSets`, `CuspObject.lattice`,
+  `definiteForget`, `indefiniteForget` and the three full-subcategory inclusions as structural rows;
+  `cat.crystals` becomes a category that is not opaque.
+- **Reason**: each declaration sends an object to its underlying object; only the registry row is
+  missing.
+- **Excluded**: new declarations for these functors.
+

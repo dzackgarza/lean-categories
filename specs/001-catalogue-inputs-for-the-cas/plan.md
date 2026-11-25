@@ -8,8 +8,8 @@ Paths are relative to `LeanCategories/`. `Sem/` is `Catalogue/Semantics/`. `Reg/
 
 ## Summary
 
-The feature adds to the registry the 19 declarations that the kernel task list consumes
-(issues #182 to #200). Each declaration is stated at its generating category, from its source,
+The feature adds to the registry the 29 declarations that the kernel task list consumes
+(issues #182 to #210). Each declaration is stated at its generating category, from its source,
 and enters through `normalized_registry`. Four schema additions carry them: a computation
 reference for object applications and binder operations, a result kind with choice fibres, a
 structured notation field, and constructor roles. The design decisions are in
@@ -26,7 +26,7 @@ is in [contracts/registry-additions.md](contracts/registry-additions.md).
 **Project Type**: Lean library (formal mathematics and its registry)
 **Performance Goals**: tier-1 loop of each task under 300 s (constitution E1, E4)
 **Constraints**: one Lean process under `flock .tmp/lean.lock` (E10); no `sorry`, no axiom (M3)
-**Scale/Scope**: 19 issues; 100 registered categories; 675 registry rows at `443fba9`
+**Scale/Scope**: 29 issues; 100 registered categories; 675 registry rows at `443fba9`
 
 ## Constitution Check
 
@@ -85,6 +85,16 @@ look for.
 | #182 | `Basis`, `Module.Finite`, `Module.Free`, `Module.rank`, `Submodule.span`, `Function.Surjective`, `Classical.choice` |
 | #199 | `nsmul`, `Set.range`, `sub_eq_add_neg`, `Nat.sub`, `tsub` |
 | #195 | `Preord`, `PartOrd`, `LinOrd`, `SemilatSupCat`, `SemilatInfCat`, `Lat`, `BddLat`, `BoolAlg`, `SupHom`, `InfHom`, `LatticeHom` |
+| #201 | `Crystal` (`Exceptional/Mathlib.lean`), crystal, Kashiwara operator, `forget` |
+| #202 | `AlgebraicGeometry.Scheme.forgetToTop`, `TopCat`, `forget TopCat`, `TopologicalSpace` |
+| #203 | `Ideal`, `Submodule`, `Submodule.subtype`, `Subobject.mk` |
+| #204 | `ObjectProperty.FullSubcategory`, `ObjectProperty.ι`, `CategoryExpr.refine`, `structuralEdges` |
+| #205 | `LinearMap.BilinMap`, `CategoryTheory.Grothendieck.forget` |
+| #206 | `QuadraticMap`, `QuadraticModuleCat` |
+| #207 | `ModuleCat.extendScalars`, `ModuleCat.restrictScalars`, `ModuleCat.extendRestrictScalarsAdj`, `CategoryTheory.Grothendieck`, `forget₂ CommRingCat RingCat` |
+| #208 | `CuspObject`, `Subgroup.FiniteIndex` |
+| #209 | `ObjectProperty.ι`, `QuadraticForm.PosDef`, signature |
+| #210 | `ObjectProperty.ι`, `Module.Free`, `Module.Finite` |
 
 ## Files and registry rows per requirement
 
@@ -297,24 +307,22 @@ Each row gives the files to add or change and the registry rows. New modules are
   is deleted when it becomes a composite.
 - Tests: a test module `Sem/Foundation/OrderTowerTests.lean`.
 
-## Scaffolding gaps with no issue
+## Structural functors of the scaffolding gaps
 
-Each line names the exact missing structural functor. No issue of lean-categories owns it at
-`443fba9`; the change that does one of them files its issue first.
+Each requirement adds a structural edge that the [computational milestones](https://github.com/dzackgarza/lean-cas-dsl/blob/main/specs/001-categorical-research-language/plan.md#computational-milestones) of lean-cas-dsl need: a category is implemented after the categories that its structural functors reach. Line numbers are of `main` at `f009120`. Each row adds its test cases to the new test module `Reg/ScaffoldingReachTests.lean`, which asserts that the category reaches `cat.sets` along structural edges.
 
-| Category | Missing structural functor |
-| --- | --- |
-| `cat.lattices_over_rings`, `cat.finite_projective_lattices_over_rings`, `cat.finite_free_lattices_over_rings`, `cat.unimodular_lattices_over_rings`, `cat.integral_lattices`, `cat.even_integral_lattices` | the inclusion of `refine(base, c)` into `base`; the registry derives no edge from a `refine` expression (`Reg/Semantic.lean:1681-1693`) |
-| `cat.integral_forms` | none of its own: `fun.integral_forms.to_bil` is structural; its target `cat.bilin_forms_over_rings` has no chain |
-| `cat.bilin_forms_over_rings` | the underlying module, to `cat.modules_over_rings_ext` (`fun.bilin_forms.values` is the fibration projection) |
-| `cat.quad_forms_over_rings` | the underlying module, to `cat.modules_over_rings_ext` |
-| `cat.modules_over_rings_ext` | to `cat.modules_total`, along $\mathbf{CRing} \to \mathbf{Ring}$ |
-| `cat.ideals_r` | an ideal as a submodule of the regular module, to `cat.subobjects_modules_r` |
-| `cat.definite_lattice`, `cat.indefinite_lattice` | the inclusion into the registered category of lattices (`cat.lattice`); they have no functor row |
-| `cat.even_lattice`, `cat.finite_free_lattice`, `cat.unimodular_lattice` | the fibre inclusion of their family into its total category |
-| `cat.schemes` | the underlying set of the underlying space, $\mathbf{Sch} \to \mathbf{Set}$ (Mathlib `Scheme.forgetToTop`, then `forget TopCat`); no category of topological spaces is registered |
-| `cat.cusps` | the forget $(L, \Gamma) \mapsto L$ to the registered category of integral lattices (`CuspObject.lattice`, `Lattices/Valued/Cusps.lean`) |
-| `cat.crystals` | an underlying-set functor; the category is opaque and its map to sets is the opaque port `oport.crystals.sets`, which is not an edge |
+| Requirement | Issue | Files and rows | Consumer (lean-cas-dsl) |
+| --- | --- | --- | --- |
+| FR-022 | #201 | `Sem/Exceptional/CatalogueRegistration.lean`: `cat.crystals` with a non-opaque expression; a structural functor row to `cat.sets` declared by `crystalsToSets` (`Exceptional/Mathlib.lean:153`); delete `oport.crystals.sets` | T225, milestone T217 |
+| FR-023 | #202 | `Sem/Foundation/`: `cat.topological_spaces` (Mathlib `TopCat`) with its structural forget; `Sem/Algebra/Schemes.lean`: structural `fun.schemes.space` declared by `Scheme.forgetToTop` | T226, milestone T221 |
+| FR-024 | #203 | `Sem/Modules/Operations.lean`: structural functor from `cat.ideals_r` to `cat.subobjects_modules_r` at the regular module | T227, milestone T222 |
+| FR-025 | #204 | `Reg/Semantic.lean` `SemanticState.structuralEdges` (`:1680-1693`): derive `refine(B, c) → B`; the immediate-functor validation (`validateImmediateFunctor`) refuses a row equal to it | T228, milestone T223 |
+| FR-026 | #205 | `Sem/FibrationRegistration.lean`: structural `fun.bilin_forms.module` from `cat.bilin_forms_over_rings` to `cat.modules_over_rings_ext` | T229, milestone T223 |
+| FR-027 | #206 | `Sem/QuadFibrationRegistration.lean`: structural `fun.quad_forms.module` to `cat.modules_over_rings_ext` | T230, milestone T223 |
+| FR-028 | #207 | `Sem/FibrationRegistration.lean`: structural functor from `cat.modules_over_rings_ext` to `cat.modules_total` over $\mathbf{CRing} \to \mathbf{Ring}$, with the commuting theorem for the two projections | T231, milestone T223 |
+| FR-029 | #208 | `Lattices/Valued/Cusps.lean`: structural functor from `cat.cusps` to `cat.integral_lattice`, declared by `CuspObject.lattice` | T232, milestone T223 |
+| FR-030 | #209 | `Sem/Lattices/Valued/CatalogueRegistration.lean`: structural rows for `definiteForget`, `indefiniteForget` (`Lattices/Valued/DefiniteIndefinite.lean:46`, `:57`) into `cat.finite_projective_lattice` at $(\mathbb{Z}, \mathbb{Z})$ | T233, milestone T224 |
+| FR-031 | #210 | `Sem/Lattices/Valued/CatalogueRegistration.lean`: structural rows for the inclusions of `cat.finite_free_lattice` (`Lattices/Valued/Arithmetic.lean:40-46`), `cat.even_lattice` (`ScaleAndEvenness.lean:265`) and `cat.unimodular_lattice` (`MetricDual.lean:166`) | T234, milestone T224 |
 
 ## Project Structure
 
