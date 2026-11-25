@@ -49,7 +49,7 @@ The advisor supplies a high-value mathematical delta. The agent remains responsi
 
 ## Forward guidance owner
 
-The root `AGENTS.md` sections `Build the mathematical language before the target` and `Unfold compressed mathematical insight` own the forward guidance.
+The `docs/agents/mathematical-simplicity.md` sections `Build the mathematical language before the target` and `Unfold compressed mathematical insight` own the forward guidance.
 
 This memory preserves the episodes and interpretation. It does not duplicate the live instructions.
 

@@ -7,7 +7,7 @@ The repository owns as little Lean as possible. It uses Mathlib directly, import
 libraries as Lake dependencies, and ports reference implementations with provenance when no
 package exists. It authors new Lean only for mathematics that a documented search has shown to
 exist nowhere else. A shorter repository that imports more is the better repository.
-[AGENTS.md](AGENTS.md) owns the reuse gate and the formalization source registry.
+[docs/agents/reuse-gate.md](docs/agents/reuse-gate.md) owns the reuse gate and the formalization source registry.
 
 `LeanCategories` is one category-theory library and one Lean namespace. The source tree
 uses mathematical owners and support roles:
@@ -120,7 +120,7 @@ python scripts/foundational_definition_candidates.py
 The second command uses the live Formalization Corpus batch operation resolved from its OpenAPI
 document and writes resumable candidate checkpoints under `.tmp/`. Candidate hits are discovery
 evidence only; canonical semantic routes remain in `corpus/` mapping records. A greenfield
-`unmatched` disposition requires the finite negative-search gate recorded in `AGENTS.md`.
+`unmatched` disposition requires the finite negative-search gate recorded in `docs/agents/corpus-acceptance.md`.
 
 Method exposure, backend routing and the execution of registered implementations belong to
 [`dzackgarza/lean-cas-dsl`](https://github.com/dzackgarza/lean-cas-dsl). Sage labels, category
@@ -173,8 +173,9 @@ standard mathematics auditable by a working mathematician, such that later domai
 (monoidal categories, stacks, spectra, derived objects, general limits) become instances
 rather than refactors.
 
-The full orientation — including the anatomy of agent drift and the alignment lens every
-task should pass through — is [AGENTS.md](AGENTS.md). The **mathematical constitution** —
+The full orientation — including the anatomy of agent drift — is
+[docs/agents/mathematical-simplicity.md](docs/agents/mathematical-simplicity.md). The alignment lens every task should pass through
+stays in [AGENTS.md](AGENTS.md). The **mathematical constitution** —
 the definitions, variance conventions, truncations, exact sequences, and settled
 conventions this repository formalizes — is [FOUNDATIONS.md](FOUNDATIONS.md)
 ("Mathematical Foundations of the Categorical Research Language", 66 sections: the

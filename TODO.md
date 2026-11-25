@@ -32,7 +32,7 @@ mapping evidence, and per-unit acceptance stay under `corpus/`. Before dispatchi
 [definition execution traps](.agents/traps/wasteful-definition-execution-is-prohibited.md)
 only where they agree with this repository's current controls. In particular, any older trap
 wording that permits a proof as a definition prerequisite is superseded by the no-proof
-Sweep-III boundary in `AGENTS.md` and this TODO.
+Sweep-III boundary in `docs/agents/corpus-execution.md` and this TODO.
 
 | ID | Obligation | Needs |
 | --- | --- | --- |
@@ -299,7 +299,7 @@ its worklist or completion state.
 
 ## Active definition units
 
-**Governing rules:** [Definitions are constructed, not deferred](AGENTS.md#definitions-are-constructed-not-deferred-2026-09-26) in `AGENTS.md`; where anything in this section conflicts with it, that section wins.
+**Governing rules:** [Definitions are constructed, not deferred](docs/agents/corpus-execution.md#definitions-are-constructed-not-deferred-2026-09-26) in `docs/agents/corpus-execution.md`; where anything in this section conflicts with it, that section wins.
 
 **First ready node — `realization-stub-audit`.** Needs: none. Population: `python3 scripts/stub_population.py` (every `[realized]` row caught by its word net, or carrying a confirmation marker, that is not validly confirmed; 187 rows on 2026-09-26 12:15 — recompute, do not copy). For each row, open the Lean declaration of the row's object. If a declaration constructs that object from the source's inputs, mark the row `[construction-confirmed: Namespace.decl]` naming it; the script rejects predicates (`Is…`), `Prop`-valued declarations and names absent from the row's Lean files, and the named declaration's type must be the row's object itself, not a raw ingredient of it (a restriction map on invariants is not confirmed by the raw polynomial restriction). If the object is present only as a parameter, a hypothesis, a candidate, an `Is…Data` predicate or the graph of a supplied map, build it under the rules above, including the construction proofs its definition needs, and confirm it in the commit that lands the construction. Batch rebuilds by shared scaffolding and use subagents. **Acceptance:** `scripts/stub_population.py` prints nothing.
 
@@ -412,7 +412,7 @@ Recompute each bucket's rows from the selector when dispatching; the rows above 
 
 ## Begin each continuation here
 
-Read [AGENTS.md — Start here: corpus execution](AGENTS.md#start-here-corpus-execution)
+Read [docs/agents/corpus-execution.md — Start here: corpus execution](docs/agents/corpus-execution.md#start-here-corpus-execution)
 before selecting work. Its execution sequence and worked failure cases apply to all
 four sweep plans below. Then:
 
@@ -449,7 +449,7 @@ four sweep plans below. Then:
    owns the repair.
 5. Commit coherent work through the existing repository checks and continue through the
    source. Before ticking its box, return to every source unit required by this sweep,
-   using the phase-specific closure rules in `AGENTS.md`. Record completion in the
+   using the phase-specific closure rules in `docs/agents/corpus-acceptance.md`. Record completion in the
    existing ledger and handoff, then take the next source without waiting for another prompt.
 
 If an omitted unit exposes a faulty selector, revisit the coverage claims made with
@@ -732,7 +732,7 @@ work.
   fields, notation, maps, variance, and claimed generality. Do not infer fidelity from a familiar
   name or successful build.
 
-Apply [AGENTS.md's construction boundary](AGENTS.md#sweep-iii-construction-boundary): produce
+Apply [the construction boundary in docs/agents/corpus-execution.md](docs/agents/corpus-execution.md#sweep-iii-construction-boundary): produce
 only the specified definitions and constructions from the source's allowed inputs. Proof
 work is admitted only when absolutely required to formalize the exact source definition,
 after seeking an existing formalization or a simpler source-faithful representation. Reuse

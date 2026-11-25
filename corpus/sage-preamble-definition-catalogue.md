@@ -23,7 +23,7 @@ Source: `~/research/src/dzack_research/preamble` — every non-checkpoint `.sage
 
 This is the theory-ingestion inventory of the Sage research preamble: every category, functor, axiom, construction, and distinguished object it names, recorded as formalization targets for `lean-categories`. How the preamble constructs a notion in Sage is deliberately not recorded. The Sage formulation is sometimes loose or wrong; each such defect carries a ⚠ flag so the formalization fixes it rather than transcribing it, and the corrected definitions eventually flow back down to Sage. Flags marked (source) are admitted in the preamble's own comments; (inferred) is extraction-time analysis.
 
-A checkbox is a term to route through the reuse gate in `AGENTS.md`: close it when the notion has a principled owner in this repository, pinned Mathlib, or a registered external formalization. The active work queue is `TODO.md`; the corpus-wide foundation is governed by `PLAN-FOUNDATIONAL-CORPUS-CATALOGUE-SWEEP`, `PLAN-FOUNDATIONAL-CORPUS-DEFINITION-SWEEP`, and `PLAN-FOUNDATIONAL-CORPUS-THEOREM-SWEEP`. This Sage catalogue is supplementary source material unless admitted to the frozen foundational corpus.
+A checkbox is a term to route through the reuse gate in `docs/agents/reuse-gate.md`: close it when the notion has a principled owner in this repository, pinned Mathlib, or a registered external formalization. The active work queue is `TODO.md`; the corpus-wide foundation is governed by `PLAN-FOUNDATIONAL-CORPUS-CATALOGUE-SWEEP`, `PLAN-FOUNDATIONAL-CORPUS-DEFINITION-SWEEP`, and `PLAN-FOUNDATIONAL-CORPUS-THEOREM-SWEEP`. This Sage catalogue is supplementary source material unless admitted to the frozen foundational corpus.
 
 ## Systemic defects the formalization must fix
 

@@ -1,27 +1,27 @@
 # Contribution policies
 
-Use [TODO.md](TODO.md) to select work and [AGENTS.md](AGENTS.md) for the detailed
+Use [TODO.md](TODO.md) to select work and [docs/agents/corpus-acceptance.md](docs/agents/corpus-acceptance.md) for the detailed
 corpus acceptance workflow. [FOUNDATIONS.md](FOUNDATIONS.md) owns the mathematical
 constitution. The identifiers here provide stable names for contribution rules;
 the linked sections retain their full requirements.
 
 ## LC-01 — Preserve the source obligation
 
-Apply [corpus acceptance](AGENTS.md#corpus-acceptance-workflow): establish the
+Apply [corpus acceptance](docs/agents/corpus-acceptance.md#corpus-acceptance-workflow): establish the
 complete source-unit population before filtering. Preserve every hypothesis,
 quantifier, construction law, and admitted unit. Formatting and Lean availability
 do not determine mathematical scope.
 
 ## LC-02 — Reuse at the mathematical owner
 
-Apply [mapping acceptance](AGENTS.md#accept-a-mapping-against-the-whole-source-obligation).
+Apply [mapping acceptance](docs/agents/corpus-acceptance.md#accept-a-mapping-against-the-whole-source-obligation).
 Compare actual declaration inputs and conclusions with the source. Reuse valid
 canonical owners and preserve port provenance; a property of a supplied object
 does not construct the required object.
 
 ## LC-03 — Establish meaning before dependent use
 
-Apply [definition acceptance](AGENTS.md#establish-the-definition-before-dependent-use).
+Apply [definition acceptance](docs/agents/corpus-acceptance.md#establish-the-definition-before-dependent-use).
 Compare all defining clauses with the source and preserve the source's actual
 declaration/construction data before export or downstream use. Source examples may
 be used as semantic checks. Sweep III contains no proof work: if a proposed Lean
@@ -53,7 +53,7 @@ not authorize using it or complete its repair; continue independent work.
 Read the current target before editing and preserve other workers' changes.
 Commit only the intended files after inspecting their complete diff. Use existing
 repository checks for implementation and the prose-only commit route for prose.
-Close a source only under the [whole-source closure rule](AGENTS.md#close-a-source-from-its-complete-obligations),
+Close a source only under the [whole-source closure rule](docs/agents/corpus-acceptance.md#close-a-source-from-its-complete-obligations),
 with actual declarations and checks in its existing handoff.
 
 ## LC-07 — Diagnose a red gate before further authoring
@@ -271,7 +271,7 @@ written downstream.
 ## LC-19 — Exhaust prior art before greenfield definitions
 
 Apply the two-stage negative-search rule in
-[AGENTS.md](AGENTS.md#a-bundled-row-is-matched-clause-by-clause-and-unmatched-is-the-last-resort).
+[docs/agents/corpus-acceptance.md](docs/agents/corpus-acceptance.md#a-bundled-row-is-matched-clause-by-clause-and-unmatched-is-the-last-resort).
 `[negative-search-complete]` closes only the bounded source-local search pass and
 does not authorize authorship. Before any definitional row may remain greenfield,
 the corpus-wide residue audit must search beyond the known indexes and local
@@ -283,7 +283,7 @@ that part open rather than treating absence of access as a negative result.
 
 ## LC-20 — Match every realized definition to the complete prose source
 
-Apply [definition acceptance](AGENTS.md#establish-the-definition-before-dependent-use)
+Apply [definition acceptance](docs/agents/corpus-acceptance.md#establish-the-definition-before-dependent-use)
 locally and the final corpus-wide `definition-source-conformance` milestone in
 [TODO.md](TODO.md#execution-dag). Re-read the original prose reference and inspect
 the actual reused/imported/ported/authored Lean realization clause-by-clause. Preserve
@@ -293,7 +293,7 @@ identities, functoriality, existence/uniqueness, exactness, square-zero, univers
 comparison statements, and analogous propositions remain Sweep IV work without a
 Sweep-III exception. If a proposed representation requires any such proposition to
 construct the value, use the source-faithful data-level representation required by the
-[construction boundary](AGENTS.md#sweep-iii-construction-boundary). Reuse existing
+[construction boundary](docs/agents/corpus-execution.md#sweep-iii-construction-boundary). Reuse existing
 formalizations first. Build success, familiar names,
 downstream theorems, and absence of `sorry` do not establish semantic fidelity.
 

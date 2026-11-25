@@ -61,7 +61,7 @@ to the full Kerodon obligation.
 An `unmatched [negative-search-complete]` route records only the bounded
 source-local negative pass. It does **not** authorize greenfield implementation.
 After all definitional Mapping passes finish, every such row enters the corpus-wide
-open-ended residue audit in `AGENTS.md`/`TODO.md`. A row may remain greenfield only
+open-ended residue audit in `docs/agents/corpus-acceptance.md`/`TODO.md`. A row may remain greenfield only
 after its canonical row records the dated reproducible search evidence from that
 audit and carries `[residue-search-audited]`. The audit explicitly searches beyond
 the Formalization Corpus/local indexes and follows newly discovered repositories,
