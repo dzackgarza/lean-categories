@@ -263,10 +263,28 @@ and format.
 
 ## D22. The arithmetic and abelian plans
 
-**Decision**: `arithmetic-lattice-foundations` and `abelian-projectivity` keep their requirements
-in their vault plans until each becomes a Spec Kit feature of its own. In this feature each is one
-task whose acceptance is the plan's success criteria; its first step is that feature's
-specification from the vault plan.
+**Decision**: `arithmetic-lattice-foundations` is feature
+[003](../003-arithmetic-lattice-foundations/spec.md) and `abelian-projectivity` is feature
+[004](../004-abelian-projectivity/spec.md). Task T107 executes 003 T001–T049 and task T111 executes
+004 T001–T010, each in its own document order, at the position that D11 gives them. Feature 003 also
+carries the four theorem programmes of the vault feature FEATURE-ARITHMETIC-LATTICE-FOUNDATIONS
+(ADE realization, indefinite classification, Siegel mass formula, theta modularity).
 
-**Source**: the `TODO.md` rows; the vault plans PLAN-ARITHMETIC-LATTICE-FOUNDATIONS and
-PLAN-ABELIAN-PROJECTIVITY (separate features, 27 and 0 recorded tasks).
+**Source**: the `TODO.md` rows; the vault plans PLAN-ARITHMETIC-LATTICE-FOUNDATIONS (27 tasks),
+PLAN-ABELIAN-PROJECTIVITY (0 tasks) and their four sibling plans, now archived as superseded by
+features 003 and 004; 003 research D1, D2; 004 research D2.
+
+## D23. Open requests and defects recorded in COMPLAINTS.md
+
+**Decision**: Every open formalization request that COMPLAINTS.md records for this repository has a
+task. A consumer request (a research, Coble, Looijenga, AET, Satake or catalogue consumer) is a
+Phase 2 task (T112–T125), taken in at once (constitution M9). A lattice or form item that belongs to
+the arithmetic foundation is a task of feature 003 (003 research D25). A gate, contribution-rule or
+tooling defect is a Phase 1 task (T126–T129). A request of the registry and catalogue surface is
+feature 001's. Each task first compares its entry with the source at its revision, because an entry
+can lag a repair (for example the gallery bridge of #181 is now proved in
+`ForMathlib/RootSystem/WythoffAscent.lean`).
+
+**Source**: constitution M9, M12; LC-05 ("On resolution, verify the full unmet requirement");
+LC-11; COMPLAINTS.md, read in full at `533e9259`; the closed GitHub issues #26, #27, #37, #88,
+#91, #141, #162, #167, #171, whose residual items live only in COMPLAINTS.md.

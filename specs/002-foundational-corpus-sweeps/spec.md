@@ -269,6 +269,10 @@ definition is duplicated.
   that unit's mapping row (constitution M7).
 - **FR-025**: [tasks.md](tasks.md) MUST be the work order of the programme, executed in document
   order (constitution M11). `TODO.md` MUST NOT order work.
+- **FR-026**: Every open formalization request, gate defect and contribution-rule defect that
+  [COMPLAINTS.md](../../COMPLAINTS.md) records for this repository MUST have a task: a consumer
+  request in Phase 2 of this feature, a foundation item of the arithmetic lattice theory in feature
+  003, a registry or catalogue item in feature 001 (research D23).
 
 ### Key Entities
 
@@ -302,6 +306,7 @@ The start values are the selector at `fc549baa` ([units.md](units.md)).
 | Unticked Theorems cells | 17 | 0 |
 | Pending theorem units | 12,952 of 15,363 | 0 |
 | `sorry` and project axioms in the library | 0 | 0 |
+| Open COMPLAINTS.md requests of this repository without a task | not counted | 0 |
 
 - **SC-001**: After the first task, the frontier generator exits 0 at every commit on `main`.
 - **SC-002**: For any realized unit, a mathematician finds the constructing declaration and the

@@ -3,7 +3,7 @@
 **Branch**: `002-foundational-corpus-sweeps` (work lands on `main`) | **Date**: 2026-11-25 | **Spec**: [spec.md](spec.md)
 **Input**: Feature specification from `specs/002-foundational-corpus-sweeps/spec.md`
 
-Revision of record: `fc549baa`. The decisions D1–D22 are in [research.md](research.md); the
+Revision of record: `fc549baa`. The decisions D1–D23 are in [research.md](research.md); the
 record formats in [data-model.md](data-model.md); the unit populations in [units.md](units.md);
 the validation runs in [quickstart.md](quickstart.md).
 
@@ -11,11 +11,13 @@ the validation runs in [quickstart.md](quickstart.md).
 
 The programme realizes the seventeen corpus sources in four sweeps. Sweep I is complete. The
 remaining work, in task order: repair the three mapping rows that stop the frontier generator;
-take in the consumer request for the orthogonal-group structure theorem (M9); finish Sweep III
+take in the consumer requests (M9): the orthogonal-group structure theorem and the open
+requests of COMPLAINTS.md; finish Sweep III
 (the stub audit of 125 rows, the 35 pending definitions, the closure of 11 Definitions cells, the
 ownership audit and the source-conformance pass over 5,054 definitional units, Milestone 2);
 finish Sweep II (FC16, FC17); run Sweep IV over 12,952 pending theorem units in 17 catalogue
-tasks; then the continuations of the `TODO.md` DAG.
+tasks; then the continuations of the `TODO.md` DAG, of which the arithmetic lattice theory and
+abelian projectivity are features 003 and 004.
 
 ## Technical Context
 
@@ -41,7 +43,7 @@ tasks; then the continuations of the `TODO.md` DAG.
 | M6 | Typed identity; comparison cells; chosen structure as data | Contract D |
 | M7 | Registry rows name the corpus declaration | FR-024; Contract D |
 | M8 | Search record before authoring, in the mapping row | Search before authoring; D4 |
-| M9 | Consumer requests taken in at once | T004–T008 (D9) |
+| M9 | Consumer requests taken in at once | T004–T008 (D9), T112–T125 (D23) |
 | M10 | Independent review; content changes go to the mathematician | Contract R; D17 |
 | M11 | This task list in document order; `TODO.md` orders nothing | D1; constitution 2.0.0 |
 | M12 | Issues in COMPLAINTS.md; workarounds with the five fields of LC-12 | FR-020; every contract |
@@ -75,14 +77,14 @@ process is alive (LC-08).
 
 | Phase of tasks.md | Sweep | Gate to enter | Gate to leave |
 | --- | --- | --- | --- |
-| 1 | records | none | the generator exits 0 |
-| 2 | M9 intake | none | the request's statements proved at their owners |
+| 1 | records and gates | none | the generator exits 0; `just test` green (T129) |
+| 2 | M9 intake | none | each request's statements proved at their owners |
 | 3, 4 | III | Milestone 1 (closed 2026-09-18) | every Definitions cell ticked |
 | 5 | III | every Definitions cell ticked | ownership audit converged |
 | 6 | III | ownership audit converged | Milestone 2 |
 | 7 | II | Milestone 2 (scheduling precedence, D11) | FC16, FC17 Mapping ticked |
 | 8 | IV | Milestone 2 and, per source, its Mapping cell | every Theorems cell ticked |
-| 9 | continuations | the `Needs` of the `TODO.md` DAG (D11) | each node's acceptance |
+| 9 | continuations | the `Needs` of the `TODO.md` DAG (D11) | each node's acceptance; T107 is feature 003 and T111 feature 004 (D22) |
 
 Inside a phase, a unit is ready when its recorded prerequisites are delivered; source order breaks
 ties (D12). A blocked unit does not hold back an independent ready unit.
@@ -127,8 +129,10 @@ Every definition, every theorem and every lemma inside a proof is searched befor
    `python scripts/formalization_corpus.py search '<query>'` under each formulation;
    `python scripts/formalization_corpus.py batch` for a batch; refine with `repo:` and `file:` only
    after the broad query.
-4. Search Loogle, LeanSearch, Reservoir, GitHub code search across Lean repositories, the
-   proof-assistant repositories that the corpus indexes, and `formal-conjectures`.
+4. Search Loogle, LeanSearch, the Mathlib documentation, Reservoir, GitHub code search across Lean
+   repositories, the proof-assistant repositories that the corpus indexes, `formal-conjectures`,
+   the locally mirrored reference corpora, and the formalization source atlas
+   (`corpus/lean-formalization-source-atlas-and-research-log.md`).
 5. Open each plausible candidate at its revision and compare its inputs, outputs, hypotheses and
    generality with the source clause (corpus-acceptance.md, "Accept a mapping against the whole
    source obligation").
@@ -221,7 +225,7 @@ order. No tool input moves, so no task moves one.
 specs/002-foundational-corpus-sweeps/
 ├── spec.md              # requirements, user stories, success criteria
 ├── plan.md              # this file
-├── research.md          # decisions D1–D22 with their sources
+├── research.md          # decisions D1–D23 with their sources
 ├── data-model.md        # formats of the corpus record
 ├── quickstart.md        # validation runs
 ├── units.md             # unit populations at fc549baa

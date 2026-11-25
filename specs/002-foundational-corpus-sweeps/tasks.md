@@ -36,11 +36,13 @@ same phase (D12). Before each new unit, run `python3 scripts/output_check.py`
 | Sweep II remainder (`mapping` for FC16, FC17) | T087–T089 |
 | `theorems` | T090–T106 |
 | `orthogonal-group-direct-sum-structure` | T004–T008 (D9) |
-| `arithmetic-lattice-foundations` | T107 (D22) |
+| `arithmetic-lattice-foundations` | T107: feature 003 T001–T049 (D22) |
 | `refactor-audit` | T108 |
 | `lint-paydown` | T109 |
 | `bloat-audit-loop` | T110 |
-| `abelian-projectivity` | T111 (D22) |
+| `abelian-projectivity` | T111: feature 004 T001–T010 (D22) |
+| Open formalization requests of COMPLAINTS.md | T112–T125 (D23) |
+| Gate, contribution-rule and tooling defects of COMPLAINTS.md | T126–T129 (D23) |
 | `computational-core` | none: feature 001 and `lean-cas-dsl` (D10) |
 | §4a items (tiers, root set, granularity, statement/proof split) | none: settled by D13, D14, D15 |
 
@@ -67,11 +69,37 @@ same phase (D12). Before each new unit, run `python3 scripts/output_check.py`
   last paragraphs of "Sweep III construction boundary"; `docs/agents/corpus-acceptance.md`, the
   paragraph "Descent, closure, representative-independence"; `TODO.md`, the sentence of
   "Execution DAG" that calls the no-proof boundary superseding, and step 4 of "Begin each
-  continuation here"; the vault plan
-  PLAN-FOUNDATIONAL-CORPUS-DEFINITION-SWEEP, "Mathematical boundary", through `agent-memory update`.
-  Decision: D2. Check: each text read against D2 states the same boundary.
+  continuation here". Decision: D2. Check: each text read against D2 states the same boundary.
+- [ ] T129 Run `just test` on `main` and repair each red step before more authoring (LC-07): the
+  axiom audit's `native_decide` proofs in `LeanCategories/Catalogue/Registry/PresentationProbes.lean`
+  and `ComparisonProbes.lean` (COMPLAINTS.md, "`native_decide` in the registry probes"; the registry
+  part is feature 001's owner surface, the green gate is this task's), and any vacuity-audit failure
+  that COMPLAINTS.md, "V1 mathematical source reconciliation", records and the run still shows.
+  Decision: D23. Check: `just test` exits 0 with its log (constitution E6).
+- [ ] T126 [P] Correct `CONTRIBUTING.md` LC-06 (it names a prose-only commit route that does not
+  exist; the commit hook runs `just test-commit`, which runs no check) and LC-07 (its blocker record
+  needs the red gate to pass), and add the lesson of COMPLAINTS.md, "#95 — a completed unit's commits
+  were force-rewritten off `main`" (fetch before a whole-file commit of a shared file; push against
+  the tip that a fetch has just returned); each policy shows a defective contribution beside its
+  replacement (constitution E3). Decision: D23. Check: each policy names an existing command.
+- [ ] T127 [P] Make `scripts/output_check.py` distinguish an explicit catalogue-interface or
+  consumer-intake commit from corpus unit selection, with its regression test in `tests/` on the
+  20-commit population of COMPLAINTS.md, "The corpus output check does not classify explicit
+  catalogue-interface work" (FR-019). Decision: D23. Check: the test passes and the script's
+  verdict on that population is the corrected one.
+- [ ] T128 [P] Give the long recipes (`just test`, `just cache`, `scripts/cache-get.sh`) an early
+  free-space preflight that compares the free space with the size of the artefacts the step writes,
+  and an explicit report of `ENOSPC` (COMPLAINTS.md, "Full host volume can kill Lean gates and strand
+  otherwise-green staged work"; GitHub #150). Decision: D23. Check: a run below the threshold stops
+  before the step with the diagnostic.
 
-## Phase 2: Consumer intake, the orthogonal-group structure theorem (US5, constitution M9)
+## Phase 2: Consumer intake (US5, constitution M9)
+
+Each consumer request is taken in at once (D9, D23). A task of this phase first compares its
+COMPLAINTS.md entry with the source at its own revision; a repair that has landed closes the entry
+with its evidence (LC-05, "On resolution"). The task then delivers what remains, with the search of
+plan.md "Search before authoring", the source statements read from the library, Contract D for a
+definition and Contract T for a theorem.
 
 - [ ] T004 [US5] Search and source the request of COMPLAINTS.md, "Orthogonal groups of orthogonal
   direct sums need their structure theorem": run the search of plan.md "Search before authoring"
@@ -95,6 +123,94 @@ same phase (D12). Before each new unit, run `python3 scripts/output_check.py`
 - [ ] T008 [US5] Prove the checked instance: $\Gamma_{4m}$ is indecomposable for $m \ge 2$
   (Milnor–Husemoller (6.5)). Inputs: T005. Contract T. Check: tier 1; the COMPLAINTS.md entry
   names the proving declarations and stays as the upstream record (LC-11).
+- [ ] T112 [US5] #26: $A_M \cong \Gamma^\perp/\Gamma$ for the overlattice $M$ of the graph
+  $\Gamma_\gamma$ as one linear equivalence (repair the `HasQuotient` instance path on the
+  dual-submodule subtype, or present $M^\vee/M$ through a quotient whose instance path matches); the
+  quadratic refinement of $D^\perp/D$ for an arbitrary isotropic subgroup $D$ of $A_L$; $K = S^\perp$
+  in $M$ (the primitivity half is `OverlatticePrimitive.lean`). Files:
+  `Lattices/Valued/{OverlatticeDiscriminant,OverlatticePrimitive,QuadraticSubquotient}.lean`.
+  Source: Nikulin 1980, Prop. 1.5.1, p. 111. Entries: "An overlattice had no lattice object ...",
+  "The quadratic refinement of an orthogonal sum's discriminant form ...". Consumer: 003 T007.
+- [ ] T113 [US5] #88: the discriminant transport $\alpha_g(L) : A_L \to A_{gL}$ as a functor on the
+  translation groupoid of a valued bilinear space, with $\alpha_{\mathrm{id}} = \mathrm{id}$, the
+  composition law and $\alpha_g(L) = \rho_L(g)$ when $gL = L$; restate
+  `discriminantRangeImage_eq_closure_schreier` as the composite of transports. Files:
+  `Lattices/Valued/{DiscriminantFunctor,CuspSchreierImage}.lean`. Entry: "No discriminant transport
+  along a translate of an integral lattice".
+- [ ] T114 [US5] #88, #171: the per-plane line count of `sec-descent-flags`: the coordinate transport
+  of $\Delta$ into $GL(2, \mathbb Z)$ in a chosen basis of $P$, the correspondence of `PlaneLines` with
+  $\mathbb P^1(\mathbb Q)$, the index 8 and the parabolic subgroup of $T_{\mathrm{Co}}$, then the count
+  (`natCard_cuspOrbits_le_index_GL2` is a bound, not the count); restate `toLine_toSubmodule` at
+  `cobleLine` with its instance. Files: `Lattices/Valued/{CuspPlaneIncidence,CuspPlaneLineCorrespondence,CuspPlaneOrbitCount,CobleCusps}.lean`,
+  `ForMathlib/ModularCuspsGL2.lean`. Entries: "The per-plane line count of `#88` has no formal
+  chain", "`toLine_toSubmodule` at `cobleLine` ...".
+- [ ] T115 [US5] #91: define the structure $C$ of the #91 request and its preservation condition at
+  $C$'s owner, then $\operatorname{Sym}_C(I)$ as a subgroup of `Equiv.Perm I` and the stabilizer
+  under $O(L) \times \operatorname{Sym}_C(I)$ through `Subgroup.comap` of `familyStabilizer`. Files:
+  `Lattices/Valued/FamilyStabilizer.lean`. Entry: "Missing definition: `Sym_C(I)`". The registry row
+  `lim.groups.product` of the neighbouring entry is feature 001's.
+- [ ] T116 [US5] #27: `primitiveEmbeddingLocus.IsClosedUnderIsomorphisms` from `Comma.isIso_left` and
+  `Comma.isIso_right` (proved in `ForMathlib/` as upstream candidates); an `IsRegular (2 : ℤ)`
+  instance from `IsDomain`, and `negIso_ne_refl` without its hypothesis `h2`. Files:
+  `Lattices/Valued/ArrowLoci.lean`, `ForMathlib/`. Entry: "#27 — the arrow-category locus closure
+  ...".
+- [ ] T117 [US5] #162: the correspondence of the walls of $\mathcal H$ through $I$ with the
+  $\mathbb Q$-hyperplanes of $I^\perp/I$, built from the reduced-lattice quotient of the normals, so
+  that `semifanArrangement_isLocallyRational_of_traces` takes no correspondence hypothesis; the
+  selection of the smallest containing member of Lemma 6.6; $I(C_{J,+}) \subseteq J$ from the bound
+  $\dim \le 2$ of real isotropic subspaces; the ambient counting lemma at a conical fibre in
+  signature $(2, n)$ in the form the entry states. Files:
+  `Lattices/Valued/{SemifanArrangement,ConicalMember,ConicalLocus,LocallyRationalDecomposition}.lean`.
+  Source: Looijenga, math/0201218v2, §1B, Def. 6.1, Ex. 6.4, Lemma 6.6. Entries: "The ambient
+  counting lemma of Example 4.3 (b) ...", "The common member type exists, but the trace
+  correspondence ...".
+- [ ] T118 [US5] #167: `StabilizerTransitiveOnWallsThroughLine` for $O(I_{2,9})$ on the
+  $\mathbb Q$-hyperplanes through one primitive isotropic line, then `TraceOrbitCover` and the
+  hypothesis `hsub` of `semifanArrangement_arithmetic_fibre` from `fibreTrace_comp`,
+  `fibreTrace_map_fibreInducedEquiv` and `exists_orbitFamily_of_traceOrbitCover`. Files:
+  `Lattices/Valued/{FibreArithmetic,CobleCusps}.lean`. Entry: "The transfer of the ambient orbit count
+  ... (#167)".
+- [ ] T119 [P] [US5] #37: an order on `FractionRing R` for an ordered domain (`ForMathlib/`, upstream
+  candidate); restate `IsLatticeRational` over `RationalSpan ℤ L` and delete the second carrier
+  `TensorProduct ℤ ℚ L.obj.carrier`. Files: `Lattices/Valued/RationalPolyhedralCone.lean`. Entry: "No
+  order on `FractionRing ℤ` blocks `PointedCone` ...".
+- [ ] T120 [P] [US5] #141: `faceBarycenterCoordinates` at a general `N` at its owner, with the
+  `Fin (n + 1)` statements by specialization; delete `BarySubdiv.baryWeight`, `baryWeight_mem` and
+  their `TODO(LC-12)`. Files: `Topology/{BarycentricSubdivision,BarycentricSubdivisionChainData,BarySubdiv}.lean`.
+  Entry: "`faceBarycenterCoordinates` is `Fin (n + 1)`-indexed ...".
+- [ ] T121 [US5] #180, #181: compare the family of AET Prop. 4.17(4) with the facial completion of
+  Def. 4.16 (derive the relevant-face family from AET's hypotheses, or state the $A_3$ counterexample
+  against AET's data); give `coarsenedFamily` the codomain `Set (PointedCone ℝ M)` through
+  `maximalConePointed`, with the set-level statements as its comparison; confirm the gallery bridge at
+  `ForMathlib/RootSystem/WythoffAscent.lean`. Files:
+  `Lattices/Valued/{WythoffSemifan,WythoffCoarsenedFamily}.lean`. Source: Alexeev–Engel–Thompson,
+  arXiv:1903.09742v3, Def. 4.16, Prop. 4.17; Maxwell, *Wythoff's Construction for Coxeter Groups*,
+  Props. 5.1–5.5. Entries: the four Wythoff and AET entries.
+- [ ] T122 [US5] #86: the transport `IsAdmissiblePair.smul` for $\sigma$ in
+  `diagramAutomorphismGroup A` (finite type, $\tau|_{\sigma X} = -w_{\sigma X}$ with the uniqueness of
+  the longest element, the parabolic Weyl vector coefficients) and the equivalence laws of
+  `SameDiagramOrbit`; then the Araki correspondence from the appendix of Kolb, arXiv:1207.6036v2,
+  pp. 55–58, with Kac–Wang's classification of involutions of the second kind. Files:
+  `Algebra/{RealFormData,SatakeDiagramData}.lean`. Source: Bourbaki, *Lie Groups and Lie Algebras*,
+  Ch. IV–VI, V §6.2; Araki 1962. Entries: the two #86 entries.
+- [ ] T123 [US5] Research P1, polytopes: finite graded posets with rank-preserving maps and the
+  abstract-polytope locus with its automorphisms and forgetful functor; placed convex polytopes with
+  their face inclusions, incidence order and map category; polytopal complexes and selected
+  triangulations with their categories, face posets, realizations and cocones, compared with
+  `Topology/{DeltaComplex,SurfaceTriangulation}.lean`. Entries: "Abstract polytopes need a graded
+  incidence category", "Placed convex polytopes need their face inclusions and map category",
+  "Polyhedral complexes and selected triangulations need common categorical maps".
+- [ ] T124 [US5] Research P1, manifolds: the categories of topological, $C^k$, smooth and complex
+  manifolds with their map classes, the dimension predicates and the realification functor; the
+  integral-affine group $GL(\Lambda) \ltimes V$, integral-affine atlases and maps, and singular
+  integral-affine objects with their regular-locus inclusion (FOUNDATIONS Def. 62.6). Entries:
+  "Manifold categories need fixed dimension, degree and realification maps", "Integral-affine atlases
+  and singular integral-affine spaces need category owners".
+- [ ] T125 [US5] Complex analytic spaces: the structure sheaf of an analytic subset as a sheaf of
+  local rings, analytic spaces as locally ringed spaces locally isomorphic to it, the germ ring as
+  its stalk, and normality; compare with `Analytic/LocalModel.lean` and delete
+  `IsLocallyAnalyticSpace` once its consumers use the owner. Entry: "Missing definitions: complex
+  analytic spaces". Consumers: the Baily–Borel stratification of the entry, feature 004 T008.
 
 ## Phase 3: Sweep III, the realization-stub audit (US1)
 
@@ -317,13 +433,11 @@ closure.
 
 ## Phase 9: Continuations of the corpus
 
-- [ ] T107 [US5] `arithmetic-lattice-foundations`: specify the vault plan
-  PLAN-ARITHMETIC-LATTICE-FOUNDATIONS as a Spec Kit feature (`speckit-specify` to
-  `speckit-analyze`), then execute it. Acceptance: the plan's success criteria (R-modularity;
-  genus over the full ring adeles $\mathbb A_R$; field adeles compared with, not replacing, the
-  integral ring adeles; left and right separation for nondegeneracy; generic-fibre perfection;
-  primitive embeddings with torsion-free cokernel; an explicit comparison for every
-  specialization). Inputs: T086 and the exact theorem units it uses (D11, D22).
+- [ ] T107 [US5] `arithmetic-lattice-foundations`: execute the tasks T001–T049 of feature
+  [003](../003-arithmetic-lattice-foundations/tasks.md) in their document order. Acceptance: 003
+  T049 (every owner row of 003 data-model.md closed, the four theorem programmes' success criteria
+  met, `just test` green). Inputs: T086 and the exact theorem units that a 003 task names (D11,
+  D22).
 - [ ] T108 `refactor-audit`: one corpus-wide pass for duplicated Lean, parallel near-definitions,
   local restatements and misplaced owners; repair each finding at its owner, keeping the realized
   mathematics. Inputs: T107. Decision: D19. Check: a final read finds no identified duplicate or
@@ -335,23 +449,24 @@ closure.
   imports, typeclass and universe design, proof size, rewriting surfaces, test integrity, dead
   bridges and module cohesion; search Mathlib, open upstream work and Reservoir before improving a
   local mechanism. Inputs: T109. Check: every finding repaired or recorded with its blocker.
-- [ ] T111 [US5] `abelian-projectivity`: specify the vault plan PLAN-ABELIAN-PROJECTIVITY as a
-  Spec Kit feature, then execute it, reusing the FC11 and FC12 results. Acceptance: principled
-  holomorphic line bundles, sections, Picard data and closed embeddings; Appell–Humbert with exact
-  hypotheses; theta sections and very-ampleness giving a closed projective embedding; any
-  algebraic-variety conclusion with its Chow or GAGA comparison. Inputs: T110 (D11, D22).
+- [ ] T111 [US5] `abelian-projectivity`: execute the tasks T001–T010 of feature
+  [004](../004-abelian-projectivity/tasks.md) in their document order, reusing the FC11 and FC12
+  results at their owners. Acceptance: 004 T010 (the four success criteria of the plan, `just test`
+  green). Inputs: T110, T125 and 003 T036, T037 (D11, D22).
 
 ## Dependencies & Execution Order
 
 - Phase 1 blocks every later phase (T001: the selector; T002: the source locators; T003: the
-  acceptance rules that reviewers apply).
-- Phase 2 (M9 intake) depends only on Phase 1.
+  acceptance rules that reviewers apply; T129: a green full gate). T126–T128 block nothing.
+- Phase 2 (M9 intake) depends only on Phase 1. T113 and T114 share `Cusp*.lean` with T112 and run
+  after it; the other intake tasks are independent.
 - Phases 3 and 4 produce the Definitions cells; Phase 5 needs all of them; Phase 6 needs Phase 5;
   T086 closes Sweep III.
 - Phase 7 follows T086 by scheduling precedence (D11); T105 needs T087 and T106 needs T089.
 - Phase 8 needs T086 (D12).
 - Phase 9 follows the `Needs` of the `TODO.md` DAG: T107 after Phase 8, then T108, T109, T110,
-  T111 (D11).
+  T111 (D11). T107 is feature 003 and T111 is feature 004 (D22); 003 T007 needs T112 and 004 T008
+  needs T125.
 
 ## Parallel Example: Phase 4, FC06
 
