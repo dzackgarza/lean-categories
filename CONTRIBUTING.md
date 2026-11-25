@@ -229,9 +229,9 @@ a reviewer refuses it.
 
 Mathematics here is written by the formalization author only, from the mathematical requirement
 and its sources. That author never reads the kernel, the language, an acceptance test or a leaf
-to decide what to write, and no agent who writes those writes here
-([`lean-cas-dsl/specs/architecture.md`](https://github.com/dzackgarza/lean-cas-dsl/blob/main/specs/architecture.md),
-"Authors: one role per agent"). A downstream difficulty arrives as a written request for
+to decide what to write. A missing declaration that a consumer needs is a task of this
+repository; the consumer's workstream does it here at once as a formalization author, under
+[constitution M9](.specify/memory/constitution.md#m9-authorship-permitted-inputs-and-immediate-intake). A downstream difficulty arrives as a written request for
 mathematics, and it never shapes the answer. Formalizing an API to fit what a kernel can
 elaborate or a leaf can compute lets an implementation shape the mathematics, which the evidence
 model forbids ([AGENTS.md](AGENTS.md), "The evidence model"). Such work is not accepted however it
@@ -278,7 +278,8 @@ the corpus-wide residue audit must search beyond the known indexes and local
 engines, follow newly discovered repositories/projects/branches/PRs and other
 proof-assistant implementations, and record reproducible dated search evidence in
 the canonical mapping row. Only `unmatched [residue-search-audited]` may enter the
-new-mathematics queue. A worker that cannot access a relevant search surface leaves
+new-mathematics queue. A declaration that a consumer needs keeps the search of LC-09 and does
+not wait for that audit ([constitution M9](.specify/memory/constitution.md#m9-authorship-permitted-inputs-and-immediate-intake)). A worker that cannot access a relevant search surface leaves
 that part open rather than treating absence of access as a negative result.
 
 ## LC-20 — Match every realized definition to the complete prose source

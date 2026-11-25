@@ -153,8 +153,8 @@ owns the separation of concerns.
 
 **Who writes here.** Only the formalization agent writes here: a subagent given the mathematical
 requirement and its sources. It never reads the kernel, the language, a test or a leaf to decide
-what to write. The orchestrator, which owns the kernel, and the test and leaf authors never author
-mathematics here (architecture.md "Authors: one role per agent"; LC-17). Schemas, metadata and validators that express the mathematical or abstract computational
+what to write. A consumer's workstream that needs a missing declaration does that task here as a formalization
+author ([constitution M9](.specify/memory/constitution.md#m9-authorship-permitted-inputs-and-immediate-intake); LC-17). Schemas, metadata and validators that express the mathematical or abstract computational
 API are upstream-owned; their current form is an implementation means, not an immutable requirement. Operations
 exist only where their structure does (LC-16), and no map is partial (LC-14).
 
