@@ -74,15 +74,15 @@ whose object is a corpus object names the same declaration as the corpus record.
 built next and what downstream may use. A record that does not regenerate returns unit selection
 to whoever reads it.
 
-**Independent Test**: At a pinned revision, run `just foundational-frontier` and
-`python3 scripts/foundational_definition_index.py` to standard output. Both exit 0. Every catalogue
-unit has exactly one mapping row. For each registry row that cites a corpus unit, the row's
+**Independent Test**: At a pinned revision, regenerate the frontier (`just foundational-frontier`)
+and the definition index (`python3 scripts/foundational_definition_index.py`). Both exit 0. Every
+catalogue unit has exactly one mapping row. For each registry row that cites a corpus unit, the row's
 declaration equals the declaration of the unit's mapping row.
 
 **Acceptance Scenarios**:
 
 1. **Given** the current `main`, **When** the frontier generator runs, **Then** it exits 0 and
-   names the next ready units of every unticked ledger cell.
+   names the next ready units of every unticked ledger cell that has pending units.
 2. **Given** a unit ID, **When** a consumer reads the definition index, **Then** it obtains the
    source data, the route and the action of that unit.
 3. **Given** a ledger cell, **When** a consumer reads it, **Then** a tick means that the sweep is

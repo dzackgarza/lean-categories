@@ -8,7 +8,7 @@ The tasks cite decisions by their number.
 
 **Decision**: [tasks.md](tasks.md) is the work order of the corpus programme and of the open nodes
 of `TODO.md`. It is executed in document order. `TODO.md` keeps the record of the closed nodes and
-of the earlier passes, and orders no work. Constitution M11 states this (amendment 1.1.0).
+of the earlier passes, and orders no work. Constitution M11 states this (version 2.0.0).
 
 **Source**: constitution M11 and its governance clause; the programme rule that planning happens
 only in the Spec Kit workflow.

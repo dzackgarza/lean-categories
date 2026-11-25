@@ -43,7 +43,7 @@ tasks; then the continuations of the `TODO.md` DAG.
 | M8 | Search record before authoring, in the mapping row | Search before authoring; D4 |
 | M9 | Consumer requests taken in at once | T004–T008 (D9) |
 | M10 | Independent review; content changes go to the mathematician | Contract R; D17 |
-| M11 | This task list in document order; `TODO.md` orders nothing | D1; amendment 1.1.0 |
+| M11 | This task list in document order; `TODO.md` orders nothing | D1; constitution 2.0.0 |
 | M12 | Issues in COMPLAINTS.md; workarounds with the five fields of LC-12 | FR-020; every contract |
 | M13 | No artifact certifies itself; a worker's report is evidence only | Contract R |
 | E1, E4 | Tier 1 per change, under 300 s; long runs at milestones | Checks of this repository |

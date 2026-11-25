@@ -132,9 +132,9 @@ Sources: `CONTRIBUTING.md` LC-09, LC-19; `docs/agents/reuse-gate.md`; kernel con
   review of this repository. While it does that task it states the mathematics at its own
   generality and never shapes it to a kernel or a leaf. It does not supply the mathematics
   downstream instead.
-- Such an issue is taken in at once. It must not wait for its corpus sweep, for the `TODO.md` DAG
-  or for the corpus-wide residue audit of LC-19. It keeps the search of M8 and the source
-  comparison of M2.
+- Such an issue is taken in at once. It must not wait for its corpus sweep, for the corpus task
+  list (M11) or for the corpus-wide residue audit of LC-19. It keeps the search of M8 and the
+  source comparison of M2.
 - A consumer workstream enters the single work stream of this repository as follows: one Lean
   process under the lock (E10); commits by explicit pathspec of its own files (LC-06); the
   import lines in `LeanCategories/All.lean` for the modules that it adds are part of its task.
@@ -157,11 +157,13 @@ interactive work"; `CONTRIBUTING.md` LC-17; kernel constitution C20.
 ### M11. Work lists
 
 - The task list of a Spec Kit feature (`specs/<feature>/tasks.md`) is executed in document order.
-- `TODO.md` is the executable DAG of the foundational corpus and governs corpus work only.
-- Neither list delays the other. A task of a feature that adds a declaration also adds the
+- The foundational corpus programme is ordered only by the task list of feature
+  `specs/002-foundational-corpus-sweeps/`. `TODO.md` is the record of the closed nodes of the
+  earlier corpus DAG and orders no work.
+- Neither task list delays the other. A task of a feature that adds a declaration also adds the
   matching row of `FOUNDATIONAL_DEFINITIONS.tsv` or the corpus mapping when one exists.
 
-Sources: `TODO.md`, opening section; kernel constitution C21; kernel task list, "Execution order".
+Sources: feature 002, research D1; kernel constitution C21; kernel task list, "Execution order".
 
 ### M12. Defect records and workarounds
 
@@ -268,4 +270,4 @@ correction that leaves the obligations unchanged.
 Compliance: each feature plan states its check against every article. Review (M10) checks the
 change against the articles that it touches.
 
-**Version**: 1.0.1 | **Ratified**: 2026-11-25 | **Last Amended**: 2026-11-25
+**Version**: 2.0.0 | **Ratified**: 2026-11-25 | **Last Amended**: 2026-11-25

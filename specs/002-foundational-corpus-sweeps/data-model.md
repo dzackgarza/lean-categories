@@ -23,6 +23,8 @@ the tasks cite.
 | `Unit.dependencies` | earlier units needed to state it | catalogue |
 
 A mixed unit contributes its definitional clause to Sweep III and its result clauses to Sweep IV.
+The fields of a source unit are frozen (FR-003); no task of this feature writes them. A catalogue
+defect found by a task is recorded under LC-05 and repaired in the catalogue as FR-003 states.
 
 ## Mapping row
 

@@ -97,9 +97,10 @@ same phase (D12). Before each new unit, run `python3 scripts/output_check.py`
 ## Phase 3: Sweep III, the realization-stub audit (US1)
 
 Each stub task applies Contract S to every row of its source in units.md, "Sweep III:
-realization-stub-audit population". Files: the mapping records named there and the Lean files of
-each row. Check: `python3 scripts/stub_population.py` lists no row of the source. A closure task
-applies Contract C to the source's Definitions cell.
+realization-stub-audit population", and writes the marker in data-model.md `MappingRow.verdict`.
+Files: the mapping records named there and the Lean files of each row. Check:
+`python3 scripts/stub_population.py` lists no row of the source. A closure task applies Contract C
+to the source's Definitions cell (data-model.md `LedgerCell.ticked`).
 
 - [ ] T009 [US1] FC05 stub rows (6). Decision: D6 (FC05 Definitions is ticked).
 - [ ] T010 [P] [US1] FC13 stub rows (3).
@@ -124,8 +125,9 @@ applies Contract C to the source's Definitions cell.
 
 ## Phase 4: Sweep III, the pending definition units (US1)
 
-Each task applies Contract D to one unit of units.md, "Sweep III: pending definition units".
-Files: the unit's mapping record and its Lean file (named in the row, or the owner that M4
+Each task applies Contract D to one unit of units.md, "Sweep III: pending definition units", and
+appends `[realized]` in data-model.md `MappingRow.verdict` with the route unchanged
+(`MappingRow.route`). Files: the unit's mapping record and its Lean file (named in the row, or the owner that M4
 selects in the directory named). Check: tier 1 on the changed modules; `just foundational-frontier`
 exits 0 and the unit leaves the pending population; Contract R.
 
@@ -276,7 +278,8 @@ revision.
   missing FC16 row.
 - [ ] T088 [US2] Write the mapping rows of the 6,812 FC17 units without a row (units.md, "FC17",
   route `missing`), Contract M, in `corpus/foundational-corpus-mapping-fc17-kerodon.md` and its
-  chapter records, by Kerodon tag order. Search in corpus-wide batches
+  chapter records, by Kerodon tag order, each with data-model.md `MappingRow.route`,
+  `MappingRow.provenance` and `MappingRow.verdict`. Search in corpus-wide batches
   (`python scripts/formalization_corpus.py batch`), adjudicate per unit. Inputs: T086 (D11).
   Check: the generator reports 0 FC17 units of route `missing`.
 - [ ] T089 [US2] Close FC17 Mapping, Contract C for Mapping. Inputs: T088.
@@ -285,8 +288,9 @@ revision.
 
 Each task applies Contract T to every pending theorem unit of its source (units.md, "Sweep IV:
 pending theorem units"), in dependency order with source order as the tie-break, and ends with
-Contract C for the source's Theorems cell. Files: the source's mapping records and the Lean
-owners of its definitions. Inputs: T086; per source, its ticked Mapping cell. Decisions: D4, D12,
+Contract C for the source's Theorems cell (data-model.md `LedgerCell.ticked`); each unit's search
+record and `[realized]` go in data-model.md `MappingRow.verdict`. Files: the source's mapping
+records and the Lean owners of its definitions. Inputs: T086; per source, its ticked Mapping cell. Decisions: D4, D12,
 D13. Check: tier 1 per unit; the source leaves the pending population; `just test` at the cell's
 closure.
 
