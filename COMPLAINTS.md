@@ -38,6 +38,285 @@ does not justify weakening a dependent theorem or starting unrelated work.
 
 ## Mathematical issues
 
+### An overlattice had no lattice object, and the quotient of its metric dual diverges in `whnf` (#26)
+
+- **Need:** `A_M = M^∨/M` for an integral overlattice `M` of `L`, and Nikulin's §1.5 Prop. 1.5.1
+  (`A_M ≅ Γ^⊥/Γ`, `M = S ⊕_γ K`). `Overlattice R L` (`Gluing.lean:26`) is a subtype of a submodule
+  of the rational span with an integrality property, not an `IntegralLatticeCat`, so `M^∨/M` had
+  nothing to be a quotient of. **Half done: the object now exists.**
+- **Done — `OverlatticeLattice.lean`:** `Overlattice.pairing` (the ambient rationalized form read
+  back in `R` through integrality, `algebraMap_pairing` its defining property),
+  `Overlattice.bilinMap`, `bilinObject`, `lattice : IntegralLatticeCat R` with carrier
+  `↥M.carrier` (given `Module.Projective R ↥M.carrier`), `lattice_pairing`; and projectivity over a
+  PID, `isTorsionFree_carrier` + `moduleFinite_carrier` + `free_of_finite_torsionFree` +
+  `projective_of_pid`, so `latticeOfPID` and `exists_basis_gram` (a `Fin n`-basis from
+  `Module.basisOfFiniteTypeTorsionFree'`, with Gram matrix `M.pairing (b i) (b j)`, i.e. exactly
+  the ambient values by `algebraMap_pairing`). Axioms
+  `[propext, Classical.choice, Quot.sound]` throughout.
+- **Done — `OverlatticeDiscriminant.lean`:** `Overlattice.discMap : ↥M.dualSubmodule →ₗ A_L` and
+  `discMap_mem_glueOrthogonal : discMap x ∈ Γ^⊥` — the class map and its inclusion into the
+  orthogonal complement of the gluing subgroup. That is one half of `A_M ≅ Γ^⊥/Γ`.
+- **The block.** The other half needs the quotient as a codomain:
+
+  ```lean
+  noncomputable def discPsi : ↥M.dualSubmodule →ₗ[R] (L.obj.defect ⧸ M.glueSubgroup)
+  ```
+
+  It reports `(deterministic) timeout at 'whnf'` at 200000 heartbeats, and at 800000. The same
+  definition, written with `M` an implicit section variable and with only three declarations in the
+  file, elaborates in about 1.5 s; adding the three preceding declarations of
+  `OverlatticeDiscriminant.lean` to that file reproduces the divergence, and `M` explicit in the
+  short file does not. So the trigger is the `defeq` chain behind `M.glueSubgroup`
+  (`LinearMap.range` of `metricDualToDiscriminant ∘ M.toMetricDual`, whose type mentions
+  `metricDual R L`), the same `abbrev`-unfolding family as the `metricDual R (S ⊥ K)` trap this
+  issue hit before (`metricDual` and `rationalizedForm` are both `abbrev`s). Naming the lattices,
+  which fixed that one, does not fix this one; the workaround that did work upstream — prove the
+  statement without the offending term — is what the kernel/range step still needs.
+- **The mathematics, settled:** with `Γ = M.glueSubgroup` and `D = dualSubmodule M.carrier`,
+  `ker (mkQ Γ ∘ discMap) = M` (if `[x] ∈ Γ` then `x - m ∈ ker (metricDualToDiscriminant) =
+  range (toMetricDual) = integralImage ⊆ M`), and `range (mkQ Γ ∘ discMap) = Γ^⊥ ⧸ Γ` (every class
+  of `Γ^⊥` has a representative `y ∈ L^∨` pairing integrally with all of `M`, so `y ∈ D`). Both are
+  written out as Lean proof scripts that compile up to the divergent `discPsi`.
+- **Not started:** the primitive-embedding half (`S`, `K` primitive in `M`, `K = S^⊥`). With
+  `Overlattice.lattice` these become statable (`Module.IsTorsionFree R (M ⋯ ⧸ range …)` for
+  primitivity, TauCeti's shape in `Overlattice/Graph.lean`
+  `isTorsionFree_quotient_range_glueLeft`/`_glueRight` and `mem_glueAlongDiscriminant_left/right_iff`
+  for the coordinate intersections); they are not stated yet, so no statement changed.
+- **Update — the `whnf` block was misdiagnosed, and is gone.** On a fresh probe the divergence is
+  not the quotient codomain at all: `glueClassMap : ↥M.dualSubmodule →ₗ (A_L ⧸ Γ)` elaborates in
+  about two seconds. What diverged was the term `map_sub (metricDualToDiscriminant R L) a b` used to
+  *build* a rewrite, i.e. `(map_sub …).trans …` with `a b : ↥(metricDual R L)`: that reports
+  `timeout at 'whnf'` (and `'isDefEq'`) at 1000000 heartbeats. `Gluing.lean:245-252` already
+  subtracts metric-dual classes and compiles, and its form is the fix:
+  `rw [show f (a - b) = f a - f b from map_sub f a b]`. With that one change the kernel and range
+  of the class map are proved (`Overlattice.ker_glueClassMap`, `Overlattice.range_glueClassMap`);
+  a file whose `hdiff` step is a `sorry` compiles in 1.7 s and the same file with the `.trans` form
+  times out three times — a clean bisection on the single term.
+- **Update — what still blocks the single `≃ₗ`.** Not mathematics: `HasQuotient ↥M.dualSubmodule
+  (Submodule R ↥M.dualSubmodule)` has no instance. `Submodule.hasQuotient` is stated at
+  `Ring.toSemiring` and the ambient carries `CommRing.toCommSemiring.toSemiring`, so the instance
+  is an instance-path mismatch of exactly the family `ModuleCat.zsmul_eq_smul`
+  (`Modules/Bilinear/Valued/Fixed.lean`) was written for. `↥M.carrier ⧸ _` fails identically, so it
+  is not specific to the metric dual, and `RationalSpan R L ⧸ _` succeeds, so it is the subtype
+  (rather than the ambient) that loses the instance. Stating `M^∨/M ≅ Γ^⊥/Γ` as one equivalence
+  needs either that instance or a presentation of `M^∨/M` through a quotient whose instance path
+  matches. The isomorphism itself is in the record twice over: `ker_glueClassMap` gives injectivity
+  modulo `M` and `range_glueClassMap` gives the image `Γ^⊥ ⧸ Γ`.
+- **TauCeti:** has no equivalent of the missing object to port — `TauCeti.IntegralLattice V` is a
+  submodule of a fixed `ℚ`-vector space with no projectivity field, so an overlattice is a lattice
+  there for free. The gap here is the `Module.Projective` field of `LatticeCat`'s object property
+  (`Basic.lean:39`), and `Overlattice.projective_of_pid` closes it over a PID from finiteness and
+  torsion-freeness — no separate lattice representation was introduced.
+
+
+### The quadratic refinement of an orthogonal sum's discriminant form diverges in `isDefEq` at the sum's `metricDual` — resolved, and the divergence located (#26)
+
+- **Status: resolved** by `evenDiscriminantQuadraticMap_orthogonalSum` in
+  `LeanCategories/Lattices/Valued/OrthogonalSumDiscriminant.lean`, together with
+  `orthogonalSumSpanFst_rieszEmbedding`, `orthogonalSumSpanSnd_rieszEmbedding`,
+  `rationalizedForm_orthogonalSum_prodEquiv` and `isFractionFieldPerfect_orthogonalSum` in the same
+  file. Axiom audit: `[propext, Classical.choice, Quot.sound]`. The entry is kept because the
+  divergence below is a live trap for the next lemma about the sum's `metricDual`, and because the
+  diagnosis it carried (a diverging substitution of a surjectivity witness) was wrong in a way that
+  cost a session.
+- **Need (met):** for even lattices `S`, `K` and `z ∈ A_(S ⊥ K)`,
+  `q_(S ⊥ K)(z) = q_S(z₁) + q_K(z₂)` where `(z₁, z₂) = evenDiscriminantDefectMap S K z`. This is
+  the ambient form of Nikulin, *Integral symmetric bilinear forms and some of their applications*,
+  Math. USSR Izv. 14 (1980), Prop. 1.5.1, p. 111 (`q_S ⊕ q_K` on `A_S ⊕ A_K`), and it is the last
+  input of #26's results 3 and 4.
+- **What the proof needed:** nothing from the metric dual. `rieszEmbedding` alone suffices: the two
+  coordinates of a Riesz vector are the Riesz vectors of the two coordinate restrictions
+  (`orthogonalSumSpanFst_rieszEmbedding`, `orthogonalSumSpanSnd_rieszEmbedding`), the identity then
+  reduces to `rationalizedForm_orthogonalSum_fst_snd` at one element of the rational span, and the
+  class is handled by `Submodule.Quotient.induction_on` on its representative. No `metricDual`
+  coercion, no `LinearEquiv` supplied by a surjectivity witness and no
+  `mem_metricDual_orthogonalSum_iff` occurs in the proof.
+- **Evidence — the actual divergence, reproduced.** It is not the substitution of a witness:
+  `obtain ⟨x, rfl⟩ := metricDualToDiscriminant_surjective R (S ⊥ K) hLM z` followed by `rfl`
+  succeeds at `maxHeartbeats 200000`, and `metricDualToDiscriminant_surjective` at a single factor
+  is instant. It is `isDefEq` between two presentations of `metricDual R (S ⊥ K)` when the lattice
+  arguments are left to unification. Minimal divergent goal state (Lean 4.36.0, this checkout,
+  `maxHeartbeats 200000`; reported as `(deterministic) timeout at 'whnf'` and at `'isDefEq'`):
+
+  ```lean
+  example (v : RationalSpan R (orthogonalSum L M))
+      (hv : v ∈ metricDual R (orthogonalSum L M)) : True := by
+    obtain ⟨hx, hx'⟩ :=
+      (mem_metricDual_orthogonalSum_iff (⟨v, hv⟩ : metricDual R (orthogonalSum L M))).mp hv
+    trivial
+  ```
+
+  With `mem_metricDual_orthogonalSum_iff (L := L) (M := M) (x := v)` — the lattices named rather
+  than inferred — the same three lines elaborate instantly, so the loop is unification-driven and
+  not term-driven. **Responsible declarations:** `metricDual`
+  (`Lattices/Valued/MetricDual.lean:34`, itself an `abbrev`, body
+  `(rationalizedForm R L).dualSubmodule (integralImage R L)`) together with `rationalizedForm`
+  (`Lattices/Valued/Rationalization.lean:54`), also an `abbrev`, so `whnf` runs through both into
+  `LinearMap.compr₂ (BilinearMap.baseChange …) (AlgebraTensorModule.rid …).toLinearMap`. At
+  `L := orthogonalSum L M` that exposes `orthogonalSum`'s `bilinMap` (`Constructions.lean:230`) at
+  unsolved lattice metavariables, and `isDefEq` does not terminate there within 4000000 heartbeats.
+  Raising the limit does not help; naming the lattices does. Nothing in Mathlib's `Dual` or
+  `TensorProduct` neighbourhood is at fault: the same `isDefEq` at a plain lattice is instant, and
+  `metricDual R (S ⊥ K) = metricDual R (S ⊥ K)` is `rfl`-fast.
+- **Consequence for later work:** a lemma stated at the sum and taking a `metricDual`-membership
+  hypothesis must be applied with `(L := …) (M := …)` explicit. This is why the metric-dual half of
+  the file (`metricDualToValueDual_orthogonalSum_fst` and below) takes
+  `hx : orthogonalSumSpanFst L M x ∈ metricDual R L` as a named hypothesis: it is never discharged
+  from `x.2`.
+- **Coverage:** reproduced with the `whnf`, `isDefEq` and `«synthesize pending MVars»` reports; the
+  statement alone (with `sorry`) elaborates at 200000 heartbeats, so the earlier claim that the
+  statement was cheap held, and the claim that the witness substitution was at fault did not. Not
+  inspected: whether a `noncomputable def` (rather than `abbrev`) spelling of `rationalizedForm`
+  removes the trap; left open because changing it touches every file in `Lattices/Valued`, and the
+  workaround is one line.
+- **Still unfinished in #26:** result 3, the overlattice discriminant theorem `A_M ≅ Γ^⊥/Γ` (`M`
+  the overlattice attached to the graph `Γ_γ`), and result 4, primitivity of the two factors with
+  `K = S^⊥`. Neither can be stated yet: the repository has no lattice structure on an
+  `Overlattice R L`, so `A_M = M^∨/M` has no object to be about, and
+  `isotropicSubquotientQuadraticMap` (`QuadraticSubquotient.lean:151`) builds the refinement of
+  `D^⊥/D` only for `D` cut out by a submodule of the carrier, not for an arbitrary isotropic
+  subgroup of `A_L`. The cleared route supplies result 3's two inputs (`q_S ⊕ q_K` over an
+  arbitrary class, and perfection at the sum), not its statement.
+
+### The per-plane line count of `#88` has no formal chain: the adapted basis and the line/`ℙ¹(ℚ)`
+correspondence are still absent (the image `Δ` and its action have landed)
+
+- **Need:** the number of orbits of the image `Δ ≤ Aut(P)` of the plane stabilizer
+  `MulAction.stabilizer (OrthogonalGroup L) P` on the primitive `ℤ`-lines lying in a primitive
+  isotropic plane `P` — `sec-descent-flags` of
+  `writing/coble/computations/discriminant-form-descent.md` at `b636d06011`. The count is for `Δ` and
+  not for `Aut(P) ≅ GL(2, ℤ)`: the source records the `T_Co` integral parabolic image as a proper
+  subgroup of the finite stabilizer with `|F/S| = 8`, so a `GL(2, ℤ)` count counts a different object.
+- **Evidence:** the four links of the chain and their state in the tree at `eefd1728`, updated at
+  the commit that closed link 2 (`CuspPlaneIncidence.lean`, "the image of the plane stabilizer in
+  the plane's automorphism group").
+  1. An adapted `ℤ`-basis of `P`: absent. The link is moreover weaker than it reads, because the
+     restriction of the form to an *isotropic* plane is identically zero, so "adapted to the
+     restriction" has no content here and what is needed is only `Basis (Fin 2) R ↥P.toSubmodule`.
+  2. `Δ` and its action on `PlaneLines`: **closed.** `planeStabilizerRestrictHom` (the restriction
+     `↥(MulAction.stabilizer (OrthogonalGroup L) P) →* (↥P.toSubmodule ≃ₗ[R] ↥P.toSubmodule)`,
+     multiplicativity as its own lemma `planeStabilizerRestrict_mul`) and
+     `planeStabilizerImage P = (planeStabilizerRestrictHom P).range` supply `Δ`; the action is
+     `instMulActionPlaneStabilizerImage` through `planeLineTransport`, and its well-definedness is
+     the primitivity transport `planeSubmoduleTransport_primitive`, via
+     `isPrimitiveSubmodule_comap_subtype_iff` (for `q ≤ P` with `P` primitive, `L ⧸ q` is
+     torsion-free exactly when `P ⧸ q` is) and `IsPrimitiveSubmodule.map_equiv_iff` applied inside
+     `P` — an automorphism of `P` is not one of `L`, so the equivalence cannot be applied to the
+     line directly. The action needs `[IsDomain R]` (the saturation form of primitivity). What
+     remains of this link is only the choice of a `ℤ`-basis of `P` and the coordinate transport of
+     `Δ` into `GL(2, ℤ)`.
+  3. The correspondence `PlaneLines L P ↔ ℙ¹(ℚ)`: absent. `PlaneLines` (`CuspPlaneIncidence.lean:126`)
+     is a subtype of `PrimitiveIsotropic L 1`, and nothing in the tree maps it to a projective line.
+  4. The count: `ForMathlib/ModularCuspsGL2.lean:196` and `:201` give finiteness of the cusps of a
+     finite-index `Γ : Subgroup (GL (Fin 2) ℤ)` and the bound `natCard_cuspOrbits_le_index_GL2`;
+     there is no exact count, `[Γ.FiniteIndex]` is a hypothesis, and no subgroup of `GL (Fin 2) ℤ` is
+     attached to a plane anywhere outside `ForMathlib/ModularCuspsGL2.lean`.
+- **Gap and impact:** the count cannot be stated until links 1 and 3 exist, so `sec-descent-flags`
+  still has no formal content for the plane case. The mathematical obstruction the source's wording
+  hides — that an automorphism of `P` is not an automorphism of `L`, so the primitivity of a line in
+  `L` must be transported through `Δ` — is now discharged by
+  `planeSubmoduleTransport_primitive`; what stays open is that a line's *coordinates* in a basis of
+  `P` are not yet available, because no basis is chosen. Until link 3 exists an orbit of `Δ` on
+  `PlaneLines` is not a point of `ℙ¹(ℚ)` and the corpus cusp bound does not apply to it.
+- **Coverage:** Searched — `scripts/formalization_corpus.py` at the corpus head used on
+  `2026-11-17`, under `isotropic plane primitive basis hyperbolic partner submodule`, `primitive
+  vectors projective line rational points bijection`, `GL(2,Z) orbits on primitive vectors cusps`,
+  `Submodule.equivMapOfInjective`, `image of stabilizer action on submodule automorphism group
+  restriction`, `Projectivization.mk Units primitive vector`, `hyperbolic partner isotropic vector`,
+  together with the tree-wide searches `toSubmodule ≃ₗ`, `planeStabilizerImage`,
+  `PlaneLines.*≃`, `Projectivization`, `GL (Fin 2) ℤ`. Found — TauCeti's
+  `LinearAlgebra/QuadraticForm/Witt/TotallyIsotropic.lean` (hyperbolic partners over a field, which
+  `IsotropicQuotientSignature.exists_hyperbolicPartner` already mirrors), Mathlib's
+  `Submodule.equivMapOfInjective` and `Projectivization.mk`, and the repository's own
+  `exists_hyperbolicPartner`. Conclusion — no source supplies links 2 or 3; both are glue that has
+  not been written, and link 1 is a free-module statement. Confidence — high for the tree, high for
+  the corpus (two queries returned `status=500 context deadline exceeded` on the first batch and were
+  rerun individually with narrower terms). Gaps — the `T_Co` index `8` and the parabolic subgroup `S`
+  are not formalized anywhere, so link 4 can be at best a bound even after links 2 and 3.
+- **Repair link:** `#88`'s remaining stage-1 work and its child `#171`. Link 2 landed in
+  `CuspPlaneIncidence.lean` (`planeStabilizerImage`, `planeLineTransport`,
+  `planeSubmoduleTransport_primitive`), with the axiom set of every declaration exactly
+  `[propext, Classical.choice, Quot.sound]`; the remaining order that does not beg the question is
+  the basis and the coordinate transport of `Δ` into `GL(2, ℤ)`, then the `PlaneLines ↔ ℙ¹(ℚ)`
+  correspondence, and only then any count — with `natCard_cuspOrbits_le_index_GL2` read as what it
+  is, a bound.
+
+### No discriminant transport along a translate of an integral lattice
+
+- **Need:** the discriminant-form descent page (`writing/coble/computations/discriminant-form-descent.md`
+  at `b636d060`, `thm:discriminant-transport-functor`, item 3 of `thm:schreier-discriminant-image`)
+  needs, for `g` an isometry of an integral lattice `L` and `gL` the translated lattice on the same
+  rational space, the isomorphism of discriminant forms `α_g(L) : A_L → A_{gL}`, `[y] ↦ [g y]`, with
+  `α_{id} = id`, `α_{g₁g₂}(L) = α_{g₁}(g₂L) ∘ α_{g₂}(L)`, and `α_g(L) = ρ_L(g)` when `gL = L`. Each
+  Schreier loop `ρ_L(k_{s,p})` then factors through the translate `L_p = t_p L` into a composite of
+  such transports, which is what makes its image intermediate between two orbit points.
+- **Evidence:** the repository's owner of the discriminant module is the object
+  `IntegralLatticeCat` together with `OrthogonalGroup.discriminantRepresentation` at a *fixed*
+  lattice (`Lattices/Valued/DiscriminantAction.lean`, `Lattices/Valued/IsotropicDiscriminantAction.lean`);
+  the discriminant of a translate by an isometry has no owner. Searched (formalization-corpus API,
+  manifest head `6d97e8ad`): `discriminant of a translate of a lattice isometry` and `dual lattice of
+  an isometric image discriminant form`; found TauCeti `Algebra/Module/ZLattice/Shell.lean` and
+  `.../RealModel.lean`, whose lattice model carries its own dual inside a vector space, so their
+  transport is the trivial one and does not apply to a category whose objects carry their carriers;
+  `discriminant representation orthogonal group stabilizer image` returns only the TauCeti roadmap's
+  target signatures.
+- **Gap and impact:** `Lattices/Valued/CuspSchreierImage.lean` states
+  `discriminantRangeImage_eq_closure_schreier` with the discriminant actions at the single lattice
+  `L`, which is a true equality of the same image but does not expose the per-translate
+  factorisation. The gap is the readers' ability to check the page's composite
+  `α_{t_{sp}^{-1}}(L_{sp}) ∘ α_s(L_p) ∘ α_{t_p}(L)`; the generated subgroup itself is unaffected.
+  Consumers: the descent count over an orbit of lattices, and any later statement that identifies a
+  loop's discriminant action with a product of transport maps.
+- **Coverage:** the search above is over the indexed corpus only; Mathlib has no `A_{gL}` owner (its
+  `LinearAlgebra/IntegralLattice` neighbours are `Mathlib`'s own valued-lattice API, read directly).
+  Confidence: the absence is in the repository, which is what the ported statement needs; an
+  upstream Mathlib transport was not located.
+- **Repair link:** issue #88's `discriminantRangeImage_eq_closure_schreier`; the resolution is a
+  functor `α` on the translation groupoid of a valued bilinear space and the comparison
+  `α_g(L) = ρ_L(g)` at a self-isometry, which would let the Schreier image be restated as the page's
+  composite. Until then the single-lattice form stays, and the module docstring records the
+  differential.
+
+### Mathlib has no symmetric monoidal structure on `SheafOfModules` and no `O_X`-algebra layer
+
+- **Need:** lean-categories#22 needs the category of quasi-coherent commutative `O_X`-algebras on an
+  arbitrary scheme `X`, whose objects are commutative monoid objects in `Scheme.Modules` whose
+  underlying sheaf of modules is quasi-coherent, and relative Spec as an anti-equivalence from that
+  category to affine schemes over `X` (Definition 36.5; Stacks 01LL, 01LQ; Hartshorne II.5 and II
+  Ex. 5.17).
+- **Evidence:** Mathlib at `7692d7fbbf9cad52d465b18742a9838e5d0c84c5` provides
+  `SheafOfModules` (`Mathlib/Algebra/Category/ModuleCat/Sheaf.lean`), `Scheme.Modules`
+  (`Mathlib/AlgebraicGeometry/Modules/Sheaf.lean`), `SheafOfModules.IsQuasicoherent`
+  (`Mathlib/Algebra/Category/ModuleCat/Sheaf/Quasicoherent.lean`), the tilde model and
+  `tildeEquiv` (`Mathlib/AlgebraicGeometry/Modules/Tilde.lean`), `IsAffineHom`
+  (`Mathlib/AlgebraicGeometry/Morphisms/Affine.lean`) and — decisively — the relative gluing of
+  schemes over the small affine Zariski site
+  (`Mathlib/AlgebraicGeometry/Sites/SmallAffineZariski.lean`: `AffineZariskiSite`,
+  `relativeGluingData`, `Scheme.Cover.RelativeGluingData`, `directedCover`, `Coquifibered`).
+  It does not provide a monoidal structure on `SheafOfModules` (its monoidal structure stops at
+  presheaves of modules, `Mathlib/Algebra/Category/ModuleCat/Presheaf/Monoidal.lean`), nor the
+  algebra-of-sections functor, nor the localization of algebra sections over basic opens, nor any
+  `relativeSpec`.
+- **Gap and impact:** without a symmetric monoidal structure on `Scheme.Modules`, "sheaf of
+  `O_X`-algebras" cannot be written as a monoid object at all, so neither the relative-Spec
+  universal property nor the affine/absolute comparison theorems can be typed. Everything in
+  lean-categories#22, #18's general-base relative Spec and #17's toric gluing is downstream.
+- **Coverage:** Searched the formalization corpus (queries and hits recorded in
+  `LeanCategories/AlgebraicGeometry/RelativeSpec/Basic.lean`); Found Tau Ceti's
+  `AlgebraicGeometry/RelativeSpec/*` and its `Algebra/Category/ModuleCat/Sheaf/TensorProduct/*`
+  (commit `ca32605ff53921fa0689dd312618b7cfaafa7e43`, Apache 2.0) and CBirkbeck/AINTLIB's
+  independent `Scheme.Modules.monoidalCategory`; Conclusion: the layer is a Mathlib candidate,
+  not a research problem; Confidence: high for the named modules, which were read in full;
+  Gaps: Mathlib's own plans for a sheaf-of-modules tensor product were not inspected.
+- **Repair link:** ported here, every module marked `## Provenance (lean-categories#22)` and
+  registered in `LeanCategories/All.lean`: the monoidal structure
+  (`LeanCategories.Algebra.Category.ModuleCat.Sheaf.TensorProduct.Monoidal`), the algebra layer
+  (`LeanCategories.AlgebraicGeometry.Modules.Algebra.Sections`,
+  `LeanCategories.AlgebraicGeometry.Modules.Localization`) and relative Spec
+  (`LeanCategories.AlgebraicGeometry.RelativeSpec.{Basic,Functor,AffineFunctions,Unit,Counit,
+  Equivalence,MorphismProperties,Affine}`). These stay upstream candidates until Mathlib owns them;
+  relative Proj (`TauCeti/AlgebraicGeometry/RelativeProj/*`) is not ported yet.
+
 ### V1 mathematical source reconciliation with the later main branch (2026-10-28)
 
 - **Need:** preserve the independently authored source in PRs #93 and #94 together
@@ -582,6 +861,59 @@ not a decidable quotient equality or a new mathematical comparison.
 - **Optimal:** `⊥` as a symmetric monoidal structure on `QuadModuleCat R W`; `IsometryClass R W`
   is then its skeleton monoid. TODO(LC-12) in the file.
 
+### Missing definition: `Sym_C(I)`, the permutation group appearing in #91's stabilizer item
+
+- **Need:** lean-categories#91's consumer clause asks for the stabilizer of a family
+  `v : I → L` of lattice vectors "under `O(L) × Sym_C(I)` itself". `Sym_C(I)` is used as a group
+  acting on the index set; the stabilizer needs that group as a subgroup of `Equiv.Perm I`.
+- **Searches:** repository-wide `Sym_C`, `SymC`, `symC` (no declaration); corpus
+  `stabilizer product group family vectors`, `symmetric group acting on functions orbit stabilizer
+  lattice`, `MulAction stabilizer Pi` (0 files each). Mathlib has `Equiv.Perm` and the stabilizer
+  API, and no cone-, fan- or structure-preserving permutation subgroup.
+- **Found:** nothing that names `C` or the subgroup. The repository's nearest objects are the
+  pointwise stabilizers of submodules and of flags (`MulAction.stabilizer (OrthogonalGroup L) P`,
+  `Lattices/Valued/CuspFlagFiniteness.lean:46`, `OrthogonalGroup.lean` `submoduleStabilizer`),
+  none of which acts on an index set.
+- **Did instead:** `Lattices/Valued/FamilyStabilizer.lean` defines the action of
+  `O(L) × Equiv.Perm I` on families, the stabilizer `familyStabilizer` of a family, its
+  membership criterion, the image `familyStabilizerImage` in `O(L)`, and
+  `image_range_of_mem_familyStabilizer`. That is the full-`Equiv.Perm` form of the item: every
+  `Sym_C(I)` would be a subgroup of it, so the delivered statements lose only the carrier of
+  `Sym_C(I)`, not the stabilizer construction.
+- **Gap and impact:** a consumer cannot state the stabilizer *under `Sym_C(I)`* — only under
+  `Equiv.Perm I` — until `C` and its preservation condition are defined. No mathematics in the
+  delivered file blocks that step; the missing piece is the definition, whose source (`C`) is not
+  in this repository.
+- **Optimal:** `Sym_C(I) : Subgroup (Equiv.Perm I)` (or a bundled permutation group) at whatever
+  owner defines `C`, then `familyStabilizer` read through `Subgroup.comap`/`subgroupOf` along
+  `Sym_C(I) × O(L) → O(L) × Equiv.Perm I`.
+
+### Missing construction: no registered binary product in the category of groups
+
+- **Need:** lean-categories#91's consumer clause asks for products of subgroups of lattice
+  orthogonal groups through the catalogue. The limit presentations for groups
+  (`CategoryId.groups`, `Catalogue/Semantics/Algebra/Catalogue.lean:14`) cover the kernel only:
+  `lim.groups.kernel` (`Catalogue/Semantics/Limits/Registration.lean:419`) has no product row.
+- **Searches:** formalization-corpus API `MonoidHom.inl GrpCat product` (0 files), `binary product
+  GrpCat` (24 files, none a product cone in groups), `"MonoidHom.inl" "BinaryFan"` (0 files);
+  Mathlib `Mathlib/Algebra/Category/Grp/Limits.lean` (`GrpCat.hasLimits`, whose apex is a `Shrink`
+  of the sections of the forgetful functor, not `G × H`).
+- **Found:** this repository had `LeanCategories.Algebra.kernelFork` / `kernelLimitCone`
+  (`Algebra/GroupKernel.lean`) and nothing else presenting a `Grp` limit concretely.
+- **Proved here:** `LeanCategories.Algebra.groupProduct`, `groupProductFst`, `groupProductSnd`,
+  `groupProductFan`, `groupProductIsLimit`, the inclusions `groupProductInl`/`groupProductInr`
+  with their component lemmas and the universal-property characterisations
+  `eq_groupProductInl`/`eq_groupProductInr`, and `groupProductIsoProd`
+  (`Algebra/GroupProduct.lean`).
+- **Gap and impact:** no `normalized_registry .limit` row of shape `"product"` in `cat.groups`
+  names them, so the kernel cannot dispatch a product of groups and a consumer reaches the product
+  only as Lean, not through the catalogue. No mathematical hypothesis blocks the row: the cone and
+  its `IsLimit` are proved, so only the registration and its checks are missing.
+- **Optimal:** one row `lim.groups.product` with `declaration := groupsProduct` (a
+  `LimitCone (pair X Y)` built from `groupProductFan`/`groupProductIsLimit`),
+  `standardization := diagramIsoPair` and `dataConstructor := BinaryFan.mk`, plus the registration
+  checks that file runs at elaboration.
+
 ### Missing theorem: the Lorentzian negative cone, coordinate-free
 
 - **Need:** the negative cone of a real quadratic form of negative index one has two convex
@@ -842,7 +1174,50 @@ not a decidable quotient equality or a new mathematical comparison.
   of a registered category). Resolved when `obj.sets.units` cites `units_underlying` and
   `mor.sets.units_inverse` cites `units_inverse`.
 
+### `native_decide` in the registry probes: the axiom audit's red step on main
+
+- **Repaired (the two #91 sites):** `RouteDiscoveryProbes.id99.simpleRoutesOnly` and
+  `id99.explicitRevisiting` (`Catalogue/Registry/ComparisonProbes.lean:116`, `:124` — landed on main
+  by `9c6d4ebb`) are now `id99.simpleRoutesOnlyCheck` / `id99.explicitRevisitingCheck`, checked by
+  `run_cmd` + `Lean.Meta.evalExpr` at elaboration; no declaration carries `Lean.ofReduceBool`.
+  No theorem is available at them: `decide` fails at `:116` (stuck at `(routes …).size.beq 1`;
+  `SemanticState.routes` is `partial`, `Registry/Semantic.lean:1729`) and at the `routeEdges?` term
+  (`:124`, `Array.forIn`); `simp` and `rfl` fail too.
+- **Not repaired (the four #99 sites):** `PresentationProbes.id99.oneCellPresentation`,
+  `id99.unaryEdgeDerived`, `id99.twoInputEdgeNotDerived`, `id99.productSourceRows`
+  (`Catalogue/Registry/PresentationProbes.lean:50`, `:57`, `:65`, `:70`, from `4daba6d9`) still fail
+  the audit, which therefore stays red on `main`. `decide` fails on them as well (`:50` stuck at
+  `constructorSpecimen.presentation.oneCells.size.beq 1`). Owner: #99.
+- **Optimal:** rewrite `SemanticState.routes` (structural on `fuel`, `List.foldl`) and
+  `routeEdges?`, `presentation`, `edgesFrom` over `List`; all six then kernel-reduce and `decide`
+  restores theorems. Tracked in the commit message of #91's registration commit.
+
 ## Workflow papercuts
+
+### `Topology/BarySubdiv` does not elaborate at Mathlib master: `FreeAbelianGroup` renamed
+
+- **Need:** the gate `just test` must build the `LeanCategories.lean` closure against the Mathlib
+  head the worktree resolves. `LeanCategories/Topology/BarySubdiv.lean` (the #141 certificate port
+  `0977bedd`, imported at `LeanCategories/All.lean:48`) must still elaborate there.
+- **Evidence:** on 2026-11-17, worktree `.scratch/wt167` at `380b8da6`, `MATHLIB_NO_CACHE_ON_UPDATE=1
+  lake update` moved the pin from `6d97e8ad9c32` (`lake-manifest.json` at main `55966097`) to Mathlib
+  master `d9a73ae1ea9a`. `just test` then built 11759 of 11778 jobs and failed in that module:
+  `:191` `failed to synthesize instance AddCommMonoid (FreeAbelianGroup (List (Finset (Fin N))))`,
+  with follow-on errors at `:202` (`Not a definitional equality` of the `subdivAux` equation), `:207`,
+  `:226`, `:238`, `:254`, `:1107`, `:1409`, `:1488`, `:1618`, `:1723`. The accompanying deprecation
+  notes name the replacement: `FreeAbelianGroup` → `FreeAddCommGroup` (`of`, `map`, and the additive
+  instance path). The vacuity audit never ran: the recipe was terminated after the build step.
+- **Gap and impact:** the gate is red at the master pin for a reason independent of the module under
+  work, so no worker can certify a *full* gate at that head until the file is ported. Nothing else in
+  the closure fails; `LeanCategories/Lattices/Valued/FibreArithmetic.lean` (#167) builds and
+  elaborates with `-DrelaxedAutoImplicit=false -Dweak.linter.mathlibStandardSet=true` at the same pin.
+  The old pin's gate state was not re-run here, so whether main is green at `6d97e8ad9c32` is not
+  claimed.
+- **Coverage:** the build log (`just-test-20261117T044955.log`) and the error text were inspected;
+  the module's sources were not read. Confidence: the errors are local to the file's use of the
+  renamed constant; the follow-on errors are not individually diagnosed.
+- **Repair link:** the Mathlib pin move (manifest `6d97e8ad9c32 → d9a73ae1ea9a`) owns this; the
+  repair is to port `BarySubdiv` to `FreeAddCommGroup`, then re-run `just test`.
 
 ### The corpus output check does not classify explicit catalogue-interface work
 
@@ -2569,3 +2944,1180 @@ downstream assertions, computational observations, or downstream diagnostics.
   provenance. The hand-authored `IsRationalPolyhedral` formulation that could not close
   the gap is deleted and replaced by the ported `IsLatticeRational`; the Finsupp-to-
   Fintype sum bridge this entry had sought is not needed by the reference proof.
+
+### `faceBarycenterCoordinates` is `Fin (n + 1)`-indexed, so the subdivision recursion restates it at general `N` (2026-11-14, #141)
+
+- **Need:** the barycentre of a face of the standard simplex as a weight vector, for a face
+  `F : Finset (Fin N)` at a *general* `N`. The ported certificate of card `E-HAT-2.1-25`
+  (`LeanCategories/Topology/BarySubdiv.lean`) states Hatcher's recursion `subdiv`, its full
+  coefficient formula and the sign identity on chains of faces of the standard `(N - 1)`-simplex
+  at an arbitrary `N`, `N = 0` included.
+- **Evidence:** the repository's owner of exactly this formula is
+  `LeanCategories.Topology.faceBarycenterCoordinates`
+  (`LeanCategories/Topology/BarycentricSubdivision.lean`),
+  `def faceBarycenterCoordinates {n : ℕ} (F : Finset (Fin (n + 1))) : Fin (n + 1) → ℝ`, with the
+  two facts `faceBarycenterCoordinates_nonneg` and `sum_faceBarycenterCoordinates_eq_one`
+  (`LeanCategories/Topology/BarycentricSubdivisionChainData.lean`). Its index type is
+  `Fin (n + 1)`, so its use at a general `N` needs `N` syntactically of the form `n + 1`; the
+  recursion does not have that form. Mathlib owns no barycentric coordinates on a face of the
+  standard simplex: the LC-09 queries are recorded in the ported module's docstring.
+- **Gap and impact:** the recursion and its coefficients cannot use the existing owner, and the
+  affected consumers are exactly the ported statements of card `E-HAT-2.1-25` that mention a
+  barycentre. Worked around, not repaired: `BarySubdiv.baryWeight : Finset (Fin N) → Fin N → ℝ`
+  restates the formula at general `N`, and `baryWeight_mem` restates the owner's two facts as the
+  single membership in `stdSimplex ℝ (Fin N)`.
+- **Coverage:** read `LeanCategories/Topology/BarycentricSubdivision.lean` and
+  `LeanCategories/Topology/BarycentricSubdivisionChainData.lean` in full; searched Mathlib for
+  barycentric coordinates of a simplex face (`element barycentric`, `stdSimplex`,
+  `Face/Basic` for cones) — nothing. Confidence high; what remains uninspected is whether a
+  second consumer at general `N` appears, which would make the generalization urgent.
+- **Repair link:** the optimal repair is the general-`N` form at the owner,
+  `def faceBarycenterCoordinates {N : ℕ} (F : Finset (Fin N)) : Fin N → ℝ`, its `Fin (n + 1)`
+  statements obtained by specialization; when it exists, `BarySubdiv.baryWeight` and
+  `baryWeight_mem` are deleted and `BarySubdiv` uses the owner. Tracked as
+  `-- TODO(LC-12)` at `baryWeight`.
+
+### Mathlib has no relative homotopy set `π₁(X, A, x₀)` and no `π₀` tail of the pair sequence
+
+- **Need:** Hatcher, *Algebraic Topology*, §4.1 (printed pp. 343 and 358) and lean-categories#156
+  need, for a pair `(X, A)` with `x₀ ∈ A`, the set `π₁(X, A, x₀)` of homotopy classes of maps of
+  triples `(I, ∂I, {1}) → (X, A, x₀)` — equivalently of paths starting in `A` and ending at
+  `x₀`, modulo homotopies through such paths, so that the start point may move inside `A` — the
+  maps `π₁(X, x₀) → π₁(X, A, x₀) → π₀(A, x₀) → π₀(X, x₀)` with their exactness, and the quotient
+  `π₀(X, A, x₀) := π₀(X, x₀)/i_*π₀(A, x₀)`.
+- **Evidence:** LC-09 searches (`content:ZerothHomotopy`, `content:relative homotopy`,
+  `content:"relative homotopy group"`, `content:Path.Homotopic`, `content:FundamentalGroupoid`,
+  `content:"five lemma"`, `content:"π_rel"`, `repo:TauCeti file:Relative`) and local Mathlib:
+  Mathlib has `ZerothHomotopy`, `Path.Homotopic.Quotient` and the fundamental groupoid, and
+  `HomotopyGroup N X x` for `N = Fin n` with `n ≥ 0`, but no relative group for a pair at any `n`;
+  `Mathlib/Topology/Homotopy/HomotopyGroup.lean` is absolute only. The corpus has
+  `Vilin97/lean-pool`'s `π_rel n X A a` (relative homotopy groups of disks inside a
+  Whitehead-theorem development) and TauCeti's relative Hurewicz homomorphism, neither of which
+  provides the `n = 1` set or the `π₀` tail. Mathlib's `CategoryTheory.FiveLemma` is for abelian
+  categories and does not apply to the pointed-set end of the sequence.
+- **Gap and impact:** the pair sequence cannot be expressed at all without inventing the
+  definition, so anything stated in terms of relative homotopy groups — Hatcher §4.1 Exercises 5–9,
+  the relative Hurewicz theorem, `π_n(X, A) ≅ π_{n-1}` of a homotopy fibre — is downstream of it.
+  The subtlest point is the one the definition exists for: a naive `Σ a : A, π₁(X, x₀)` model gives
+  the wrong set, and the five lemma of Exercise 9(a) is then false at the `π₁(X, A, x₀)` term
+  (folding `[0,1]` into itself over `X = Y = ℝ`, `A = B = [0,1]`).
+- **Coverage:** the search is recorded in the module docstring of
+  `LeanCategories/Topology/PairHomotopySequence.lean`, which supplies the definitions, the three
+  exactness statements and the two five-lemma conclusions as the project's own declaration set.
+  Mathlib's `HomotopyGroup` for `N = Fin 1` is the absolute `π₁` and was not compared with the
+  relative case beyond the API reading.
+- **Repair link:** lean-categories#156; upstream candidates `RelativePiOne` (with
+  `map`/`ofLoop`/`boundary` and their exactness) and `PairZerothHomotopy`. The proving
+  declarations are `LeanCategories.Topology.RelativePiOne.{boundary_eq_base_iff,
+  zerothHomotopyMk_eq_iff}` and the two five-lemma theorems in that module; they stay here as an
+  upstream candidate until Mathlib or the corpus owns a relative homotopy-group API.
+
+### `HasSectionSeparatingFunctional` needs a support theorem at intrinsic frontiers (#163)
+
+- **Need:** Looijenga's Lemma-Definition 4.5 proof needs, on a non-affine section of a convex cone in
+  finite dimension, a linear functional nonnegative on the cone, zero at a section point and positive at
+  another section point. The crucial analytic prerequisite is a supporting functional at a point of the
+  intrinsic frontier of a general closed convex set, not only at a face of a finitely generated cone or
+  polytope.
+- **Evidence:** `Mathlib.Analysis.LocallyConvex.Separation.geometric_hahn_banach_point_closed` separates
+  an external point but need not produce a zero on the set, and
+  `PointedCone.IsFaceOf.exists_nonneg_linear_inf_ker` needs finite generation.
+- **Coverage:** LC-09 searched the formalization corpus for `supporting hyperplane boundary`,
+  `intrinsicFrontier support linear`,
+  `geometric_hahn_banach_of_nonempty_interior_point intrinsicInterior`, affine quotient/polyhedron
+  formulations and the corresponding Mathlib modules. No standalone supporting-frontier theorem or
+  section-separation theorem was found. The nearest reference implementation was
+  `Vilin97/lean-pool@01db1d7049cf9668bda1e9e106875ee1278b43e6`,
+  `LeanPool/ErdosGinzburgZiv/EGZ/Convex/LeastFaceInterior.lean`'s
+  `IsLeastFaceAt.mem_relInterior` (Apache 2.0), whose affine-span support construction was read in full.
+- **Gap and impact:** this is the analytic input needed by
+  `LeanCategories/Lattices/Valued/LocallyRationalDecomposition.lean` for the general reverse inclusion
+  of the isotropic case. The source already has relative closedness on the isotropic half-space, so no
+  extra decomposition hypothesis is required.
+- **Repair link:** resolved in this batch by
+  `exists_dual_le_and_lt_of_mem_intrinsicFrontier`, with the normalized section-to-cone argument
+  `hasSectionSeparatingFunctional_of_relativeClosed`, its module-topology transport, and
+  `hasSectionSeparatingFunctional_map_of_isotropicHalfspace`. The first declaration remains a candidate
+  for Mathlib's `Analysis.Convex.Intrinsic` / `LocallyConvex.Separation` boundary.
+
+### Definition 4.2 does not supply `hloc` at an isotropic boundary point (#163)
+
+- **Need:** the final source-strength reverse inclusion must use only Looijenga's hypotheses, without
+  an additional ambient local-finiteness assumption at the isotropic generator.
+- **Evidence:** Definition 4.2, `.tmp-sources/looijenga-math0201218v2.md:481`, requires that the union
+  be `C₊` and that restriction to every rational subcone be a finite rational cone system. It has no
+  ambient-neighbourhood finiteness clause. The proof of Lemma-Definition 4.5 instead says at line 521:
+  "These cones decompose $A_I(\mathbb R)$ in a locally finite ... manner"; that is local finiteness of
+  the *projected* affine-space decomposition, already carried by
+  `locallyFinite_map_star_of_isotropicHalfspace`. Example 4.3(b), line 491, likewise says "locally
+  finite on $C$", not at the isotropic boundary of `C₊` where 4.5 projects along `I`.
+- **Resolution:** `hloc` was an artifact of the former finite-candidate proof, not a necessary input.
+  The source's projected finiteness has `0` outside the affine section `β = 1` and supplies no global
+  finite candidate set, but no finite candidate set is needed. `exists_isProjectedMinimal` selects by
+  least projected linear-span rank. Any strictly smaller nonempty section makes the common projected
+  face proper; `finrank_span_lt_of_isFaceOf_of_ne` and `span_eq_span_section_of_nonneg` then give the
+  contradictory rank descent. This also avoids the false one-point local-minimality inference, which
+  misses proper faces not containing that point.
+- **Coverage:** Definition 4.2, Setting 4.4, Example 4.3(b), the complete proof of 4.5, the Lean
+  structure fields and the existing finite-trace/projected-local-finiteness declarations were compared.
+  LC-09 queries covered locally rational/polyhedral decompositions, local finiteness, proper-face
+  dimensions, well-founded minima and level-one section spans. No counterexample to `hloc` is asserted:
+  it is simply not needed by the new proof.
+- **Repair link:** resolved by `finrank_span_map_lt_of_projectedPolyhedron_ssubset`,
+  `exists_isProjectedMinimal`, and `inf_ker_iInf_span_le_sigmaSupportSpace`. The final theorem has
+  only `hpos`, `hnd`, `he0`, `he`, `heC`, and `hS`, and it is the single form of the reverse
+  inclusion: no variant carries an ambient-finiteness premise.
+
+### Proper cone faces need a linear-span rank drop (#163)
+
+- **Need:** an inclusion-minimal nonempty projected member can be selected by least linear-span rank
+  only if a proper face of a pointed cone has strictly smaller linear-span rank. This is the general
+  replacement for choosing a minimum just among the cells containing one point, which misses smaller
+  faces not containing that point.
+- **Coverage:** LC-09 queries `FACE_OF_AFF_DIM_LT`, `IsFaceOf finrank`, `proper face affine dimension`,
+  `IsFaceOf span`, and `intrinsicInterior IsFaceOf` found no Lean declaration with the required
+  statement. The nearest reference implementation was the HOL Light/Candle `FACE_OF_AFF_DIM_LT`
+  argument in `Multivariate/polytope.ml`; its finite-dimensional descent is the same mathematical
+  ingredient. The local search also considered `Submodule.finrank_lt_finrank_of_lt` and the existing
+  intrinsic-interior face API, which are the two owners used by the proof.
+- **Repair link:** supplied here by
+  `LeanCategories.Lattices.Valued.finrank_span_lt_of_isFaceOf_of_ne`, using equality of affine spans
+  and `face_eq_of_mem_intrinsicInterior`; it remains an upstream candidate for Mathlib's pointed-cone
+  face API.
+
+### A cone is spanned by its nonempty level-one section (#163)
+
+- **Need:** comparing the linear-span ranks of two projected cones must be equivalent to comparing
+  their `A_I` sections, so the face-rank drop can be used for projected-minimal selection.
+- **Coverage:** LC-09 queries `span cone hyperplane section nonnegative`,
+  `PointedCone span eq_one`, and `span_inter_eq_one`, together with local Mathlib searches for span,
+  section, slice, level and hyperplane, found no declaration identifying a pointed cone's span with
+  the span of its nonempty level-one section under a nonnegative linear form.
+- **Repair link:** supplied here by
+  `LeanCategories.Lattices.Valued.span_eq_span_section_of_nonneg`; its proof is algebraic and is an
+  upstream candidate for the pointed-cone API.
+
+### The ambient counting lemma of Example 4.3 (b) at a conical fibre is not instantiated (#162)
+
+- **Need:** condition (i) of Looijenga's Definition 6.1 (p. 28, text line 769) for `Σ(H)` with no
+  hypothesis carried: `CutsFinitelyOnRational C_{I,+}` for the traces of the hyperplanes of `H`
+  containing `I`. Through the transfer of this unit
+  (`LeanCategories.Lattices.Valued.cutsFinitelyOnRational_semifanArrangement`) that is exactly the
+  ambient counting lemma at `ambientClosedSheet`, the cone of `V(ℝ)` generated by the ambient closed
+  sheet.
+- **Evidence:** Looijenga, Example 6.4, p. 29 (text line 791): "the `H ∈ H` containing `I` correspond
+  to `ℚ`-hyperplanes in `I^⊥/I ⊗ I` of signature `(1, n-2)` and so according to example 4.3-b these
+  decompose `C_{I,+}`"; Example 4.3 (b), p. 18 (text line 487) supplies it for a form of signature
+  `(1, dim L - 1)` and `C` a component of `x·x > 0`. The repository proves it in that setting
+  (`cutsFinitelyOnRational_orbitFamily`, #161) and it is not instantiated per fibre: at the fibre
+  the reduced lattice's cut of a `ℚ`-line need not be generated by the projection of an ambient
+  lattice vector — with `Λ = ℤ(e + 2w) ⊕ ℤ f ⊕ ℤ(2e)` in `ℚ³ = ⟨e, f⟩ ⊥ ⟨w⟩` (`e·f = 1`,
+  `w·w = 1`) and `ℓ = ℚ w`, `ℓ ⊓ Λ = ℤ·4w` while `Λ_F = ℤ·2π(w)` — so the ambient finite set of
+  norm values does not serve at the fibre by direct instantiation.
+- **Gap and impact:** the ambient space of a type IV domain carries a form of signature `(2, n)`,
+  where the closed sheet `{x | 0 ≤ Q x, 0 ≤ x·t}` is not convex (in `x₁² + x₂² - x₃²`, the vectors
+  `(1, 5, √26)` and `(1, -5, √26)` are in it and sum to a vector of negative value), so #161's
+  lemma, whose hypotheses `sigPos Q = 1` and salience enter its convexity arguments, does not
+  state it. What this unit supplies is the geometric half, with no hypothesis:
+  `map_closure_le_ambientClosedSheet`. The ambient counting itself is open, and condition (i) of
+  Definition 6.1 for `Σ(H)` is insensitive to it only where the ambient cone is not used.
+- **Coverage:** LC-09 queries `PositiveCone closedSheet`, `closedSheet`, `QuadraticForm.associated
+  positive cone sheet`, `convexHull positive cone rational`, `closed light cone hull`, `PointedCone
+  closed sheet`, and local Mathlib searches for `PointedCone.hull_le`, `positive cone sheet` and
+  `ConicalCone`; found no counting statement for an arrangement on a cone of a form of signature
+  `(p, q)` with `p ≥ 2`. Confidence: high that Mathlib has none. Gaps: TauCeti's cone and fan
+  directories were searched by name only, not read.
+- **Repair link:** upstream candidate for Mathlib's quadratic-form cone API: the counting lemma with
+  `sigPos Q = 1` replaced by `x·y ≥ 0` on the pairs of generators of the rational cone, which is
+  what the proof of `finite_cutting_normals_of_both_timelike` actually uses.
+
+### `J_{Σ(H)} = J_H` needs a member of `Σ(H)` above the half line meeting `C_I` (#162)
+
+- **Need:** Looijenga, Example 6.4, p. 29: "the space `J_H` associated to a `ℚ`-isotropic plane `J`
+  is the common intersection of `J^⊥` and the hyperplanes `H ∈ H` containing `J`" — this is
+  `vSigmaPlane` at the half line of `J` in the member `Σ(H)` of the fibre of a line `I ≤ J`, i.e.
+  condition (ii) of Definition 6.1 and the identification of its support space.
+- **Evidence:** `vSigmaPlane` (`ConicalLocus.lean`) is `sigmaSupportSpace C S σ` over
+  `supportIndex C S σ`, the members `τ` of `Σ` with `σ ≤ τ` and `τ ∩ C ≠ ∅` (Lemma-Definition 4.5,
+  p. 19, text line 519). With `supportIndex` empty the intersection is `⊤`, so both inclusions need
+  one such `τ`; the `≤` half then follows from one-signedness of the traces on a member.
+- **Gap and impact:** the existence of `τ` does not follow from the cover of `C_{I,+}` alone
+  (`union_arrangementDecomposition`): the half line is an isotropic boundary ray, and walls
+  accumulating at it without containing it leave every member off the ray — in `ℝ²` with `C₊` the
+  closed upper half plane, the walls `{y = x/n}` (`n ≥ 1`) and the ray `{(x,0) | x ≥ 0}`. For the
+  `H` of the source it is the local finiteness of `H` on `D` at the ray that supplies `τ`. What this
+  unit supplies is the `≤` half with `τ` in hand (`supportSpace_halfLine_le_ker`,
+  `LeanCategories/Lattices/Valued/SemifanArrangement.lean`), i.e. `J_{Σ(H)} ⊆ J_H`. The existence
+  of `τ` is open, and is now reduced to one geometric statement: the cell of the ray's own sign
+  pattern is a member of `Σ(H)` above the half line (`hull_fibreRay_le_cell`,
+  `mem_semifanArrangement_cell`), so `τ` exists **iff** that cell meets the open cone `C_I` — and
+  the cell of the ray is `arrangementCone φ s ⊓ C_{I,+}` with `s = signPattern φ r`, so this is
+  exactly the assertion that the walls through the ray do not cover its germ in `C_I`. The
+  examples in the previous bullet show that this can fail once walls accumulate at the ray; what
+  is missing for the `H` of the source is a proof that they do not (local finiteness of `H` on `D`
+  is local finiteness *on `D`*, at the boundary of the compactified domain it is the locally
+  rational — not locally finite — property that holds, so the source's own hypothesis does not
+  immediately give it).
+- **The `≤` half (landed).** `vSigmaPlane_semifanArrangement_le_JH` proves
+  `J_{Σ(ℋ)} ⊆ ⟨gen⟩^⊥ ⊓ ⋂_{H ⊇ J} H`: the `I`-half of `J^⊥` from the fibre's orthogonality to `I`
+  (`vSigmaPlane_semifanArrangement_le_ker_gen`, no counting needed) and the walls from
+  `supportSpace_halfLine_le_ker` at the member above the half line that meets the open cone
+  (`vSigmaPlane_semifanArrangement_le_ker_wall`). Two pieces of `J^⊥` are still owed and are *not*
+  formal: the orthogonal complement of the **ray** of `J`, which needs `0 ≤ r · x` for `x` on the
+  closed sheet and `r` an isotropic vector of it (the Lorentzian sign on the closed sheet, which
+  this repository has only for `x` in the *open* sheet,
+  `associated_pos_of_mem_upper_of_mem_closedSheet`), and the passage from the two generators to all
+  of `J`; and the `≥` half below.
+- **The `≥` half, reduced:** `J_H ⊆ J_{Σ(H)}` asks that every form `ψ` nonnegative on `τ` and zero
+  on the ray `⟨r⟩` kill `w`, where `w` is orthogonal to `r` and lies in the trace of every wall
+  through `J`. `mem_supportSpace_halfLine_of_supportForms_span` proves this from one statement
+  about the cell's dual cone — that such a `ψ` is spanned by the forms nonnegative on the closed
+  sheet and zero at `r` together with the traces through `r` —
+  and `supportForms_closedSheet_apply_eq_zero_of_isotropic` proves the closed-sheet half of that
+  span with no hypothesis, by `supportSpace_closedSheet_hull_eq_ker` (p. 19): a form nonnegative
+  on the closed sheet and zero at the isotropic `r` kills `r^⊥`, hence `w`. What remains is the
+  conic-duality step `⟨arrangementCone φ s ⊓ C₊⟩₊ = ⋂_{s i = 0} ker (φ i)` for a sign cell, i.e.
+  the description of the cell's dual cone by the closed sheet and its walls. That step is not
+  formal: the dual cone of an intersection of closed cones is the *closure* of the sum of the dual
+  cones, so an approximation argument would have to show that the closed-sheet part vanishes in
+  the limit — in the formulation above, if `ψ = lim (c n + ∑ λ i n • s i φ i)` with `c n ∈ C₊`,
+  then `c n r → 0` follows from `ψ r = 0` but `c n w → 0` does not follow from `c n r → 0` without
+  a bound on `|c n w|` in terms of `c n r`.
+- **Coverage:** LC-09 queries `closed sheet`, `arrangement cell closure`, `fan locally finite
+  boundary ray`, `weakSignCellCone`; the cells are the ported TauCeti sign-cell machine
+  (`arrangementCone`, #159) and no declaration there or in Mathlib places a member over a boundary
+  ray. Confidence: high. Gaps: the compactness of the closed cone's unit sphere was not searched
+  for as a route to a limiting member.
+- **Repair link:** the existence statement is
+  `∃ τ ∈ semifanArrangement ψ F, PointedCone.hull ℝ {rationalPoint (fibreRay hBsym F G)} ≤ τ ∧
+  ((τ : Set (realified ↥F.space)) ∩ positiveCone.upper (fibreForm Q F.space) F.sheet).Nonempty`.
+  It is landed as `exists_mem_semifanArrangement_halfLine_meets`, from `CutsFinitelyOnRational` at
+  the fibre; what remains open for Example 6.4 is the `≥` half of `J_{Σ(H)} = J_H`, whose `hspan`
+  is the description of the cell's dual cone by its walls.
+
+### `Σ(ℋ)`'s condition (i) is the count at the reduced lattice, and its ambient index is not the fibre's
+
+- **Need:** condition (i) of Definition 6.1 for `Σ(ℋ)` on the arithmetic input Example 6.4 names
+  ("the `H ∈ H` containing `I` correspond to `ℚ`-hyperplanes in `I^⊥/I ⊗ I` of signature `(1, n-2)`
+  and so according to example 4.3-b these decompose `C_{I,+}` into locally rational cones",
+  `.tmp-sources/looijenga-math0201218v2.md:791`), with no counting hypothesis left open.
+- **Evidence (the signature, checked on the Lean objects).** Looijenga §1B, p. 11
+  (`.tmp-sources/looijenga-math0201218v2.md:239`): the form on `I^⊥/I` has signature `(1, n-1)`.
+  The Lean statement is `Semifan.sigPos_fibreForm`
+  (`sigPos (fibreForm Q (planeComplement BQ e f)) + 1 = sigPos Q`) and
+  `Semifan.sigPos_fibreForm_space`; `sigPos_fibreForm_eq_one` now records `sigPos = 1` at every
+  fibre from `sigPos Q = 2`. So the objects do carry `(1, n-1)`: no Lean object has the wrong
+  signature. What is wrong is the *cone*: `ambientClosedSheet` is the cone generated by the closed
+  sheet of a form of signature `(2, n)`, hence `sigPos = 2` there, and it is not salient, so
+  `cutsFinitelyOnRational_orbitFamily` — which needs `sigPos Q = 1` and `Salient` — cannot be
+  applied to it (the arithmetic input cannot be a count of lattice vectors of fixed negative norm
+  in signature `(2, n)` either: infinitely many). `cutsFinitelyOnRational_semifanArrangement`'s
+  `hcut`, an ambient `CutsFinitelyOnRational` at `ambientClosedSheet`, therefore cannot be
+  discharged from the source's arithmetic, and is not the source's statement.
+- **What is now on main.** `cutsFinitelyOnRational_reducedLattice` derives the counting hypothesis
+  at the fibre from `cutsFinitelyOnRational_orbitFamily` (#161) at the reduced lattice
+  `(Λ ⊓ I^⊥)/(Λ ⊓ I)`, with `sigPos = 1` (`sigPos_fibreForm_eq_one`), salience
+  (`salient_rationalClosure`), the sheet inequalities (`closure_le_closedSheet`) and the
+  integrality of the reduced lattice (`integral_reducedLattice`) all discharged rather than
+  assumed, `Γ_I` acting on the reduced lattice; and
+  `arrangementDecomposition_reducedLattice_isLocallyRational` is condition (i) with **no**
+  `CutsFinitelyOnRational` hypothesis. Two new ingredients make the `ℚ`-side work:
+  `restrictBilinForm` with `restrictBilinForm_nondegenerate`, which needs
+  `rationalPoint_injective` (a fibre vector orthogonal to the whole fibre dies on the rational
+  points, which span).
+- **Gap and impact: the index.** `semifanArrangement ψ F` indexes the walls by the *ambient*
+  family, `fibreWalls ψ F = {i // F.line ≤ ker (ψ i)}`. The counting lemma indexes by the fibre's
+  own `ℚ`-hyperplanes. The map from the first to the second is not injective: with
+  `V = ℚe ⊕ ℚf ⊕ W` for a hyperbolic plane `⟨e, f⟩` orthogonal to `W` and `I = ℚe`, a hyperplane
+  `H ⊇ I` whose trace on the fibre is `T ⊂ W` (codim one) is `I ⊕ T ⊕ ℚ(f + k)` for any
+  `k ∉ I ⊕ T`, and these are distinct hyperplanes with the same trace. If infinitely many members
+  of `ℋ` share a trace that cuts a rational cone `P`, then `{i // CutsOn (φ i) P}` is infinite while
+  the fibre's collection of hyperplanes is a single element — so the ambient-indexed
+  `CutsFinitelyOnRational` is *false* in that situation, and `semifanArrangement` must be indexed
+  by the set of traces (equivalently, by the fibre's orbit family) before Definition 6.1 (i) for
+  `Σ(ℋ)` is a statement about `Σ(ℋ)` at all.
+- **Coverage:** LC-09 queries and hits are recorded in `SemifanArrangement`'s section docstring;
+  the corpus has no semifan, no locally rational decomposition and no hyperplane-arrangement
+  theory, and Mathlib has none either (`HyperplaneArrangement` and `signPattern` do not occur).
+  Confidence: high on the signature and on the failure of injectivity (both are computations).
+  Gaps: whether a *finite union of `Γ`-orbits* can realise infinitely many hyperplanes over one
+  trace was not settled, and does not have to be — the ambient indexing is wrong independently.
+- **Repair link:** `arrangementCone_reindex` covers only bijections of the index set; the missing
+  lemma is that `arrangementDecomposition` is unchanged when the family is replaced by one with the
+  same set of kernels up to nonzero scalar (sign patterns then correspond, so the cells are the
+  same set), composed with the identification of that set with `orbitFamily H₀ Γ_I`. With it,
+  `arrangementDecomposition_reducedLattice_isLocallyRational` becomes `condition_i` for
+  `Σ(ℋ)`. The generators `gen`/`hgen` of the orbit family are carried, not derived: they are the
+  statement that the normals of `ℋ` are lattice vectors, i.e. the arithmetic input itself.
+
+### The cell of the half line's *own* sign pattern is not the member that Lemma-Definition 4.5 needs
+
+- **Need:** a member `τ ∈ Σ(ℋ)` above the half line `C_{J,+}` with `τ ∩ C_I ≠ ∅` — the hypothesis of
+  Lemma-Definition 4.5, p. 19 (`.tmp-sources/looijenga-math0201218v2.md:519`: "If `τ ∈ Σ` is such
+  that `τ ≥ σ` and `τ ∩ C ≠ ∅` then the common zero set of the real linear forms on `V` which are
+  nonnegative on `τ` and zero on `σ` is a subspace that is independent of `τ`"), applied to
+  `σ = C_{J,+}`.
+- **Evidence that the own-pattern cell does not serve.** `hull_fibreRay_le_cell` puts the ray in the
+  cell of its own sign pattern `signPattern φ r`, whose entries at the walls through the ray are
+  `0`, so that cell is contained in the common kernel of those walls. Two walls through the ray
+  already cut this down to the ray: in a fibre of signature `(1, 2)` — `V` of signature `(2, 3)`,
+  the smallest case of the source's setting — a hyperplane of the fibre spanned by the isotropic ray
+  `r` and a vector `w` with `⟨r, w⟩ ≠ 0` has associated matrix with determinant `−⟨r,w⟩² < 0`, hence
+  signature `(1, 1)`, which is the source's `(1, n-2)`; two such hyperplanes `span(r, w₁)`,
+  `span(r, w₂)` with `r, w₁, w₂` independent meet in `span(r)`. So the own-pattern cell meets
+  `C_{I,+}` in `span(r)`, and `span(r) ∩ C_I = ∅` because `r` is isotropic. **Item (2) as stated is
+  therefore false**, and `hull_fibreRay_le_cell` must not be read as reducing the existence of `τ`
+  to that cell.
+- **The object that does serve.** Cells with a *one-sided* value at a wall through the ray also
+  contain the ray (a weak sign cell contains every point at which the forms of its zero entries
+  vanish). Concretely, for `u ∈ C_I` close to `r` and `s := signPattern φ u`, the ray satisfies `s`
+  at the walls through the ray (their value is `0`, which satisfies either sign) and, at the walls
+  off the ray, `sign (φ i u) = sign (φ i r)` as long as `u` stays on the same side of each of them.
+  So `τ = arrangementCone φ s ⊓ C_{I,+}` contains the ray and contains `u`.
+- **What that last clause needs, and does not have.** "As long as `u` stays on the same side of each
+  of them" has to hold simultaneously for *infinitely many* walls: `|φ i (r + ε v) − φ i r| =
+  ε |φ i v|` is not dominated by `|φ i r|` uniformly in `i`. So the construction needs the walls off
+  the ray to keep a positive distance from `r`, i.e. local finiteness of `ℋ` at the ray — the
+  source's local finiteness of `ℋ` on `D`, taken at a boundary point of `D`. `CutsFinitelyOnRational`
+  at the fibre gives local finiteness on `C_{I,+}`, and quantifies over rational subcones `P ≤
+  C_{I,+}`, none of which has the boundary ray `r` in its interior: a cone through `r` is not cut by
+  the walls through `r` either (`P = hull(r, v)` has `φ i ≥ 0` on it when `φ i r = 0 ≤ φ i v`), so
+  the finiteness of cutters does not bound the walls through `r`.
+- **Coverage:** the `(1, 2)`-fibre computation is by hand and checkable in three lines (the Gram
+  matrix of `span(r, w)`); `mem_arrangementCone` and `signPattern` fix the pattern convention.
+  Confidence: high for the refutation, medium for the claim that only boundary local finiteness
+  closes the positive statement — no counterexample to the positive statement was constructed.
+- **Repair link:** restate the target as `∃ τ ∈ semifanArrangement ψ F, ray ⊆ τ ∧ (τ ∩ C_I).Nonempty`
+  with `τ` a one-sided cell as above, and supply the boundary local finiteness either as the named
+  hypothesis the source's `ℋ` supplies or from `CutsFinitelyOnRational` at a cone through `r` once
+  such a cone is available.
+
+### A half-line field on `ConicalPlane` is unsatisfiable; the orientation lives in the fibre (#162)
+
+- **Need:** item (4) of the #162 brief asks that `ConicalPlane` carry its half line `C_{J,+}` as a
+  field, so that `hsheet` (the inequality `0 ≤ ⟨r, t_F⟩` at a fibre's positive vector `t_F`) leaves
+  the statement of `bailyBorel_isAdmissibleDecomposition`.
+- **Evidence (the field is uninhabited).** Two `ConicalLine`s `F`, `F'` over one `ℚ`-isotropic plane
+  `J` may carry opposite sheets: `ConicalLine.sheet` is a positive vector of the fibre form, and the
+  fibre of a form of signature `(1, n-1)` has two open sheets, so `F.sheet` and `-F.sheet` are both
+  legal `sheet_pos` data. The class `r ∈ I^⊥/I` of the plane's ray is isotropic and nonzero
+  (`fibreRay_isotropic`, `fibreRay_ne_zero`), and in signature `(1, n-1)` an isotropic vector pairs
+  nonzero with a positive vector, so `⟨r, t⟩ ≠ 0`. Hence a field asserting `0 ≤ ⟨r, t_F⟩` for every
+  fibre `F` over `J` would require `⟨r, t⟩ ≥ 0` and `⟨r, -t⟩ ≥ 0`, i.e. `⟨r,t⟩ = 0` — a
+  contradiction. A structure with such a field has no instances, and every theorem about it would be
+  vacuously true.
+- **Why the source does not need it.** Looijenga fixes a type IV domain `D`, i.e. one connected
+  component of the positive 2-planes of `V(ℝ)`; the sheets `C_{I,+}` of all fibres come from that one
+  `D` and are coherent, so `C_J ⊂ ∂C_I` for the coherent pair (§1B, p. 11, text line 267). The Lean
+  carriers `ConicalLine`/`ConicalPlane` do not model `D`, so coherency across two fibres is not
+  available at all — it is not a missing lemma.
+- **Repair (landed).** The orientation is carried where it *is* well defined, in the fibre:
+  `ConicalLocus.fibreRay` is now the half line — the class `fibreRayProj` of the plane's ray, or its
+  negative, whichever lies on the closed sheet — and `fibreRay_sheet_nonneg` is the sheet inequality
+  as a theorem. `hsheet` is removed from `vSigmaPlane_eq_ker_inf_ker`, `bailyBorel_condition_ii` and
+  `bailyBorel_isAdmissibleDecomposition`. `rationalPoint_fibreRay_val` records the value in `V` up to
+  sign, which is what the two points of `vSigmaPlane_eq_ker_inf_ker` that used to unfold the class use.
+- **Coverage:** the sign computation is two lines and has no case analysis beyond the two sheets;
+  `ConicalPlane.ray` is unchanged, so `V_σ` is the support space of the half line on the closed sheet
+  of the fibre, which is the source's member. Confidence: high.
+- **What remains:** nothing in this item. A coherent family of sheets over a whole conical locus would
+  be a model of `D` (a predicate relating the sheets of the fibres of two lines in a plane), and is
+  not needed for Definition 6.1.
+
+### `Σ(ℋ)` at a fibre is indexed by the fibre's hyperplanes, and the count is the fibre's (#162)
+
+- **Need:** item (1) of the #162 brief: the walls of `Σ(ℋ)` at a fibre must be indexed by the fibre's
+  own `ℚ`-hyperplanes (the traces), so that the counting lemma of Example 4.3 (b) — a statement about
+  the fibre's hyperplanes — applies.
+- **Evidence.** `semifanArrangement ψ F` indexes the walls by the *ambient* family,
+  `fibreWalls ψ F = {i // F.line ≤ ker (ψ i)}`, while `CutsFinitelyOnRational` counts *indices*
+  (`{i | CutsOn (φ i) P}.Finite`). The map from ambient walls to traces is not injective: with
+  `V = ℚe ⊕ ℚf ⊕ W`, `I = ℚe` and `T ⊂ W` a hyperplane, every `I ⊕ T ⊕ ℚ(f + k)`, `k ∉ I ⊕ T`, is a
+  `ℚ`-hyperplane containing `I` with trace `T`, so an infinite ambient family can sit over one trace
+  and the ambient-indexed count is not the source's count.
+- **Repair (landed).** `arrangementCone_smul`/`arrangementCells_smul`/`arrangementDecomposition_smul`:
+  the arrangement sees the hyperplanes and not the normals that represent them, so it is unchanged
+  when each form of the family is multiplied by a nonzero scalar. With `arrangementDecomposition_reindex`
+  this gives `semifanArrangement_isLocallyRational_of_traces`: a bijection of the ambient walls with
+  the fibre's own hyperplane family, up to a nonzero scalar per wall, carries condition (i) at the
+  fibre — `arrangementDecomposition_reducedLattice_isLocallyRational`, which has no counting
+  hypothesis — to the ambient-indexed `semifanArrangement`.
+- **Gap and impact.** The correspondence hypothesis is carried, not derived: it says that the ambient
+  family has exactly one member over each trace. Deriving it needs the arithmetic input (the normals
+  of `ℋ` are lattice vectors, i.e. the generators `gen`/`hgen` of `cutsFinitelyOnRational_reducedLattice`),
+  which is not formalized per fibre. What *is* settled is that the ambient indexing is not the
+  source's, so condition (i) for `Σ(ℋ)` is now stated with the fibre's count and the correspondence as
+  its only remaining hypothesis.
+- **Coverage:** the non-injectivity is a three-line computation. Confidence: high.
+
+### The member of `Σ(ℋ)` above the half line: what the obstruction actually is (#162)
+
+- **Need:** item (2) of the #162 brief: a member `τ ∈ Σ(ℋ)` above the half line `C_{J,+}` with
+  `τ ∩ C_I ≠ ∅`, the hypothesis of Lemma-Definition 4.5, p. 19 (text line 519), used to compute
+  `J_{Σ(ℋ)}`.
+- **Evidence (corrected).** The earlier record said that walls *through* the ray cut the cell of the
+  ray's own sign pattern down to the ray. That is true of the own-pattern cell, but it is not the
+  obstruction to the general statement, because a wall through `r` imposes *no* condition at `r`:
+  for a pattern `s` with `s i = pos` the condition at `r` is `0 ≤ φ i r`, and `φ i r = 0` satisfies it;
+  the same for `neg`. So with `s = signPattern φ u` for a point `u` of the open cone, `r` lies in the
+  cell of `u`'s pattern as soon as, for every wall **not** through `r`, `φ i u` has the same sign as
+  `φ i r`, and for every wall on which `u` happens to lie, `φ i r = 0`.
+- **The two clauses that a proof needs.** (a) Walls not through `r` that cut a rational cone `P`
+  through `r` (`P = hull{r, v}`, `v ∈ C_I`): finitely many, by `CutsFinitelyOnRational` at `P`, and
+  `u = r + ε v ∈ relint P` can be chosen close enough to `r` to keep their signs — the two conditions
+  "in the relative interior of `P`" and "close to `r`" are compatible because `r + ε v ∈ relint P` for
+  every `ε > 0` when `r`, `v` are independent. (b) Walls not through `r` that do **not** cut `P`: they
+  are one-signed on `P`, so if such a wall vanishes on `relint P` it vanishes on `P` and hence at `r` —
+  a contradiction with "not through `r`" — so `u ∈ relint P` is automatically off it. Hence a single
+  `u` satisfies both clauses, and `τ := arrangementCone φ (signPattern φ u) ⊓ C_{I,+}` contains `r`
+  and meets `C_I` in `u`.
+- **Gap and impact.** The proof of (a)+(b) is not formalized: it needs the relative interior of the
+  cone `hull{r, v}`, the finiteness of the cutting walls from `CutsFinitelyOnRational` at that cone, a
+  rational point `v` of the open cone (for `P` to be a *rational* cone, as the count requires), and
+  the transfer of a sign from `r` to nearby points of `relint P`. No boundary local finiteness of `ℋ`
+  is needed — the earlier record's conclusion that it is was too strong, since walls through `r` are
+  harmless.
+- **Repair link:** with such a `τ`, `supportSpace_halfLine_le_ker` gives `J_{Σ(ℋ)} ⊆ J_ℋ`, and
+  `mem_supportSpace_halfLine_of_supportForms_span` gives the reverse inclusion once the dual cone of
+  the cell is described by its walls; `isAdmissibleDecomposition_of_vSigmaPlane_eq` then assembles
+  Definition 6.1 for `Σ(ℋ)`.
+- **What is landed of it.** `Semifan.fibreRay_mem_closure`: the half line lies in `C_{I,+}` (it is an
+  isotropic ray of the closed sheet with `0 ≤ r · t`), so `hull_fibreRay_le_cell` no longer takes that
+  as a hypothesis, and `exists_mem_semifanArrangement_halfLine_le` states the easy half
+  unconditionally: the cell of the ray's own sign pattern is a member of `Σ(ℋ)` containing the ray.
+  `mem_arrangementCone_signPattern_iff` is the reduction to geometry: `r` lies in the cell of `u`'s
+  sign pattern exactly when every wall through `u` passes through `r` and every wall off `r` has the
+  same sign at `u` — clause (a) is *not* "`u` is off the walls through `r`" but "`u` is on no wall
+  that misses `r`", and `mem_arrangementCone_signPattern_of_sign_eq` packages the two clauses.
+- **Repair (landed): the member meeting `C_I` exists.** `exists_mem_semifanArrangement_halfLine_meets`
+  constructs `τ ∈ Σ(ℋ)` above the half line with `τ ∩ C_I ≠ ∅`, from `CutsFinitelyOnRational` at the
+  fibre and nothing else. The two gaps this entry recorded are closed:
+  (2) `C_I ⊆ C_{I,+}` is `ConicalLine.upper_subset_closure`: the open sheet lies in the interior of
+  the *pointed* upper sheet `positiveCone.upperZero`, whose closure is the closed sheet, so
+  `subset_rationalClosure_of_mem` applies — `subset_rationalClosure` itself is unusable at a pointed
+  cone, as this entry said, and the pointed upper sheet is the object to apply it to.
+  (1) the point `u` is `r + ε v` for a rational `v ∈ C_I`, `ε > 0`, where `v` exists because the
+  rational points are dense in the open sheet and `ε` is chosen in the neighbourhood of `0⁺` on which
+  the finitely many walls cutting `P = ⟨r, v⟩` keep their sign (`exists_mem_signPattern_eq_of_cutsFinitely`).
+  Both `r` and `v` are rational points, so `P` is a rational cone and the count applies to it; and
+  `0 < r · v` (`associated_pos_of_mem_upper_of_mem_closedSheet`, at the isotropic ray and a point of
+  the open sheet of a form of signature `(1, n-1)`) is what puts `r + ε v` in the open sheet for
+  every `ε > 0`. No local finiteness of `ℋ` at the ray is needed, and no `ℚ`-point argument beyond
+  density: the relative interior of `P` is not used, the sign agreement being with the finitely many
+  cutting walls of a cone through `r`.
+- **LC-09 for (1) and (2).** Queries `rationalClosure`, `rationalBoundary`, `dense rational points
+  convex cone`, `convexHull rational points dense`, `signPattern arrangement cone`, `semifan`,
+  `locally finite hyperplane arrangement`, `germ arrangement point wall` over the corpus: no hit for
+  a rational closure, a semifan or an arrangement germ (the closest, TauCeti
+  `SimplicialComplex/Arrangement.lean`, subdivides a *finite* family of affine functionals, which is
+  the `CutsFinitelyOnRational` case, not the germ at a boundary ray). Mathlib has
+  `Dense.exists_mem_open`, `PointedCone` as a submodule over `Nonneg ℝ`, and no statement about the
+  germ of a hyperplane arrangement at an isotropic boundary ray.
+
+### `J_H ⊆ J_{Σ(ℋ)}` cannot come from the dual cone of a cell: the cells are not polyhedral (#162)
+
+- **Need:** the `≥` half of `J_{Σ(ℋ)} = J_ℋ` (Looijenga, Example 6.4, p. 29), i.e. condition (ii) of
+  Definition 6.1 for `Σ(ℋ)`: every vector of `J^⊥` killed by the traces of the hyperplanes of `ℋ`
+  containing `J` lies in `V_σ` for `σ = C_{J,+}`, hence — through
+  `isAdmissibleDecomposition_of_vSigmaPlane_eq` — the admissibility of `Σ(ℋ)`.
+- **The plan that does not work, and why.** The reduction recorded earlier
+  (`mem_supportSpace_halfLine_of_supportForms_span`, hypothesis `hspan`) asks that every form
+  nonnegative on a member `τ` and zero at the ray `r` be spanned by the forms nonnegative on the
+  closed sheet and the traces of the walls. That is Farkas' theorem for `τ = C ∩ ⋂_{i ∈ T} {s_i φ_i
+  ≥ 0}`, which needs `T` **finite**: for finitely many half-spaces the dual of the intersection is
+  the sum of the duals, and the sum is closed because it is finitely generated. `T` is not finite
+  here. `CutsFinitelyOnRational` is a statement about *rational* cones, and `IsRationalCone` in this
+  repository means generated by the rational points of a **finite** set
+  (`LocallyRationalDecomposition.lean:729`), so `CutsFinitelyOnRational` cannot be applied at
+  `C_{I,+} = F.closure = rationalClosure (closedSheet …)`, which is not finitely generated: the
+  hypothesis is local (it is applied at the cone `hull{r, v}` through the ray in
+  `exists_mem_semifanArrangement_halfLine_meets`), the members of `Σ(ℋ)` are not polyhedral, and the
+  arrangement is locally finite rather than finite. So a proof of the `≥` half has to consume the
+  local finiteness, not a finite description of the cell.
+- **What a proof of the `≥` half does look like** (two routes, neither formalized):
+  1. *The source's route* (text line 519, the proof of Lemma-Definition 4.5): project to the affine
+     space `A_I(ℝ)` over `(I ⊗ I^⊥/I)(ℝ)`; the members `τ > σ` map to rational polyhedra that
+     decompose `A_I(ℝ)` in a locally finite manner; a **minimal** member of that decomposition is an
+     affine subspace with translation space `U`, and induction over the common faces shows the whole
+     decomposition is invariant under `U`. Then `L_σ = I + U`, which for `Σ(ℋ)` is
+     `J^⊥ ∩ ⋂_{H ⊇ J} H`. This is the route the #163 record called "the source's `π_I`/polyhedra
+     route, recorded as unreconstructed", and `sigmaSupportSpace_le_ker_inf_iInf_span` is its `≤`
+     half: `L_σ ⊆ I^⊥ ⊓ ⨅_{τ} ⟨τ⟩`. What is missing is `I^⊥ ⊓ ⨅_{τ} ⟨τ⟩ ⊆ L_σ`, i.e. that the
+     minimal member's span is exactly `I + U`.
+  2. *A germ argument at the ray*, which is what the `≤`-half proofs in this file use in small form.
+     Let `τ` be the member above the ray meeting `C_I`, `u ∈ τ ∩ C_I`, and `ψ : W → ℝ` with `ψ ≥ 0`
+     on `τ`, `ψ r = 0`. Then `ψ(w) ≥ 0` for every `w` with `r + λ w ∈ τ` for small `λ > 0`, because
+     `ψ (r + λ w) = λ ψ (w)`. Taking `w = y + μ u` for a candidate `y ⊥ r` killed by the traces
+     through `r` and letting `μ → 0⁺` gives `ψ y ≥ 0`, and `-y` gives `ψ y = 0`. Two facts make the
+     step `r + λ w ∈ τ` available: `0 < (associated Q) r w` when `y ⊥ r` (so `Q (r + λ w) > 0` for
+     small `λ`), and — this is the part that consumes local finiteness — all but finitely many wall
+     conditions of the pattern hold **on all of the closed sheet**, because a wall that does not cut
+     a cone is one-signed on it (`le_or_le_of_not_cutsOn`) and `r + λ w` is itself in the closed
+     sheet. What remains for this route is a finite-set statement for the cutting walls at the germ:
+     the walls cutting the *closed sheet* are not finite, and no lemma in the repository bounds them
+     at the germ of a boundary ray. `arrangementCone_inf_eq_signConeInf_of_mem` is the tool for
+     turning a cell into a finite intersection once such a finite set is known.
+- **Landed towards it.** `vSigmaPlane_semifanArrangement_le_JH` now includes the `⟨ray⟩^⊥` half of
+  `J^⊥` (`vSigmaPlane_semifanArrangement_le_ker_ray`,
+  `sigmaSupportSpace_halfLine_le_ker_fibreRay`), so the `≤` half of `J_{Σ(ℋ)} = J_ℋ` is complete
+  against the source's `J_ℋ`. Nothing of the `≥` half is claimed.
+- **LC-09 for the `≥` half.** Queries `light cone isotropic ray orthogonal`,
+  `reversed Cauchy-Schwarz indefinite quadratic form`, `Lorentzian cone self-dual`,
+  `closed cone dual quadratic signature one`, `isotropic vector nonnegative pairing sheet`, `sigPos`,
+  `nonneg_associated_of_mem_closedSheet`, `PointedCone.dual finitely generated`. No file on the light
+  cone or on a reversed Cauchy–Schwarz inequality; Mathlib's `sigPos` is
+  `LinearAlgebra/QuadraticForm/Signature.lean` and its Cauchy–Schwarz results
+  (`Analysis/InnerProductSpace/Basic.lean`) are for positive definite spaces. The one port target
+  recorded for a future route: TauCeti `Geometry/Convex/Cone/Face/Exposed.lean` — "if `C` is finitely
+  generated, a functional nonnegative on the face `C ⊓ ker φ` becomes nonnegative on `C` after adding
+  a large multiple of `φ`" — which is the polyhedral localisation step route 1 would need after
+  passing to a minimal member.
+
+### The reverse inclusion of Lemma-Definition 4.5 does not supply `J_H ⊆ J_{Σ(ℋ)}` (#162)
+
+- **Need:** the `≥` half of `J_{Σ(ℋ)} = J_ℋ` (Looijenga, Example 6.4, p. 29), i.e. that every vector
+  of `J^⊥` killed by the traces of the hyperplanes of `ℋ` containing `J` lies in the support space of
+  the half line `C_{J,+}` — with which `isAdmissibleDecomposition_of_vSigmaPlane_eq` closes
+  condition (ii) of Definition 6.1 for `Σ(ℋ)`.
+- **Evidence, and a correction to the plan of this unit.** The reverse inclusion of
+  Lemma-Definition 4.5 now on main, `inf_ker_iInf_span_le_sigmaSupportSpace`
+  (`LeanCategories/Lattices/Valued/LocallyRationalDecomposition.lean:11470`), concludes
+  `ker (associated Q e) ⊓ ⨅_{τ ∈ supportIndex C S σ} ⟨τ⟩ ≤ sigmaSupportSpace C S σ σ`: its left side
+  is *smaller* than the intersection of the spans of the members, and its right side is the support
+  space. Applying it at the fibre to `Σ(ℋ)` and calling the right side `J_ℋ` therefore needs the
+  remaining inclusion `J_ℋ|fibre ≤ ker (associated (fibreForm …) e) ⊓ ⨅_{τ} ⟨τ⟩`, i.e. that the span
+  of every member `τ ⊇ ⟨r⟩` meeting the open cone contains the vectors orthogonal to the ray and
+  killed by the walls through it. That inclusion is not an instance of the theorem but its
+  hypothesis, and it is not in the repository: it is the assertion that the walls of the arrangement
+  cut the member out. So the unit's route does not close the `≥` half, and this entry replaces the
+  expectation recorded for it.
+- **Landed towards it** (`LeanCategories/Lattices/Valued/SemifanArrangement.lean`): `planePerpQ` is
+  `J^⊥` as the common kernel of the pairings with the plane's vectors, which by `ker_inf_ker_eq` is
+  independent of the isotropic line of `J`; `JH` is `J_ℋ` itself, the intersection of that space with
+  the kernels of the forms of the walls containing `J`, so it names the plane alone;
+  `vSigmaPlane_semifanArrangement_le_JHspace` is the `≤` half stated against it;
+  `JH_le_lineSpan_sup_fibreJH` splits a vector of `J_ℋ` as a multiple of the line's generator plus a
+  vector `y` of the fibre that is orthogonal to the ray and killed by every wall through it
+  (`fibreJH`); `fibreJH_le_span_of_wallsThrough` states the remaining hypothesis in its geometric
+  form — the common kernel of the traces through the ray lies in the span of the member, i.e. the
+  walls cut the member out — and `fibreJH_le_sigmaSupportSpace` puts that `y` in the support space
+  from
+  `inf_ker_iInf_span_le_sigmaSupportSpace`; and `vSigmaPlane_semifanArrangement_eq_JH` /
+  `isAdmissibleDecomposition_semifanArrangement` assemble `J_{Σ(ℋ)} = J_ℋ` and the admissibility of
+  `Σ(ℋ)` from the single remaining statement `hspan` — that the span of every member above the half
+  line meeting the open cone contains `fibreJH`. Nothing above `hspan` is assumed.
+- **What a proof of `hspan` now looks like** (this sharpens the earlier entry at
+  "`J_H ⊆ J_{Σ(ℋ)}` cannot come from the dual cone of a cell"). Run the germ at an **intrinsic
+  interior point** `c` of `τ ∩ C` rather than at the ray: the port of TauCeti's
+  `SignCell/Interior.lean` in `LeanCategories/Analysis/Convex/SignCell.lean` has what that needs —
+  `eq_zero_of_nonneg_of_mem_intrinsicInterior` (a form nonnegative on a set and zero at an intrinsic
+  interior point vanishes on the set) and `row_eq_zero_iff_forall_of_mem_intrinsicInterior` (at such
+  a point a row vanishes iff it vanishes on the whole cell) — so the walls vanishing at `c` are
+  exactly the walls vanishing on `τ`, and each of those contains `r` because `r ∈ τ`. For `z` a
+  **rational** point of `fibreJH`, put `z' := z + c₀ u₁` with `c₀` rational, `u₁` rational in
+  `τ ∩ C`, and `c₀` large enough that `z'` is on the closed sheet. Then `hull{c, z'}` is a rational
+  subcone of the closed sheet, and the walls that can obstruct `c + ε z'` for small `ε > 0` are
+  exactly the ones that *cut* that cone — finitely many, by `CutsFinitelyOnRational`; every other
+  wall is one-signed on the cone (`le_or_le_of_not_cutsOn`) or vanishes on all of `τ`. Membership in
+  `C` is automatic: `Q (c + ε z') = Q c + 2ε (c · z') + ε² Q z'` has the sign of `Q c > 0`. So
+  `z' ∈ ⟨τ⟩`, and `z = z' - c₀ u₁ ∈ ⟨τ⟩` because `u₁ ∈ τ`. The reduction to arbitrary `z` is
+  algebraic: every point of the ℚ-rational subspace `fibreJH` is a real combination of its rational
+  points.
+  **Ingredients that must be formalized for this**: (1) that a ℚ-rational subspace of a realified
+  space is spanned by its rational points (`span_range_rationalPoint` is the ambient form); (2)
+  rational points in the intrinsic interiors of `τ ∩ C`, from the density of the rational points;
+  (3) that a member of `Σ(ℋ)` meeting `C` is the weak sign cell of its pattern cut by the kernels of
+  the walls that vanish on it — the face step, for which the port's
+  `row_eq_zero_iff_forall_of_mem_intrinsicInterior` is stated and which `mem_faceClosure` supplies
+  here only up to `IsFaceOf`; (4) the coincidence `Q (rationalPoint v) = fibreForm …` at the fibre,
+  already on main. None of this is a new idea from the source; the source instead reads the
+  inclusion off the minimal member of the induced decomposition of `A_I(ℝ)` (`I^⊥ ⊓ ⨅_τ ⟨τ⟩ = L_σ`
+  because the minimal member's span is `I + U`), which is the other route and equally open.
+- **LC-09 for this reduction**, run over the corpus before the declarations above: `span of a face
+  equals intersection of its walls`, `relative interior face polyhedral cone walls cut out`,
+  `rational points dense in realification span`, `hyperplane arrangement cell lineality span`,
+  `isotropic half line support space walls`, `weakSignCell relative interior closure`, `span of weak
+  sign cell equals intersection of kernels`, `cone dual intersection finitely many halfspaces dual
+  cone sum`. The one substantive hit is TauCeti's `Analysis/Convex/Polyhedron/SignCell/Interior.lean`
+  ("relative interiors of arrangement cells"), already ported into
+  `LeanCategories/Analysis/Convex/SignCell.lean` and consumed by ingredient (3); nothing states the
+  span description of a cell of an infinite arrangement, and nothing gives the rational-density
+  reduction.
+- **Repair link:** the four ingredients above, in that order (the port's intrinsic-interior lemmas
+  first, since ingredient (3) is stated with them); `hspan` is then discharged and every
+  declaration in the list above becomes unconditional.
+- **Closed (this unit).** `hspan` is proved, on the primal side and without any of the four
+  ingredients listed above: `fibreJH_le_span_of_member` (in `SemifanArrangement.lean`) states that a
+  member `τ` of `Σ(ℋ)` above the half line that meets the open cone spans the common kernel of its
+  own walls, through the general statement `le_span_of_isFaceOf_arrangementCone` (in
+  `LocallyRationalDecomposition.lean`). The proof does not need the germ at an intrinsic interior
+  point nor the rational-density reduction: it perturbs `y ∈ τ ∩ C` in the direction of the sum `w`
+  of witnesses, inside `τ`, of the finitely many walls that cut a rational cone `P₀` around `y`
+  without vanishing on `τ`, which makes each such wall strictly signed at the sum
+  (`φ i` is one-signed on `τ` because `τ` lies in a sign cell). A rational cone `P ⊆ int P₀` around
+  the perturbed point `x` then cuts `P` only along walls that do vanish on `τ`, so both
+  `x ± t' • z` lie in the sign cell and in `C₊` for small `t'`, and the face relation applied to
+  their half sum `x ∈ τ` puts `z` in `τ`. The dual-cone description of a cell by its walls is not
+  needed, and `mem_supportSpace_halfLine_of_supportForms_span` keeps its hypothesis: it is a
+  different (dual) route to the same inclusion.
+- **What this costs, for the record.** The statement that a ℚ-rational subspace of a realified space
+  is spanned by its rational points (ingredient (1) above) is not formalized here and is not needed;
+  the LC-09 queries listed above remain the search record for the dual route.
+
+### The common member type exists, but the trace correspondence at `Σ(ℋ)` and Lemma 6.6's "smallest containing member" do not (#162)
+
+- **Need:** (a) the correspondence between the hyperplanes of `ℋ` containing the line `I` and the
+  `ℚ`-hyperplanes of the fibre `I^⊥/I`, which `semifanArrangement_isLocallyRational_of_traces`
+  takes as its data (`j`, `c`, `hc`, `hforms`); (b) the choice, for a member `σ` of a refinement `Σ`
+  of `Σ'`, of the *smallest* member `σ'` of `Σ'` containing it, which Lemma 6.6 (p. 30) quantifies
+  over; (c) the reverse inclusion `I(C_{J,+}) ⊆ J` of the isotropic centre.
+- **Evidence:** Example 6.4, p. 29 (`.tmp-sources/looijenga-math0201218v2.md:791`), Lemma 6.6, p. 30
+  (text line 821), and Definition 6.1's `I(σ) = V_σ ∩ V_σ^⊥` (text line 773). The declarations now
+  on main: `ConicalMember` with `vSigma`/`isotropicCenter`, `ConicalMember.vSigma_plane_witness` (the
+  plane case is independent of the witnessing line), and the monotonicity in the member for the apex,
+  the fibre and the plane (`vSigma_zero_le`, `vSigma_fibre_mono`, `vSigma_plane_mono_of_refines`).
+- **Gap and impact:** (a) is not constructed: the map is not injective on the ambient family (every
+  `I ⊕ T ⊕ ℚ(f + k)` over one trace `T`, recorded at `SemifanArrangement`'s "TracesIndex" section), so
+  it has to be built from the reduced-lattice quotient of the normals, and until then
+  `isAdmissibleDecomposition_semifanArrangement_of_signature` keeps condition (i) as the per-fibre
+  counting input `hcut`. (b) is not constructed: the three member cases are proved but nothing selects
+  `σ'` from the refinement, so Lemma 6.6 is not yet one theorem over the member type. (c) needs the
+  bound `dim ≤ 2` on real isotropic subspaces (Looijenga §1, p. 11) and the description of `V_σ` for an
+  arbitrary admissible `Σ`; only `J ⊆ I(σ)` is proved
+  (`ConicalMember.realify_plane_le_isotropicCenter_facial`).
+- **Coverage:** inspected the source passages above and the declarations named; the reduced-lattice
+  counting of #161 is proved at the fibre (`arrangementDecomposition_reducedLattice_isLocallyRational`)
+  and the fibre's own hyperplane family is the index there.
+- **Repair link:** (a) then unblocks the unconditional Example 6.4; (b) is the remaining choice step of
+  Lemma 6.6; (c) is a separate bound on isotropic subspaces.
+
+### `toLine_toSubmodule` at `cobleLine` does not synthesize `cobleLatticeCarrierTorsionFree` (#88)
+
+- **Need:** the span of the Coble line as a submodule, `cobleLine.toSubmodule = span ℤ {coblePlaneV}`,
+  which the flag-incidence specialization `cobleLine_le_coblePlane` needs in order to prove
+  `cobleLine ≤ coblePlane` from the two displayed spans.
+- **Evidence:** `PrimitiveIsotropicVector.toLine_toSubmodule` (`CuspVector.lean:117`) applied to
+  `cobleVector` fails with `synthInstanceFailed: NoZeroSMulDivisors ℤ ↑cobleLattice.obj.carrier`,
+  while `#synth NoZeroSMulDivisors ℤ ↑cobleLattice.obj.carrier` in the same file returns
+  `cobleLatticeCarrierTorsionFree` (`CobleLattice.lean:343`). Reproduced in a three-line probe
+  importing only `LeanCategories.Lattices.Valued.CobleCusps`. Passing the instance explicitly
+  (`@PrimitiveIsotropicVector.toLine_toSubmodule ℤ _ _ cobleLattice cobleLatticeCarrierTorsionFree
+  cobleVector`) elaborates.
+- **Gap and impact:** papercut, not a missing instance: the instance is found by `#synth`, so the
+  failure is in elaborating the lemma's implicit instance argument at this carrier, and every consumer
+  of `cobleLine`'s span has to name the instance itself. Nothing mathematical is lost.
+- **Coverage:** `CuspPlaneIncidence.cobleLine_le_coblePlane` names the instance; the same shape did not
+  appear at `PrimitiveIsotropic.act`, whose `R` stays a variable.
+- **Repair link:** a restatement of `toLine_toSubmodule` at `cobleLine` in `CobleCusps` (or naming the
+  instance in that file's own `cobleLine`-level span lemma) would remove the papercut for later users.
+
+### The transfer of the ambient orbit count to a fibre's traces needs transitivity of `Stab_Γ(I)` on the walls through `I` (#167)
+
+- **Need:** for a fibre `F` at a `ℚ`-isotropic line `I`, that
+  `distinctTraces ψ F ⊆ orbitFamilyTraces BQ F gen` — the one hypothesis `hsub` that
+  `semifanArrangement_arithmetic_fibre` (`FibreArithmetic.lean:1288`) and its two
+  `IsLocallyRational` callers still take, and the first acceptance bullet of #167 — be derived from
+  the ambient arithmetic input `IsFiniteUnionOfOrbits Γ ψ` alone. The group-theoretic form of the
+  missing statement is `StabilizerTransitiveOnWallsThroughLine` (`FibreArithmetic.lean`): any two
+  isometries of `Γ` carrying `I` into one orbit representative `Hⱼ` differ by an element of `Γ` that
+  preserves `I`, its generator up to a nonzero rational scalar, the form, and one wall to the other.
+  Its trace-level consequence is `TraceOrbitCover`, and `exists_orbitFamily_of_traceOrbitCover`
+  turns that into an orbit family of hyperplanes.
+- **Evidence:** `(distinctTraces ψ F).Finite` is **false** — a single ambient orbit can give
+  infinitely many distinct traces at one fibre. With `V = ℚe ⊕ ℚf ⊕ ℚu ⊕ ℚw`,
+  `e·f = 1`, `u² = -1`, `w² = 2`, `I = ℚe`, `Γ ⊇ O(ℤu ⊕ ℤw)` and `ψ_g = BQ(g u, ·)`, the walls
+  `g u^⊥` all contain `I` and their traces at `I` are the positive lines spanned by `(4,3)`,
+  `(24,17)`, `(140,99)`, … from the Pell automorphs of `⟨-1,2⟩`, pairwise distinct; `permutes` holds
+  with `ρ` = left multiplication and `d ≡ 1`, `finite_orbits` with `s = {1}` and `g = i⁻¹`.
+  `fibreTrace_comp` (`FibreArithmetic.lean:177`) is why no invariance under a fibre-moving isometry
+  exists to contradict this; `fibreTrace_map_fibreInducedEquiv` (`:1610`) is the true equivariance,
+  under `Stab(I)` only.
+- **Gap and impact:** the transfer needs transitivity of `Γ` on the *pairs* `(H, I')` with
+  `I' ⊆ H`, `H ∈ ℋ`, `I'` in the `Γ`-orbit of `I` — strictly stronger than transitivity on primitive
+  isotropic lines. The repository proves the line form for `U ⊕ U` only
+  (`CuspWorkedInstance.exists_isometry_apply_eq`, `CuspWorkedInstance.lean:633`, orbit form
+  `:1169`); for `B = I_{2,9}` no transitivity statement of either kind exists (`CobleCusps.lean`
+  contains none, and its docstring at `:33` puts the orbit count out of scope). No attempt was made
+  to derive it here.
+- **Coverage:** `FibreArithmetic.lean`'s `semifanArrangement_arithmetic_fibre` and
+  `semifanArrangement_arithmetic_fibre_of_basis` take `hsub`; `isAdmissibleDecomposition_semifanArrangement_of_signature`
+  (`SemifanArrangement.lean:2667`) takes the ambient-indexed `hcut`, which the trace route replaces.
+- **Repair link:** a pair-transitivity theorem for `O(I_{2,9})` on the `ℚ`-hyperplanes through one
+  primitive isotropic line, stated in the shape `StabilizerTransitiveOnWallsThroughLine` for a wall
+  family with `IsFiniteUnionOfOrbits`; then `TraceOrbitCover` and `hsub` follow from
+  `fibreTrace_comp`, `fibreTrace_map_fibreInducedEquiv` and
+  `exists_orbitFamily_of_traceOrbitCover`. Filed here because the GitHub connector cannot create
+  issues: this entry is the issue.
+
+### #27 — the morphism-level comparison between `BC2Action` and `EquivariantLatticeCat` — RESOLVED
+
+- **Need (as filed):** the functor half of the comparison in `ArrowLoci.lean` §4: the two models
+  coincide on objects, and the transport of *morphisms* was missing.
+- **Resolution:** both constructions exist and the comparison functor is proved, full and faithful.
+  * `Action.mapFunctor (F : C ⥤ D) : Action C G ⥤ Action D G` (`ForMathlib/ActionCore.lean`), with
+    `mapFunctor_obj_V`, `mapFunctor_map_hom`, and the instances `Action.instFaithfulMapFunctor`
+    (`F` faithful ⇒ faithful) and `Action.instFullMapFunctor` (`F` full *and* faithful ⇒ full; the
+    preimage is `Action.mapFunctor.preimage`). Mathlib has no such construction: `Action.res` restricts
+    along a monoid hom and keeps the target category, and `Action.functorCategoryEquivalence` gives an
+    indirect route only. `Functor.mapEnd` supplies the monoid hom on endomorphisms.
+  * `coreInclusion (Rc) : Core (FiniteProjectiveLatticeCat Rc Rc) ⥤ Core (LatticeCat Rc Rc)`, with
+    the instances `coreInclusion_instFaithful` and `coreInclusion_instFull`. Fullness is why this
+    works: `isFiniteProjectiveLattice` is an object property of a *full* subcategory, so
+    `ObjectProperty.isoMk` lifts an ambient isomorphism back.
+  * `compareFunctor (Rc) := Action.mapFunctor (coreInclusion Rc) :
+    Action (Core (FiniteProjectiveLatticeCat Rc Rc)) BC2 ⥤ BC2Action Rc Rc`, with
+    `compareFunctor_faithful` and `compareFunctor_full`.
+- **What the shape turned out to be, against the expectation in the filing:** there are two composites,
+  and neither is an equivalence.
+  (i) *Into `BC2Action`* (`compareFunctor`, the core inclusion into the big core then `mapFunctor`) is
+  a **full embedding** — an equivalence onto its essential image — because `Core` of a full subcategory
+  sits fully faithfully inside `Core` of the ambient category. Its obstruction is on *objects*:
+  `compareFunctor_not_essSurjective` exhibits `bc2ActionInfinite` (the trivial `C₂`-action on the zero
+  form over `ℕ →₀ ℤ`) outside the essential image, using `not_moduleFinite_finsupp` (a finite spanning
+  set of a free module has a finite union of supports) and `moduleFinite_of_iso` (finiteness transfers
+  along an isomorphism of lattices).
+  (ii) *Into `EquivariantLatticeCat`* (`forgetCoreFunctor = mapFunctor (Core.inclusion _)`) is the
+  functor that carries the core-valued finite action to the `EquivariantLatticeCat` object it
+  coincides with; it is faithful and, as expected in the filing, **not full**:
+  `forgetCoreFunctor_not_full`, with the explicit witness `nonInvertibleActionHom` — the coordinate
+  inclusion `⟨e₀⟩ ↪ ℤ²` between the two trivial `C₂`-actions, on objects that are in the image
+  (`trivCoreAction`), whose underlying map is not surjective (`coordEmbedding_not_surjective`), while
+  every morphism in the image of `forgetCoreFunctor` has an invertible underlying map because every
+  morphism of `Action (Core _) _` is an isomorphism of the core.
+  Together: the non-core model is *not* equivalent to `BC2Action` nor to the core-valued finite model
+  — it is strictly bigger on morphisms, while agreeing on objects. Both hypotheses are carried, not
+  specialized: `W = Rc` is in both functors' types, and finiteness is the source's object property.
+- **Coverage:** Mathlib searched at the pinned revision for `Action.mapFunctor`, `Action.res`,
+  `Action.forget`, `Action.Hom`, `Action.instCategory`, `Functor.mapEnd`, `Functor.Full`,
+  `Functor.Faithful`, `Functor.preimage`, `ObjectProperty.isoMk`, `ObjectProperty.ι`,
+  `Module.Finite.equiv`, `Module.Finite.of_surjective`, `Finsupp.mem_supported`, `Finsupp.supported`,
+  `Set.Finite.biUnion`, `Set.Finite.bddAbove`. TauCeti (corpus, `TauCetiProject__TauCeti`) searched for
+  `involutive endomorphism automorphism`, `End.of asHom`, `Action core self-involution`,
+  `IsIso.of_mul_self_eq_one`: no action-category transport and no involution-is-an-automorphism lemma.
+  Not inspected: whether a packaged Mathlib PR adds `Action.mapFunctor`.
+- **Repair link:** no further work owed for this entry. The remaining gaps of #27 are the ones already
+  filed separately (the `Arrow.isoMk`-presentation of the locus closure, and the torsion-freeness
+  hypothesis of `negIso_ne_refl`).
+
+### #27 — the arrow-category locus closure, the `End`/`Aut` extraction for a `BC₂`-action, and a concrete torsion-free marking witness
+
+- **Need:** (a) `primitiveEmbeddingLocus.IsClosedUnderIsomorphisms`, i.e. primitivity inherited along
+  an arbitrary isomorphism of `Arrow (Lat_R)`, not only along one presented by `Arrow.isoMk`;
+  (b) the involution *as an isomorphism* `σ : L ≅ L` extracted from a `BC₂`-action, to match
+  `FOUNDATIONS.md` Definition 28.4's "equivalently, an isometry `σ : L → L` with `σ² = 1`" in the
+  object language rather than at the endomorphism-monoid level; (c) `exists_distinct_markings` as a
+  concrete instance at `rankOneLattice 1`, with the two markings visibly distinct.
+- **Evidence:** (a) Mathlib has `Arrow.isoMk (l) (r) (h)` and `CommaMorphism.left`/`.right`, but no
+  component-extraction lemma (`Comma.isIso_left`, `Comma.isIso_right` do not exist at the pinned
+  revision), so an arbitrary `e : f ≅ g` in `Arrow T` cannot be decomposed into end isomorphisms
+  without rebuilding the inverses by hand from `e.hom_inv_id` under `congrArg CommaMorphism.left`.
+  `primitiveEmbeddingLocus_of_arrow_isoMk` states the closure in the presentation `Arrow.isoMk`
+  actually supplies. (b) **RESOLVED** — `End` in this revision is a *structure*
+  (`CategoryTheory.End` with field `asHom`, constructor `End.of`), not an abbreviation for `X ⟶ X`,
+  so `CoreHom.iso (A.ρ g)` cannot elaborate: the projection `End.asHom` is the bridge and the
+  failure is a missing projection, not a missing lemma. `Core.endOfIso` (`End.of ∘ CoreHom.mk`) and
+  `Core.isoOfEnd` (`·.asHom.iso`) in `ForMathlib/ActionCore.lean` are the two directions;
+  `BC2Action.involutionOf` now reads the involution out of a `BC₂`-action *as an isometry*
+  (`σ : L ≅ L`, with `involutionOf_involutive : σ ≪≫ σ = Iso.refl L`), `BC2Action.ofInvolution`
+  builds the action from such an isometry, and `involutionOf_ofInvolution` /
+  `ofInvolution_involutionOf` are the two round trips. `Action.isIso_gen` independently proves that
+  the generator of *any* `C₂`-action is invertible (an involutive endomorphism is an automorphism,
+  `IsIso.mk ⟨f, h, h⟩`). `BC2Action.gen_sq` remains as the monoid-level statement it was. (c) `Module.IsTorsionFree.isSMulRegular`
+  needs `IsRegular (2 : ℤ)`, which is not an instance at this revision, and `rw`/`simp` do not see
+  through the `ModuleCat.of` carrier coercions of `rankOneLattice 1`
+  (`(-Pi.single 0 1) 0` stays unreduced, `LinearEquiv.neg ℤ` does not match `LinearEquiv.coe_neg`),
+  so `negIso_ne_refl` carries `h2 : ∀ y, (2 : ℤ) • y = 0 → y = 0` as a named hypothesis.
+- **Gap and impact:** the locus closure and the marking noncontractibility are theorems in the
+  `Arrow.isoMk` presentation and under a torsion-freeness hypothesis respectively, not in the
+  strongest available form; a consumer needing `IsClosedUnderIsomorphisms` must supply the missing
+  extraction. No mathematics is weakened: `markingFibre_subsingleton_iff` is stated with no
+  hypothesis at all, and `negIso` is defined for every `W`-valued lattice. Item (b) is closed.
+- **Coverage:** Mathlib searched at the pinned revision (`Comma.isIso_left`, `Comma.isIso_right`,
+  `Comma.hom_ext`, `Arrow.isoMk`, `Action.ρAut`, `End`, `Aut`, `Module.IsTorsionFree`,
+  `IsRegular`, `Pi.neg_apply`, `Pi.single_eq_same`); the repository searched for `changeValue_id`,
+  `changeValue_comp`, `Under.subsingleton`, `primitive completion`, `marking`. Not inspected: whether
+  an `IsRegular (2 : ℤ)` instance arrives with a later Mathlib move.
+- **Repair link:** upstream candidates `Comma.isIso_left`/`Comma.isIso_right` (then the closure
+  follows from `BilinModuleCat.IsPrimitiveEmbedding.of_iso`), an `End`/`Aut`-to-hom coercion instance
+  or `Action.ρIso`, and `IsRegular (2 : ℤ)` from `IsDomain`. Filed here because the GitHub connector
+  cannot create issues: this entry is the issue.
+
+### #86 — Araki's classification of real forms by Satake diagrams is stated, not proved
+
+- **Need:** issue #86, item 3 — for a complex semisimple Lie algebra `g` with Dynkin diagram `A`,
+  the isomorphism classes of real forms of `g` correspond bijectively to the `Aut(A)`-orbits of
+  admissible pairs of `A` (Araki, *On root systems and an infinitesimal classification of
+  irreducible symmetric spaces*, J. Math. Osaka City Univ. 13 (1962), pp. 32–33; Kolb, *Quantum
+  symmetric Kac–Moody pairs*, Adv. Math. 267 (2014), Theorem 2.7, p. 11). Either direction of the
+  correspondence, and the construction `(X, τ) ↦ θ(X, τ)` of the involution underlying it (Kolb,
+  *op. cit.*, Theorem 2.5, p. 10), would discharge it; so would the weaker statement that every
+  real form of `g` *is* isomorphic to one attached to an admissible pair.
+- **Evidence:** `LeanCategories/Algebra/RealFormData.lean` contains the statement as the structure
+  `RealFormCorrespondence` and the `Prop`-valued definition `ArakiClassification`, which is
+  asserted nowhere. What *is* proved there: `RealForm.isoSetoid` (isomorphism of real forms is an
+  equivalence relation), `RealForm.ofScalarExtension` (the definition is inhabited) and
+  `RealForm.bracket_copy_ofScalarExtension` (the bracket compatibility
+  `LieAlgebra.ExtendScalars.bracket_tmul` that makes the image a Lie subalgebra). On the diagram
+  side `diagramAutomorphismGroup` and `diagramTriality_not_preserves` formalize the audit
+  correction of 2026-10-29 on issue #86 (triality moves a black node, so the classification is with
+  `Aut(A)`-orbits and not with pairs). Searched: the formalization corpus
+  (`scripts/formalization_corpus.py search`, queries `Satake`, `SatakeDiagram`, `realForm`,
+  `admissible pair`, `restricted root`) returns only TauCeti's Satake *parameters* of modular
+  forms and two machine-learning-adjacent `realForm` hits — no Satake-diagram or real-form
+  classification anywhere; this repository had no `Satake` declaration before this file
+  (`rg -il satake LeanCategories` → only `K3SBBoundaryData.lean`, a Satake compactification
+  docstring). Mathlib at the pinned revision has `LieAlgebra.IsSemisimple`
+  (`Algebra/Lie/Semisimple/Defs.lean:105`), `RootPairing`
+  (`LinearAlgebra/RootSystem/Defs.lean:80`) and `RootPairing.Base.cartanMatrix`
+  (`LinearAlgebra/RootSystem/CartanMatrix.lean:106`), but nothing classifying real forms.
+- **Gap and impact:** the consumer named in the issue — the functor from Satake diagrams to real
+  forms — cannot be built from this file; a consumer must supply the correspondence itself. Each of
+  the two present directions is blocked on independent mathematics: real forms require a
+  semisimplicity/Cartan-subalgebra API for `g` (Mathlib has `Algebra/Lie/CartanExists.lean` but no
+  Dynkin-diagram extraction from a semisimple Lie algebra), and the diagram side requires the
+  transport of the four admissibility conditions along `Aut(A)`, which is not in this file (see the
+  next entry).
+- **Coverage:** inspected: Kolb's Definition 2.3, Example 2.4, Propositions 2.2, 2.5, Theorem 2.7
+  (arXiv 1207.6036v2, pp. 8–11), the corpus queries above, `LeanCategories/Algebra/*` and
+  `LeanCategories/Lattices/Valued/*` for prior art. Not inspected: Araki 1962 itself (not in
+  `.tmp-sources/` and not obtained); the appendix proof of Kolb's Theorem 2.7 (pp. 55–58), which is
+  where the Kac–Wang reduction of the correspondence actually sits.
+- **Repair link:** port the appendix of Kolb (arXiv 1207.6036v2) together with Kac–Wang's
+  classification of involutions of the second kind; the upstream candidates are
+  `RealFormCorrespondence` (as data) and a `Nonempty`-free existence theorem replacing
+  `ArakiClassification`. Filed here because the GitHub connector cannot amend the issue itself.
+
+### #86 — the `Aut(A)`-action on admissible pairs is not proved well defined
+
+- **Need:** for `σ ∈ Aut(A)` and an admissible pair `(X, τ)`, the pair `(σ X, στσ⁻¹)` must be
+  admissible again, so that `Aut(A)`-orbits of admissible pairs are a quotient of the admissible
+  pairs rather than of all pairs (`SameDiagramOrbit` in
+  `LeanCategories/Algebra/RealFormData.lean` is currently defined on `Finset ι × Equiv.Perm ι`).
+- **Evidence:** four transports are missing, in increasing cost: (1) `τ² = id` and `τ ∈ Aut(A, σX)`
+  are group computations and are cheap; (2) `σX` of finite type — `IsFiniteTypeSubdiagram`
+  (`LeanCategories/Algebra/SatakeDiagramData.lean`) is stated on the coordinate subspace of `X` in
+  `ℚ^ι` precisely so that this transport is a reindexing of `Finset.univ` along `σ`
+  (`Fintype.sum_equiv`) with `d ∘ σ` for the rescaling — not written; (3) `τ|_{σX} = -w_{σX}` —
+  needs `W_{σX} = σ W_X σ⁻¹` and that the longest element transports, together with uniqueness of
+  the longest element (Bourbaki, *Lie Groups and Lie Algebras* Ch. IV–VI, V §6.2, Cor. 3 — the
+  uniqueness is cited in `IsLongestElementOfSubdiagram`, not proved); (4)
+  `α_{σj}(ρ^∨_{σX}) = α_j(ρ^∨_X)` — the parabolic Weyl vector coefficients transport, which is the
+  same reindexing on the sums of `IsParabolicWeylVectorCoefficient`.
+- **Gap and impact:** `SameDiagramOrbit` is a relation but is not proved to be an equivalence on
+  admissible pairs, so the diagram side of #86 cannot be quotiented. No statement in the two files
+  depends on the missing transport: `RealFormCorrespondence` uses `SameDiagramOrbit` only as the
+  target of its `injective` field, which is data.
+- **Coverage:** inspected the four conditions as implemented (`IsAdmissiblePair`,
+  `IsFiniteTypeSubdiagram`, `AgreesWithNegativeLongestElement`, `HasIntegralParabolicWeylPairing`);
+  Mathlib searched for `Subgroup.map`, `Fintype.sum_equiv`, `Finset.sum_bij`, `Subgroup.comap` at
+  the pinned revision (all present). Not inspected: whether Mathlib's `RootPairing.Base.equivOfCartanMatrixEq`
+  (`LinearAlgebra/RootSystem/CartanMatrix.lean:361`) can be used to build the transport directly
+  instead of reindexing the sums by hand.
+- **Repair link:** the transport theorem `IsAdmissiblePair.smul` for `σ : diagramAutomorphismGroup A`
+  followed by `SameDiagramOrbit`'s equivalence laws; it makes `RealFormCorrespondence.injective` a
+  statement about a genuine quotient. Upstream candidate: the same transport for `RootPairing`
+  sub-diagrams, which belongs with `RootPairing.Base.equivOfCartanMatrixEq`.
+### #97 — an atomic category row over a `FullSubcategory` carrier left an unassigned universe metavariable (repaired)
+
+- **Need:** a `normalized_registry .category` row for any category whose declaration is an `ObjCat`
+  over an `ObjectProperty.FullSubcategory`, registering it as an atom.
+- **Evidence (before the repair):** every such row failed with
+  `unknown universe metavariable ?_uniq.N` at the row — for `{}` and `{ familyFibre := none }`
+  realizations, realizations in the same module and imported, explicit
+  `CategoryRealization.{u+1, u, u, u}` and `.{1, 0, 0, 0}` instantiations, and both `Cat.of C` and
+  `⟨C, inferInstance⟩` bundlings. Rows whose carrier is not a `FullSubcategory`
+  (`Cat.of PartOrd` for `cat.partially_ordered_sets`) were unaffected. Cause:
+  `validateNotPropertyAtom` returned the ambient category as an `Expr` out of the
+  `withoutModifyingState` scope that had created its level metavariables, so an ambient matching no
+  registered category left one unassigned for the enclosing command to report.
+- **Repair:** `Catalogue/Registry/Semantic.lean`, `propertySubcategoryAmbient?` — the ambient
+  comparison now runs in one elaboration scope and returns only a `CategoryId`, so nothing carrying
+  metavariables escapes; `validateNotPropertyAtom` consumes that. The check keeps both of its
+  answers: an atom that is a registered classifier's total, or a property subcategory of a
+  registered category, is refused by name; an atom whose ambient no row names is admitted. Decided
+  by `Catalogue/Registry/PropertySubcategoryAtomTests.lean`, which requires, in one module, the
+  refusal of `LeanCategories.Foundation.WellOrderedSets` as the total
+  `clf.linear_orders.well_ordered`, the refusal of a property subcategory of `cat.totally_ordered_sets`
+  by that name, the admission of a full subcategory of an unregistered ambient, and the admission of
+  a category that is not a subcategory — with no `unknown universe metavariable` in any refusal.
+- **Not a workaround:** #97's category row is still registered as the classifier
+  `clf.linear_orders.well_ordered`'s total (`Foundation/WellOrderedSets.lean`'s `wellOrderedSets`,
+  `Classifier.ofProperty …`). That is what the rule demands — the well-ordered sets *are* the
+  property subcategory of the linear orders — and the repaired check enforces exactly that, since an
+  atom row for `LeanCategories.Foundation.WellOrderedSets` is now refused as that total.
+### #95 — two catalogue test modules in `Foundation/` are outside the build
+
+- **Need:** every `*Tests` module under `LeanCategories/Catalogue/Semantics/Foundation/` should be
+  elaborated by `just test`, so that the refusals it asserts are evidence rather than dead code.
+- **Evidence:** `PowerSetsTests.lean` (rejecting the global-image operation and a source-specialized
+  direct image as the whole `𝒫` action) and `FiniteOrdersTests.lean` (rejecting a carrier
+  presentation specialized at one size, an omitted structural route, and an order isomorphism
+  substituted for a set carrier comparison) both exist, but nothing imports either:
+  `rg -n "PowerSetsTests|FiniteOrdersTests"` finds only their own namespaces. The default build
+  target reaches tests through `LeanCategories.lean → LeanCategories.Catalogue → Catalogue.lean`,
+  which names neither module.
+- **Gap and impact:** the two modules are elaborated only when a worker runs them by hand, so a
+  regression in the rows they cover leaves the gate green. `FiniteSubsetsTests.lean` (#95) is
+  therefore imported from `Catalogue.lean` in the commit that adds it.
+- **Coverage:** inspected `LeanCategories.lean`, `LeanCategories/All.lean` and
+  `LeanCategories/Catalogue.lean` at `72a79b19`; the two modules' contents beyond their `run_meta`
+  probes were not audited, and neither was run.
+- **Repair link:** add both imports to `Catalogue.lean` in one commit that also repairs whatever the
+  two modules then report. Filed here because this unit added their sibling and found the gap; it is
+  not this issue's obligation.
+
+### #95 — a completed unit's commits were force-rewritten off `main`
+
+- **Need:** a push that completes a unit should stay on `main`; another session's later push should
+  not remove it.
+- **Evidence:** `main` was at `c0a34f1c`; this unit pushed `87090736` and `0573b7e5` (confirmed by
+  `git ls-remote omm main` right after each push). Thirteen minutes later `main` was `242c3d3d`,
+  whose parent is `c0a34f1c`, and `git merge-base --is-ancestor` reports all three #95 commits
+  missing. `git diff 0573b7e5 242c3d3d` shows the unit's own lines deleted: 34 lines of
+  `FiniteSubsets.lean`, 35 of `PowerSets.lean`, the whole 141-line `FiniteSubsetsTests.lean`, the
+  `Catalogue.lean` import at line 71, and the `COMPLAINTS.md` `#95` entry. The #95 work was
+  re-applied as `54a12b80`, `c72e9da2`, `b1cadda9` on `242c3d3d`, with both `COMPLAINTS.md` entries
+  kept.
+- **Gap and impact:** a session that commits a whole file from a tree predating another session's
+  push reverts that session's lines in the file and, if its push is leased or forced against the
+  older tip, drops the other commits entirely. Neither `git ls-remote` before the push nor the
+  connector's `pushed` answer protects the earlier unit; only a re-read of `main` after the fact did.
+  `Catalogue.lean` and `COMPLAINTS.md` are the two files every unit appends to, so they are where
+  the next loss will happen.
+- **Coverage:** inspected `git log 0573b7e5..omm/main`, the two pushes' `ls-remote` answers, and
+  `git diff 0573b7e5 242c3d3d --stat`. The other session's working state and push call were not
+  inspected; the cause named above is inferred from the tree contents, not observed.
+- **Repair link:** whole-file commits of `Catalogue.lean`/`COMPLAINTS.md` should be made from a tree
+  that has fetched `main` (`Catalogue.lean` staged by path or via `hash-object`/`update-index`, as
+  this unit does), and a push should be repeated against the tip a fetch has just returned rather
+  than the tip read earlier.
+
+### `native_decide` in `Registry/ComparisonProbes.lean` keeps the repository axiom audit red on main
+
+- **Need:** the repository's own axiom audit — `lake exe lean-categories-axiom-audit`, the
+  `_lean-axiom-audit` step of `just test` — must pass on `main`, so that `just test` is the
+  acceptance build for every unit instead of a gate with a known red step.
+- **Evidence:** at `main` = `24efa194`, `lake exe lean-categories-axiom-audit` fails with
+  `error: LeanCategories/Tools/AxiomAudit.lean:43:0: nonstandard axiom dependencies:
+  [(CasCatalogue.RouteDiscoveryProbes.id99.explicitRevisiting, [_private …
+  native_decide.ax_1_1]), (CasCatalogue.RouteDiscoveryProbes.id99.simpleRoutesOnly, [_private …
+  native_decide.ax_1_1])]`. The two theorems are
+  `LeanCategories/Catalogue/Registry/ComparisonProbes.lean:114` and `:120`, both closed by
+  `native_decide` (`:116`, `:124`). The file is unmodified in the working tree, its content equals
+  `HEAD`'s, and it landed in `9c6d4ebb` (2026-11-18 02:25:49), an ancestor of this unit's base
+  `72a79b19`; the audit and its constant list are untouched by #96, and the seventeen `#print axioms`
+  checks over the declarations #96 adds give `[propext, Classical.choice, Quot.sound]` only. The
+  failure is therefore pre-existing on `main` and not introduced by this unit.
+- **Gap and impact:** no commit in the repository can report `just test` green while these two
+  proofs stand, because the axiom step is repository-wide (`Tools/AxiomAudit.lean` enumerates the
+  whole environment). The finding itself is correct — `native_decide` adds the compiler's axiom —
+  so the defect is the two proofs, not the audit. Consumers: every unit whose delivery evidence is
+  `just test`, and the audit gate itself.
+- **Coverage:** inspected the flagged theorems, the audit message, the file's git status and content
+  against `HEAD`, and the ancestry of `9c6d4ebb`. Not inspected: whether either statement has a
+  `decide`-only or `rfl`-level proof (both count the routes of a small explicit `SemanticState`), and
+  whether these registry probes belong in the built library at all rather than in a test module.
+- **Repair link:** replace the two `native_decide` proofs with kernel-checked computations over the
+  finite route enumeration, or move `RouteDiscoveryProbes` out of the built library; then re-run
+  `lake exe lean-categories-axiom-audit`. The registry comparison probes the rest of that file
+  supplies (`id99.competing`, `:70`–`:98`) are unaffected.
+
+### The sign twist does not transport the orthogonal group definitionally
+
+- **Need:** `O(L) = O(L(-1))` as subgroups of one endomorphism group, so that a statement proved for
+  positive definite lattices transfers to negative definite ones (the second item of `#87`). The two
+  subgroups are subgroups of `L.obj.carrier ≃ₗ[ℤ] L.obj.carrier` and of
+  `(oppositeLattice L.obj).obj.carrier ≃ₗ[ℤ] (oppositeLattice L.obj).obj.carrier`.
+- **Evidence:** `Lattices/Valued/Constructions.lean` builds `scaleLattice` through
+  `BilinModuleCat.ofBilinMap`, and the two carriers are equal only below default transparency.
+  `Subgroup.ext` on the two `BilinModuleCat.orthogonalSubgroup`s leaves a goal whose two sides print
+  identically (`@Eq W (L.obj.pairing (f x) (f y)) (L.obj.pairing x y)` on both sides) and still fail
+  the type check, and `set_option backward.isDefEq.respectTransparency.types false` only moves the
+  failure from the carrier types to the `pairing` instance paths. The repository routes around the
+  same obstruction for `gramMatrix_opposite` (`Constructions.lean`) and `representationSet_opposite`
+  (`RootLattice.lean`) with that option; a subgroup equality has no such route.
+- **Gap and impact:** the sign twist cannot carry a group-theoretic theorem. The negative definite
+  case of `#87` is therefore proved directly in `Mass.lean`
+  (`orthogonalGroup_finite_of_isNegativeDefinite`) from `representationSet_finite_of_isDefinite`
+  rather than by transport, which also makes `Mass.lean` import `RootLattice`.
+- **Coverage:** tried `Subgroup.ext` with and without the transparency option, `show` at the
+  permutation level, and both directions of the forall. Not tried: an explicit `LinearEquiv` between
+  the two carriers — both are the same `W`, so a `LinearEquiv.refl`-level transport may exist.
+- **Repair link:** express `orthogonalSubgroup` of a scaled lattice as the image of the identity
+  linear equivalence, or give `scaleLattice` the same carrier object by construction; then the sign
+  twist replaces the direct proof.
+
+### The Pell converse for a split binary lattice is not formalized
+
+- **Need:** `O(L)` infinite for an indefinite rank-two `ℤ`-lattice `L` with `-det G` not a square, and
+  `O(L)` infinite for an indefinite `L` of rank at least three. These are the two converses `#87`
+  names and then excludes ("whose sources are still to be opened and which are not part of this
+  request yet"). What `#87` does ask for — `SO(L) = {±1}`, `O(L)` finite, `|O(L)| ≤ 4` — is proved
+  (`LeanCategories/Lattices/Valued/SplitBinaryLattice.lean`), so nothing in the formalization depends
+  on the entries below.
+- **Source, now opened:** C. O'Sullivan, *Topographs for binary quadratic forms and class numbers*,
+  arXiv:2408.14405v3, §8.1 (read as the HTML rendering of v3, 24 Jul 2025). Prop. 8.1 (citing
+  [Lan58, Thm. 202] and [Bue89, Thm. 3.9]): for a primitive form `q` of non-square discriminant `D`,
+  `Aut(q) = Stab(z_q) = {G_q(t,u) : t,u ∈ ℤ, t² − Du² = 4}`. Prop. 8.4: for non-square `D > 0` the
+  smallest positive solution of `t² − Du² = 4` exists (it is read off a river period). Cor. 8.6: for
+  primitive `q` with non-square `D > 0`, `Aut(q) = {±G_qⁿ : n ∈ ℤ}` with `G_q` hyperbolic, so `Aut(q)`
+  is infinite and `Aut(q)/{±I} ≅ ℤ`. With `D = -4 det G`, "`-det G` not a square" is "`D` a non-square",
+  and indefiniteness of a rank-two lattice is `det G < 0`, i.e. `D > 0`, so §8.1 gives the rank-two
+  converse in the form the issue names it.
+- **Gap:** no source for the rank-at-least-three converse in this paper — the strings `rank`, `O(L)`,
+  `orthogonal group` do not occur in the text (grep of the fetched HTML), and the paper is about binary
+  forms throughout. That clause needs its own source before it can be stated, let alone proved.
+- **Coverage:** the §8.1 statements above were read in full, including the clause list of Cor. 8.2
+  (`D` a nonzero square, `D < -4`, and `D = 0, -3, -4`). Not audited: the numbering and page of Props.
+  8.1/8.4 and Cor. 8.6 in the published version, and whether [Lan58]/[Bue89] state Prop. 8.1 in the
+  same normalization (`q|M = q` versus `Mᵀ G M = G`).
+- **Repair link:** formalizing the converse needs the Pell existence statement (units of norm one in
+  `ℚ(√D)`, unbounded powers of the fundamental solution) — a unit of its own, in a new issue, since
+  `#87` excludes it. The rank-at-least-three clause needs a source chosen first.
+- **Searches run for the rank-at-least-three source** (2026-11-18): web search
+  `orthogonal group of an indefinite integral lattice of rank at least 3 is infinite theorem`. No
+  citable statement was found: the hits were seminar abstracts, course notes and unrelated question
+  sets. The one near-hit is Shimura, *Arithmetic of Quadratic Forms*, Section 32 ("strong
+  approximation in an indefinite orthogonal group of more than two variables"), known only from a
+  book preview that does not display the theorem or its number; strong approximation presupposes
+  infiniteness rather than stating it, so it is not cited here. Recorded as unverified: an infinitude
+  statement for `O(L)` of an indefinite lattice of rank at least three is expected to be classical but
+  is **not** sourced, and nothing in this repository relies on it. A second query,
+  `automorphism group of an integral quadratic form is finite if and only if the form is definite;
+  infinite for indefinite forms of rank at least three`, returned only encyclopaedia summaries of
+  *binary* quadratic forms (Wikipedia, WIKI2, Grokipedia) whose "definite ⟹ finite, indefinite ⟹
+  infinite" claim is about rank two alone, and MathOverflow threads about generators of `O_q(ℤ)`; none
+  ranges over rank at least three, so none can carry that clause. The formalization corpus
+  (`scripts/formalization_corpus.py`, whole index, 2026-11-18) was then searched — `orthogonal group
+  infinite indefinite lattice`, `Aut(q) infinite indefinite binary quadratic form Pell`,
+  `automorphism group quadratic form finite definite infinite indefinite`, `orthogonal group finite
+  iff definite lattice`, `orthogonalGroup_infinite`, `orthogonalGroup infinite`, `indefinite
+  orthogonalGroup` — and it has no statement of the converse either: the nearest hits are TauCeti
+  `NumberTheory/IntegralLattice/Mass.lean` and `LinearAlgebra/BilinearForm/Isometry.lean` (mass of a
+  genus; isometry API), both about definite lattices. So the clause is unsourced in every surface
+  available here, and a source must be supplied before it is stated.
+
+### Wythoff maximal-cone intersections are proved from the restored chamber geometry
+
+- **Need:** #180's O3, universal pairwise intersection-as-common-face for the Wythoff coarsened
+  family. The six-field datum restored only AET's convexity/sign fields and admitted arbitrary linear
+  groups. It omitted the root/wall system, the Coxeter identification, the standard parabolic, the
+  positive cone and wall preservation, so its swap example was a counterexample to that abstraction,
+  not to AET's construction.
+- **Delivered declarations:** `WythoffCoarseningDatum.maximalConesMeetInFaces` proves the law for
+  every pair of translates. `inf_isFaceOf_left` and `inf_isFaceOf_right` prove it for every pair of
+  members of `coarsenedCones`, while `mem_of_isFaceOf` proves universal face closure and `inf_mem`
+  membership of the intersection. All nine `#print axioms` checks in
+  `WythoffCoarsenedFamilyTests.lean` return exactly `[propext, Classical.choice, Quot.sound]`.
+- **Hypotheses retained and added:** the original fields remain, and the datum now also carries a
+  `CoxeterSystem` on `W`, `WJ` as the inactive standard parabolic (`WJ_eq`), simple-root reflection
+  formulas, AET's positive cone and its stability/salience, and `wall_preserving`. The construction
+  is the facial completion of AET Definition 4.16's maximal cones; it does not assert equality with
+  AET Proposition 4.17(4), AE22 Definition 9.1, or the dissertation's face descriptions.
+- **Proof mechanism:** an active simple functional is nonnegative on `L = 𝒞_gen` and nonpositive on
+  its translate by the corresponding simple reflection. Their sum vanishes on the shared wall, so
+  the one-simple-translate intersection is a face. `map_equiv` transports the one-wall law. A
+  reduced-gallery induction then proves `inf_wordProd_isFaceOf`: gallery convexity puts a point in
+  both ends into every prefix translate, reduced prefixes stay reduced, and the prefix and one-wall
+  face lemmas apply. This is a chamber/Tits argument through parabolic unions, not an assumed
+  intersection law. Maxwell, *Wythoff's Construction for Coxeter Groups*, Proposition 5.5 supplies
+  the stronger intersection formula; its index is `S_w^c`, as the printed page confirms.
+- **Remaining bridge:** the file does not currently construct `gallery` and `reduced_gallery` from
+  the existing `AETChamberHypotheses`; those source-justified facts remain explicit hypotheses of
+  `WythoffCoarseningDatum`. The exact bridging statement is: for the AET chamber representation,
+  discharge reduced-gallery convexity and show that every parabolic translate has such a reduced
+  representative. This is not hidden as an unproven `Prop` or silently weakened into a top/trivial
+  parabolic case.
+- **Coverage and verification:** renewed LC-09 searches included Wythoff/fan, generalized Coxeter
+  semifan, common-face chamber, parabolic-chamber-face-intersection, parabolic union, chamber
+  coarsening, relevant faces, generalized-permutohedron and normal-fan formulations. Atlas's
+  `face_intersection_property` is only an ingredient, not the needed coarsening theorem, and its
+  sorries/gaps are not used. Focused builds of both Wythoff modules pass; no full-suite gate is run.
+
+### `AET Proposition 4.17(4)` and `Definition 4.16` name different families in rank at least three
+
+- **Need:** a single family for the cones of the generalized Coxeter semifan. V. Alexeev,
+  P. Engel, A. Thompson, arXiv:1903.09742v3, Definition 4.16 (p. 26) says the cones are the faces of
+  `𝒞_gen` and their `W`-translates; Proposition 4.17(4) (p. 26) says they are `g(F)` for `g ∈ W` and
+  the *relevant* faces `F` of `K`. V. Alexeev and P. Engel, §9 `sec:semifan`, Definition
+  `def:generalized-cox-semifan`, repeats the second reading in the phrase "the generalized Coxeter
+  fan for this set `V_irr` of relevant vertices" while its displayed formula quantifies over
+  `W_dirr = ⟨w_i | i ∈ V_irr⟩`.
+- **Evidence:** the two families differ as soon as the rank is at least three. In `A₃` with
+  `J = {a, b}` put `K = {x₁ ≥ x₂ ≥ x₃ ≥ x₄}`, so `𝒞_gen = {x₄ ≤ min(x₁,x₂,x₃)}` and the relevant
+  chamber face is `F_c = K ∩ ker φ_c`. Both `F_c` and the facet `𝒞_gen ∩ ker φ_c` are
+  two-dimensional cones in the plane `x₃ = x₄` of `Σxᵢ = 0`, `F_c ⊆` that facet, and
+  `(-1, 5, -2, -2)` lies in the facet but not in `F_c` (it has `x₁ < x₂`), so `F_c` is not a face of
+  `𝒞_gen`. In rank two the two readings agree, which is why the `A₂` example in the source does not
+  expose the discrepancy. The relevant-content discussion is evidence that several source passages
+  were meant to be compatible, but it is not a proof of that comparison.
+- **Gap and impact:** `LeanCategories/Lattices/Valued/WythoffSemifan.lean` (`aetWythoffSemifan`)
+  builds the Proposition 4.17(4) family, so its members are not all faces of `𝒞_gen` in rank at
+  least three; every statement there about chamber-face members remains true of those members as
+  subsets. `WythoffCoarsenedFamily.lean` instead constructs the cone-intrinsic facial completion
+  required by the issue. It does **not** assert equality with Proposition 4.17(4), AE22 Definition
+  9.1, or the dissertation's face-description.
+- **Repair link:** the source referent discrepancy remains open. Any later comparison must either
+  derive the relevant-chamber-face family from AET's stated hypotheses or give the counterexample
+  against the actual AET data, then prove or refute equality with the facial completion. The Lean
+  availability of the completion is not evidence for that comparison.
+
+### The set-level face relation admits `∅`, so a family of cones needs a cone-valued codomain
+
+- **Need:** a cone family whose members are cones. `IsConeFace` in
+  `LeanCategories/Lattices/Valued/WythoffSemifan.lean` is the set-level port of Mathlib's
+  `PointedCone.IsFaceOf`, made at the level of `Set M` because the maximal cone `𝒞_gen` is a `Set`
+  whose convexity is AET Proposition 4.17(1), a hypothesis rather than a definitional property.
+- **Evidence:** `∅` satisfies the set-level relation vacuously, so
+  `WythoffCoarseningDatum.coarsenedFamily` contains `∅`; `WythoffCoarsenedFamilyTests.probe_empty_mem`
+  exhibits it. `∅` is not a cone and is not a cone of `𝔉_gen`. Adding `0 ∈ Φ` to the membership
+  would not repair it either: the set-level relation does not transport the apex, because it has no
+  scaling clause, so `∅` would then be a face of a member without being a member and O2 would fail
+  as stated.
+- **Gap and impact:** with `convex` (closure of `𝒞_gen` under addition) and the free closure under
+  nonnegative scaling, `𝒞_gen` is a `PointedCone ℝ M`, and `PointedCone.IsFaceOf` is then the
+  intrinsic relation: its faces are cones, the apex is automatic and `∅` is not a cone at all. O2
+  and O3 as proved in `WythoffCoarsenedFamily.lean` hold for *every* member of the larger set-level
+  family, so the cone-intrinsic statement is a corollary of them, not a repair of them.
+- **Repair link:** add `maximalConePointed : PointedCone ℝ M` built from `convex` plus scaling
+  closure, restate `coarsenedFamily` with codomain `Set (PointedCone ℝ M)` and membership
+  `F.IsFaceOf (g • maximalConePointed)`, and keep the set-level statements as the comparison. No
+  consumer needs it today; it is recorded so the codomain is not mistaken for the cones.
+
+### #181: the AET gallery bridge still needs Maxwell's standard-geometric ascent theorem
+
+- **Need:** discharge `WythoffCoarseningDatum.gallery` on the original chamber/Coxeter datum, for
+  arbitrary infinite `W` and `W_J`, without adding a gallery hypothesis.  The necessary
+  standard-geometric input is Maxwell, *Wythoff's Construction for Coxeter Groups*, Proposition
+  5.1: if `i` is not a left descent of `w`, then the `i`-th simple functional is nonnegative on the
+  `w`-translate of the fundamental chamber.  Proposition 5.5 uses this with Propositions 5.2–5.3
+  and Theorem 1.3, all in the standard geometric representation; its `S_w^c` is the centralizer of
+  the reduced-word support, not its complement.
+- **Searched (LC-09):** Mathlib `GroupTheory/Coxeter/*` and `GroupTheory/DoubleCoset` for
+  double-coset minimality, minimal coset representatives, reduced/minimal/Tits chamber galleries,
+  `wordProd`/prefix/descent, and Wythoff.  Formalization-corpus queries included all of those
+  formulations, `pos_of_ascent`, `IsMinimalCosetRep`, `wordProd take`, and Maxwell/Wythoff.  The
+  substantive reusable hits are TauCeti `GroupTheory/Coxeter/{Basic,StrongExchange,Parabolic}` and
+  Atlas `CoxeterGroup/PosOfAscentProof.lean`; the latter is for the canonical coordinate action,
+  not for the abstract `WythoffCoarseningDatum` representation.  AET arXiv:1903.09742v3 Definition
+  4.16/Proposition 4.17 and Maxwell's printed Propositions 5.1–5.5 were read at their hypotheses.
+- **Did instead:** ported the three TauCeti modules with provenance.  Proved arbitrary-double-coset
+  minimization, reduced representatives, the correct translate identity `g(L) = u⁻¹r(L)` when
+  `r = u g v`, and the hereditary one-sided prefix predicate.  Corrected two false old fields:
+  word-reducedness was missing from `ParabolicReduced`, and double-coset minimality is not
+  generally inherited by prefixes.  Removed the old `reduced_gallery` equality, which confused
+  right cosets of maximal cones with double cosets.  Added the negative singleton test and rewired
+  the maximal-intersection proof through the parabolic factor before the outer translate.
+- **Gap and optimal repair:** the exact missing Coxeter/geometric theorem is recorded at
+  `WythoffCoarseningDatum.gallery` as the deliberately red application of
+  `CoxeterSystem.nonneg_simple_apply_of_not_isLeftDescent`: for every non-left-descent `i` of `w`
+  and every chamber point `y`, `0 ≤ φ i (w y)`.  The optimal repair is a standard-geometric Coxeter
+  chamber API proving Maxwell 5.1–5.3, together with an explicit identification of the AET datum
+  with that representation; it must not be introduced as another unproved field.  Until then #181
+  acceptance item 2 remains open and the focused build is intentionally red.  #180 remains open.
+- **Verification:** the algebraic/cosmetic revision compiled before the deliberate red was inserted,
+  and all six algebraic axiom checks returned exactly `[propext, Classical.choice, Quot.sound]`.
+  The final focused build stops at line 619 with `Unknown constant` for the named ascent lemma,
+  followed by the unsolved prefix-nesting goal at line 616;
+  no full suite or CI was run.  This is a reproducible blocked declaration, not a completed fan
+  theorem or a source-fidelity claim about `wall_preserving`.

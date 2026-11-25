@@ -10,6 +10,7 @@ public import LeanCategories.Modules.Bilinear.Valued.DyadicDoublingData
 public import LeanCategories.Modules.Bilinear.Valued.DyadicHalvingData
 public import LeanCategories.Modules.Bilinear.Valued.Isometry
 public import LeanCategories.Modules.Bilinear.Valued.OrthogonalGroup
+public import LeanCategories.Modules.Bilinear.Valued.OrthogonalSum
 public import LeanCategories.Modules.Bilinear.Valued.Primary
 public import LeanCategories.Modules.Bilinear.Valued.Presented
 public import LeanCategories.Modules.Bilinear.Valued.ReducedDiscriminantData

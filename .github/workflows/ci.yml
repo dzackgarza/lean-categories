@@ -34,3 +34,11 @@ jobs:
           just-version: 1.58.0
       - name: Run repository QC
         run: just test-ci
+      - name: Upload the per-module elaboration times of this run
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: build-timings
+          path: build-timings/
+          if-no-files-found: error
+          retention-days: 90

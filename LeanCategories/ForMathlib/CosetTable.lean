@@ -1,0 +1,287 @@
+/-
+Copyright (c) 2026 Dzack Garza. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+-/
+module
+
+public import Mathlib.GroupTheory.GroupAction.Quotient
+public import Mathlib.GroupTheory.Index
+public import Mathlib.Algebra.Pointwise.Stabilizer
+
+/-!
+# Coset tables certify index bounds
+
+A coset table on `k` points for `m` generators records the action of each generator on `k` cosets of
+a subgroup, together with a word in the generators naming each coset as the image of a base point.
+Checked against a *deduction certificate* — the relators of a presentation and the words of the
+subgroup generators, replayed as a finite Boolean computation — a table certifies that the subgroup
+has index at most `k` (`LeanCategories.ForMathlib.CosetTable.index_le`), that it has finite index
+(`...finiteIndex`), and that its index is exactly `k` exactly when the named cosets are distinct
+(`...index_eq_iff_injective`).
+
+This is the interface through which a Todd--Coxeter enumeration bounds an index without naming any
+element of the subgroup: the certificate is checked by `decide`, and the bound is then proved from
+the action of the generators on the named points.
+
+Search record (LC-09): `scripts/formalization_corpus.py search` at the manifest head `6d97e8ad`
+under `coset table transitive index` and `index bound coset enumeration certificate`; the hit is
+TauCeti `GroupTheory/Coset/Table.lean` (below) and its sibling `GroupTheory/Coset/Enumeration.lean`
+(Todd--Coxeter over a cyclic subgroup, the enumerator that produces such a table, not the bound).
+
+Ported from TauCeti (`https://github.com/TauCetiProject/TauCeti`, commit `7b4d5f7`, Apache 2.0),
+`TauCeti/GroupTheory/Coset/Table.lean`; the statements are verbatim apart from the namespace, and
+the file carries only Mathlib imports.
+-/
+
+public section
+
+open scoped Pointwise
+
+namespace LeanCategories.ForMathlib
+
+/-- A coset table on `k` points for `m` generators: the action of each generator on the points,
+together with a word in the generators for each point, naming the point as the image of a base
+point under that word. -/
+structure CosetTable (m k : ℕ) where
+  /-- The action of the generator `t` on the points. -/
+  act : Fin m → Fin k → Fin k
+  /-- A word in the generators naming the point `i`, read as a product from left to right. -/
+  word : Fin k → List (Fin m)
+
+namespace CosetTable
+
+variable {m k : ℕ} (T : CosetTable m k)
+
+/-! ### The Boolean certificate check
+
+The bodies below are exposed because a certificate is checked by `decide`, which has to evaluate
+them. -/
+
+/-- The point reached from `i` along the word `u`, applying its letters from right to left, as
+the product of the word acts on a point. -/
+@[expose]
+def trace (u : List (Fin m)) (i : Fin k) : Fin k :=
+  u.foldr T.act i
+
+/-- The edges `(t, j)` of the table traversed by `T.trace u i`: each letter `t` of `u` together
+with the point it is applied to. -/
+@[expose]
+def edges : List (Fin m) → Fin k → List (Fin m × Fin k)
+  | [], _ => []
+  | t :: u, i => (t, T.trace u i) :: edges u i
+
+/-- One deduction: scanning the closed word `t :: u` at the point `i`. If every edge of `u` is
+among the known edges and the table carries `T.trace u i` to `i` along `t`, the edge
+`(t, T.trace u i)` is added to the known edges. -/
+@[expose]
+def deduce (known : List (Fin m × Fin k)) (i : Fin k) : List (Fin m) → List (Fin m × Fin k)
+  | [] => known
+  | t :: u =>
+    if (T.edges u i).all (· ∈ known) && T.act t (T.trace u i) = i then
+      (t, T.trace u i) :: known
+    else known
+
+/-- The edges `(t, i)` holding by definition of the points: those with
+`T.word (T.act t i) = t :: T.word i`. -/
+@[expose]
+def treeEdges : List (Fin m × Fin k) :=
+  (List.finRange m ×ˢ List.finRange k).filter fun e ↦ T.word (T.act e.1 e.2) = e.1 :: T.word e.2
+
+/-- The action check of a deduction certificate `cert` for the relators `rels` and the subgroup
+generators `stab`. It verifies that each deduction scans a relator, or a subgroup generator at a
+point with the empty word, and that running the deductions makes every edge of the table known. -/
+@[expose]
+def checkAction (rels stab : List (List (Fin m))) (cert : List (Fin k × List (Fin m))) : Bool :=
+  cert.all (fun c ↦ c.2 ∈ rels || (T.word c.1 = [] && c.2 ∈ stab)) &&
+    (List.finRange m).all fun t ↦ (List.finRange k).all fun i ↦
+      (t, i) ∈ cert.foldl (fun known c ↦ T.deduce known c.1 c.2) T.treeEdges
+
+/-- The check of a deduction certificate `cert` for the relators `rels` and the subgroup
+generators `stab`. It verifies that some point has the empty word, that each deduction `(i, r)`
+scans a relator, or a subgroup generator at a point with the empty word, and that running the
+deductions in order from `T.treeEdges` makes every edge of the table known. -/
+@[expose]
+def check (rels stab : List (List (Fin m))) (cert : List (Fin k × List (Fin m))) : Bool :=
+  (List.finRange k).any (T.word · = []) &&
+    T.checkAction rels stab cert
+
+@[simp]
+theorem trace_nil (i : Fin k) : T.trace [] i = i := rfl
+
+@[simp]
+theorem trace_cons (t : Fin m) (u : List (Fin m)) (i : Fin k) :
+    T.trace (t :: u) i = T.act t (T.trace u i) := rfl
+
+/-! ### Soundness -/
+
+section Monoid
+
+variable {G α : Type*} [Monoid G] [MulAction G α] (g : Fin m → G) (a : α)
+
+/-- The point of a `G`-set named by the index `i` of the table: the base point `a` moved by the
+word `T.word i` in the generators `g`. -/
+def point (i : Fin k) : α :=
+  ((T.word i).map g).prod • a
+
+theorem point_def (i : Fin k) : T.point g a i = ((T.word i).map g).prod • a := (rfl)
+
+/-- A list of edges all of which describe the action of the generators on the named points. -/
+private def Sound (known : List (Fin m × Fin k)) : Prop :=
+  ∀ e ∈ known, g e.1 • T.point g a e.2 = T.point g a (T.act e.1 e.2)
+
+variable {T g a}
+
+/-- If every edge traversed by a word describes the action on the named points, the word acts
+as its table trace. Only the traversed edges need to be sound; a monoid action suffices. -/
+theorem prod_smul_point_of_edges (i : Fin k) :
+    ∀ u : List (Fin m),
+      (∀ e ∈ T.edges u i, g e.1 • T.point g a e.2 = T.point g a (T.act e.1 e.2)) →
+      (u.map g).prod • T.point g a i = T.point g a (T.trace u i)
+  | [], _ => by simp
+  | t :: u, hu => by
+    obtain ⟨ht, hu⟩ := List.forall_mem_cons.1 hu
+    simpa [List.prod_cons, mul_smul, prod_smul_point_of_edges i u hu] using ht
+
+private theorem sound_deduce {known : List (Fin m × Fin k)} (hk : Sound T g a known)
+    {i : Fin k} {r : List (Fin m)} (hr : (r.map g).prod • T.point g a i = T.point g a i) :
+    Sound T g a (T.deduce known i r) := by
+  match r with
+  | [] => exact hk
+  | t :: u =>
+    rw [deduce]
+    split_ifs with h
+    · simp only [Bool.and_eq_true, List.all_eq_true, decide_eq_true_eq] at h
+      refine List.forall_mem_cons.2 ⟨?_, hk⟩
+      simpa [List.prod_cons, mul_smul,
+        prod_smul_point_of_edges i u (fun e he ↦ hk e (h.1 e he)), h.2] using hr
+    · exact hk
+
+private theorem sound_treeEdges : Sound T g a T.treeEdges := by
+  intro e he
+  simp only [treeEdges, List.mem_filter, decide_eq_true_eq] at he
+  rw [point_def, point_def, he.2, List.map_cons, List.prod_cons, mul_smul]
+
+private theorem sound_foldl {rels stab : List (List (Fin m))}
+    (hrels : ∀ r ∈ rels, (r.map g).prod = 1) (hstab : ∀ r ∈ stab, (r.map g).prod • a = a) :
+    ∀ (cert : List (Fin k × List (Fin m))) (known : List (Fin m × Fin k)),
+      (∀ c ∈ cert, c.2 ∈ rels ∨ (T.word c.1 = [] ∧ c.2 ∈ stab)) → Sound T g a known →
+        Sound T g a (cert.foldl (fun known c ↦ T.deduce known c.1 c.2) known)
+  | [], _, _, hk => hk
+  | c :: cert, known, hc, hk => by
+    rw [List.foldl_cons]
+    refine sound_foldl hrels hstab cert _ (fun c' hc' ↦ hc c' (List.mem_cons_of_mem _ hc')) ?_
+    refine sound_deduce hk ?_
+    rcases hc c List.mem_cons_self with h | ⟨hw, h⟩
+    · rw [hrels _ h, one_smul]
+    · rw [point_def, hw, List.map_nil, List.prod_nil, one_smul, hstab _ h]
+
+/-- **Soundness of a certified coset table.** If the relators `rels` hold for the generators `g`
+and the words `stab` fix the base point `a`, a table whose certificate checks describes the action
+of each generator on the points it names. -/
+theorem smul_point {rels stab : List (List (Fin m))} {cert : List (Fin k × List (Fin m))}
+    (hT : T.checkAction rels stab cert = true) (hrels : ∀ r ∈ rels, (r.map g).prod = 1)
+    (hstab : ∀ r ∈ stab, (r.map g).prod • a = a) (t : Fin m) (i : Fin k) :
+    g t • T.point g a i = T.point g a (T.act t i) := by
+  simp only [checkAction, Bool.and_eq_true, List.all_eq_true, Bool.or_eq_true,
+    decide_eq_true_eq, List.mem_finRange, forall_const] at hT
+  exact sound_foldl hrels hstab cert _ hT.1 sound_treeEdges _ (hT.2 t i)
+
+end Monoid
+
+section Group
+
+variable {T} {G α : Type*} [Group G] [MulAction G α] {g : Fin m → G} {a : α}
+
+/-- A nonempty table with sound generator edges contains the orbit of its base point under
+the generated subgroup. No empty-word row or deduction certificate is required, and the
+generators need not generate the whole ambient group. -/
+theorem smul_mem_range_point_of_edges [NeZero k]
+    (hedges : ∀ t i, g t • T.point g a i = T.point g a (T.act t i))
+    {x : G} (hx : x ∈ Subgroup.closure (Set.range g)) :
+    x • a ∈ Set.range (T.point g a) := by
+  have hfin : (Set.range (T.point g a)).Finite := Set.finite_range _
+  have hstabilizer : Subgroup.closure (Set.range g) ≤
+      MulAction.stabilizer G (Set.range (T.point g a)) := by
+    rw [Subgroup.closure_le]
+    rintro _ ⟨t, rfl⟩
+    rw [SetLike.mem_coe, MulAction.mem_stabilizer_set' hfin]
+    rintro _ ⟨i, rfl⟩
+    exact ⟨T.act t i, (hedges t i).symm⟩
+  have hw : ((T.word 0).map g).prod ∈ Subgroup.closure (Set.range g) := by
+    apply list_prod_mem
+    intro y hy
+    obtain ⟨t, -, rfl⟩ := List.mem_map.1 hy
+    exact Subgroup.subset_closure (Set.mem_range_self t)
+  have hxa := (MulAction.mem_stabilizer_set' hfin).1
+    (hstabilizer (Subgroup.mul_mem _ hx (Subgroup.inv_mem _ hw))) (Set.mem_range_self 0)
+  simpa [point_def, mul_smul] using hxa
+
+/-- If the generators `g` generate `G`, the points named by a certified coset table contain the
+whole orbit of the base point `a`. -/
+theorem smul_mem_range_point {rels stab : List (List (Fin m))}
+    {cert : List (Fin k × List (Fin m))} (hg : Subgroup.closure (Set.range g) = ⊤)
+    (hT : T.check rels stab cert = true) (hrels : ∀ r ∈ rels, (r.map g).prod = 1)
+    (hstab : ∀ r ∈ stab, (r.map g).prod • a = a) (x : G) :
+    x • a ∈ Set.range (T.point g a) := by
+  rw [check, Bool.and_eq_true] at hT
+  obtain ⟨i, -, -⟩ := List.any_eq_true.1 hT.1
+  have : NeZero k := ⟨Nat.ne_zero_of_lt i.isLt⟩
+  exact smul_mem_range_point_of_edges (smul_point hT.2 hrels hstab) (hg ▸ Subgroup.mem_top x)
+
+/-- The cosets named by a certified coset table for a subgroup `H` are all the cosets of `H`. -/
+theorem surjective_point {H : Subgroup G} {rels stab : List (List (Fin m))}
+    {cert : List (Fin k × List (Fin m))} (hg : Subgroup.closure (Set.range g) = ⊤)
+    (hT : T.check rels stab cert = true) (hrels : ∀ r ∈ rels, (r.map g).prod = 1)
+    (hstab : ∀ r ∈ stab, (r.map g).prod ∈ H) :
+    Function.Surjective (T.point g ((1 : G) : G ⧸ H)) := by
+  refine QuotientGroup.mk_surjective.forall.2 fun x ↦ ?_
+  have hstab' : ∀ r ∈ stab, (r.map g).prod • ((1 : G) : G ⧸ H) = ((1 : G) : G ⧸ H) :=
+    fun r hr ↦ by simpa [MulAction.Quotient.smul_mk, QuotientGroup.eq] using hstab r hr
+  simpa [MulAction.Quotient.smul_mk] using smul_mem_range_point hg hT hrels hstab' x
+
+/-- Every element lies in the left coset of some representative word of a certified table. -/
+theorem exists_inv_word_mul_mem {H : Subgroup G} {rels stab : List (List (Fin m))}
+    {cert : List (Fin k × List (Fin m))} (hg : Subgroup.closure (Set.range g) = ⊤)
+    (hT : T.check rels stab cert = true) (hrels : ∀ r ∈ rels, (r.map g).prod = 1)
+    (hstab : ∀ r ∈ stab, (r.map g).prod ∈ H) (x : G) :
+    ∃ i, ((T.word i).map g).prod⁻¹ * x ∈ H := by
+  obtain ⟨i, hi⟩ := T.surjective_point hg hT hrels hstab (x : G ⧸ H)
+  refine ⟨i, QuotientGroup.eq.mp ?_⟩
+  simpa [point_def, MulAction.Quotient.smul_mk] using hi
+
+/-- **Coset enumeration bounds the index.** If the generators `g` generate `G`, the relators
+`rels` hold for them and the words `stab` lie in the subgroup `H`, a coset table on `k` points
+whose certificate checks shows that `H` has index at most `k`. -/
+theorem index_le {H : Subgroup G} {rels stab : List (List (Fin m))}
+    {cert : List (Fin k × List (Fin m))} (hg : Subgroup.closure (Set.range g) = ⊤)
+    (hT : T.check rels stab cert = true) (hrels : ∀ r ∈ rels, (r.map g).prod = 1)
+    (hstab : ∀ r ∈ stab, (r.map g).prod ∈ H) : H.index ≤ k := by
+  rw [Subgroup.index_eq_card]
+  exact (Nat.card_le_card_of_surjective _ (surjective_point hg hT hrels hstab)).trans_eq
+    (Nat.card_fin k)
+
+/-- A certified coset table on `k` points for a subgroup `H` shows that `H` has index exactly `k`
+if and only if the cosets it names are distinct. -/
+theorem index_eq_iff_injective {H : Subgroup G} {rels stab : List (List (Fin m))}
+    {cert : List (Fin k × List (Fin m))} (hg : Subgroup.closure (Set.range g) = ⊤)
+    (hT : T.check rels stab cert = true) (hrels : ∀ r ∈ rels, (r.map g).prod = 1)
+    (hstab : ∀ r ∈ stab, (r.map g).prod ∈ H) :
+    H.index = k ↔ Function.Injective (T.point g ((1 : G) : G ⧸ H)) := by
+  have hsurj := surjective_point hg hT hrels hstab
+  rw [Subgroup.index_eq_card]
+  refine ⟨fun h ↦ (hsurj.bijective_of_nat_card_le (by rw [Nat.card_fin, h])).1, fun hinj ↦ ?_⟩
+  rw [← Nat.card_eq_of_bijective _ ⟨hinj, hsurj⟩, Nat.card_fin]
+
+/-- A subgroup admitting a certified coset table has finite index. -/
+theorem finiteIndex {H : Subgroup G} {rels stab : List (List (Fin m))}
+    {cert : List (Fin k × List (Fin m))} (hg : Subgroup.closure (Set.range g) = ⊤)
+    (hT : T.check rels stab cert = true) (hrels : ∀ r ∈ rels, (r.map g).prod = 1)
+    (hstab : ∀ r ∈ stab, (r.map g).prod ∈ H) : H.FiniteIndex :=
+  have : Finite (G ⧸ H) := Finite.of_surjective _ (surjective_point hg hT hrels hstab)
+  H.finiteIndex_of_finite_quotient
+
+end Group
+
+end CosetTable
+
+end LeanCategories.ForMathlib

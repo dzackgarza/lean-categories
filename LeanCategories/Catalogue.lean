@@ -13,6 +13,14 @@ public import LeanCategories.Catalogue.Lift
 public import LeanCategories.Catalogue.Realization
 public import LeanCategories.Catalogue.Registry.Entry
 public import LeanCategories.Catalogue.Registry.Semantic
+public import LeanCategories.Catalogue.Registry.RouteDiscovery
+public import LeanCategories.Catalogue.Registry.ComparisonProbes
+public import LeanCategories.Catalogue.Registry.Presentation
+public import LeanCategories.Catalogue.Registry.PresentationProbes
+public import LeanCategories.Catalogue.Registry.EnumerationCompleteness
+public import LeanCategories.Catalogue.Registry.AcceptanceProbes
+public import LeanCategories.Catalogue.Registry.RouteSearchCompleteness
+public import LeanCategories.Catalogue.Registry.IsoCommaExample
 public import LeanCategories.Catalogue.Registry.Snapshot
 public import LeanCategories.Catalogue.Registry.Computation
 public import LeanCategories.Catalogue.Registry.Typed
@@ -22,6 +30,7 @@ public import LeanCategories.Catalogue.Registry.BinderProbes
 public import LeanCategories.Catalogue.Semantics.EvidenceTests
 public import LeanCategories.Catalogue.Semantics.BinderTests
 public import LeanCategories.Catalogue.Semantics.DecidableElementTests
+public import LeanCategories.Catalogue.Semantics.DecidableFiniteMorphismTests
 public import LeanCategories.Catalogue.Semantics.UnitInverseTests
 public import LeanCategories.Catalogue.Semantics.Modules.Bilinear.Valued.ConstructionTests
 public import LeanCategories.Catalogue.Semantics.Modules.Bilinear.Valued.AlternatingTests
@@ -66,6 +75,7 @@ public import LeanCategories.Catalogue.Semantics.Algebra.AdditiveOperations
 public import LeanCategories.Catalogue.Semantics.Algebra.GroupMaps
 public import LeanCategories.Catalogue.Semantics.Algebra.LinearAlgebra
 public import LeanCategories.Catalogue.Semantics.Foundation.FiniteSubsets
+public import LeanCategories.Catalogue.Semantics.Foundation.FiniteSubsetsTests
 public import LeanCategories.Catalogue.Semantics.Foundation.Maps
 public import LeanCategories.Catalogue.Semantics.Algebra.FiniteSums
 public import LeanCategories.Catalogue.Semantics.Algebra.Calculus

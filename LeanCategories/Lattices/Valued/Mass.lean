@@ -6,6 +6,7 @@ module
 
 public import LeanCategories.Lattices.Valued.OrthogonalGroup
 public import LeanCategories.Lattices.Valued.ReducedBasis
+public import LeanCategories.Lattices.Valued.RootLattice
 public import LeanCategories.Lattices.Valued.Theta
 
 /-!
@@ -46,6 +47,25 @@ theorem orthogonalGroup_finite (L : FiniteProjectiveLatticeCat ℤ ℤ)
   set b := Module.Free.chooseBasis ℤ L.obj.obj.carrier with hb
   haveI : ∀ i, Finite (L.representationSet (L.obj.obj.pairing (b i) (b i))) :=
     fun i ↦ (L.representationSet_finite hL _).to_subtype
+  refine Finite.of_injective
+    (fun g : OrthogonalGroup L.obj ↦ fun i ↦
+      (⟨g.1 (b i), g.property (b i) (b i)⟩ :
+        L.representationSet (L.obj.obj.pairing (b i) (b i)))) ?_
+  intro g h hgh
+  refine Subtype.ext (LinearEquiv.toLinearMap_injective (b.ext fun i ↦ ?_))
+  exact congrArg Subtype.val (congrFun hgh i)
+
+/-- The orthogonal group of a negative definite lattice is finite. The level sets of a definite
+form are finite (`representationSet_finite_of_isDefinite`), and an isometry is determined by its
+values on a basis. -/
+theorem orthogonalGroup_finite_of_isNegativeDefinite (L : FiniteProjectiveLatticeCat ℤ ℤ)
+    (hL : IsNegativeDefiniteLattice L) : Finite (OrthogonalGroup L.obj) := by
+  classical
+  letI : Module.Free ℤ L.obj.obj.carrier := L.carrier_free
+  letI : Module.Finite ℤ L.obj.obj.carrier := L.property
+  set b := Module.Free.chooseBasis ℤ L.obj.obj.carrier with hb
+  haveI : ∀ i, Finite (L.representationSet (L.obj.obj.pairing (b i) (b i))) :=
+    fun i ↦ (L.representationSet_finite_of_isDefinite (Or.inr hL) _).to_subtype
   refine Finite.of_injective
     (fun g : OrthogonalGroup L.obj ↦ fun i ↦
       (⟨g.1 (b i), g.property (b i) (b i)⟩ :

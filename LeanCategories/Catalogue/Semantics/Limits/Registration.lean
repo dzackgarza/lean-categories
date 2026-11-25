@@ -7,6 +7,7 @@ module
 public import LeanCategories.Catalogue.Semantics.Foundation.CatalogueRegistration
 public import LeanCategories.Catalogue.Semantics.Algebra.CatalogueRegistration
 public import LeanCategories.Algebra.GroupKernel
+public import LeanCategories.Algebra.GroupProduct
 public import Mathlib.CategoryTheory.Limits.Types.Pullbacks
 public import Mathlib.CategoryTheory.Limits.Types.Coproducts
 public import Mathlib.CategoryTheory.Limits.Types.Products
@@ -40,6 +41,9 @@ public meta import LeanCategories.Catalogue.Registry.Semantic
   `mor.bil_wform.root_lattice_a_to_discriminant`;
 * `lim.groups.kernel`: the kernel `ker f ↪ G` of a group homomorphism, an equalizer of `f` and
   the trivial homomorphism (`LeanCategories.Algebra.kernelLimitCone`).
+* `lim.groups.product`: the binary product `G × H` of groups with its two projections and the
+  factor inclusions, a product cone with its universal property
+  (`LeanCategories.Algebra.groupProductFan`, `groupProductIsLimit`).
 
 Each is a family of Mathlib `LimitCone`s: apex, legs, and the mediator `IsLimit.lift`.
 -/
@@ -266,6 +270,11 @@ def groupsKernel {G H : GrpCat.{u}} (f : G ⟶ H) :
     LimitCone (parallelPair f 1) :=
   LeanCategories.Algebra.kernelLimitCone f
 
+/-- Binary products in `Grp`, on the carrier `G × H`: the projections, the factor inclusions and
+the universal property are `LeanCategories.Algebra.groupProductFan`/`groupProductIsLimit`. -/
+def groupsProduct (X Y : GrpCat.{u}) : LimitCone (pair X Y) :=
+  ⟨LeanCategories.Algebra.groupProductFan X Y, LeanCategories.Algebra.groupProductIsLimit X Y⟩
+
 /-- Binary products in `Sets`. -/
 def setsProduct (X Y : LeanCategories.Foundation.Mathlib.Sets.{u}) : LimitCone (pair X Y) :=
   Types.binaryProductLimitCone X Y
@@ -421,6 +430,12 @@ normalized_registry .limit
     standardization := some `CategoryTheory.Limits.diagramIsoParallelPair
     dataConstructor := some `CategoryTheory.Limits.Fork.ofι }
 
+normalized_registry .limit
+  { id := ⟨"lim.groups.product"⟩, category := ⟨"cat.groups"⟩, shape := "product"
+    declaration := `CasCatalogue.Limits.Registration.groupsProduct
+    standardization := some `CategoryTheory.Limits.diagramIsoPair
+    dataConstructor := some `CategoryTheory.Limits.BinaryFan.mk }
+
 namespace Limits.Registration
 
 /-- A valid diagram comparison, but in groups rather than the requested category of sets. -/
@@ -445,6 +460,9 @@ run_cmd
     let some product := state.limits.find? (·.id.raw == "lim.sets.product")
       | throwError "the product presentation is not registered"
     validateLimit state product
+    let some groupProduct := state.limits.find? (·.id.raw == "lim.groups.product")
+      | throwError "the group product presentation is not registered"
+    validateLimit state groupProduct
     let rejects (description : String) (entry : LimitEntry) : MetaM Unit := do
       let accepted ← try
         validateLimit state entry
@@ -465,6 +483,8 @@ run_cmd
       dataConstructor := some `CasCatalogue.Limits.Registration.groupProductData }
     rejects "a universal presentation in place of plain cone data" { product with
       dataConstructor := some `CasCatalogue.Limits.Registration.setsProduct }
+    rejects "a cospan comparison for the group product" { groupProduct with
+      standardization := some `CategoryTheory.Limits.diagramIsoCospan }
 
 end Limits.Registration
 

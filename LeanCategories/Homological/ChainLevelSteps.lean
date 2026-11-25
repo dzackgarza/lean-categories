@@ -63,9 +63,13 @@ Both halves of that chain-level comparison are now proved. `skSimplexEquiv` and
 `skChainsIso_δ` and `skChainsIso_d` compare the differentials: the alternating face map
 differential is the alternating sum of the face maps, so the face-level compatibility summed
 over `Fin (i + 2)` gives the chain-level square, for `i + 1 ≤ k`. What this file still does not
-prove, and what `proofs/README.md` §5 records: the homology statement
-$\widetilde H_i((\Delta^m)^k) = 0$ for $i < k$, and the barycentric chains, for which the pin has
-no `SSet.B` and no `sd ⟶ B`.
+prove: the homology statement $\widetilde H_i((\Delta^m)^k) = 0$ for $i < k$ here (it is
+`SkeletonHomology.isZero_skHomology`), and the barycentric chains.  The pin has no `SSet.B` and
+no `sd ⟶ B`, and the standard simplex needs neither: `BarycentricChains.lean` certifies the
+barycentric chain model of `Δ^n` — its chain groups on the flags of nonempty faces, the
+alternating-deletion boundary, the augmented exactness, and the identification of this card's
+chains with the top faces of the subdivision — straight from the flags, with no subdivision
+functor.
 
 The transport that the homology statement needs is `skChains_exact`: exactness at a degree,
 `\\ker \\partial_{j+1} = \\operatorname{im} \\partial_{j+2}`, passes to the $k$-skeleton when

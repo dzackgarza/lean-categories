@@ -1,0 +1,151 @@
+/-
+Copyright (c) 2026 The Tau Ceti contributors. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: The Tau Ceti contributors
+-/
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Colimits
+public import Mathlib.CategoryTheory.Monoidal.Braided.Reflection
+public import LeanCategories.Algebra.Category.ModuleCat.Presheaf.MonoidalClosed
+public import LeanCategories.Algebra.Category.ModuleCat.Sheaf.TensorProduct.Monoidal
+public import LeanCategories.CategoryTheory.Monoidal.Closed.Preadditive
+
+/-!
+# The closed monoidal category of sheaves of modules
+
+## Provenance (lean-categories#22)
+
+Ported from `TauCeti/Algebra/Category/ModuleCat/Sheaf/TensorProduct/Closed.lean` (The Tau Ceti contributors, Apache 2.0), commit
+`ca32605ff53921fa0689dd312618b7cfaafa7e43`, namespaces renamed `TauCeti` →
+`LeanCategories`. The unit's provenance and search record is in
+`LeanCategories/AlgebraicGeometry/RelativeSpec/Basic.lean`.
+
+
+Let `R` be a sheaf of commutative rings on a small site. This file makes sheaves of `R`-modules
+into a closed symmetric monoidal category. Consequently, tensoring on the left has the internal
+Hom functor as a right adjoint; Mathlib's standard `ihom.adjunction`, `ihom.ev`, and `ihom.coev`
+provide the tensor--Hom adjunction, evaluation, and coevaluation.
+
+Presheaves of modules form a closed monoidal category by
+`LeanCategories.PresheafOfModules.monoidalClosed`. Day's reflection theorem transports this closed
+structure across the reflective sheafification adjunction. Thus the internal Hom of sheaves is
+the sheafification of the presheaf internal Hom.
+
+## Main declarations
+
+* `LeanCategories.SheafOfModules.presheafMonoidalClosed` transfers the closed structure of
+  `LeanCategories.PresheafOfModules.monoidalClosed` to presheaves of modules over the ring presheaf
+  underlying `R`;
+* `LeanCategories.SheafOfModules.monoidalClosed` gives the closed structure on sheaves of modules;
+* `LeanCategories.SheafOfModules.monoidalPreadditive` makes tensoring additive in each variable;
+* `SheafOfModules.ihom_obj` identifies its internal Hom object with the sheafification of the
+  presheaf internal Hom;
+* `SheafOfModules.dual` and `SheafOfModules.dualIso` give the internal-Hom dual and its action on
+  isomorphisms.
+
+The use of the special adjoint functor theorem and Day reflection follows the construction of
+closed monoidal structures on sheaf categories in Mathlib's
+`CategoryTheory.Monoidal.Braided.Reflection` and `Condensed.Light.Monoidal`.
+-/
+
+public section
+
+open CategoryTheory Limits MonoidalCategory MonoidalClosed PresheafOfModules
+
+namespace LeanCategories
+
+universe u
+
+noncomputable section
+
+variable {C : Type u} [SmallCategory C] {J : GrothendieckTopology C}
+variable [J.HasSheafCompose (forget₂ CommRingCat RingCat.{u})]
+variable [HasWeakSheafify J AddCommGrpCat.{u}]
+  [J.WEqualsLocallyBijective AddCommGrpCat.{u}]
+
+namespace SheafOfModules
+
+variable (R : Sheaf J CommRingCat.{u})
+
+/-- The closed monoidal structure on presheaves of modules over the ring presheaf underlying `R`,
+transferred from `LeanCategories.PresheafOfModules.monoidalClosed` so that instance search finds it at
+`(ringCatSheaf R).obj`. -/
+instance presheafMonoidalClosed :
+    MonoidalClosed (PresheafOfModules.{u} (ringCatSheaf R).obj) :=
+  inferInstanceAs (MonoidalClosed (PresheafOfModules.{u}
+    (R.obj ⋙ forget₂ CommRingCat RingCat.{u})))
+
+/-- The closed symmetric monoidal structure on sheaves of `R`-modules. It is obtained from the
+closed structure on presheaves of modules by Day's reflection theorem. -/
+instance monoidalClosed : MonoidalClosed (SheafOfModules.{u} (ringCatSheaf R)) :=
+  Monoidal.Reflective.monoidalClosed
+    (PresheafOfModules.sheafificationAdjunction (R := ringCatSheaf R)
+      (R₀ := (ringCatSheaf R).obj) (J := J) (𝟙 (ringCatSheaf R).obj))
+
+/-- The tensor product of sheaves of modules is additive in each variable. -/
+instance monoidalPreadditive : MonoidalPreadditive (SheafOfModules.{u} (ringCatSheaf R)) :=
+  monoidalPreadditive_of_isLeftAdjoint _
+
+variable {R}
+
+/-- The internal Hom of sheaves of modules is the sheafification of the internal Hom of their
+underlying presheaves of modules. -/
+@[simp]
+theorem _root_.SheafOfModules.ihom_obj
+    (M N : SheafOfModules.{u} (ringCatSheaf R)) :
+    (ihom M).obj N =
+      (PresheafOfModules.sheafification (𝟙 (ringCatSheaf R).obj)).obj
+        ((ihom M.val).obj N.val) := rfl
+
+/-- On morphisms, the internal Hom of sheaves of modules is induced by sheafification from the
+internal Hom of presheaves of modules. -/
+@[simp]
+theorem _root_.SheafOfModules.ihom_map
+    (M : SheafOfModules.{u} (ringCatSheaf R)) {N P : SheafOfModules.{u} (ringCatSheaf R)}
+    (f : N ⟶ P) :
+    (ihom M).map f =
+      (PresheafOfModules.sheafification (𝟙 (ringCatSheaf R).obj)).map
+        ((ihom M.val).map f.val) := rfl
+
+/-- The internal-Hom dual of a sheaf of modules. -/
+abbrev _root_.SheafOfModules.dual
+    (M : _root_.SheafOfModules.{u} (ringCatSheaf R)) :
+    _root_.SheafOfModules.{u} (ringCatSheaf R) :=
+  (ihom M).obj (_root_.SheafOfModules.unit (ringCatSheaf R))
+
+/-- An isomorphism of sheaves induces an isomorphism of their duals. -/
+def _root_.SheafOfModules.dualIso {M N : _root_.SheafOfModules.{u} (ringCatSheaf R)}
+    (e : M ≅ N) : M.dual ≅ N.dual := by
+  have hpre : IsIso (pre e.inv) := by
+    unfold pre
+    infer_instance
+  exact asIso ((pre e.inv).app (_root_.SheafOfModules.unit (ringCatSheaf R)))
+
+attribute [nolint checkType] _root_.SheafOfModules.dualIso.eq_1
+/-- The forward map on duals induced by an isomorphism is precomposition with its inverse. -/
+@[simp]
+theorem _root_.SheafOfModules.dualIso_hom
+    {M N : _root_.SheafOfModules.{u} (ringCatSheaf R)} (e : M ≅ N) :
+    (_root_.SheafOfModules.dualIso e).hom =
+      (pre e.inv).app (_root_.SheafOfModules.unit (ringCatSheaf R)) := by
+  simp only [_root_.SheafOfModules.dualIso, asIso_hom]
+
+/-- The inverse map on duals induced by an isomorphism is precomposition with its forward map. -/
+@[simp]
+theorem _root_.SheafOfModules.dualIso_inv
+    {M N : _root_.SheafOfModules.{u} (ringCatSheaf R)} (e : M ≅ N) :
+    (_root_.SheafOfModules.dualIso e).inv =
+      (pre e.hom).app (_root_.SheafOfModules.unit (ringCatSheaf R)) := by
+  rw [_root_.SheafOfModules.dualIso, asIso_inv]
+  have _ : IsIso (pre e.inv) := by  -- This instance is needed for IsIso.inv_eq_of_hom_inv_id
+    unfold pre
+    infer_instance
+  apply IsIso.inv_eq_of_hom_inv_id
+  rw [← NatTrans.comp_app, ← pre_map, e.hom_inv_id, pre_id, NatTrans.id_app]
+
+end SheafOfModules
+
+end
+
+end LeanCategories

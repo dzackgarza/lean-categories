@@ -1,0 +1,169 @@
+/-
+Copyright (c) 2026 Dzack Garza. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+-/
+module
+
+public import Mathlib.Algebra.Homology.Single
+public import LeanCategories.Modules.AugmentedObjects
+public import LeanCategories.Modules.StableEnhancement
+
+/-!
+# The chain-complex model of a selected augmented object
+
+FOUNDATIONS.md, Definitions 76.1 and 77.1, and dzackgarza/lean-categories#62.
+
+Definition 76.1's sequence `... --> P_1 --> P_0 --> X` is a selected diagram; Definition 77.1
+records that `Ch(C)` exists once `C` is additive. `chainComplex S` is that object: the chosen terms
+and differentials of `S`, as a `ChainComplex C ℕ`. `augmentation S` is the augmentation as a chain
+map into the complex supported in degree zero, so the augmented diagram is an arrow of `Ch(C)`.
+
+## What is not built here
+
+This Mathlib pin develops the mapping cone and the triangulated structure only for
+`CochainComplex C ℤ` (see `LeanCategories.Modules.StableEnhancement`). The `ℕ`-indexed chain
+complex of a selected object therefore has no cofiber triangle in this file: that needs the index
+reversal `X i := S.term (-i)` at `i ≤ 0`, `0` above, with its casts, and a decision about which
+indexing the downstream development standardizes on.
+-/
+
+@[expose] public section
+
+noncomputable section
+
+open CategoryTheory CategoryTheory.Limits
+
+namespace LeanCategories.Modules
+
+universe u v
+
+variable {C : Type u} [Category.{v} C] [Preadditive C]
+
+/-- The chain complex of a selected augmented object: its chosen terms and chosen differentials. -/
+noncomputable def chainComplex (S : AugmentedGradedObject C) : ChainComplex C ℕ :=
+  ChainComplex.of S.term S.diff S.comp_diff
+
+/-- The chosen term in each degree is the complex's term there. -/
+@[simp]
+theorem chainComplex_X (S : AugmentedGradedObject C) : (chainComplex S).X = S.term := by
+  simp [chainComplex]
+
+/-- The chosen differential out of degree `n + 1` is the complex's differential there. -/
+@[simp]
+theorem chainComplex_d (S : AugmentedGradedObject C) (n : ℕ) :
+    (chainComplex S).d (n + 1) n = S.diff n := by
+  simp [chainComplex]
+
+section Augmentation
+
+variable [HasZeroObject C]
+
+/-- The augmentation of a selected augmented object, as a chain map into the chain complex supported
+in degree zero: the augmented diagram is an arrow of `Ch(C)`. -/
+noncomputable def augmentation (S : AugmentedGradedObject C) :
+    chainComplex S ⟶ (ChainComplex.single₀ C).obj S.point :=
+  ChainComplex.ofHom
+    (fun i => match i with
+      | 0 => S.augment
+      | _ + 1 => 0)
+    (fun i => by
+      match i with
+      | 0 =>
+        rw [chainComplex_d, zero_comp]
+        exact S.comp_augment.symm
+      | _ + 1 => simp only [zero_comp, comp_zero])
+
+end Augmentation
+
+section Cochain
+
+open ZeroObject
+
+variable [HasZeroObject C]
+
+/-- The reversed terms: the chosen term `P_0` sits in degree `0`, `P_{n+1}` in degree `-(n+1)`, and
+every positive degree carries the zero object. -/
+noncomputable def cochainTerm (S : AugmentedGradedObject C) : ℤ → C
+  | Int.ofNat n => if n = 0 then S.term 0 else 0
+  | Int.negSucc m => S.term (m + 1)
+
+/-- The reversed chosen differentials: in a negative degree the chosen differential of `S`, and zero
+from degree `0` upwards. -/
+noncomputable def cochainDiff (S : AugmentedGradedObject C) (i : ℤ) :
+    cochainTerm S i ⟶ cochainTerm S (i + 1) :=
+  match i with
+  | Int.ofNat 0 => 0
+  | Int.ofNat (_ + 1) => 0
+  | Int.negSucc 0 => S.diff 0
+  | Int.negSucc (k + 1) => S.diff (k + 1)
+
+/-- The `ℤ`-indexed cochain complex of a selected augmented object: the chain complex read with its
+degrees reversed, so that the mapping-cone and triangulated API of this Mathlib pin — which exists
+only for `CochainComplex C ℤ` — applies to it. -/
+noncomputable def cochainComplexOf (S : AugmentedGradedObject C) : CochainComplex C ℤ :=
+  CochainComplex.of (cochainTerm S) (cochainDiff S) (by
+    intro i
+    match i with
+    | Int.ofNat 0 => exact zero_comp
+    | Int.ofNat (_ + 1) => exact zero_comp
+    | Int.negSucc 0 => exact comp_zero
+    | Int.negSucc (k + 1) =>
+      match k with
+      | 0 => exact S.comp_diff 0
+      | j + 1 => exact S.comp_diff (j + 1))
+
+/-- The cochain complex supported in degree zero at `M`. -/
+noncomputable def singleCochain (M : C) : CochainComplex C ℤ :=
+  CochainComplex.of
+    (fun i => match i with
+      | Int.ofNat n => if n = 0 then M else 0
+      | Int.negSucc _ => 0)
+    (fun _ => 0) (fun _ => zero_comp)
+
+/-- The augmentation of a selected augmented object, as a map of cochain complexes into the cochain
+complex supported in degree zero at the augmentation point. -/
+noncomputable def cochainAugmentation (S : AugmentedGradedObject C) :
+    cochainComplexOf S ⟶ singleCochain S.point :=
+  CochainComplex.ofHom
+    (fun i => match i with
+      | Int.ofNat 0 => S.augment
+      | Int.ofNat (_ + 1) => 0
+      | Int.negSucc _ => 0)
+    (fun i => by
+      have hd : ∀ j : ℤ, (singleCochain S.point).d j (j + 1) = 0 := by
+        intro j
+        simp [singleCochain, CochainComplex.of_d, zero_comp]
+        rfl
+      have hx : ∀ j : ℤ, (cochainComplexOf S).d j (j + 1) = cochainDiff S j := by
+        intro j
+        simp [cochainComplexOf, CochainComplex.of_d]
+      match i with
+      | Int.ofNat 0 =>
+        rw [hd, hx]
+        exact (comp_zero).trans (zero_comp.symm)
+      | Int.ofNat (_ + 1) =>
+        rw [hd, hx]
+        exact (comp_zero).trans (zero_comp.symm)
+      | Int.negSucc 0 =>
+        rw [hd, hx]
+        exact (zero_comp).trans (S.comp_augment.symm)
+      | Int.negSucc (_ + 1) =>
+        rw [hd, hx]
+        exact (zero_comp).trans (comp_zero.symm))
+
+end Cochain
+
+section AugmentationTriangle
+
+variable {C : Type u} [Category.{v} C] [Abelian C]
+
+/-- **The cofiber sequence of a selected augmented object's augmentation is a distinguished
+triangle**: the mapping cone of `cochainAugmentation S` carries the cofiber, and its third map lands
+in the suspension `Σ` of the cochain model. -/
+theorem cochainAugmentation_triangle_distinguished (S : AugmentedGradedObject C) :
+    cofiberTriangle (cochainAugmentation S) ∈
+      distTriang (HomotopyCategory C (ComplexShape.up ℤ)) :=
+  cofiberTriangle_distinguished _
+
+end AugmentationTriangle
+

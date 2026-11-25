@@ -58,10 +58,13 @@ three-term complexes therefore transports exactness by `ShortComplex.exact_of_is
 `Submodule`/`LinearEquiv` plumbing at all. `scIso` is that isomorphism — the three chain-group
 isomorphisms and the two differential squares — and `skExactAt` is the transport.
 
-What this file does **not** do: it says nothing about the barycentric chains, for which the pin has
-neither `SSet.B` nor `sd ⟶ B` (`AlgebraicTopology/SimplicialSet/Subdivision.lean:19-23`), and it
-does not compare the normalised and unnormalised models beyond what `cards/SimplexChains.lean`
-already does.
+What this file does **not** do: it says nothing about the barycentric chains, and it does not
+compare the normalised and unnormalised models beyond what `SimplexChains.lean` already does.
+The barycentric chain model of `Δ^n` is certified separately, in `BarycentricChains.lean`: the
+flags of nonempty faces are the nondegenerate simplices of the subdivision, the model is
+augmented-exact, and this card's chains are the top faces of those flags — so the pin's absent
+`SSet.B` and `sd ⟶ B` (`AlgebraicTopology/SimplicialSet/Subdivision.lean:19-23`) are not on the
+route.
 -/
 
 open CategoryTheory Opposite Simplicial SimplicialObject SimplicialObject.Augmented Limits
