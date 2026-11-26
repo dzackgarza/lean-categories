@@ -45,8 +45,8 @@ implementation supplies is consulted for meaning; its answers are judged only by
 
 ## Consuming the registry (#49)
 
-A downstream package depends on a pinned revision of this repository — the release tag when one
-is published, otherwise an explicit `rev` — and reads the checked catalogue at elaboration time.
+A downstream package depends on the head of `main` of this repository (`rev = "main"` in its
+`[[require]]`) and reads the checked catalogue at elaboration time.
 [`Integration/RegistryConsumer/`](Integration/RegistryConsumer/) is the minimal worked example:
 it requires this package as a Lake dependency on the same toolchain and Mathlib pin, and fails
 loudly if a row it needs is missing.
