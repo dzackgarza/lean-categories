@@ -24,12 +24,13 @@ artifact anywhere in the resolution. `lake update` moves `lake-manifest.json` to
 ## Reproduce
 
 From this directory, with the toolchain pinned by `lean-toolchain`
-(`leanprover/lean4:v4.33.0`) and Mathlib at the revision the library pins:
+(the toolchain of the library at `main`, now `leanprover/lean4:v4.36.0`) and Mathlib at the revision
+the library pins:
 
 ```console
 $ lake update   # resolves the head of main; the Mathlib cache is reused
 $ lake build
-Build completed successfully (3761 jobs).
+Build completed successfully.
 ```
 
 The library is cloned and compiled from the head of `main`; only then does the consumer module

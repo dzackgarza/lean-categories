@@ -1,5 +1,5 @@
 name = "registry_consumer"
-packagesDir = "../../../../.local/share/lean/v4.33.0/packages"
+packagesDir = "../../../../.local/share/lean/v4.36.0/packages"
 version = "0.1.0"
 defaultTargets = ["RegistryConsumer"]
 
