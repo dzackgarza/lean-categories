@@ -161,6 +161,12 @@ issue first (Contract F, step 2).
   places they name and delete the amendment list; the mathematics is unchanged
   (constitution M10). File: `FOUNDATIONS.md`. Acceptance: each amendment's content is at its
   named place, read against the amendment text.
+  In the same change, replace the status sentence of §13 (before Definition 13.10) that names
+  issue #62 as an open obligation: #62 is complete, and the general owner is
+  `AugmentedGradedObject` (`LeanCategories/Modules/AugmentedObjects.lean`); state, from the
+  source, which specialization and forgetful functors from it to the free covers, based modules
+  and coordinates of `LeanCategories/Modules/TruncatedResolutions.lean` exist, and give each
+  missing one its task in this feature.
 
 ## Phase 6: Vertical slices (US6, #29)
 
