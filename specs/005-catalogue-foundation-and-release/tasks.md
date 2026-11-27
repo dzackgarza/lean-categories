@@ -18,8 +18,7 @@ Paths are relative to `LeanCategories/`, except `README.md`, `FOUNDATIONS.md`, `
 ## Execution order
 
 Tasks are executed in document order (constitution M11), beside feature 001; neither list
-delays the other. Inside a phase, a task is ready when its inputs are delivered; a blocked task
-does not hold back a later ready task of the same phase. Each task records its search in its
+delays the other. Inside a phase, a task follows the tasks whose results it uses; the workstream does each input task first, in the feature or repository that owns it, and then returns (constitution M11). Each task records its search in its
 issue first (Contract F, step 2).
 
 ## Phase 1: Classifiers (US1, #30)
@@ -216,7 +215,7 @@ issue first (Contract F, step 2).
 
 ## Dependencies & Execution Order
 
-- Phase 1 blocks Phase 2 (rows evaluate classifier totals). Phase 2 blocks Phases 3 and 4.
+- Phase 1 comes before Phase 2 (rows evaluate classifier totals). Phase 2 comes before Phases 3 and 4.
 - T010 needs 001 T035 and 001 T086; T011 needs 001 T056; T013 needs 001 T005; T019 needs T013.
 - T022 needs T001–T021 and 001 T042; T023 needs 003 T009 and 003 T034.
 - T024 needs the milestones of 001, 003 and 006–009; T025 needs T024.

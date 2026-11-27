@@ -51,7 +51,7 @@ Gate result: pass. No violation is justified in Complexity Tracking.
 
 | Tier | Command | Source |
 | --- | --- | --- |
-| Tier 1 | `flock .tmp/lean.lock lake env lean <changed module>` for each changed module and each test module of the changed mechanism; after T001, `just loop <modules>` | `TODO.md` "One Lean process"; constitution E1 |
+| Tier 1 | `just loop <modules>` (T001, the first task) for each changed module and each test module of the changed mechanism | `TODO.md` "One Lean process"; constitution E1 |
 | Full gate | `just test` (build, `lean-no-sorry`, vacuity audit, Mathlib lint audit, unused-variable check, axiom audit) | `justfile` |
 | CI | `just test-ci` on push | `.github/workflows/ci.yml` |
 

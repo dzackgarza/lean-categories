@@ -16,8 +16,7 @@ Paths are relative to `LeanCategories/`.
 ## Execution order
 
 Tasks are executed in document order (constitution M11) as a consumer intake (research D1).
-Inside a phase, a task is ready when its inputs are delivered; a blocked task does not hold back a
-later ready task of the same phase.
+Inside a phase, a task follows the tasks whose results it uses; the workstream does each input task first, in the feature or repository that owns it, and then returns (constitution M11).
 
 ## Phase 1: Sources
 

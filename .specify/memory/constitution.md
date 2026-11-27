@@ -4,7 +4,7 @@ This file is the repository constitution: authority, authorship, intake of work,
 engineering. [FOUNDATIONS.md](../../FOUNDATIONS.md) keeps its authority over *what* the
 mathematics is. [CONTRIBUTING.md](../../CONTRIBUTING.md) keeps the contribution lessons `LC-01`
 to `LC-21`; an article below cites the policy that it makes binding. Where this file and the
-[kernel constitution v4.0.1](https://github.com/dzackgarza/lean-cas-dsl/blob/main/.specify/memory/constitution.md)
+[kernel constitution v5.0.0](https://github.com/dzackgarza/lean-cas-dsl/blob/main/.specify/memory/constitution.md)
 govern the same question, they agree; a governing document of this repository that disagrees
 with either is corrected.
 
@@ -162,6 +162,10 @@ interactive work"; `CONTRIBUTING.md` LC-17; kernel constitution C20.
   earlier corpus DAG and orders no work.
 - Neither task list delays the other. A task of a feature that adds a declaration also adds the
   matching row of `FOUNDATIONAL_DEFINITIONS.tsv` or the corpus mapping when one exists.
+- No task waits. A task that uses the result of another task follows that task: the workstream
+  does it first, in the feature or the repository that owns it and in the role that it names, and
+  then returns (kernel constitution C16, C21). When no task produces the result, the change that
+  finds the need adds the task, with its issue in the owning repository.
 
 Sources: feature 002, research D1; kernel constitution C21; kernel task list, "Execution order".
 
@@ -253,7 +257,7 @@ Sources: `AGENTS.md`, "The evidence model"; kernel constitution C2, C10.
 
 ## Governance
 
-This constitution and the kernel constitution v4.0.1 bind every contributor of this repository.
+This constitution and the kernel constitution v5.0.0 bind every contributor of this repository.
 A governing document of this repository (`AGENTS.md`, `CONTRIBUTING.md`, `README.md`, `TODO.md`,
 `docs/agents/*.md`) that conflicts with an article is corrected to agree with it and to point to
 it. `FOUNDATIONS.md` owns the content of the mathematics; this file does not amend it.
@@ -270,4 +274,4 @@ correction that leaves the obligations unchanged.
 Compliance: each feature plan states its check against every article. Review (M10) checks the
 change against the articles that it touches.
 
-**Version**: 2.0.0 | **Ratified**: 2026-11-25 | **Last Amended**: 2026-11-25
+**Version**: 2.1.0 | **Ratified**: 2026-11-25 | **Last Amended**: 2026-11-27

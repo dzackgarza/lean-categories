@@ -171,8 +171,9 @@ definition is duplicated.
   support is searched on its own before it is written.
 - A row of a source whose Definitions cell is ticked fails the stub audit. The cell is unticked
   until the row is rebuilt and the source closes again.
-- The source text is not reachable on the worker's host. The unit stays open; lack of access is
-  not a negative search result.
+- The source text is not reachable on the worker's host. The worker first makes the admitted
+  source reachable on its host (the live Zotero library or another copy of the admitted source),
+  then does the unit; lack of access is not a negative search result.
 - The generator fails on a malformed or inconsistent mapping row. The row is repaired before more
   units are selected.
 - A consumer needs a theorem before Sweep IV opens. The theorem is taken in under M9 and uses only
@@ -325,7 +326,8 @@ The start values are the selector at `fc549baa` ([units.md](units.md)).
 - The catalogues of FC01–FC17 are complete (all Catalogue cells ticked) and stay frozen.
 - The generator's rules in `scripts/foundational_frontier.py` stand; a task of this feature that
   finds a rule wrong changes it with its regression test.
-- A worker's host reaches the live Zotero library or another copy of the admitted source;
-  otherwise the unit stays open for a host that does.
-- Feature [001](../001-catalogue-inputs-for-the-cas/tasks.md) task T001 supplies the tier-1
-  recipe `just loop`; until it lands, tier 1 is `flock .tmp/lean.lock lake env lean <module>`.
+- A worker's host reaches the live Zotero library or another copy of the admitted source; a
+  worker whose host does not first makes the admitted source reachable on it, then does the unit.
+- Tier 1 is the recipe `just loop` that feature
+  [001](../001-catalogue-inputs-for-the-cas/tasks.md) task T001 supplies; T001 comes before the
+  first task of this feature that runs tier 1 (constitution M11).

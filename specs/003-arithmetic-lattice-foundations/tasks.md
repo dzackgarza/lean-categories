@@ -16,8 +16,7 @@ the task carries.
 ## Execution order
 
 This task list is executed as task T107 of feature 002 (research D2), in document order
-(constitution M11). Inside a phase, a task is ready when its inputs are delivered; a blocked task
-does not hold back a later ready task of the same phase. Inputs from feature 002 are cited as
+(constitution M11). Inside a phase, a task follows the tasks whose results it uses; the workstream does each input task first, in the feature or repository that owns it, and then returns (constitution M11). Inputs from feature 002 are cited as
 "002 Tnnn".
 
 ## Phase 1: Projective formed arithmetic (US1)
@@ -258,8 +257,8 @@ does not hold back a later ready task of the same phase. Inputs from feature 002
   Inputs: T035, T036, T030. Source: [@LZ16, §§1.3, 2.1, 3.1.2]; [@PK16, Def. 1.3]. Decision: D22. Vault:
   TASK-COMPLEX-TORUS-PERIOD-REALIZATION.
 - [ ] T038 [US4] FR-030: for each root-imported file named by D23 (genus, completion, dyadic, Hasse,
-  spinor, spinor genus, involution) record its outcome (comparison, restricted name, or removal from
-  `LeanCategories/All.lean` until the comparison exists) and apply it; retain the general owners the
+  spinor, spinor genus, involution) record its outcome (a comparison theorem with its canonical owner, which this task proves after
+  the owner tasks T001–T037; a restricted name; or removal from `LeanCategories/All.lean`) and apply it; retain the general owners the
   vault card lists (formed-module categories, scalar and value change, localization and residue,
   metric discriminant forms, orthogonal groups, discriminant actions, stable kernels, square classes,
   height-one primary decomposition). Inputs: T001–T037. Decision: D23. Vault:
@@ -331,7 +330,7 @@ does not hold back a later ready task of the same phase. Inputs from feature 002
 
 ## Dependencies & Execution Order
 
-- Phase 1 blocks every later phase. Phases 2 and 4 need only Phase 1; Phase 3 needs Phase 1 and
+- Phase 1 comes before every later phase. Phases 2 and 4 need only Phase 1; Phase 3 needs Phase 1 and
   T010 (T014).
 - Phase 5 needs T014; Phase 6 needs Phase 5 and T018; Phase 7 needs T006, T014, T015, T017.
 - Phase 8 needs T021 (T030) and T005 (T035); T038 needs T001–T037.

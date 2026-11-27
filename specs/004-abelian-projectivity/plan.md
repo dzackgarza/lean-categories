@@ -37,7 +37,7 @@ a projective variety.
 | M5, M6 | Total constructions; the chosen polarization and semicharacter are data | FR-003 |
 | M7 | No registry row is added by this feature | none |
 | M8 | Search before authoring; Mathlib vector bundles first | D5 |
-| M9 | No consumer request is waiting on this feature | none |
+| M9 | No consumer request names a task of this feature | none |
 | M10 | Content changes to FOUNDATIONS go to the mathematician | none planned |
 | M11 | Executed as 002 T111 | D2 |
 | M12, M13 | Records under LC-05, LC-11, LC-12; independent review | Contract O |

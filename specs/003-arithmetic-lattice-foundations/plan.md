@@ -69,7 +69,8 @@ Gate result: pass. No violation is justified in Complexity Tracking.
 The tiers, commands and preconditions are those of feature 002
 ([plan.md](../002-foundational-corpus-sweeps/plan.md#checks-of-this-repository)): tier 1 is
 `flock .tmp/lean.lock lake env lean <module>` for each changed module and each changed test module,
-or `just loop <modules>` after feature 001 T001; the full gate is `just test`.
+through `just loop <modules>`, the recipe of feature 001 T001, which comes first; the full gate is
+`just test`.
 
 ## Current source state
 
@@ -109,7 +110,7 @@ The subtraction of the vault plan from the source at `533e9259`. Evidence is the
 
 Phase order follows the vault dependency spine (formed and projective semantics; duality; completions
 and equivariance; adeles; genus; Hasse and spinor; classification; consumers). Phases 2 and 4 need only
-Phase 1, and Phase 3 needs Phase 1 and T010; a blocked task does not hold back an independent ready task of the same phase.
+Phase 1, and Phase 3 needs Phase 1 and T010; inside a phase, a task follows only the tasks whose results it uses (constitution M11).
 
 ## Unit contract
 

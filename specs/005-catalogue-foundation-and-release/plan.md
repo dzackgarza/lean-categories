@@ -42,7 +42,7 @@ generated from `RegistrySnapshot`
 | M6 | Comparison cells are data; chosen structure never from existence | FR-003, FR-008, FR-015 |
 | M7 | One field per meaning; the export comes from the registry | data-model.md; FR-010, FR-019 |
 | M8 | Search before authoring, recorded in the issue | Contract F, step 2 |
-| M9 | Consumer requests of the kernel go to feature 001; none waits here | Assumptions |
+| M9 | Consumer requests of the kernel are tasks of feature 001, not of this feature | Assumptions |
 | M10 | Independent review of each change | Contract F, step 7 |
 | M11 | This task list in document order | Execution order |
 | M12, M13 | Records under LC-05, LC-11, LC-12; no artifact certifies itself | Contract F |
@@ -54,7 +54,7 @@ Gate result: pass. No violation is justified in Complexity Tracking.
 
 The tiers, commands and preconditions are those of feature 001
 ([plan.md](../001-catalogue-inputs-for-the-cas/plan.md#checks-of-this-repository)): tier 1 is
-`just loop <modules>` after 001 T001, otherwise `flock .tmp/lean.lock lake env lean <module>`;
+`just loop <modules>`, the recipe of 001 T001, which comes first;
 the full gate is `just test`.
 
 ## Current source state

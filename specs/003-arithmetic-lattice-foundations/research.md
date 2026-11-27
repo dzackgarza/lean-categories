@@ -260,8 +260,8 @@ COMPLAINTS.md entries named; FOUNDATIONS §61.
 
 **Decision**: For each root-imported file named by the plan (genus, completion, dyadic, Hasse,
 spinor, spinor genus, involution), exactly one outcome: a comparison theorem with the canonical
-owner, a name that states the restricted meaning, or removal from the root surface until the
-comparison exists. Compilation does not establish the condition.
+owner, which T038 proves after the owner tasks T001–T037; a name that states the restricted
+meaning; or removal from the root surface. Compilation does not establish the condition.
 
 **Source**: TASK-CANONICAL-PUBLIC-LATTICE-SURFACE; docs/agents/mathematical-simplicity.md, "Keep the
 root surface coherent" and "Resolve parallel presentations".

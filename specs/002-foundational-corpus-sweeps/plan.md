@@ -63,7 +63,7 @@ Gate result: pass. No violation is justified in Complexity Tracking.
 
 | Tier | Command | Source |
 | --- | --- | --- |
-| Tier 1 | `flock .tmp/lean.lock lake env lean <module>` for each changed module and each module that imports it in the change; after feature 001 T001, `just loop <modules>` | constitution E1; `TODO.md`, "One Lean process" |
+| Tier 1 | `just loop <modules>` (feature 001 T001, which comes first) for each changed module and each module that imports it in the change | constitution E1; `TODO.md`, "One Lean process" |
 | Selector | `just foundational-frontier`; `python3 scripts/foundational_definition_index.py`; `python3 scripts/stub_population.py`; `python3 scripts/output_check.py` before each new unit | [data-model.md](data-model.md) |
 | Commit | `just test-commit` (no check; a partial unit can be banked) | `justfile`; D15 |
 | Push | `test-push` (`lean-no-sorry`) | `justfile`; D15 |
@@ -88,7 +88,8 @@ process is alive (LC-08).
 | 9 | continuations | the `Needs` of the `TODO.md` DAG (D11) | each node's acceptance; T107 is feature 003 and T111 feature 004 (D22) |
 
 Inside a phase, a unit is ready when its recorded prerequisites are delivered; source order breaks
-ties (D12). A blocked unit does not hold back an independent ready unit.
+ties (D12). A unit follows only the units that it records as prerequisites, and the workstream
+does those units first.
 
 ## Source catalogues
 
@@ -212,7 +213,8 @@ counts and its next five ready units (`--limit N` shows more on standard output)
 cell. `python3 scripts/foundational_definition_index.py` writes `FOUNDATIONAL_DEFINITIONS.tsv`.
 Both regenerate in the commit that changes the mapping state (FR-018). At `fc549baa` the generator
 fails on three rows (units.md, "Scheduler defects"); task T001 repairs them. A failure of the
-generator stops unit selection until it is repaired (corpus-execution.md, "Repair the scheduler").
+generator is repaired first, before the next unit is selected (corpus-execution.md, "Repair the
+scheduler").
 
 ## Files that stay as tool data
 

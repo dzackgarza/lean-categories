@@ -16,9 +16,9 @@ tasks or units), its check and its decisions. The contracts S, D, C, R, M and T 
 
 ## Execution order
 
-Tasks are executed in document order (constitution M11, research D1). Inside a phase, a task is
-ready when its inputs are delivered; a blocked task does not hold back a later ready task of the
-same phase (D12). Before each new unit, run `python3 scripts/output_check.py`
+Tasks are executed in document order (constitution M11, research D1). Inside a phase, a task
+follows the tasks whose results it uses; the workstream does each input task first, in the
+feature or repository that owns it, and then returns (constitution M11, D12). Before each new unit, run `python3 scripts/output_check.py`
 (corpus-execution.md, "Check output before choosing more work").
 
 ## Open nodes of `TODO.md`, open COMPLAINTS.md items and their tasks
@@ -59,12 +59,12 @@ same phase (D12). Before each new unit, run `python3 scripts/output_check.py`
   (data-model.md `MappingRow.construction_prerequisites`). Regenerate `FOUNDATIONAL_FRONTIER.md`
   and `FOUNDATIONAL_DEFINITIONS.tsv` in the same commit. Decision: D18. Check: `just
   foundational-frontier` and `python3 scripts/foundational_definition_index.py` exit 0; the three
-  units keep their routes and `[realized]`. Unblocks: every later task.
+  units keep their routes and `[realized]`. Consumer: every later task.
 - [ ] T002 [P] Record for each source its Zotero item key and the key of its extraction
   attachment in `corpus/foundational-source-corpus.md` (data-model.md `Source.item_key`), read
   through the live library (the `zotero` skill, `health()` first); for FC17 name
   `corpus/kerodon-source-units.json`. Record a source that the library does not hold under LC-05.
-  Decision: D16. Check: each key resolves to the admitted edition's extraction. Unblocks: the
+  Decision: D16. Check: each key resolves to the admitted edition's extraction. Consumer: the
   source comparisons of every Contract D, R and T.
 - [ ] T003 [P] Correct the texts that state "no proof work in Sweep III" to state the boundary of
   D2: `CONTRIBUTING.md` LC-03 and LC-20 (each with a defective contribution beside its
@@ -490,9 +490,9 @@ closure.
 
 ## Dependencies & Execution Order
 
-- Phase 1 blocks every later phase (T001: the selector; T002: the source locators; T003: the
+- Phase 1 comes before every later phase (T001: the selector; T002: the source locators; T003: the
   acceptance rules that reviewers apply; T130 then T129: a green full gate over every module).
-  T126–T128 and T131 block nothing.
+  No task uses the results of T126–T128 or T131.
 - Phase 2 (M9 intake) depends only on Phase 1. T113 and T114 share `Cusp*.lean` with T112 and run
   after it; the other intake tasks are independent.
 - Phases 3 and 4 produce the Definitions cells; Phase 5 needs all of them; Phase 6 needs Phase 5;
@@ -512,7 +512,7 @@ T036 secant and tangent lines
 ```
 
 These drafts touch different files and have no open input. Their Lean checks run one at a time
-under `flock .tmp/lean.lock`. T032 waits for T031; T030 waits for T029.
+under `flock .tmp/lean.lock`. T031 comes before T032, and T029 before T030.
 
 ## Implementation Strategy
 

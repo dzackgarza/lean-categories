@@ -373,8 +373,10 @@ its hypotheses are explicit.
 **Surface, records and checks**
 
 - **FR-030**: The root import module MUST expose only canonical owners, precisely named
-  specializations with comparison theorems, or neither; a declaration without its comparison MUST
-  stay outside the root surface until the comparison exists.
+  specializations with comparison theorems, or neither. Task T038 proves the comparison theorem of
+  each root-imported declaration with its canonical owner, after the tasks T001–T037 that construct
+  those owners; a declaration with no comparison theorem and no name that states its restricted
+  meaning MUST be outside the root surface.
 - **FR-031**: Every definition and proof obligation MUST be searched before it is written
   (constitution M8), with the reference ports of research D24; every workaround MUST carry the
   five fields of LC-12, and every missing theorem MUST be filed under LC-11.

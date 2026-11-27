@@ -149,9 +149,9 @@ before Sweep IV); constitution M11 (document order).
 ## D12. Order inside Sweeps III and IV
 
 **Decision**: Sweep IV opens only after Milestone 2 (corpus-wide). Inside a sweep, a unit is ready
-when its recorded prerequisites are delivered; the v3 traversal order (FC01, FC02, FC03, FC04,
-FC05, FC13, FC06, FC07, FC08, FC09, FC10, FC11, FC12, FC14, FC15, FC16, FC17) breaks ties. A
-blocked unit does not hold back an independent ready unit.
+after the units that it records as prerequisites, which the workstream does first; the v3
+traversal order (FC01, FC02, FC03, FC04, FC05, FC13, FC06, FC07, FC08, FC09, FC10, FC11, FC12,
+FC14, FC15, FC16, FC17) breaks ties. A unit follows only its own prerequisites.
 
 **Source**: `TODO.md` (`theorems` needs `definitions`); corpus-execution.md, "Definitions close
 before theorems open"; `phase_blocker` in `scripts/foundational_frontier.py`; the source manifest.
@@ -228,7 +228,8 @@ is not the worker's to change" (this feature is the owner's task list); the vali
 
 **Decision**: A false mapping or a wrong definition is repaired when found, with its dependents,
 before a dependent unit uses it. Consolidation of correct work (duplicated owners, module layout,
-names) waits for `audit-authored-definitions`, `refactor-audit` and `bloat-audit-loop`.
+names) is done in the tasks of `audit-authored-definitions` (T068), `refactor-audit` (T108) and
+`bloat-audit-loop` (T110).
 
 **Source**: corpus-acceptance.md, "Repair the defeated assumption and its affected uses";
 `TODO.md` §4a, "Corpus rework is a milestone phase, not continuous".
