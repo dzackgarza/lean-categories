@@ -22,7 +22,8 @@ that it names.
 
 ## Execution order
 
-Tasks are executed in document order. The issue phases follow the document order of their
+Select issues in definition-first native tree order (constitution M11); within each selected issue,
+execute its tasks in prerequisite order. For reference, the phases below are grouped by their
 kernel upstream tasks in the kernel task list: T123, T131, T138, T121, T119, T129, T120, T128,
 T124, T122, T132, T125, T136, T135, T137, T130, T118, T134, T133, T332, T328, T331, T329, T330,
 T334, T335, T336, T337, T333, T338, T339, T340, T341, T227, T146, T225, T226, T228, T229, T230,
@@ -582,13 +583,13 @@ new modules to `LeanCategories/All.lean`, and is reviewed by an author who did n
   T023); T039 uses the additive owners of T005.
 - T056 (#207) gives `cat.modules_over_rings_ext` its chain; the rows of T052 and T054 (#205,
   #206) reach `cat.sets` through it, and the refinements of T050 (#204) reach it through them.
-- The phase order is the order of the kernel consumers; it is not a dependency order between
-  issues.
+- The phase order records the kernel consumers; it is neither a dependency order nor the
+  work order between issues (constitution M11).
 - T068 needs 009 T001 (the divisibility tower). Every task of this feature writes its new
   rows in the LC-13 form; T079 moves the rows that are already on `main`.
 - T084 is in Phase 1; T080–T087 follow the scaffolding phases (research D29).
 
 ## Implementation Strategy
 
-Deliver in phase order. Each issue closes when its acceptance holds on `main`; the kernel then
-pins the revision. The milestone T042 runs once after the last phase.
+Deliver in definition-first issue-tree order, following actual prerequisites (constitution M11).
+Each issue closes when its acceptance holds on `main`; the kernel then pins the revision. The milestone T042 runs once after the last phase.

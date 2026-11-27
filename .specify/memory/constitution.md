@@ -167,7 +167,10 @@ interactive work"; `CONTRIBUTING.md` LC-17; kernel constitution C20.
   so definition-bearing work precedes theorem/lemma-only work. Groupings order work; work units
   are leaves. Use native blockers for real prerequisites, never fabricated mathematical
   dependencies to simulate priority. On intake or a change of scope, restore definition-first
-  order before selecting further work; verify with `itree tree` and `itree doctor`.
+  order before selecting further work; verify with `itree tree` and `itree doctor`. Use the
+  existing itree commands or their native GitHub sub-issue operations, not a second scheduler.
+  If blocked definitions remain and traversal reaches independent proof work, discharge the actual
+  prerequisites of the definitions first; do not use blocked status to circumvent priority.
 - Classify by the missing mathematical output, not the title or Lean declaration keyword.
   In a mixed obligation construct the definitions first; schedule independent proof obligations
   after the definition layer, separating genuine independent review boundaries when necessary.

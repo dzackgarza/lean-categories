@@ -16,7 +16,9 @@ tasks or units), its check and its decisions. The contracts S, D, C, R, M and T 
 
 ## Execution order
 
-Tasks are executed in document order (constitution M11, research D1). Inside a phase, a task
+Select issues in definition-first native tree order (constitution M11); within the selected
+issue, execute tasks in prerequisite order (research D1). The four corpus sweeps retain
+their definition-before-theorem invariant. Inside a phase, a task
 follows the tasks whose results it uses; the workstream does each input task first, in the
 feature or repository that owns it, and then returns (constitution M11, D12). Before each new unit, run `python3 scripts/output_check.py`
 (corpus-execution.md, "Check output before choosing more work"). Tier 1 is `just loop`, the recipe

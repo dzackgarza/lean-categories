@@ -15,8 +15,8 @@ Paths are relative to `LeanCategories/`. `Sem/` is `Catalogue/Semantics/`.
 
 ## Execution order
 
-Tasks are executed in document order (constitution M11), beside features 001 and 005 (research
-D1). Inside a phase, a task follows the tasks whose results it uses; the workstream does each input task first, in the feature or repository that owns it, and then returns (constitution M11). Each task records its search in its issue first.
+Select issues in definition-first native tree order (constitution M11); within the selected
+issue, execute tasks in prerequisite order (research D1). Inside a phase, a task follows the tasks whose results it uses; the workstream does each input task first, in the feature or repository that owns it, and then returns (constitution M11). Each task records its search in its issue first.
 
 ## Phase 1: Rings (US1, US2, #55, #102)
 

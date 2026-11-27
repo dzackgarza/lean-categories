@@ -17,8 +17,8 @@ Paths are relative to `LeanCategories/`, except `README.md`, `FOUNDATIONS.md`, `
 
 ## Execution order
 
-Tasks are executed in document order (constitution M11), beside feature 001; neither list
-delays the other. Inside a phase, a task follows the tasks whose results it uses; the workstream does each input task first, in the feature or repository that owns it, and then returns (constitution M11). Each task records its search in its
+Select issues in definition-first native tree order (constitution M11); within the selected
+issue, execute tasks in prerequisite order. Inside a phase, a task follows the tasks whose results it uses; the workstream does each input task first, in the feature or repository that owns it, and then returns (constitution M11). Each task records its search in its
 issue first (Contract F, step 2).
 
 ## Phase 1: Classifiers (US1, #30)

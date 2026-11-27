@@ -15,8 +15,9 @@ the task carries.
 
 ## Execution order
 
-This task list is executed as task T107 of feature 002 (research D2), in document order
-(constitution M11). Inside a phase, a task follows the tasks whose results it uses; the workstream does each input task first, in the feature or repository that owns it, and then returns (constitution M11). Inputs from feature 002 are cited as
+This task list supplies the obligations of task T107 of feature 002 (research D2).
+Select issues in definition-first native tree order and execute their actual prerequisites
+first (constitution M11); do not wait for independent proofs. Inside a phase, a task follows the tasks whose results it uses; the workstream does each input task first, in the feature or repository that owns it, and then returns (constitution M11). Inputs from feature 002 are cited as
 "002 Tnnn".
 
 ## Phase 1: Projective formed arithmetic (US1)

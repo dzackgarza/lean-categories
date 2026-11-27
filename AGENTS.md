@@ -151,9 +151,9 @@ existing sweep records,
 Record new issues when encountered under `LC-05`; logging never discharges the
 mathematical obligation. A task whose input another task produces follows that task, which the
 workstream does first (constitution M11).
-`.specify/feature.json` names the feature whose first unchecked task comes first in the
-execution order of constitution M11 (feature 001 T001, the tier-1 loop, comes before every task
-that runs tier 1); set it with `jq`.
+`.specify/feature.json` names the feature of the next applicable task for the selected issue
+or its actual prerequisite under constitution M11 (feature 001 T001, the tier-1 loop, comes
+before every task that runs tier 1); set it with `jq`.
 
 # Role in the programme: the single mathematical authority (always-on)
 

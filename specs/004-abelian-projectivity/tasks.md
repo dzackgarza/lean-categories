@@ -13,8 +13,9 @@ the milestone runs `just test`.
 
 ## Execution order
 
-This task list is executed as task T111 of feature 002 (research D2), in document order
-(constitution M11). Inputs from other features are cited as "002 Tnnn" and "003 Tnnn"; the workstream does each input task first, in the feature that owns it, and then returns (constitution M11).
+This task list supplies the obligations of task T111 of feature 002 (research D2).
+Select issues in definition-first native tree order and execute their actual prerequisites
+first (constitution M11); do not wait for independent proofs. Inputs from other features are cited as "002 Tnnn" and "003 Tnnn"; the workstream does each input task first, in the feature that owns it, and then returns (constitution M11).
 
 ## Phase 1: Sources (all stories)
 
