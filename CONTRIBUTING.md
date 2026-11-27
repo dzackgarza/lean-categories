@@ -1,6 +1,7 @@
 # Contribution policies
 
-Use the [corpus task list](specs/002-foundational-corpus-sweeps/tasks.md) to select corpus work and [docs/agents/corpus-acceptance.md](docs/agents/corpus-acceptance.md) for the detailed
+Use the native GitHub issue tree (`itree next dzackgarza/lean-categories`) for cross-issue
+selection under constitution M11, then the [corpus task list](specs/002-foundational-corpus-sweeps/tasks.md) and [docs/agents/corpus-acceptance.md](docs/agents/corpus-acceptance.md) for the detailed
 corpus acceptance workflow. [FOUNDATIONS.md](FOUNDATIONS.md) owns the mathematical
 constitution. The identifiers here provide stable names for contribution rules;
 the linked sections retain their full requirements.
@@ -33,11 +34,16 @@ concept.
 
 ## LC-04 — Follow the execution DAG
 
-Use the [corpus task list](specs/002-foundational-corpus-sweeps/tasks.md) and the existing
-source records.
+Use `itree next dzackgarza/lean-categories` and the selected issue's feature tasks and
+source records. Maintain native sibling order: definition-bearing work precedes independent
+theorem and lemma work throughout the repository (constitution M11). In mixed work, construct
+first; independent proof work follows the definition layer, with all original obligations intact.
 Resume valid delivered work and respect active claims. Dependencies name required
 mathematical outputs, not shared filenames or preferred subject order. Preserve
 all unresolved obligations and reject dangling references and cycles.
+Defective: prove a standalone lemma while a missing construction remains ready, or add a false
+blocker to force queue order. Replacement: place the construction earlier in the actual tree,
+complete it, and select the proof only after the definitional layer is complete.
 
 ## LC-05 — Record mathematical issues and papercuts when encountered
 

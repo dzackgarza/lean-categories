@@ -102,8 +102,11 @@ Mathlib and the broader formalization ecosystem; realize the remaining definitio
 categorical owners; then formalize the remaining source lemmas and theorems. Only units that
 survive the mapping sweep as genuinely unmatched are greenfield formalization. The
 definition layer must close before the theorem pass opens; independent ready definitions
-can proceed without waiting for source-order predecessors. The work order is the task list of
-[feature 002](specs/002-foundational-corpus-sweeps/tasks.md); the
+can proceed without waiting for source-order predecessors. The same definition-first rule governs
+all repository issues: `itree next dzackgarza/lean-categories` selects the next ready work unit
+under [constitution M11](.specify/memory/constitution.md#m11-definition-first-work-order-and-issue-tree).
+The task list of [feature 002](specs/002-foundational-corpus-sweeps/tasks.md) supplies corpus tasks
+and dependencies; the
 [source/snapshot manifest](corpus/foundational-source-corpus.md) and the
 [central four-phase status ledger](corpus/foundational-corpus-status.md) own the corpus state.
 

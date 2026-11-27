@@ -74,7 +74,9 @@ plans, including plans that describe their input mappings as “verified.”
 
 1. Read the corpus task list (`specs/002-foundational-corpus-sweeps/tasks.md`) and its
    plan, the source manifest, and the whole-source ledger. Resume your claimed task;
-   otherwise take the next ready task in document order. Read its existing handoff and delivered declarations
+   otherwise select the next ready issue with `itree next dzackgarza/lean-categories` under
+   constitution M11 and its next applicable task in prerequisite order. Repository-wide
+   definitions precede independent theorem or lemma work. Read its existing handoff and delivered declarations
    so you continue from the latest mathematical result rather than repeat a completed
    search, implementation, or integration check.
 2. Establish the source's complete unit population before filtering it for the sweep.

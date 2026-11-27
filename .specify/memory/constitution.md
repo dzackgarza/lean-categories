@@ -154,20 +154,38 @@ Sources: `CONTRIBUTING.md` LC-17; `AGENTS.md`, "Who writes here"; kernel constit
 Sources: `TODO.md`, "Acceptance stays with the prime"; `AGENTS.md`, "Balance autonomous and
 interactive work"; `CONTRIBUTING.md` LC-17; kernel constitution C20.
 
-### M11. Work lists
+### M11. Definition-first work order and issue tree
 
-- The task list of a Spec Kit feature (`specs/<feature>/tasks.md`) is executed in document order.
-- The foundational corpus programme is ordered only by the task list of feature
-  `specs/002-foundational-corpus-sweeps/`. `TODO.md` is the record of the closed nodes of the
-  earlier corpus DAG and orders no work.
-- Neither task list delays the other. A task of a feature that adds a declaration also adds the
-  matching row of `FOUNDATIONAL_DEFINITIONS.tsv` or the corpus mapping when one exists.
+- Definitions, structures, constructors, operations, predicates, functors and their semantic
+  registration have priority over standalone theorems and lemmas, repository-wide, not merely
+  within each subject or source. Complete the outstanding definitional layer before selecting
+  independent proof work. A structural law or proof needed to construct a faithful Lean definition
+  is part of that definition's obligation, not permission to pursue unrelated theorems.
+- The single GitHub issue tree rooted at #1 is the cross-issue work order. Use
+  `itree next dzackgarza/lean-categories` to select the next ready issue, not issue number,
+  convenience, assignee, or a parallel work queue. Maintain the actual native sub-issue order
+  so definition-bearing work precedes theorem/lemma-only work. Groupings order work; work units
+  are leaves. Use native blockers for real prerequisites, never fabricated mathematical
+  dependencies to simulate priority. On intake or a change of scope, restore definition-first
+  order before selecting further work; verify with `itree tree` and `itree doctor`.
+- Classify by the missing mathematical output, not the title or Lean declaration keyword.
+  In a mixed obligation construct the definitions first; schedule independent proof obligations
+  after the definition layer, separating genuine independent review boundaries when necessary.
+  Retain the entire original mathematical acceptance obligation, including all laws and proofs.
+- A Spec Kit feature (`specs/<feature>/tasks.md`) supplies the tasks and their prerequisite order
+  for the selected issue. Feature 002 retains the four corpus sweeps, with all definitions before
+  Sweep IV. Reconcile task order with this article; neither feature selection nor immediate intake
+  (M9) authorizes bypassing ready definitions for independent proof work. `TODO.md` records closed
+  nodes of the earlier corpus DAG and orders no work.
+- A task of a feature that adds a declaration also adds the matching row of
+  `FOUNDATIONAL_DEFINITIONS.tsv` or the corpus mapping when one exists.
 - No task waits. A task that uses the result of another task follows that task: the workstream
   does it first, in the feature or the repository that owns it and in the role that it names, and
   then returns (kernel constitution C16, C21). When no task produces the result, the change that
   finds the need adds the task, with its issue in the owning repository.
 
-Sources: feature 002, research D1; kernel constitution C21; kernel task list, "Execution order".
+Sources: owner directive (2026-11-27), feature 002, research D1; kernel constitution C21;
+kernel task list, "Execution order"; `itree help model`.
 
 ### M12. Defect records and workarounds
 
@@ -274,4 +292,9 @@ correction that leaves the obligations unchanged.
 Compliance: each feature plan states its check against every article. Review (M10) checks the
 change against the articles that it touches.
 
-**Version**: 2.1.0 | **Ratified**: 2026-11-25 | **Last Amended**: 2026-11-27
+**Amendment (2026-11-27, M11).** Previously feature task lists alone ordered work;
+now the native issue tree orders cross-issue selection, with definitions ahead of independent
+theorems and lemmas. Feature task lists retain prerequisite and source obligations. This implements
+the owner’s definition-first directive without weakening mathematical acceptance.
+
+**Version**: 3.0.0 | **Ratified**: 2026-11-25 | **Last Amended**: 2026-11-27

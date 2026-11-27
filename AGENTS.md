@@ -140,8 +140,11 @@ Consequences:
 > agent (lean-cas-dsl constitution C14, C19).
 
 
-Read the [corpus task list](specs/002-foundational-corpus-sweeps/tasks.md) for the work order of
-the corpus programme (constitution M11), [TODO.md](TODO.md) for the closed DAG nodes and the
+Select the next ready issue using `itree next dzackgarza/lean-categories`. Constitution
+[M11](.specify/memory/constitution.md#m11-definition-first-work-order-and-issue-tree) requires
+repository-wide definitions and constructions before independent theorems and lemmas; maintain
+native sub-issue order on intake. Read the [corpus task list](specs/002-foundational-corpus-sweeps/tasks.md)
+for the tasks and dependencies of the corpus programme, [TODO.md](TODO.md) for the closed DAG nodes and the
 existing sweep records,
 [CONTRIBUTING.md](CONTRIBUTING.md) for named policies, and
 [COMPLAINTS.md](COMPLAINTS.md) for observed mathematical issues and papercuts.
