@@ -372,6 +372,7 @@ entry with its evidence (LC-05, "On resolution").
 | FR-051 (a) | Non-inherited constructions (`Aut`, `Stab`) | `Reg/Entry.lean` (`ConstructionEntry`, method shape), `Sem/Algebra/Automorphisms.lean` | a new `Reg/GenericConstructionTests.lean` |
 | FR-051 (b) | An object row cannot be identified with a functor value | `Reg/Entry.lean` (`ObjectFunctorPresentation`), `Sem/Algebra/Units.lean` | `Sem/UnitInverseTests.lean` |
 | FR-051 (d) | Catalogue review of bd31fe3, item 3 | `Reg/Totality.lean` | `Sem/TotalityProbes.lean` |
+| FR-051 (e) | `CONTRIBUTING.md` LC-16, the registration gate | `Reg/Semantic.lean` | `Sem/TotalityProbes.lean` |
 
 ## Structural functors of the scaffolding gaps
 

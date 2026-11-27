@@ -47,7 +47,11 @@ and concrete workflow friction, including discoveries outside the selected unit.
 Give the mathematical need, observed evidence, affected owner and consumer, and
 the precise uncertainty. Extend an existing entry for the same underlying issue.
 Link the existing source unit or TODO owner. Recording a prerequisite defect does
-not authorize using it or complete its repair; continue independent work.
+not authorize using it or complete its repair: its repair is a task before its
+consumers, and the workstream that needs the repair does that task first
+(constitution M11). Defective: an entry for a missing lemma, then work on other
+units while the consumer stays open. Replacement: the entry, the task that proves
+the lemma in its owning feature, and that task done before its consumer.
 
 ## LC-06 — Preserve concurrent work and prove delivery
 
@@ -60,11 +64,14 @@ with actual declarations and checks in its existing handoff.
 ## LC-07 — Diagnose a red gate before further authoring
 
 The first time a commit gate, hook, or check goes red, diagnosing that failure
-becomes the current task. Stop authoring; root-cause and fix the gate, or record
-it as a blocker with a reproducer. Never continue authoring behind a red gate,
+becomes the current task. Stop authoring; root-cause and fix the gate. A gate
+defect that another repository owns is a task of that repository, which the
+workstream does first and then returns (constitution M11). Never continue authoring behind a red gate,
 and never accumulate uncommitted work around one. A gate that is red on two
 consecutive commit attempts is a defect to diagnose, not an environment
-condition to wait out.
+condition to wait out. Defective: a red axiom audit recorded as a blocker while
+authoring continues on other modules. Replacement: the audit failure root-caused
+and repaired in the next commit, before any further authoring.
 
 ## LC-08 — Verify a long-running process before waiting on it again
 
@@ -222,9 +229,8 @@ an element of the units, formed there or admitted there by the evidence this lib
 with the units (LC-18), never by a claim from a caller or a leaf; one not established
 to be invertible cannot even be written as an argument of `⁻¹`.
 
-A row that violates this is ill-defined mathematics, and the registry must refuse it at
-registration (gate owed here: constitution M7). Until that gate exists,
-a reviewer refuses it.
+A row that violates this is ill-defined mathematics: the registry refuses it at registration
+(constitution M7; the gate of feature 001 T087), and a reviewer refuses it (constitution M10).
 
 ## LC-17 — Independent mathematical authority and abstract computational API
 
@@ -235,8 +241,10 @@ repository; the consumer's workstream does it here at once as a formalization au
 [constitution M9](.specify/memory/constitution.md#m9-authorship-permitted-inputs-and-immediate-intake). A downstream difficulty arrives as a written request for
 mathematics, and it never shapes the answer. Formalizing an API to fit what a kernel can
 elaborate or a leaf can compute lets an implementation shape the mathematics, which the evidence
-model forbids ([AGENTS.md](AGENTS.md), "The evidence model"). Such work is not accepted however it
-reads: `bd31fe3` (2026-09-30) was authored this way and awaits independent review.
+model forbids ([AGENTS.md](AGENTS.md), "The evidence model"). Defective: an API formalized to fit
+what a kernel can elaborate (`bd31fe3`, 2026-09-30). Replacement: the API stated from its
+mathematical requirement and sources; a change authored the defective way is accepted only after
+an independent review clears it (constitution M10).
 
 The mathematical API includes abstract computational obligations: required data and operations,
 dependent signatures, their composition, and the interface that publishes these distinctions.

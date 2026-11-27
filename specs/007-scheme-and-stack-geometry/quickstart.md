@@ -5,7 +5,7 @@ Run from the repository root on the research image; `pgrep -a -x 'lean|lake'` pr
 ## 1. Universal properties (US1)
 
 After T006 and T007, elaborate `LeanCategories/AlgebraicGeometry/Blowup.lean` and
-`Covers.lean` with `flock .tmp/lean.lock lake env lean <module>`. Expected: exit 0; the universal
+`Covers.lean` with `just loop <module>` (feature 001 T001). Expected: exit 0; the universal
 property of the blowup of $\mathbb A^2_k$ at the origin is a theorem.
 
 ## 2. Stack conditions (US2, US3, US4)

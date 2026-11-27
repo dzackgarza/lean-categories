@@ -25,8 +25,8 @@ Inside a phase, a task follows the tasks whose results it uses; the workstream d
   an algebraic stack and a Deligne–Mumford stack; Kollár–Mori §2.3; Kollár, *Singularities of the
   MMP*, §5; Kollár, *Families of Varieties of General Type*, the chapters on stable families;
   arXiv:2312.03638 §§5, 7. Record each item key, tag and locator in #38 or #39, and run the search
-  of constitution M8 for every notion of FR-001–FR-014. A source the library does not hold is
-  recorded under LC-05.
+  of constitution M8 for every notion of FR-001–FR-014. A source that the library does not hold
+  is added to it first (002 research D16).
 
 ## Phase 2: Schemes (US1, #38)
 

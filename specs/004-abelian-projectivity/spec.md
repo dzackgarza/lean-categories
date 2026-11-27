@@ -170,5 +170,5 @@ manifolds and the hypotheses of Chow's theorem.
   as feature 002 T111 (research D2).
 - The complex analytic spaces of feature 002 T125 supply the closed analytic subsets that Chow's
   theorem uses.
-- The live library holds the sources of research D4; a source a worker cannot reach leaves its task
-  open.
+- The live library holds the sources of research D4; a source that a worker cannot reach is made
+  reachable, or added to the library, first (002 research D16), then read.

@@ -19,7 +19,9 @@ tasks or units), its check and its decisions. The contracts S, D, C, R, M and T 
 Tasks are executed in document order (constitution M11, research D1). Inside a phase, a task
 follows the tasks whose results it uses; the workstream does each input task first, in the
 feature or repository that owns it, and then returns (constitution M11, D12). Before each new unit, run `python3 scripts/output_check.py`
-(corpus-execution.md, "Check output before choosing more work").
+(corpus-execution.md, "Check output before choosing more work"). Tier 1 is `just loop`, the recipe
+of feature 001 T001: the workstream does 001 T001 first, before the first task of this list whose
+check runs tier 1 (T005).
 
 ## Open nodes of `TODO.md`, open COMPLAINTS.md items and their tasks
 
@@ -63,7 +65,8 @@ feature or repository that owns it, and then returns (constitution M11, D12). Be
 - [ ] T002 [P] Record for each source its Zotero item key and the key of its extraction
   attachment in `corpus/foundational-source-corpus.md` (data-model.md `Source.item_key`), read
   through the live library (the `zotero` skill, `health()` first); for FC17 name
-  `corpus/kerodon-source-units.json`. Record a source that the library does not hold under LC-05.
+  `corpus/kerodon-source-units.json`. A source that the library does not hold is added to the
+  library first, with its item key (D16).
   Decision: D16. Check: each key resolves to the admitted edition's extraction. Consumer: the
   source comparisons of every Contract D, R and T.
 - [ ] T003 [P] Correct the texts that state "no proof work in Sweep III" to state the boundary of
@@ -86,8 +89,8 @@ feature or repository that owns it, and then returns (constitution M11, D12). Be
   run still shows. Inputs: T130. Decision: D23. Check: `just test` exits 0 with its log
   (constitution E6).
 - [ ] T126 [P] Correct `CONTRIBUTING.md` LC-06 (it names a prose-only commit route that does not
-  exist; the commit hook runs `just test-commit`, which runs no check) and LC-07 (its blocker record
-  needs the red gate to pass), and add the lesson of COMPLAINTS.md, "#95 — a completed unit's commits
+  exist; the commit hook runs `just test-commit`, which runs no check), and add the lesson of
+  COMPLAINTS.md, "#95 — a completed unit's commits
   were force-rewritten off `main`" (fetch before a whole-file commit of a shared file; push against
   the tip that a fetch has just returned); each policy shows a defective contribution beside its
   replacement (constitution E3). Decision: D23. Check: each policy names an existing command.
@@ -482,7 +485,8 @@ closure.
 - [ ] T110 `bloat-audit-loop`: one source-aware pass over reuse, duplicate statements, ownership,
   imports, typeclass and universe design, proof size, rewriting surfaces, test integrity, dead
   bridges and module cohesion; search Mathlib, open upstream work and Reservoir before improving a
-  local mechanism. Inputs: T109. Check: every finding repaired or recorded with its blocker.
+  local mechanism. Inputs: T109. Check: every finding is repaired at its owner, or is a task of its
+  owning feature that the commit recording the finding adds (constitution M11).
 - [ ] T111 [US5] `abelian-projectivity`: execute the tasks T001–T010 of feature
   [004](../004-abelian-projectivity/tasks.md) in their document order, reusing the FC11 and FC12
   results at their owners. Acceptance: 004 T010 (the four success criteria of the plan, `just test`

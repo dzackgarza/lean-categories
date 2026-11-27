@@ -68,8 +68,9 @@ Gate result: pass. No violation is justified in Complexity Tracking.
 
 The tiers, commands and preconditions are those of feature 002
 ([plan.md](../002-foundational-corpus-sweeps/plan.md#checks-of-this-repository)): tier 1 is
-`flock .tmp/lean.lock lake env lean <module>` for each changed module and each changed test module,
-through `just loop <modules>`, the recipe of feature 001 T001, which comes first; the full gate is
+`just loop <modules>` for each changed module and each changed test module, the recipe of
+feature 001 T001, which comes first and builds the imports of each module before it elaborates
+the module; the full gate is
 `just test`.
 
 ## Current source state

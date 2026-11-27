@@ -553,9 +553,12 @@ kernel task list.
   `mor.sets.units_inverse` its identification with group inversion (research D26); (c) the
   numeral kind MUST mean only images of initial maps (FR-004, research D24); (d) the totality gate
   MUST refuse a row whose declaration unfolds to a registered totalized Mathlib function on a
-  domain wider than that function's domain (research D27). Source: COMPLAINTS.md, "Non-inherited
-  constructions (`Aut`, `Stab`) have no method presentation", "An object row cannot be identified
-  with a functor value", "Catalogue review of bd31fe3", items 2 and 3.
+  domain wider than that function's domain (research D27); (e) the registration gate MUST refuse
+  an operation, method or endofunctor row whose declaration does not take its object in the
+  declared category, so that some object of that category lacks the structure that the row uses
+  (LC-16; constitution M7). Source: COMPLAINTS.md, "Non-inherited constructions (`Aut`, `Stab`)
+  have no method presentation", "An object row cannot be identified with a functor value",
+  "Catalogue review of bd31fe3", items 2 and 3; `CONTRIBUTING.md` LC-16.
 - **FR-052 (#95)**: Every catalogue test module MUST be elaborated by `just test`; the modules
   `Sem/Foundation/PowerSetsTests.lean` and `Sem/Foundation/FiniteOrdersTests.lean` MUST be
   imported and their failures repaired. Source: COMPLAINTS.md, "#95 — two catalogue test modules

@@ -4,8 +4,8 @@ Run from the repository root on the research image; `pgrep -a -x 'lean|lake'` pr
 
 ## 1. The final theorem
 
-After T009, elaborate the module of the final theorem with `flock .tmp/lean.lock lake env lean
-<module>`. Expected: exit 0; `#print axioms` of the final theorem lists only `propext`,
+After T009, elaborate the module of the final theorem with `just loop <module>` (feature 001
+T001). Expected: exit 0; `#print axioms` of the final theorem lists only `propext`,
 `Classical.choice` and `Quot.sound`; its hypotheses are a `ComplexTorus` with `IsAbelianVariety`.
 
 ## 2. A principal polarization

@@ -431,5 +431,5 @@ its hypotheses are explicit.
   feature owns their mathematics and registers no row that 001 owns.
 - The live library holds the cited sources ([@MH73], [@Nik80], [@Rot15], [@Wei82], [@Ger08],
   [@Jac85], [@Cas08a], [@Hum90], [@Bou08], [@Sch21], [@Mor19], [@LZ16], [@PK16], [@CS88], [@Ros21],
-  [@Tel22]) and the sources that tasks T036, T043 and T046 name;
-  a source that a worker cannot reach leaves its task open.
+  [@Tel22]) and the sources that tasks T036, T043 and T046 name; a source that a worker cannot
+  reach is made reachable, or added to the library, first (002 research D16), then read.

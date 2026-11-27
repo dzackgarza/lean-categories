@@ -12,13 +12,19 @@ repository root. `Sem/` is `Catalogue/Semantics/`. `Reg/` is `Catalogue/Registry
 ## Format: `[ID] [P?] [Story] Description`
 
 Each task names its issue, its files, its acceptance and the kernel task that consumes it (the
-lean-cas-dsl task list, "Upstream inputs recorded as missing").
+lean-cas-dsl task list, "Upstream tasks").
+
+The check of a search task is `gh issue view <issue> --comments`: the record names each query,
+each surface and each hit (constitution M8). The check of every other task is `just loop` (T001)
+on its changed modules and on the test module of its acceptance; the task is done when that check
+passes and its acceptance holds. Its inputs are T001, the search task of its issue and the tasks
+that it names.
 
 ## Execution order
 
 Tasks are executed in document order. The issue phases follow the document order of their
-kernel upstream tasks in the kernel task list: T123, T131, T138, T121, T119, T129, T122, T132,
-T120, T125, T124, T136, T137, T128, T130, T135, T134, T118, T133, T332, T328, T331, T329, T330,
+kernel upstream tasks in the kernel task list: T123, T131, T138, T121, T119, T129, T120, T128,
+T124, T122, T132, T125, T136, T135, T137, T130, T118, T134, T133, T332, T328, T331, T329, T330,
 T334, T335, T336, T337, T333, T338, T339, T340, T341, T227, T146, T225, T226, T228, T229, T230,
 T231, T232, T233, T234; each kernel upstream task stands before its first consumer. The phases
 of the COMPLAINTS.md entries (Phases 46–49, FR-047 to FR-051) follow, since no kernel task is
@@ -31,9 +37,14 @@ new modules to `LeanCategories/All.lean`, and is reviewed by an author who did n
 ## Phase 1: Setup (fast feedback, logs and timing)
 
 - [ ] T001 Add the private tier-1 recipe `loop` to `justfile`: `just loop <module> [modules]`
-  elaborates each module with `flock .tmp/lean.lock lake env lean`, in order, and stops at the
-  first error. Constitution E1, E4. Acceptance: `just loop LeanCategories/Catalogue/Registry/OperationBindingTests.lean`
-  finishes under 300 s on the research image with the shared cache. Consumer: every later task.
+  builds the imports of each module (`lake build +<Module>:deps`), then elaborates the module
+  source afresh with `lake env lean`, under `flock .tmp/lean.lock`, in order, and stops at the
+  first error; no module is elaborated against an import that is older than its source (kernel
+  `CONTRIBUTING.md`, LOOP005). Constitution E1, E4. Check: `just loop
+  LeanCategories/Catalogue/Registry/OperationBindingTests.lean` finishes under 300 s on the
+  research image with the shared cache; after a one-line edit of a module that the test module
+  imports, the same command rebuilds that module before it elaborates the test module.
+  Consumer: every later task.
 - [ ] T002 Make `just loop` and `just test` write a durable log of each run to `build-logs/<commit>-<start time>.log`
   in the repository tree, through `scripts/build-timing.sh`. Constitution E6, LC-21. Acceptance:
   after a run, the log holds every elaborated module and its messages. Consumer: every later task.
@@ -44,9 +55,12 @@ new modules to `LeanCategories/All.lean`, and is reviewed by an author who did n
   run, revision, environment and input. Consumer: timing triage (E8).
 - [ ] T084 [US9] FR-052: import `Sem/Foundation/PowerSetsTests.lean` and
   `Sem/Foundation/FiniteOrdersTests.lean` from `Catalogue.lean` and repair what they then report.
-  Files: `Catalogue.lean`, the rows the two modules cover. Decision: research D29. Acceptance: both
-  modules elaborate in `just test`; the COMPLAINTS.md entry "#95 — two catalogue test modules in
-  `Foundation/` are outside the build" closes with its evidence. Consumer: every later task whose
+  Files: `Catalogue.lean`, the rows the two modules cover. Decision: research D29. Check: `just
+  loop Catalogue/Semantics/Foundation/PowerSetsTests.lean
+  Catalogue/Semantics/Foundation/FiniteOrdersTests.lean Catalogue.lean`. Acceptance: both modules
+  are in the import closure of `Catalogue.lean`, which `just test` builds; the COMPLAINTS.md entry
+  "#95 — two catalogue test modules in `Foundation/` are outside the build" closes with its
+  evidence. Consumer: every later task whose
   evidence these modules give.
 
 ## Phase 2: #187, names of shape objects (US3, for kernel T123 and T308)
@@ -127,28 +141,7 @@ new modules to `LeanCategories/All.lean`, and is reviewed by an author who did n
   five families; $f^{-1}(B) \supseteq A \iff f(A) \subseteq B$ is a registered theorem. Consumer:
   kernel T113, T035.
 
-## Phase 8: #186, the numeral of additive monoids (US1, for kernel T122 and T034)
-
-- [ ] T014 [US1] #186: record the search (plan.md row #186) in the issue.
-- [ ] T015 [US1] #186: add `num.additive_monoids`, the image of the unique map from the zero
-  monoid; an additive monoid has no other numeral. File: `Sem/Algebra/AdditiveOperations.lean`.
-  Decision: research D6. Acceptance in `Sem/EvidenceTests.lean`: `0` in $\mathbb{Q}^n$ reads as the
-  zero vector; `1` in an additive monoid has no numeral row. Consumer: kernel T034.
-
-## Phase 9: #194, numerals of semirings and rings (US1, for kernel T132 and T034)
-
-- [ ] T016 [US1] #194: record the search (plan.md row #194) in the issue.
-- [ ] T017 [US1] #194: add `obj.additive_monoids.naturals`, the category
-  `cat.additive_monoids_with_one` = `coslice(cat.additive_monoids, obj.additive_monoids.naturals)` with the structural coslice
-  forget of `ctor.coslice`, the numeral row there, the functor $S \mapsto (U_+(S), 1)$, and the
-  restriction theorems of `num.semirings` and `num.rings` (`Int.cast_natCast`, `Nat.cast_zero`,
-  `Nat.cast_one`). Files: `Sem/Algebra/AdditiveOperations.lean`, `Sem/ConstructorRegistration.lean`,
-  `Sem/Algebra/Semirings.lean`, `Sem/Algebra/NamedRings.lean`. Decision: research D6. Acceptance in
-  `Sem/EvidenceTests.lean`: for every ring $R$ and $k \in \mathbb{N}$ the two numerals agree, as one
-  theorem about the family; `cat.coslice_sets` reaches `cat.sets` by the coslice forget. Consumer:
-  kernel T034.
-
-## Phase 10: #184, written forms of morphisms and methods (US3, for kernel T120 and T315)
+## Phase 8: #184, written forms of morphisms and methods (US3, for kernel T120 and T315)
 
 - [ ] T018 [US3] #184: record the search (plan.md row #184) in the issue.
 - [ ] T019 [US3] #184: add `NotationForm` and the `notation` field, the projected index and its
@@ -163,16 +156,19 @@ new modules to `LeanCategories/All.lean`, and is reviewed by an author who did n
   row with one form at one owner is refused; a notation equal to the call form of `name` is
   refused. Consumer: kernel T315, T035, T036, T075.
 
-## Phase 11: #189, multivariate polynomial rings (US3, for kernel T125 and T036)
+## Phase 9: #190, binder operations (US2, for kernel T128 and T037)
 
-- [ ] T020 [US3] #189: record the search (plan.md row #189) in the issue.
-- [ ] T021 [US3] #189: add `obj.commutative_rings.mv_polynomials` for a commutative ring and an
-  index type, with `refines` to `obj.rings.mv_polynomials` and the comparison to
-  `obj.algebras.mv_polynomials`. File: `Sem/Algebra/Polynomials.lean`. Acceptance in
-  `Sem/PolynomialContractTests.lean`: Krull dimension applies to $\mathbb{Q}[x, y]$ by its
-  registered domain. Consumer: kernel T036.
+- [ ] T026 [US2] #190: record the search (plan.md row #190) in the issue.
+- [ ] T027 [US2] #190: add `ComputationRef.binder (id : BinderId)` (`data-model.md`
+  `ComputationRef.binder`); register the derivations
+  `sumOver_eq_sum`, `prodOver_eq_prod`, `realSeriesSum_eq`, `complexSeriesSum_eq`,
+  `powerSeriesSum_eq`, `limit_eq`, and the uniqueness of the limit in a Hausdorff space. Files:
+  `Reg/Computation.lean`, `Sem/Algebra/FiniteSums.lean`, `Sem/Algebra/Calculus.lean`,
+  `Sem/Algebra/Series.lean`, `Sem/Algebra/RealLimits.lean`. Decision: research D3. Acceptance in
+  `Reg/BinderProbes.lean`: each of the eight binders is a named family; the six identities
+  validate as derivations. Consumer: kernel T037.
 
-## Phase 12: #188, reading rules (US3, for kernel T124 and T036)
+## Phase 10: #188, reading rules (US3, for kernel T124 and T036)
 
 - [ ] T024 [US3] #188: record the search (plan.md row #188) in the issue.
 - [ ] T025 [US3] #188: add `ReadingEntry` (`data-model.md` `ReadingEntry.source`, `.target`,
@@ -183,7 +179,37 @@ new modules to `LeanCategories/All.lean`, and is reviewed by an author who did n
   declared inclusion no reading applies; `p(a)` for $a \in R$ reads at $(R, \mathrm{id}_R)$ with
   `evaluation_own`. Consumer: kernel T036, T059.
 
-## Phase 13: #198, Spec, complements of zero, slices (US3, for kernel T136 and T036)
+## Phase 11: #186, the numeral of additive monoids (US1, for kernel T122 and T034)
+
+- [ ] T014 [US1] #186: record the search (plan.md row #186) in the issue.
+- [ ] T015 [US1] #186: add `num.additive_monoids`, the image of the unique map from the zero
+  monoid; an additive monoid has no other numeral. File: `Sem/Algebra/AdditiveOperations.lean`.
+  Decision: research D6. Acceptance in `Sem/EvidenceTests.lean`: `0` in $\mathbb{Q}^n$ reads as the
+  zero vector; `1` in an additive monoid has no numeral row. Consumer: kernel T034.
+
+## Phase 12: #194, numerals of semirings and rings (US1, for kernel T132 and T034)
+
+- [ ] T016 [US1] #194: record the search (plan.md row #194) in the issue.
+- [ ] T017 [US1] #194: add `obj.additive_monoids.naturals`, the category
+  `cat.additive_monoids_with_one` = `coslice(cat.additive_monoids, obj.additive_monoids.naturals)` with the structural coslice
+  forget of `ctor.coslice`, the numeral row there, the functor $S \mapsto (U_+(S), 1)$, and the
+  restriction theorems of `num.semirings` and `num.rings` (`Int.cast_natCast`, `Nat.cast_zero`,
+  `Nat.cast_one`). Files: `Sem/Algebra/AdditiveOperations.lean`, `Sem/ConstructorRegistration.lean`,
+  `Sem/Algebra/Semirings.lean`, `Sem/Algebra/NamedRings.lean`. Decision: research D6. Acceptance in
+  `Sem/EvidenceTests.lean`: for every ring $R$ and $k \in \mathbb{N}$ the two numerals agree, as one
+  theorem about the family; `cat.coslice_sets` reaches `cat.sets` by the coslice forget. Consumer:
+  kernel T034.
+
+## Phase 13: #189, multivariate polynomial rings (US3, for kernel T125 and T036)
+
+- [ ] T020 [US3] #189: record the search (plan.md row #189) in the issue.
+- [ ] T021 [US3] #189: add `obj.commutative_rings.mv_polynomials` for a commutative ring and an
+  index type, with `refines` to `obj.rings.mv_polynomials` and the comparison to
+  `obj.algebras.mv_polynomials`. File: `Sem/Algebra/Polynomials.lean`. Acceptance in
+  `Sem/PolynomialContractTests.lean`: Krull dimension applies to $\mathbb{Q}[x, y]$ by its
+  registered domain. Consumer: kernel T036.
+
+## Phase 14: #198, Spec, complements of zero, slices (US3, for kernel T136 and T036)
 
 - [ ] T022 [US3] #198: record the search (plan.md row #198) in the issue.
 - [ ] T023 [US3] #198: register `ctor.opposite`; the functors Spec on
@@ -197,42 +223,7 @@ new modules to `LeanCategories/All.lean`, and is reviewed by an author who did n
   of relative Spec at $K[x]$; `Poly∖0` is the value of the construction; `cat.schemes_over` and
   `cat.schemes_over_ring` reach `cat.schemes`. Consumer: kernel T317, T036, T057.
 
-## Phase 14: #199, progressions and subtraction (US1, for kernel T137 and T316)
-
-- [ ] T038 [US1] #199: record the search (plan.md row #199) in the issue.
-- [ ] T039 [US1] #199: add the progression, its sections and enumeration, the ellipsis
-  proposition with its procedure, `op.additive_groups.sub` (refined by the ring row), and the
-  subtraction of $\mathbb{N}$ on $b \le a$ with its admission. File:
-  `Sem/Algebra/AdditiveOperations.lean`. Decision: research D15. Acceptance in
-  `Sem/FiniteSubsetLiteralTests.lean`: `{1, 3, …}` denotes $\{1 + 2k\}$ with enumeration
-  $k \mapsto 1 + 2k$; `{1, 2, 4, …}` is refuted; `2 - 5` in $\mathbb{N}$ is outside the domain.
-  Consumer: kernel T316, T068.
-
-## Phase 15: #190, binder operations (US2, for kernel T128 and T037)
-
-- [ ] T026 [US2] #190: record the search (plan.md row #190) in the issue.
-- [ ] T027 [US2] #190: add `ComputationRef.binder (id : BinderId)` (`data-model.md`
-  `ComputationRef.binder`); register the derivations
-  `sumOver_eq_sum`, `prodOver_eq_prod`, `realSeriesSum_eq`, `complexSeriesSum_eq`,
-  `powerSeriesSum_eq`, `limit_eq`, and the uniqueness of the limit in a Hausdorff space. Files:
-  `Reg/Computation.lean`, `Sem/Algebra/FiniteSums.lean`, `Sem/Algebra/Calculus.lean`,
-  `Sem/Algebra/Series.lean`, `Sem/Algebra/RealLimits.lean`. Decision: research D3. Acceptance in
-  `Reg/BinderProbes.lean`: each of the eight binders is a named family; the six identities
-  validate as derivations. Consumer: kernel T037.
-
-## Phase 16: #192, change of values at module morphisms (US4, for kernel T130 and T046)
-
-- [ ] T028 [US4] #192: record the search (plan.md row #192) in the issue.
-- [ ] T029 [US4] #192: change the parameter of `fun.bilin_module.change_value`,
-  `lift.bilin_module.change_value_restriction`, `fun.quad_module.change_value` and
-  `fun.lattice.change_value` to a morphism of `ModuleCat R`; declare the functors
-  $\mathbf{Mod}_R \to \mathbf{Cat}$ with `changeValue_id`, `changeValue_comp`. Files:
-  `Sem/Modules/Bilinear/Valued/CatalogueRegistration.lean`, `Sem/Modules/Bilinear/Valued/ChangeValueLifts.lean`,
-  `Sem/Modules/Quadratic/Valued/CatalogueRegistration.lean`, `Sem/Lattices/Valued/CatalogueRegistration.lean`.
-  Decision: research D10. Acceptance in a new `Sem/Modules/Bilinear/Valued/ChangeValueTests.lean`:
-  a linear map admitted by `admitLinear` is accepted by all four rows. Consumer: kernel T046.
-
-## Phase 17: #197, refinement along a classifier (US4, for kernel T135 and T057)
+## Phase 15: #197, refinement along a classifier (US4, for kernel T135 and T057)
 
 - [ ] T032 [US4] #197: record the search (plan.md row #197) in the issue.
 - [ ] T033 [US4] #197: add `refineAlong` with its comparison and uniqueness for property
@@ -245,19 +236,30 @@ new modules to `LeanCategories/All.lean`, and is reviewed by an author who did n
   comparison; a refinement row for a structure classifier is refused; `is_finite` is proved for a
   finite literal set and refuted for $\mathbb{N}$. Consumer: kernel T057.
 
-## Phase 18: #196, universal data of the constructors (US4, for kernel T134 and T061)
+## Phase 16: #199, progressions and subtraction (US1, for kernel T137 and T316)
 
-- [ ] T034 [US4] #196: record the search (plan.md row #196) in the issue.
-- [ ] T035 [US4] #196: add `ConstructorRole` and `ConstructorEntry.role` (`data-model.md`
-  `ConstructorEntry.role`); declare the data of
-  each constructor, with the structural core inclusion and its naturality cell; replace the name
-  test of `Reg/Semantic.lean` (core row) by the role. Files: `Reg/Entry.lean`, `Reg/Semantic.lean`,
-  `Sem/ConstructorRegistration.lean`. Decision: research D13. Acceptance in
-  `Reg/ComparisonProbes.lean`: the validator finds the core row by its role; the seven `cat.core_*`
-  categories reach their base; the two routes $\operatorname{Core}(\mathbf{Grp}) \to \mathbf{Mon}$
-  agree by the cell. Consumer: kernel T061.
+- [ ] T038 [US1] #199: record the search (plan.md row #199) in the issue.
+- [ ] T039 [US1] #199: add the progression, its sections and enumeration, the ellipsis
+  proposition with its procedure, `op.additive_groups.sub` (refined by the ring row), and the
+  subtraction of $\mathbb{N}$ on $b \le a$ with its admission. File:
+  `Sem/Algebra/AdditiveOperations.lean`. Decision: research D15. Acceptance in
+  `Sem/FiniteSubsetLiteralTests.lean`: `{1, 3, …}` denotes $\{1 + 2k\}$ with enumeration
+  $k \mapsto 1 + 2k$; `{1, 2, 4, …}` is refuted; `2 - 5` in $\mathbb{N}$ is outside the domain.
+  Consumer: kernel T316, T068.
 
-## Phase 19: #182, choice-producing operations (US2, for kernel T118 and T115)
+## Phase 17: #192, change of values at module morphisms (US4, for kernel T130 and T046)
+
+- [ ] T028 [US4] #192: record the search (plan.md row #192) in the issue.
+- [ ] T029 [US4] #192: change the parameter of `fun.bilin_module.change_value`,
+  `lift.bilin_module.change_value_restriction`, `fun.quad_module.change_value` and
+  `fun.lattice.change_value` to a morphism of `ModuleCat R`; declare the functors
+  $\mathbf{Mod}_R \to \mathbf{Cat}$ with `changeValue_id`, `changeValue_comp`. Files:
+  `Sem/Modules/Bilinear/Valued/CatalogueRegistration.lean`, `Sem/Modules/Bilinear/Valued/ChangeValueLifts.lean`,
+  `Sem/Modules/Quadratic/Valued/CatalogueRegistration.lean`, `Sem/Lattices/Valued/CatalogueRegistration.lean`.
+  Decision: research D10. Acceptance in a new `Sem/Modules/Bilinear/Valued/ChangeValueTests.lean`:
+  a linear map admitted by `admitLinear` is accepted by all four rows. Consumer: kernel T046.
+
+## Phase 18: #182, choice-producing operations (US2, for kernel T118 and T115)
 
 - [ ] T036 [US2] #182: record the search (plan.md row #182) in the issue.
 - [ ] T037 [US2] #182: add `ResultKind` and `ChoiceFibre` (`data-model.md` `OperationEntry.result`,
@@ -269,6 +271,18 @@ new modules to `LeanCategories/All.lean`, and is reviewed by an author who did n
   Acceptance in a new `Reg/ChoiceFibreTests.lean`: two distinct bases of $\mathbb{Q}^2$ are both
   admissible points; a later construction has the dependent type over the fibre; `#print axioms`
   of the rank shows `Classical.choice` and the row is `fixed`. Consumer: kernel T115.
+
+## Phase 19: #196, universal data of the constructors (US4, for kernel T134 and T061)
+
+- [ ] T034 [US4] #196: record the search (plan.md row #196) in the issue.
+- [ ] T035 [US4] #196: add `ConstructorRole` and `ConstructorEntry.role` (`data-model.md`
+  `ConstructorEntry.role`); declare the data of
+  each constructor, with the structural core inclusion and its naturality cell; replace the name
+  test of `Reg/Semantic.lean` (core row) by the role. Files: `Reg/Entry.lean`, `Reg/Semantic.lean`,
+  `Sem/ConstructorRegistration.lean`. Decision: research D13. Acceptance in
+  `Reg/ComparisonProbes.lean`: the validator finds the core row by its role; the seven `cat.core_*`
+  categories reach their base; the two routes $\operatorname{Core}(\mathbf{Grp}) \to \mathbf{Mon}$
+  agree by the cell. Consumer: kernel T061.
 
 ## Phase 20: #195, one category for each kind of order (US5, for kernel T133 and T207)
 
@@ -547,6 +561,12 @@ new modules to `LeanCategories/All.lean`, and is reviewed by an author who did n
   `Reg/GenericConstructionTests.lean`: $\operatorname{Aut}_{\mathbf{Grp}}(\mathbb Z/3) \cong \mathbb Z/2$ while
   $\operatorname{Aut}_{\mathbf{Set}}$ of its underlying set is $\mathbf{Sym}(3)$; no structural route
   transports the construction; the COMPLAINTS.md entry closes with its evidence.
+- [ ] T087 [US9] FR-051 (e): the registration gate of LC-16: the registry refuses an operation,
+  method or endofunctor row whose declaration does not take its object in the declared category,
+  so that some object of that category lacks the structure that the row uses (constitution M7).
+  Files: `Reg/Semantic.lean`. Acceptance in `Sem/TotalityProbes.lean`: a row of `⁻¹` at
+  `cat.monoids` is refused and the row at `cat.groups` is accepted; `CONTRIBUTING.md` LC-16 names
+  this gate.
 
 ## Phase 50: Milestone
 
@@ -566,7 +586,7 @@ new modules to `LeanCategories/All.lean`, and is reviewed by an author who did n
   issues.
 - T068 needs 009 T001 (the divisibility tower). Every task of this feature writes its new
   rows in the LC-13 form; T079 moves the rows that are already on `main`.
-- T084 is in Phase 1; T080–T086 follow the scaffolding phases (research D29).
+- T084 is in Phase 1; T080–T087 follow the scaffolding phases (research D29).
 
 ## Implementation Strategy
 

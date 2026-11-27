@@ -76,7 +76,7 @@ process is alive (LC-08).
 
 ## The sweeps and their order
 
-| Phase of tasks.md | Sweep | Gate to enter | Gate to leave |
+| Phase of tasks.md | Sweep | Comes after | Done when |
 | --- | --- | --- | --- |
 | 1 | records and gates | none | the generator exits 0; `just test` green (T129) |
 | 2 | M9 intake | none | each request's statements proved at their owners |

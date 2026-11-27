@@ -5,7 +5,7 @@ Run from the repository root on the research image; `pgrep -a -x 'lean|lake'` pr
 ## 1. The period domain and its quotient (US1)
 
 After T003, elaborate `LeanCategories/Analytic/ArithmeticQuotient.lean` with
-`flock .tmp/lean.lock lake env lean <module>`. Expected: exit 0; for $T = U \perp U$ a component of
+`just loop <module>` (feature 001 T001). Expected: exit 0; for $T = U \perp U$ a component of
 $\Omega_T$ is biholomorphic to $\mathbb H \times \mathbb H$; a stabilizer survives in the stack.
 
 ## 2. The period map (US2)

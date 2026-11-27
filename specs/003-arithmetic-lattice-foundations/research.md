@@ -237,10 +237,12 @@ the docstrings of `Mass.lean`, `DensityProduct.lean`, `ClassFiniteness.lean`.
 set and hypotheses, through the canonical spinor kernel; the Eichler criterion is stated for its
 correct lattice class and rank and signature hypotheses. Both statements are read from a library
 source before they are written (constitution M2); [@Cas08a, ch. 10] is the first source to open,
-and a source that the library does not hold is recorded under LC-05. The rank-two converse
-of #87 ($O(L)$ infinite for indefinite binary $L$ with $-\det G$ not a square) follows from Pell
-existence (O'Sullivan, arXiv:2408.14405v3, §8.1). The rank-at-least-three infinitude statement is
-stated only from a statement read in a library source (constitution M2); the task records the search.
+and a source that the library does not hold is added to it first (002 research D16). The rank-two
+converse of #87 ($O(L)$ infinite for indefinite binary $L$ with $-\det G$ not a square) follows
+from Pell existence (O'Sullivan, arXiv:2408.14405v3, §8.1). The rank-at-least-three infinitude
+statement is stated only from a statement read in a library source (constitution M2); the task
+records the search that finds the source, and adds the source to the library first when the
+library lacks it (FR-033).
 
 **Source**: PLAN-INDEFINITE-LATTICE-CLASSIFICATION; TASK-INDEFINITE-ISOTROPIC-APPROXIMATION;
 COMPLAINTS.md, "The Pell converse for a split binary lattice is not formalized".

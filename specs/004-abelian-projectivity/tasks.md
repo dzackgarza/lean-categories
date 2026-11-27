@@ -22,7 +22,7 @@ This task list is executed as task T111 of feature 002 (research D2), in documen
   research D4: Appell–Humbert, the canonical theta functions, $h^0 = \operatorname{Pf}(E)$, the
   Lefschetz theorem and Chow's theorem; record each item key and page locator in research.md D4, and
   read FC11-C16-U026–U032 and FC12-C05-U009–U011 at their catalogue rows and admitted sources. A
-  source that the library does not hold is recorded under LC-05. Decision: D3, D4.
+  source that the library does not hold is added to it first (002 research D16). Decision: D3, D4.
 
 ## Phase 2: Line bundles and Picard data (US1)
 

@@ -196,7 +196,10 @@ constitution M3, E4.
 **Decision**: A source statement is read through the live Zotero library: the item key and the
 page or extraction line (citation-sources.md). The host paths of the manifest are locators on the
 owner's workstation. Task T002 records, for each source, its item key and the key of its extraction
-attachment in the manifest. A worker that cannot reach the source leaves the unit open.
+attachment in the manifest. A worker whose host cannot reach the source first makes the admitted
+source reachable on that host (the live Zotero library or another copy of the admitted source),
+then does the unit (spec, Edge Cases). A source that the library does not hold is added to it
+first, by the same rule.
 
 **Source**: constitution M2; [citation-sources.md](../../docs/agents/citation-sources.md);
 LC-19, last sentence; COMPLAINTS.md, "FC03 source manifest points to a missing extracted source

@@ -9,7 +9,7 @@ Take a row of [data-model.md](data-model.md). Open its owner module and the comp
 the closing task names in its commit. Elaborate the owner and its test module:
 
 ```bash
-flock .tmp/lean.lock lake env lean LeanCategories/Lattices/Valued/IdealDual.lean
+just loop LeanCategories/Lattices/Valued/IdealDual.lean
 ```
 
 Expected: exit 0; each specialization of the row is identified with the owner by a named theorem;

@@ -26,7 +26,7 @@ a phase, a task follows the tasks whose results it uses; the workstream does eac
   Looijenga, arXiv:math/0201218v2; the Kulikov and integral-affine sources of
   [FOUNDATIONS.md](../../FOUNDATIONS.md) §62; Shioda, *On the Mordell–Weil lattices*. Record each
   item key and locator in #40 or #109, and run the search of constitution M8 for every notion of
-  FR-001–FR-014. A source the library does not hold is recorded under LC-05.
+  FR-001–FR-014. A source that the library does not hold is added to it first (002 research D16).
 
 ## Phase 2: Period domains and quotients (US1, #40)
 

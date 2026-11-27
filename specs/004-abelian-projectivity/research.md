@@ -43,7 +43,7 @@ Lefschetz theorem are read from Birkenhake–Lange, *Complex Abelian Varieties*,
 Mumford, *Abelian Varieties*, Chapter I, as the second source; Chow's theorem from Griffiths–Harris,
 *Principles of Algebraic Geometry*, Chapter 1. Task T001 records the item keys and the page locators
 of each statement before any statement is written (002 research D16). A source that the library
-does not hold is recorded under LC-05 and its task stays open.
+does not hold is added to it first, by the same rule.
 
 **Source**: constitution M2, M8; docs/agents/citation-sources.md; the plan ("Appell–Humbert
 classification ... theta sections ... very-ampleness ... Chow/GAGA comparison").

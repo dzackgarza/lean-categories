@@ -300,7 +300,9 @@ This task list is executed as task T107 of feature 002 (research D2), in documen
   T044, T025. Decision: D21. Vault: PLAN-INDEFINITE-LATTICE-CLASSIFICATION.
 - [ ] T046 [US5] N27: $O(L)$ infinite for an indefinite rank-two $\mathbb Z$-lattice with $-\det G$
   not a square, from Pell existence; then read a library source for the rank-at-least-three
-  statement and state and prove it from that source, or record the search under LC-05. Files:
+  statement and state and prove it from that source (FR-033); the search that finds the source is
+  recorded in the commit, and a source that the library lacks is added to it first (002 research
+  D16). Files:
   `Lattices/Valued/SplitBinaryLattice.lean`. Inputs: T044. Source: O'Sullivan, arXiv:2408.14405v3,
   §8.1. Decision: D21.
 

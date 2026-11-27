@@ -5,7 +5,7 @@ Run from the repository root on the research image; `pgrep -a -x 'lean|lake'` pr
 ## 1. The folding theorem (US1)
 
 After T003, elaborate `LeanCategories/Lattices/Valued/FoldingAEGSExample.lean` with
-`flock .tmp/lean.lock lake env lean <module>`. Expected: exit 0; the folded roots and diagram are
+`just loop <module>` (feature 001 T001). Expected: exit 0; the folded roots and diagram are
 those of the source; `#print axioms` lists only `propext`, `Classical.choice` and `Quot.sound`.
 
 ## 2. Vinberg's algorithm (US2)
