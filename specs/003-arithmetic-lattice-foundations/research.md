@@ -18,10 +18,10 @@ implies"); the programme rule that all planning is in Spec Kit.
 
 ## D2. Position in the work order and consumer intake
 
-**Decision**: The tasks of this feature are executed as task T107 of feature 002, in document
-order (constitution M11). Their mathematical inputs are Milestone 2 (002 T086) and the exact theorem
-units that a task names; completion of Sweep IV is not an input, only an earlier position in the
-work order (002 D11). A consumer that needs a notion of this feature does the task of this feature
+**Decision**: The tasks of this feature are executed in the repository-wide definition-first Spec Kit order
+(constitution M11). T107 of feature 002 checks aggregate acceptance. Exact source and theorem
+inputs are prerequisites; neither the entirety of Milestone 2 nor completion of Sweep IV delays
+an independent definition (002 D11). A consumer that needs a notion of this feature does the task of this feature
 that owns it at once, out of document order (constitution M9); the task keeps its place and ID, and
 no second task is written for it. A consumer request that no task of this feature holds is a task
 of 002 Phase 2.

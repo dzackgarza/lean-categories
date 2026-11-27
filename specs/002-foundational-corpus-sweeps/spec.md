@@ -268,14 +268,24 @@ definition is duplicated.
   depend only on the exact units that it uses (constitution M9).
 - **FR-024**: A semantic registry row whose object is a corpus object MUST name the declaration of
   that unit's mapping row (constitution M7).
-- **FR-025**: [tasks.md](tasks.md) MUST be the work order of the programme, executed in document
-  order (constitution M11). `TODO.md` MUST NOT order work.
+- **FR-025**: The [repository-wide execution order](tasks.md#repository-wide-execution-order)
+  MUST select the owning Spec Kit task across all features by definition-first bands and actual
+  prerequisites (constitution M11). Only the owning task checkbox records completion. `TODO.md`
+  and the GitHub issue tree MUST NOT independently order work.
 - **FR-026**: Every open formalization request, gate defect, contribution-rule defect and tooling
   defect that
   [COMPLAINTS.md](../../COMPLAINTS.md) records for this repository MUST have a task: a consumer
   request in Phase 2 of this feature, a gate, rule or tooling defect in Phase 1, a foundation item
   of the arithmetic lattice theory in feature 003, a registry or catalogue item in feature 001,
   and an item of a body of work that features 005–009 hold in that feature (research D23, D24).
+
+- **FR-027** (#226): The foundations required by the research book's 2026-11-27 catalogue MUST
+  be traced label-by-label to source-faithful Lean declarations or exact owning feature tasks.
+  Definitions and constructions precede independent proofs, with shared requirements reused
+  once at their mathematical owners. Preserve the source's conjectures, conditional statements
+  and explicit source questions. Acceptance is the required mathematical declarations and
+  independent review, not the creation of a plan. The book is a consumer source, not an
+  eighteenth textbook in the frozen FC01–FC17 corpus (research D25).
 
 ### Key Entities
 
@@ -316,8 +326,9 @@ The start values are the selector at `fc549baa` ([units.md](units.md)).
   source locator from the unit ID alone, through the definition index and the mapping row.
 - **SC-003**: Every realization accepted in Sweep III has an independent source comparison
   (constitution M10) in its mapping row.
-- **SC-004**: Milestone 2 holds before the first Sweep-IV proof of the corpus, except for theorems
-  taken in under constitution M9.
+- **SC-004**: Milestone 2 and the repository-wide definition band hold before independent
+  Sweep-IV proof work. Only a proof actually required to construct a definition is performed
+  earlier (constitution M9, M11).
 - **SC-005**: Every ledger cell reaches its tick by the whole-source closure check, and no cell is
   ticked while a known invalid realization or mapping remains in that source.
 

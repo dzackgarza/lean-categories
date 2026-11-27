@@ -1,7 +1,6 @@
 # Contribution policies
 
-Use the native GitHub issue tree (`itree next dzackgarza/lean-categories`) for cross-issue
-selection under constitution M11, then the [corpus task list](specs/002-foundational-corpus-sweeps/tasks.md) and [docs/agents/corpus-acceptance.md](docs/agents/corpus-acceptance.md) for the detailed
+Use the [Spec Kit execution order](specs/002-foundational-corpus-sweeps/tasks.md#repository-wide-execution-order) for task selection under constitution M11, and [docs/agents/corpus-acceptance.md](docs/agents/corpus-acceptance.md) for the detailed
 corpus acceptance workflow. [FOUNDATIONS.md](FOUNDATIONS.md) owns the mathematical
 constitution. The identifiers here provide stable names for contribution rules;
 the linked sections retain their full requirements.
@@ -34,16 +33,17 @@ concept.
 
 ## LC-04 — Follow the execution DAG
 
-Use `itree next dzackgarza/lean-categories` and the selected issue's feature tasks and
-source records. Maintain native sibling order: definition-bearing work precedes independent
-theorem and lemma work throughout the repository (constitution M11). In mixed work, construct
-first; independent proof work follows the definition layer, with all original obligations intact.
+Use the repository-wide Spec Kit execution order and the selected task's feature and source
+records. Definition-bearing work precedes independent theorem and lemma work throughout the
+repository (constitution M11). In mixed work, construct first; independent proof work follows
+the definition layer, with all original obligations intact.
 Resume valid delivered work and respect active claims. Dependencies name required
 mathematical outputs, not shared filenames or preferred subject order. Preserve
 all unresolved obligations and reject dangling references and cycles.
 Defective: prove a standalone lemma while a missing construction remains ready, or add a false
-blocker to force queue order. Replacement: place the construction earlier in the actual tree,
-complete it, and select the proof only after the definitional layer is complete.
+blocker to force queue order. Replacement: put the construction in the definition band of its
+owning Spec Kit feature and the independent proof in the later band. An issue links to the tasks;
+it does not duplicate their execution state.
 
 ## LC-05 — Record mathematical issues and papercuts when encountered
 

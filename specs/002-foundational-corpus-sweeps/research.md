@@ -6,9 +6,10 @@ The tasks cite decisions by their number.
 
 ## D1. One work order
 
-**Decision**: [tasks.md](tasks.md) is the work order of the corpus programme and of the open nodes
-of `TODO.md`. It is executed in document order. `TODO.md` keeps the record of the closed nodes and
-of the earlier passes, and orders no work. Constitution M11 states this (version 2.0.0).
+**Decision**: The repository-wide execution order in [tasks.md](tasks.md#repository-wide-execution-order)
+selects tasks from their nine owning Spec Kit features under constitution M11 v4.0.0. The task
+lists retain the only completion checkboxes; GitHub issues and `TODO.md` retain source and
+historical records. Definitions precede independent proof obligations across all features.
 
 **Source**: constitution M11 and its governance clause; the programme rule that planning happens
 only in the Spec Kit workflow.
@@ -137,14 +138,15 @@ structure theorem".
 
 ## D11. Order after Milestone 2
 
-**Decision**: After Milestone 2 the order is: the Sweep-II remainder (FC16 and FC17 Mapping), then
-Sweep IV for each source, then `arithmetic-lattice-foundations`, `refactor-audit`, `lint-paydown`,
-`bloat-audit-loop`, `abelian-projectivity`.
+**Decision**: M11 v4.0.0 supersedes the former scheduling precedence. Complete the definition
+work of the other features before independent Sweep-IV work, and close the Sweep-II remainder
+(FC16 and FC17 Mapping) before its theorem units. The continuations retain their full acceptance;
+feature 003 and 004 definitions are not held until the corpus theorem sweep closes.
 
 **Source**: the `Needs` column of the `TODO.md` DAG; the `arithmetic-lattice-foundations` row
 ("the one-stream queue may still schedule Sweep IV ahead of this row by list order"); the vault
 feature FEATURE-FOUNDATIONAL-CORPUS (residual theorem mapping after the definition sweep and
-before Sweep IV); constitution M11 (document order).
+before Sweep IV); constitution M11 (definition-first Spec Kit order).
 
 ## D12. Order inside Sweeps III and IV
 
@@ -273,7 +275,8 @@ and format.
 **Decision**: `arithmetic-lattice-foundations` is feature
 [003](../003-arithmetic-lattice-foundations/spec.md) and `abelian-projectivity` is feature
 [004](../004-abelian-projectivity/spec.md). Task T107 executes the tasks of 003 and task T111 executes
-004 T001–T010, each in its own document order, at the position that D11 gives them. Feature 003 also
+004 T001–T010, in the repository-wide M11 bands. These aggregate tasks are acceptance checks,
+not execution gates for their definition-bearing child tasks. Feature 003 also
 carries the four theorem programmes of the vault feature FEATURE-ARITHMETIC-LATTICE-FOUNDATIONS
 (ADE realization, indefinite classification, Siegel mass formula, theta modularity).
 
@@ -308,3 +311,19 @@ image's Mathlib at `master`; a Mathlib change that breaks the build is repaired 
 
 **Source**: #144 and its comment of 2026-11-15; #118, body and the owner decisions of 2026-11-10 and
 2026-11-11 recorded there; #89; #178; constitution M3, M9, E5.
+
+## D25. Research-book foundation intake (#226)
+
+**Source:** [Pinned catalogue, 2026-11-27](https://gist.githubusercontent.com/dzackgarza/7486d053f8ee3fe3165c0d64bcbf1fc8/raw/df4cdf1b6ee1b6bb0f438e7982265cf7aa2e8e1f/lean-formalization-catalogue.md),
+SHA-256 `861b3de5a849c8726f706edda2c4a0985e720e33b128b163462a5a4a9a6353e9`, and
+[#226](https://github.com/dzackgarza/lean-categories/issues/226). The fetched snapshot was
+hash-verified on 2026-11-27; it contains 2,053 catalogue entry headings (including 512
+Definition, 29 Construction, 29 Notation, and mixed content in other entry kinds). These are
+source-entry counts, not counts of missing declarations. The admitted FC01–FC17 sources are
+unchanged.
+
+**Decision:** Apply M2, M4, M8–M11 and LC-02/09/17/19 to all labels, including statement and proof
+citations separately. T134 owns source intake and the definition layer; T135 owns the proof
+layer. Route each uncovered obligation to an existing feature before creating any new feature.
+No new axiom, unproved conjecture or false definition is inferred from the book's unresolved
+uses. Only the actual reviewed declarations and original acceptance discharge #226.

@@ -10,14 +10,15 @@ the validation runs in [quickstart.md](quickstart.md).
 ## Summary
 
 The programme realizes the seventeen corpus sources in four sweeps. Sweep I is complete. The
-remaining work, in task order: repair the three mapping rows that stop the frontier generator;
-take in the consumer requests (M9): the orthogonal-group structure theorem and the open
-requests of COMPLAINTS.md; finish Sweep III
-(the stub audit of 125 rows, the 35 pending definitions, the closure of 11 Definitions cells, the
-ownership audit and the source-conformance pass over 5,054 definitional units, Milestone 2);
-finish Sweep II (FC16, FC17); run Sweep IV over 12,952 pending theorem units in 17 catalogue
-tasks; then the continuations of the `TODO.md` DAG, of which the arithmetic lattice theory and
-abelian projectivity are features 003 and 004.
+remaining work is selected by the repository-wide M11 order in `tasks.md`: establish actual
+prerequisites, repair the frontier and definitions, take in missing consumer definitions (including
+FR-027, the pinned research-book catalogue), complete definitions across all feature owners, then
+independent proofs and the remaining whole-feature acceptance. The original corpus obligations,
+counts at the revision of record, and continuations remain intact.
+
+The book intake (D25) uses the same source and reuse comparison at each mathematical owner.
+T134 maps each pinned label and realizes missing definitional requirements in the owning feature;
+T135 proves the remaining independent results. Existing feature tasks are reused, not copied.
 
 ## Technical Context
 
@@ -45,7 +46,7 @@ abelian projectivity are features 003 and 004.
 | M8 | Search record before authoring, in the mapping row | Search before authoring; D4 |
 | M9 | Consumer requests taken in at once | T004–T008 (D9), T112–T125 (D23), T132, T133 (D24) |
 | M10 | Independent review; content changes go to the mathematician | Contract R; D17 |
-| M11 | This task list in document order; `TODO.md` orders nothing | D1; constitution 2.0.0 |
+| M11 | Definition-first Spec Kit order across features; issues and TODO.md order nothing | D1, D11, D25; constitution 4.0.0 |
 | M12 | Issues in COMPLAINTS.md; workarounds with the five fields of LC-12 | FR-020; every contract |
 | M13 | No artifact certifies itself; a worker's report is evidence only | Contract R |
 | E1, E4 | Tier 1 per change, under 300 s; long runs at milestones | Checks of this repository |
@@ -79,13 +80,14 @@ process is alive (LC-08).
 | Phase of tasks.md | Sweep | Comes after | Done when |
 | --- | --- | --- | --- |
 | 1 | records and gates | none | the generator exits 0; `just test` green (T129) |
-| 2 | M9 intake | none | each request's statements proved at their owners |
+| 2 | M9 intake | actual prerequisites | definition requirements constructed; independent proofs retain their tasks |
 | 3, 4 | III | Milestone 1 (closed 2026-09-18) | every Definitions cell ticked |
 | 5 | III | every Definitions cell ticked | ownership audit converged |
 | 6 | III | ownership audit converged | Milestone 2 |
 | 7 | II | Milestone 2 (scheduling precedence, D11) | FC16, FC17 Mapping ticked |
 | 8 | IV | Milestone 2 and, per source, its Mapping cell | every Theorems cell ticked |
-| 9 | continuations | the `Needs` of the `TODO.md` DAG (D11) | each node's acceptance; T107 is feature 003 and T111 feature 004 (D22) |
+| 9 | continuation acceptance | actual owning tasks (D11, D22) | original acceptance, without gating definition tasks on independent proofs |
+| 10 | independent consumer proofs | required definitions and source inputs | source statements proved at their owners (T135, T136) |
 
 Inside a phase, a unit is ready when its recorded prerequisites are delivered; source order breaks
 ties (D12). A unit follows only the units that it records as prerequisites, and the workstream

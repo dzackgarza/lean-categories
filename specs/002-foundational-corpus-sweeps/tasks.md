@@ -14,16 +14,60 @@ tasks or units), its check and its decisions. The contracts S, D, C, R, M and T 
 [plan.md](plan.md#unit-contracts). A unit population is the live selector when the task starts;
 [units.md](units.md) lists it at `fc549baa`.
 
-## Execution order
+## Repository-wide execution order
 
-Select issues in definition-first native tree order (constitution M11); within the selected
-issue, execute tasks in prerequisite order (research D1). The four corpus sweeps retain
-their definition-before-theorem invariant. Inside a phase, a task
-follows the tasks whose results it uses; the workstream does each input task first, in the
-feature or repository that owns it, and then returns (constitution M11, D12). Before each new unit, run `python3 scripts/output_check.py`
-(corpus-execution.md, "Check output before choosing more work"). Tier 1 is `just loop`, the recipe
-of feature 001 T001: the workstream does 001 T001 first, before the first task of this list whose
-check runs tier 1 (T005).
+This is the work order of **all existing Spec Kit features**, not another issue queue. Each entry
+below references the actual task checklist in the named feature; there are no duplicate completion
+flags. A range means its inclusive ascending task IDs, in the stated row position. The phase
+headings in the feature lists group user stories and retain their original IDs.
+
+Under M11, take the first unchecked owning task in the first outstanding band, following actual
+prerequisites to their owning tasks before returning. The initial task is 001 T001: the tier-1
+loop is needed by every later task. Set `.specify/feature.json` to the feature of the task actually
+being executed. If a definition needs a proof in a later row, do that specific proof, not its
+entire phase. For example, 005 T010 requires 001 T035 and T086; 006 T009 requires 006 T008;
+002 T121 needs the gallery proof T136 for its fan laws. These are dependencies, not permission
+for independent theorem work. If a mixed task's source comparison exposes an independent proof
+not required to construct the definition, preserve it as its own later owning task and update
+this order before authoring it. Do not weaken acceptance, duplicate the task, or mark it complete
+merely because its definition is written. New definition-bearing intake is inserted in the
+definition band before independent proof selection. Whole-feature milestones never bar execution
+of their definition-bearing tasks; tier-1 and independent source review still apply.
+
+| Band | Owning feature | Task IDs in selection order |
+| --- | --- | --- |
+| Groundwork | [001](../001-catalogue-inputs-for-the-cas/tasks.md) | T001–T003, T084 |
+| Groundwork | [002](tasks.md) | T001–T003, T130, T129, T126–T128, T131 |
+| Definitions | [005](../005-catalogue-foundation-and-release/tasks.md) | T001–T018 |
+| Definitions | [001](../001-catalogue-inputs-for-the-cas/tasks.md) | T040–T041, T004–T005, T026–T027, T012–T013, T030–T031, T008–T009, T010–T011, T014–T015, T018–T019, T020–T021, T024–T025, T036–T037, T034–T035, T032–T033, T049–T050, T006–T007, T055–T056, T028–T029, T051–T052, T053–T054, T063–T064, T016–T017, T043–T044, T045–T046, T047–T048, T057–T058, T059–T060, T061–T062, T022–T023, T038–T039, T065–T083, T085–T087 |
+| Definitions | [009](../009-algebraic-category-catalogue/tasks.md) | T001–T004, T006–T013 |
+| Definitions | [002](tasks.md) | T004–T005, T112–T113, T115, T117, T119–T121, T137, T123–T125, T009–T086, T134 |
+| Definitions | [003](../003-arithmetic-lattice-foundations/tasks.md) | T001–T002, T050–T051, T003–T006, T052–T053, T007–T008, T010–T011, T013–T014, T017–T018, T054, T020–T021, T023, T025, T027, T030–T031, T033–T037, T040, T043–T044, T047 |
+| Definitions | [007](../007-scheme-and-stack-geometry/tasks.md) | T001–T019 |
+| Definitions | [006](../006-reflection-and-toric-geometry/tasks.md) | T001–T002, T004, T006, T009–T012 |
+| Definitions | [008](../008-manifolds-hodge-and-periods/tasks.md) | T001–T016 |
+| Definitions | [004](../004-abelian-projectivity/tasks.md) | T001–T004, T006 |
+| Independent proofs | [002](tasks.md) | T087–T106, T006–T008, T114, T116, T118, T136, T122, T132–T133, T135 |
+| Independent proofs | [003](../003-arithmetic-lattice-foundations/tasks.md) | T015, T024, T028, T032, T041, T045–T046, T055–T059, T048 |
+| Independent proofs | [006](../006-reflection-and-toric-geometry/tasks.md) | T003, T005, T007–T008 |
+| Independent proofs | [009](../009-algebraic-category-catalogue/tasks.md) | T005 |
+| Independent proofs | [004](../004-abelian-projectivity/tasks.md) | T005, T007–T009 |
+| Delivery and closure | [001](../001-catalogue-inputs-for-the-cas/tasks.md) | T042 |
+| Delivery and closure | [003](../003-arithmetic-lattice-foundations/tasks.md) | T009, T012, T016, T019, T022, T026, T029, T038–T039, T042, T049 |
+| Delivery and closure | [004](../004-abelian-projectivity/tasks.md) | T010 |
+| Delivery and closure | [006](../006-reflection-and-toric-geometry/tasks.md) | T013–T014 |
+| Delivery and closure | [007](../007-scheme-and-stack-geometry/tasks.md) | T020 |
+| Delivery and closure | [008](../008-manifolds-hodge-and-periods/tasks.md) | T017 |
+| Delivery and closure | [009](../009-algebraic-category-catalogue/tasks.md) | T014 |
+| Delivery and closure | [005](../005-catalogue-foundation-and-release/tasks.md) | T019–T026 |
+| Delivery and closure | [002](tasks.md) | T107–T111 |
+
+Within feature 002, the corpus retains the four sweeps. The residual theorem mapping T087–T089
+precedes its Sweep-IV units T105–T106; definition realization and source-conformance work
+T009–T086 precede independent proofs. Before each new corpus unit run
+`python3 scripts/output_check.py` (corpus-execution.md, "Check output before choosing more work").
+T107 and T111 certify the corresponding feature task lists after their own obligations hold;
+they do not create duplicate implementations.
 
 ## Open nodes of `TODO.md`, open COMPLAINTS.md items and their tasks
 
@@ -197,15 +241,19 @@ definition and Contract T for a theorem.
   `Fin (n + 1)` statements by specialization; delete `BarySubdiv.baryWeight`, `baryWeight_mem` and
   their `TODO(LC-12)`. Files: `Topology/{BarycentricSubdivision,BarycentricSubdivisionChainData,BarySubdiv}.lean`.
   Entry: "`faceBarycenterCoordinates` is `Fin (n + 1)`-indexed ...".
-- [ ] T121 [US5] #180, #181: compare the family of AET Prop. 4.17(4) with the facial completion of
+- [ ] T121 [US5] #180: construct the general Wythoff coarsened family from the original AET
+  folding data, without restricting to finite $W$ or $W_J$ or assuming gallery facts as additional
+  fields. Prove closure under faces and that every intersection of two members is a common face;
+  compare the family of AET Prop. 4.17(4) with the facial completion of
   Def. 4.16 (derive the relevant-face family from AET's hypotheses, or state the $A_3$ counterexample
   against AET's data); give `coarsenedFamily` the codomain `Set (PointedCone ℝ M)` through
-  `maximalConePointed`, with the set-level statements as its comparison; confirm the gallery bridge at
-  `ForMathlib/RootSystem/WythoffAscent.lean`. Files:
+  `maximalConePointed`, with the set-level statements as its comparison; use the gallery bridge
+  proved in T136 for the fan laws. Acceptance: the original AET-domain family and both laws,
+  not merely the bridge or a conditional fan. Files:
   `Lattices/Valued/{WythoffSemifan,WythoffCoarsenedFamily}.lean`. Source: Alexeev–Engel–Thompson,
   arXiv:1903.09742v3, Def. 4.16, Prop. 4.17; Maxwell, *Wythoff's Construction for Coxeter Groups*,
   Props. 5.1–5.5. Entries: the four Wythoff and AET entries.
-- [ ] T122 [US5] #86: the transport `IsAdmissiblePair.smul` for $\sigma$ in
+- [ ] T122 [US5] #86: after T137, prove the transport `IsAdmissiblePair.smul` for $\sigma$ in
   `diagramAutomorphismGroup A` (finite type, $\tau|_{\sigma X} = -w_{\sigma X}$ with the uniqueness of
   the longest element, the parabolic Weyl vector coefficients) and the equivalence laws of
   `SameDiagramOrbit`; then the Araki correspondence from the appendix of Kolb, arXiv:1207.6036v2,
@@ -245,6 +293,29 @@ definition and Contract T for a theorem.
   `IsLocallyAnalyticSpace` once its consumers use the owner. Entry: "Missing definitions: complex
   analytic spaces". Consumers: the Baily–Borel stratification of the entry, feature 004 T008, feature 008 T003
   and T012.
+
+- [ ] T134 [US5] #226, research-book foundations (FR-027, D25): read the full pinned catalogue
+  and trace every book label, statement/proof citation and prerequisite to an exact existing Lean
+  declaration, owning feature task, or specific book-source question. Search the pinned and
+  upstream Mathlib, the existing corpus mappings, formalization-corpus API and wider ecosystem
+  under M8; compare actual hypotheses, conclusions and definitions. Reuse/import/port first.
+  Add each missing requirement to its existing feature's spec.md, plan.md and tasks.md, with
+  source passage, exact obligation, actual prerequisite IDs and acceptance proposition. Construct
+  all outstanding definitional clauses at their mathematical owners under Contract D, including
+  mixed entries; route independent proof clauses to their proof tasks under T135. Do not treat
+  conjectures as theorems, or an absent citation as an axiom. Files: the owning feature artifacts,
+  source record in #226 and the actual owner modules in `LeanCategories/`; include source mapping
+  rows where applicable. Check: every label in the SHA-256-pinned catalogue has a traceable
+  disposition, each missing definition has a verified source-faithful declaration, and no proof
+  gap is disguised as a definition or a source ambiguity. Tier 1 and Contract R.
+- [ ] T137 [US5] #86: establish the definitions at `LeanCategories/Algebra/{SatakeDiagramData,RealFormData}.lean`:
+  finite-type Cartan datum, the admissible pair $(X,\tau)$ with all four conditions in Kolb
+  Definition 2.3, the category of diagrams with maps preserving $X$ and commuting with $\tau$,
+  and a real form of the specified complex semisimple Lie algebra as real Lie algebra and
+  complexification isomorphism. Reuse the current `SatakeDiagram` groupoid and real-form data
+  only after M2/M8 comparison; complete any missing constructions. Check: exact source comparison
+  and tier 1; no classification theorem assumed. Input to T122.
+
 
 ## Phase 3: Sweep III, the realization-stub audit (US1)
 
@@ -470,10 +541,36 @@ closure.
 - [ ] T105 [US4] FC16 (353 units). Inputs: T087.
 - [ ] T106 [US4] FC17 (6,856 units, exercises included). Inputs: T089.
 
+## Phase 10: Independent consumer proofs (US5)
+
+- [ ] T136 [US5] #181: derive from the original AET chamber/Coxeter datum a double-coset-minimal
+  representative for every translate, minimal for the inactive standard parabolic (not merely a
+  reduced Coxeter word), and generalized-chamber prefix nesting along its reduced gallery, for
+  arbitrary infinite $W$ and $W_J$. Search double-coset minimality, Tits galleries and Maxwell's
+  Wythoff construction; read Maxwell Proposition 5.5 with all hypotheses. Files:
+  `LeanCategories/ForMathlib/RootSystem/WythoffAscent.lean`,
+  `LeanCategories/Lattices/Valued/WythoffCoarsenedFamily.lean`. Acceptance: discharge
+  `ParabolicReduced`, `reduced_gallery` and `gallery` from the original datum, not new hypotheses.
+  Tier 1 and Contract R. This is an actual prerequisite of T121's fan laws.
+- [ ] T135 [US5] #226, research-book foundations (FR-027, D25): prove or reuse/import/port every
+  remaining independent source result routed by T134, at its general mathematical owner and
+  with its exact hypotheses and conclusion (Contract T). The cited book proof requirements are
+  inputs, not hypotheses to add silently. For `prop:coble-boundary-intersections`, verify the
+  general intersection and canonical-degree formulas, additivity in the divisor and invariance
+  under linear equivalence at their owners, and the applicability of their hypotheses. Preserve
+  conjectures and conditional arguments in their source roles; send exact ambiguous passages to
+  the book owner. Files: the owning feature tasks and Lean modules, #226 source-to-declaration
+  record. Acceptance: every required foundation in the pinned snapshot is realized with reviewed
+  declarations and exact proof hypotheses; all resulting owning tasks pass their acceptance;
+  unresolved source questions remain explicit and do not count as realized mathematics. Inputs:
+  T134 and each exact source requirement's definition and proof prerequisites. Tier 1, Contract R.
+
+
 ## Phase 9: Continuations of the corpus
 
 - [ ] T107 [US5] `arithmetic-lattice-foundations`: execute the tasks of feature
-  [003](../003-arithmetic-lattice-foundations/tasks.md) in their document order. Acceptance: 003
+  [003](../003-arithmetic-lattice-foundations/tasks.md) in their M11 bands. This aggregate is
+  checked only when the owning tasks have all passed; it does not delay their execution. Acceptance: 003
   T049 (every owner row of 003 data-model.md closed, the four theorem programmes' success criteria
   met, `just test` green). Inputs: T086 and the exact theorem units that a 003 task names (D11,
   D22).
@@ -490,8 +587,8 @@ closure.
   local mechanism. Inputs: T109. Check: every finding is repaired at its owner, or is a task of its
   owning feature that the commit recording the finding adds (constitution M11).
 - [ ] T111 [US5] `abelian-projectivity`: execute the tasks T001–T010 of feature
-  [004](../004-abelian-projectivity/tasks.md) in their document order, reusing the FC11 and FC12
-  results at their owners. Acceptance: 004 T010 (the four success criteria of the plan, `just test`
+  [004](../004-abelian-projectivity/tasks.md) in their M11 bands, reusing the FC11 and FC12
+  results at their owners. This aggregate is checked only after the actual owning tasks. Acceptance: 004 T010 (the four success criteria of the plan, `just test`
   green). Inputs: T110, T125 and 003 T036, T037 (D11, D22).
 
 ## Dependencies & Execution Order
@@ -505,9 +602,11 @@ closure.
   T086 closes Sweep III.
 - Phase 7 follows T086 by scheduling precedence (D11); T105 needs T087 and T106 needs T089.
 - Phase 8 needs T086 (D12).
-- Phase 9 follows the `Needs` of the `TODO.md` DAG: T107 after Phase 8, then T108, T109, T110,
-  T111 (D11). T107 is feature 003 and T111 is feature 004 (D22); 003 T007 needs T112 and 004 T008
-  needs T125.
+- Phase 9 checks the continuation obligations: T107, T108, T109, T110, T111 (D11). T107 and T111
+  check the acceptance of features 003 and 004 respectively (D22); their owning tasks execute in
+  the repository-wide bands above. 003 T007 needs T112 and 004 T008 needs T125.
+- Phase 10 supplies research-book intake: T134 in the definition band and T135 in the proof band.
+  Newly identified obligations are inserted in the appropriate owning feature and band.
 
 ## Parallel Example: Phase 4, FC06
 
@@ -522,13 +621,11 @@ under `flock .tmp/lean.lock`. T031 comes before T032, and T029 before T030.
 
 ## Implementation Strategy
 
-1. Phase 1, then Phase 2: the selector regenerates, the sources resolve, and the consumer request
-   is served (MVP for US5).
-2. Phases 3 and 4 source by source: each closed Definitions cell is an increment of US1 that a
-   mathematician can use.
-3. Phases 5 and 6: US3 holds for the whole definitional layer at Milestone 2.
-4. Phases 7 and 8: US2 for every unit, then US4 source by source.
-5. Phase 9: the continuations.
+Follow the repository-wide execution order above: groundwork, definition-bearing work (including
+consumer intake and the corpus definition sweeps), independent proofs, and delivery/closure.
+The numbered phases retain their mathematical acceptance and actual inputs, not a separate
+scheduler. Each closed Definitions cell must satisfy US1; Milestone 2 retains US3; Sweep II
+and Sweep IV retain US2 and US4 respectively. Continuation acceptance stays at its owner.
 
 Each task is committed by explicit pathspec with its record updates; a commit carries
 mathematics, not only a marker (corpus-execution.md, "A record update is not a unit of work").

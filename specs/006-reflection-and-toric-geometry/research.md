@@ -67,7 +67,7 @@ live library.
 ## D7. Position in the work order
 
 **Decision**: This feature is a consumer intake of the research programme (stages 3 and 5) under
-constitution M9. It runs in its own document order and does not wait for a corpus milestone. A declaration that a task needs and that a task of another feature owns (a pending corpus unit of 002, an owner row of 003) is done first, at once, by that owning task, which keeps its place and ID.
+constitution M9. It runs in the repository-wide definition-first Spec Kit order and does not wait for an unrelated corpus milestone. A declaration that a task needs and that a task of another feature owns (a pending corpus unit of 002, an owner row of 003) is done first, at once, by that owning task, which keeps its place and ID.
 
 **Source**: constitution M9, M11; 002 research D9; #24, #116 (stage questions).
 

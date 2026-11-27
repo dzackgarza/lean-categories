@@ -50,7 +50,7 @@ owner; `just test` at the end of each phase; CI `just test-ci`
 | M8 | Search before authoring; reference ports with provenance | Contract O; D24 |
 | M9 | A consumer does the owning task of this feature at once; other requests are 002 Phase 2 tasks | D2 |
 | M10 | FOUNDATIONS content changes go to the mathematician | D6 |
-| M11 | Executed as 002 T107, in document order | D2 |
+| M11 | Definition-first Spec Kit order; 002 T107 checks aggregate acceptance | D2 |
 | M12 | Missing theorems and workarounds recorded under LC-05, LC-11, LC-12 | FR-031 |
 | M13 | No artifact certifies itself; review is independent | Contract O review step |
 | E1, E4 | Tier 1 per change; `just test` per phase | Checks |

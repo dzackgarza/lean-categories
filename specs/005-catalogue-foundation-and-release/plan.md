@@ -44,7 +44,7 @@ generated from `RegistrySnapshot`
 | M8 | Search before authoring, recorded in the issue | Contract F, step 2 |
 | M9 | Consumer requests of the kernel are tasks of feature 001, not of this feature | Assumptions |
 | M10 | Independent review of each change | Contract F, step 7 |
-| M11 | This task list in document order | Execution order |
+| M11 | Repository-wide definition-first Spec Kit order (002 tasks.md) | Execution order |
 | M12, M13 | Records under LC-05, LC-11, LC-12; no artifact certifies itself | Contract F |
 | E1–E10 | Tier-1 loop, logs and timing of feature 001 T001–T003; one Lean process | Checks |
 
@@ -109,7 +109,7 @@ its own revision (Contract F, step 3).
 | 7 | export and releases | FR-019–FR-021 | release tags reproduce |
 | 8 | certification, publication, milestone | FR-022, FR-023 | coverage report complete; publication run |
 
-The feature runs in its own document order beside feature 001 (constitution M11). Its tasks
+The feature executes in the repository-wide definition-first Spec Kit order (constitution M11). Its tasks
 name the 001 tasks whose rows they extend as inputs.
 
 ## Project Structure

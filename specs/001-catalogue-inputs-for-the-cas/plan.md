@@ -42,7 +42,7 @@ is in [contracts/registry-additions.md](contracts/registry-additions.md).
 | M8 | Search record per issue | first task of each issue |
 | M9 | Consumer workstream works here from the issue and sources | tasks name no kernel file as an input |
 | M10 | Independent review of each change | task acceptance includes review by an author who did not write the change |
-| M11 | This task list in document order; the corpus DAG of `TODO.md` does not order it | pass |
+| M11 | Repository-wide definition-first Spec Kit order (002 tasks.md); actual prerequisites first | pass |
 | E1-E9 | Tier-1 loop, durable logs, timing records | Phase 1 tasks T001-T003 |
 
 Gate result: pass. No violation is justified in Complexity Tracking.

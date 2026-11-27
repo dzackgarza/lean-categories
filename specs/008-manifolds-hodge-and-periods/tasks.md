@@ -16,9 +16,11 @@ and "007 Tnnn".
 
 ## Execution order
 
-Select issues in definition-first native tree order (constitution M11); within the selected
-issue, execute tasks in prerequisite order (research D1). Inside
-a phase, a task follows the tasks whose results it uses; the workstream does each input task first, in the feature or repository that owns it, and then returns (constitution M11).
+Use the [repository-wide Spec Kit execution order](../002-foundational-corpus-sweeps/tasks.md#repository-wide-execution-order)
+under constitution M11. The task IDs here are the implementation units and their checkboxes
+own completion. The phase headings group related requirements, not a competing scheduler.
+Do the exact prerequisites of the selected task first, in their owning features. Definitions
+precede independent proof work, including across features. Immediate intake retains the feature’s source and review obligations (M9).
 
 ## Phase 1: Sources
 

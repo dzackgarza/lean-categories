@@ -13,9 +13,13 @@ the milestone runs `just test`.
 
 ## Execution order
 
-This task list supplies the obligations of task T111 of feature 002 (research D2).
-Select issues in definition-first native tree order and execute their actual prerequisites
-first (constitution M11); do not wait for independent proofs. Inputs from other features are cited as "002 Tnnn" and "003 Tnnn"; the workstream does each input task first, in the feature that owns it, and then returns (constitution M11).
+Use the [repository-wide Spec Kit execution order](../002-foundational-corpus-sweeps/tasks.md#repository-wide-execution-order)
+under constitution M11. The task IDs here are the implementation units and their checkboxes
+own completion. The phase headings group related requirements, not a competing scheduler.
+Do the exact prerequisites of the selected task first, in their owning features. Definitions
+precede independent proof work, including across features. The aggregate task 002 T111 records whole-feature acceptance only (research D2); it does not
+hold definitions until after Sweep IV. Inputs from features 002 and 003 are cited as "002 Tnnn"
+and "003 Tnnn".
 
 ## Phase 1: Sources (all stories)
 
@@ -73,5 +77,5 @@ first (constitution M11); do not wait for independent proofs. Inputs from other 
 
 ## Implementation Strategy
 
-Phases 2–5 in order; each phase is an increment that a mathematician can use (line bundles, then
-the classification, then the embedding, then the variety).
+The definition tasks precede independent classification and embedding theorems, with actual
+prerequisites followed under M11. Each original user-story acceptance remains binding.

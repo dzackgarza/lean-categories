@@ -5,7 +5,7 @@ Each decision settles a choice that #9, #38 or #39 lists as unresolved, and name
 ## D1. Position in the work order
 
 **Decision**: The feature is a consumer intake of the research programme (stage 3) under
-constitution M9. It runs in its own document order. It works from its cited sources with the
+constitution M9. It runs in the repository-wide definition-first Spec Kit order. It works from its cited sources with the
 search of constitution M8; corpus membership of a source is not a prerequisite. A declaration that a task needs and that a task of another feature owns (a pending corpus unit of 002, an owner row of 003) is done first, at once, by that owning task, which keeps its place and ID.
 
 **Source**: constitution M9, M11; 002 research D9. **Supersedes**: the comments of 2026-09-04 on

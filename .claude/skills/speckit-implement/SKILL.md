@@ -20,6 +20,17 @@ $ARGUMENTS
 
 You **MUST** consider the user input before proceeding (if not empty).
 
+## lean-categories execution order (constitution M11)
+
+Before resolving the active feature, read `.specify/memory/constitution.md` and the
+repository-wide execution order in `specs/002-foundational-corpus-sweeps/tasks.md`.
+Select the first unchecked owning task in that order, follow its actual prerequisites, and set
+`.specify/feature.json` to the selected feature. The order supersedes the generic instruction
+below to finish all phases of one feature: switch features when the next task is owned elsewhere.
+After acceptance, tick only the owning task, then select again. An explicit consumer request is
+intake into its feature under M9; it is not permission to bypass the definition band for unrelated
+proofs. GitHub issues and the issue tree are source records, not the implementation selector.
+
 ## Pre-Execution Checks
 
 **Check for extension hooks (before implementation)**:

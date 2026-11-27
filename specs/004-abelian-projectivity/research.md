@@ -16,10 +16,11 @@ on completion of the stacks/KSBA or period-map programmes").
 
 ## D2. Position in the work order
 
-**Decision**: The tasks are executed as feature 002 T111, after T110 (002 D11). The inputs are
-feature 003 T036 and T037 (Hodge categories and complex tori, executed in 002 T107), feature 002 T125
-(complex analytic spaces, a Phase 2 intake task) and the corpus units of FR-008 at their 002 owners
-(their Sweep-IV theorems are delivered by 002 T101 and T102 before T111).
+**Decision**: The owning tasks execute in the repository-wide definition-first Spec Kit order. Feature 002 T111
+checks aggregate acceptance, after T110 (002 D11), without delaying its definition tasks.
+The actual inputs are 003 T036 and T037 (Hodge categories and complex tori), 002 T125
+(complex analytic spaces), and the required corpus units of FR-008 at their 002 owners
+(the corresponding Sweep-IV results of T101 and T102 where needed).
 
 **Source**: 002 research D11, D22; constitution M11; the plan ("If Sweep IV has already delivered an
 exact theorem or construction needed here, consume it at that owner").

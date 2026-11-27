@@ -4,7 +4,7 @@ Each decision settles a point that #55 or #101–#108 leaves open, and names its
 
 ## D1. Position in the work order
 
-**Decision**: The feature is catalogue work and runs in its own document order beside features 001
+**Decision**: The feature is catalogue work and runs in the repository-wide definition-first Spec Kit order alongside features 001
 and 005 (constitution M11). A task of feature 001 that needs one of its categories names the task
 here as an input and, when it reaches it, does that task at once (constitution M9): 001 T068 takes
 T001.

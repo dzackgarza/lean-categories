@@ -10,7 +10,7 @@ theorems, surjectivity and extension of period maps, the finite generation of th
 modular forms, Cartan's theorem that $\Gamma\backslash\Omega_T$ is a normal complex space and the
 semitoroidal comparison of arXiv:2312.03638 Thm. 1.1 are not requirements, are not stated, and
 no axiom stands for them. The feature is a consumer intake of the research programme (stages 1
-and 3) under constitution M9 and runs in its own document order; a declaration that a task needs and that a task of another feature owns (a pending corpus unit of 002, an owner row of 003) is done first, at once, by that owning task, which keeps its place and ID.
+and 3) under constitution M9 and runs in the repository-wide definition-first Spec Kit order; a declaration that a task needs and that a task of another feature owns (a pending corpus unit of 002, an owner row of 003) is done first, at once, by that owning task, which keeps its place and ID.
 
 **Source**: #1, north star (decision record 2, R1); #40, rules; constitution M9, M11; 002 research
 D9. **Supersedes**: the comment of 2026-09-04 on #40 that made a corpus-version amendment a

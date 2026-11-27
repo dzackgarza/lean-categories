@@ -15,10 +15,12 @@ the task carries.
 
 ## Execution order
 
-This task list supplies the obligations of task T107 of feature 002 (research D2).
-Select issues in definition-first native tree order and execute their actual prerequisites
-first (constitution M11); do not wait for independent proofs. Inside a phase, a task follows the tasks whose results it uses; the workstream does each input task first, in the feature or repository that owns it, and then returns (constitution M11). Inputs from feature 002 are cited as
-"002 Tnnn".
+Use the [repository-wide Spec Kit execution order](../002-foundational-corpus-sweeps/tasks.md#repository-wide-execution-order)
+under constitution M11. The task IDs here are the implementation units and their checkboxes
+own completion. The phase headings group related requirements, not a competing scheduler.
+Do the exact prerequisites of the selected task first, in their owning features. Definitions
+precede independent proof work, including across features. The aggregate task 002 T107 records whole-feature acceptance only (research D2); it does not
+hold definitions until after Sweep IV. Inputs from feature 002 are cited as "002 Tnnn".
 
 ## Phase 1: Projective formed arithmetic (US1)
 
@@ -113,7 +115,7 @@ first (constitution M11); do not wait for independent proofs. Inside a phase, a 
   $G \to O(L)$; obtain stabilizers, centralizers and normalizers from the generic group-action,
   stabilizer and normalizer constructions (INTENT.md, "O(L) := Aut"); construct the discriminant
   action and equivariant scalar change; recover `Involution.lean` from $G = C_2$ by a comparison.
-  Files: `Lattices/Valued/{Equivariant,Involution,FamilyStabilizer}.lean`. Inputs: T009. Source:
+  Files: `Lattices/Valued/{Equivariant,Involution,FamilyStabilizer}.lean`. Inputs: the relevant formed and arithmetic category declarations of T001–T007; T009 remains a phase acceptance check. Source:
   [@Sch21, Def. 2.4.1]. Vault: TASK-EQUIVARIANT-LATTICE-CATEGORY.
 - [ ] T011 [US1] N11: rational isotypic components through Mathlib's `isotypicComponent`; under
   Maschke or other explicit semisimplicity hypotheses the constituents $L_\lambda = L \cap V_\lambda$,
@@ -127,7 +129,7 @@ first (constitution M11); do not wait for independent proofs. Inside a phase, a 
 - [ ] T013 [P] [US2] N12: the place-indexed realization interface over an arithmetic base:
   height-one points as nonarchimedean indices, the distinguished places as a separate index, the
   comparison diagram $R \to R_{\mathfrak p} \to R_v$, $K \to K_v$; no new prime spectrum. Files:
-  `Lattices/Valued/{ArithmeticPlace,ArithmeticBase,Localization,Residue}.lean`. Inputs: T009.
+  `Lattices/Valued/{ArithmeticPlace,ArithmeticBase,Localization,Residue}.lean`. Inputs: the relevant formed and arithmetic category declarations of T001–T007; T009 remains a phase acceptance check.
   Source: [@Wei82, Ch. I]. Decision: D3. Vault: TASK-ARITHMETIC-PLACES-REALIZATIONS.
 - [ ] T014 [US2] N12: lattice scalar extension to $R_v$ and formed-space extension to $K_v$ from
   `HeightOneSpectrum.adicCompletionIntegers`; compatibility with orthogonal sums, ideal duals,
@@ -145,7 +147,7 @@ first (constitution M11); do not wait for independent proofs. Inside a phase, a 
 - [ ] T017 [P] [US3] N16: define the Hasse invariant on the isometry class of a nondegenerate
   quadratic space over a field with a bilinear Hilbert symbol, values $\{\pm 1\}$, normalization of
   D13; prove the diagonal formula, isometry invariance, orthogonal-sum behaviour and the
-  scalar-extension comparisons. Files: `Lattices/Valued/{Hasse,HasseInvariance}.lean`. Inputs: T009.
+  scalar-extension comparisons. Files: `Lattices/Valued/{Hasse,HasseInvariance}.lean`. Inputs: the relevant formed and arithmetic category declarations of T001–T007; T009 remains a phase acceptance check.
   Source: [@Jac85, §9.9]; [@Cas08a, Lemma 2.2]. Decision: D13. Vault: TASK-INTRINSIC-HASSE-INVARIANT.
 - [ ] T018 [P] [US3] N17: make the canonical spinor norm the owner; prove its kernel and
   exact-sequence statements, the reflection formula, the comparison with reflection products and its
@@ -202,7 +204,7 @@ first (constitution M11); do not wait for independent proofs. Inside a phase, a 
   discriminant form; at dyadic places the unit square-class filtrations, Type I and Type II
   constituents, oddity-type invariants and finite quadratic modules, with the $\mathbb Z_2$
   declarations as special cases. Files: `Lattices/Valued/{Jordan*,Witt,Dyadic*,PadicMixedSymbol}.lean`.
-  Inputs: T006, T014, T015, T017. Source: [@Ger08, §§6.7, 8.1–8.2]; [@Jac85, §9.9]. Decisions: D15,
+  Inputs: T006, T014, T017; use T015 for specialization results, not as a prerequisite of the general definitions. Source: [@Ger08, §§6.7, 8.1–8.2]; [@Jac85, §9.9]. Decisions: D15,
   D24. Vault: TASK-JORDAN-WITT-DYADIC-CLASSIFICATION.
 - [ ] T028 [US3] D25: the argument half of Milgram's formula,
   $G(q) = \sqrt{|A_L|}\, e^{2\pi i \sigma/8}$, through the $p$-adic Jordan components, with the
@@ -270,10 +272,14 @@ first (constitution M11); do not wait for independent proofs. Inside a phase, a 
 
 - [ ] T040 [US4] N24: prove that the class set of a definite genus is finite (input: the Hermite
   bound of `ClassFiniteness.lean`); define the class number and the mass of the genus
-  $\sum_{[M]} 1/|O(M)|$; relate the class set to the finite adelic double coset; express the
-  explicit-family mass of `Mass.lean` as its comparison. Files: `Lattices/Valued/{Mass,ClassFiniteness,AdelicClass}.lean`.
-  Inputs: T024, T030. Source: [@Nik80, §1.9]; [@CS88, §1]. Decision: D20. Vault:
-  TASK-DEFINITE-CLASS-NUMBER-MASS.
+  $\sum_{[M]} 1/|O(M)|$. Files: `Lattices/Valued/{Mass,ClassFiniteness}.lean`.
+  Inputs: the genus definition and T030; the finiteness proof is required to construct the finite
+  class set. The independent comparisons are T058. Source: [@Nik80, §1.9]; [@CS88, §1].
+  Decision: D20. Vault: TASK-DEFINITE-CLASS-NUMBER-MASS.
+- [ ] T058 [US4] N24: relate the class set of T040 to the finite adelic double coset of T024,
+  and express the explicit-family mass of `Mass.lean` as its comparison. Files:
+  `Lattices/Valued/{Mass,AdelicClass}.lean`. Inputs: T040, T024. Source: [@Nik80, §1.9];
+  [@CS88, §1]. Decision: D20. Check: Contract O and tier 1.
 - [ ] T041 [P] [US4] N25: compare $\Theta_L$ of `Theta.lean` with Mathlib's analytic lattice, Jacobi
   theta and Gaussian Poisson-summation interfaces. Files: `Lattices/Valued/Theta.lean`. Inputs: T035.
   Source: [@Ros21, §7.1.10]. Decision: D19. Vault: TASK-DEFINITE-THETA-SERIES.
@@ -283,11 +289,16 @@ first (constitution M11); do not wait for independent proofs. Inside a phase, a 
 
 - [ ] T043 [US5] For each finite ADE type: the named lattice from a cited root realization (not from
   a Cartan or Gram matrix); diagram enumeration giving an ordered simple-root basis and the derived
-  Gram comparison (FOUNDATIONS Thm. 72.2); realization independence and uniqueness up to isometry
-  from the finite root-system classification (FOUNDATIONS Thm. 68.7). Files:
+  Gram comparison (FOUNDATIONS Thm. 72.2). The independent realization-independence and
+  uniqueness theorem is T059. Files:
   `Lattices/Valued/{ADERealization,RootLattice,DRootLattice,SimplyLaced,RootBaseExists}.lean`.
   Inputs: T033, T034. Source: [@Hum90, ch. 1]; [@Bou08, chs. IV–VI]. Decision: D18. Vault:
   PLAN-ADE-REALIZATION-UNIQUENESS.
+- [ ] T059 [US5] Prove realization independence and uniqueness up to isometry for each finite ADE
+  type of T043 from the finite root-system classification (FOUNDATIONS Thm. 68.7), with the source
+  hypotheses. Files: `Lattices/Valued/{ADERealization,RootLattice,SimplyLaced}.lean`.
+  Inputs: T043 and the classification theorem of T033. Source: [@Hum90, ch. 1]; [@Bou08, chs. IV–VI].
+  Decision: D18. Vault: PLAN-ADE-REALIZATION-UNIQUENESS. Check: Contract O and tier 1.
 
 ## Phase 11: Indefinite lattices (US5)
 
@@ -316,11 +327,16 @@ first (constitution M11); do not wait for independent proofs. Inside a phase, a 
 
 ## Phase 12: The Siegel mass formula (US5)
 
-- [ ] T047 [US5] N26: define the real-place factor and compare it with the finite adelic density
-  product (`DensityProduct.lean`); prove the measurable fundamental-domain theorem for the rational
-  orthogonal quotient that the counting comparison needs; prove the identification of the mass of the
-  genus with the normalized product of local densities under explicit hypotheses. Inputs: T040, T024.
-  Decision: D20. Vault: PLAN-SIEGEL-MASS-FORMULA.
+- [ ] T047 [US5] N26: define the real-place factor of the Siegel mass expression at
+  `Lattices/Valued/DensityProduct.lean`, with the source's place data, normalization, and domain.
+  Inputs: the arithmetic and adelic data of T020, T021 and the mass definition of T040.
+  Decision: D20. Vault: PLAN-SIEGEL-MASS-FORMULA. Check: source comparison and tier 1.
+- [ ] T057 [US5] N26: compare the real-place factor of T047 with the finite adelic density
+  product; prove the measurable fundamental-domain theorem for the rational orthogonal quotient
+  that the counting comparison needs; prove the identification of the mass of the genus with the
+  normalized product of local densities under explicit hypotheses. Files:
+  `Lattices/Valued/DensityProduct.lean` and the quotient's mathematical owner. Inputs: T047, T040,
+  T024. Decision: D20. Vault: PLAN-SIEGEL-MASS-FORMULA. Check: Contract O and tier 1.
 
 ## Phase 13: Theta-series modularity (US5)
 
@@ -333,22 +349,24 @@ first (constitution M11); do not wait for independent proofs. Inside a phase, a 
 
 ## Dependencies & Execution Order
 
-- Phase 1 comes before every later phase. Phases 2 and 4 need only Phase 1; Phase 3 needs Phase 1 and
-  T010 (T014).
-- Phase 5 needs T014; Phase 6 needs Phase 5 and T018; Phase 7 needs T006, T014, T015, T017.
-- Phase 8 needs T021 (T030) and T005 (T035); T038 needs T001–T037.
-- Phase 9 needs Phase 6 and T030, T035; Phases 10–13 follow Phase 9 in document order (D1).
-- T050 and T051 follow T002 and T001; T052 and T053 follow T006; T054 follows T018 and T010;
-  T055 follows T023, T027, T052; T056 follows T055 and T045.
-- External inputs: 002 T086 (Milestone 2) before T001; 002 T112 before T007.
+- The M11 bands are authoritative. The former phase gates T009, T012, T016, T019, T022, T026,
+  T029, T039 and T042 retain their original acceptance checks, but their whole phase's proofs
+  are not prerequisites of independent definitions. Tier 1 still runs on every change.
+- T050 needs T002, T051 needs T001; T052 and T053 need T006; T054 needs T018 and T010.
+  T055 needs T023, T027, T052; T056 needs T055 and T045. T057 needs T047, T040, T024;
+  T058 needs T040, T024; T059 needs T043 and the classification in T033.
+- External inputs: the source definitions of 002 T086 (or the exact units needed by a consumer
+  under M9) and 002 T112 for T007. Follow the exact named inputs in the task bodies, including
+  any proof that genuinely constructs the required mathematical object. Milestone T049 retains
+  all original rows and the added proof tasks T057–T059.
 
 ## Implementation Strategy
 
-1. Phase 1: one owner and its comparisons for every notion of the projective formed layer (MVP for
-   US1).
-2. Phases 2–7: equivariance, places, invariants, adeles, genus, local classification (US2, US3).
-3. Phases 8–9: loci, named lattices, realizations, the public surface, the definite theory (US4).
-4. Phases 10–13: the theorem programmes (US5).
+Construct the formed, arithmetic and equivariant objects, places, invariants, adeles, genus,
+local data, named lattices and realizations in the definition band. Perform only the proofs
+needed to construct those objects before the independent proof band. The comparison,
+classification, approximation, mass, modularity and other independent results retain their
+original statements and acceptance; the phase gates certify the complete corresponding rows.
 
 Each task is committed by explicit pathspec; a commit carries mathematics, not only a record
 update.

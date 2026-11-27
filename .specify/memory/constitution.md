@@ -132,9 +132,10 @@ Sources: `CONTRIBUTING.md` LC-09, LC-19; `docs/agents/reuse-gate.md`; kernel con
   review of this repository. While it does that task it states the mathematics at its own
   generality and never shapes it to a kernel or a leaf. It does not supply the mathematics
   downstream instead.
-- Such an issue is taken in at once. It must not wait for its corpus sweep, for the corpus task
-  list (M11) or for the corpus-wide residue audit of LC-19. It keeps the search of M8 and the
-  source comparison of M2.
+- Such an issue is taken in at once into its owning Spec Kit feature under M11. An actual
+  prerequisite is executed before its consumer; no unrelated corpus milestone or residue audit
+  delays it. Independent proof work does not jump ahead of definitions merely because a consumer
+  asks for it. It keeps the search of M8 and the source comparison of M2.
 - A consumer workstream enters the single work stream of this repository as follows: one Lean
   process under the lock (E10); commits by explicit pathspec of its own files (LC-06); the
   import lines in `LeanCategories/All.lean` for the modules that it adds are part of its task.
@@ -154,32 +155,33 @@ Sources: `CONTRIBUTING.md` LC-17; `AGENTS.md`, "Who writes here"; kernel constit
 Sources: `TODO.md`, "Acceptance stays with the prime"; `AGENTS.md`, "Balance autonomous and
 interactive work"; `CONTRIBUTING.md` LC-17; kernel constitution C20.
 
-### M11. Definition-first work order and issue tree
+### M11. Definition-first Spec Kit execution
 
 - Definitions, structures, constructors, operations, predicates, functors and their semantic
-  registration have priority over standalone theorems and lemmas, repository-wide, not merely
-  within each subject or source. Complete the outstanding definitional layer before selecting
-  independent proof work. A structural law or proof needed to construct a faithful Lean definition
-  is part of that definition's obligation, not permission to pursue unrelated theorems.
-- The single GitHub issue tree rooted at #1 is the cross-issue work order. Use
-  `itree next dzackgarza/lean-categories` to select the next ready issue, not issue number,
-  convenience, assignee, or a parallel work queue. Maintain the actual native sub-issue order
-  so definition-bearing work precedes theorem/lemma-only work. Groupings order work; work units
-  are leaves. Use native blockers for real prerequisites, never fabricated mathematical
-  dependencies to simulate priority. On intake or a change of scope, restore definition-first
-  order before selecting further work; verify with `itree tree` and `itree doctor`. Use the
-  existing itree commands or their native GitHub sub-issue operations, not a second scheduler.
-  If blocked definitions remain and traversal reaches independent proof work, discharge the actual
-  prerequisites of the definitions first; do not use blocked status to circumvent priority.
-- Classify by the missing mathematical output, not the title or Lean declaration keyword.
-  In a mixed obligation construct the definitions first; schedule independent proof obligations
-  after the definition layer, separating genuine independent review boundaries when necessary.
-  Retain the entire original mathematical acceptance obligation, including all laws and proofs.
-- A Spec Kit feature (`specs/<feature>/tasks.md`) supplies the tasks and their prerequisite order
-  for the selected issue. Feature 002 retains the four corpus sweeps, with all definitions before
-  Sweep IV. Reconcile task order with this article; neither feature selection nor immediate intake
-  (M9) authorizes bypassing ready definitions for independent proof work. `TODO.md` records closed
-  nodes of the earlier corpus DAG and orders no work.
+  registration take precedence over standalone theorems and lemmas throughout the repository.
+  A law, descent proof, or well-definedness proof required to construct the actual definition
+  belongs to the construction. Independent results about the constructed object do not.
+- The existing Spec Kit features under `specs/` own all executable work. The repository-wide
+  order in [feature 002's tasks.md](../../specs/002-foundational-corpus-sweeps/tasks.md#repository-wide-execution-order)
+  selects the next unchecked task across the features: genuine groundwork first, then the
+  definition-bearing tasks, then the independent proof tasks and remaining delivery obligations.
+  Within a band use its listed feature/task order; perform actual prerequisites first, even
+  when they belong to another feature. Do not complete an unrelated proof phase to get to a
+  definition. The task checkbox in its owning feature is the only completion state.
+- Before implementing a mixed task, construct its source-faithful data first. Retain its full
+  acceptance; a genuinely independent result within it belongs to a later proof task with its
+  original hypotheses and conclusion, not to a narrowed construction or a deferred definition.
+  A necessary proof is performed as a prerequisite, not used to open unrelated theorem work.
+- An issue is an intake and source/acceptance record. On intake, reconcile its complete obligation
+  with an existing feature's `spec.md`, `plan.md` and `tasks.md`; add missing tasks at their
+  mathematical owners and in the appropriate band. Do not create a second checklist for a task
+  already owned there. Keep stable feature/task IDs, link the issue to them and close the issue
+  only on its original acceptance. The native issue tree remains useful for navigation and
+  release grouping, but neither `itree next` nor `TODO.md` selects work or overrides Spec Kit.
+- Resume the next Spec Kit task by setting `.specify/feature.json` to its owning feature. The
+  active feature is not a license to finish an independent proof before another feature's
+  missing definitions. Maintain the priority bands on intake and before selecting a new task.
+  Feature 002 retains the four corpus sweeps, including source and reuse checks.
 - A task of a feature that adds a declaration also adds the matching row of
   `FOUNDATIONAL_DEFINITIONS.tsv` or the corpus mapping when one exists.
 - No task waits. A task that uses the result of another task follows that task: the workstream
@@ -187,8 +189,8 @@ interactive work"; `CONTRIBUTING.md` LC-17; kernel constitution C20.
   then returns (kernel constitution C16, C21). When no task produces the result, the change that
   finds the need adds the task, with its issue in the owning repository.
 
-Sources: owner directive (2026-11-27), feature 002, research D1; kernel constitution C21;
-kernel task list, "Execution order"; `itree help model`.
+Sources: owner directives (2026-11-27); feature 002, research D1; kernel constitution C21;
+kernel task list, "Execution order".
 
 ### M12. Defect records and workarounds
 
@@ -300,4 +302,8 @@ now the native issue tree orders cross-issue selection, with definitions ahead o
 theorems and lemmas. Feature task lists retain prerequisite and source obligations. This implements
 the owner’s definition-first directive without weakening mathematical acceptance.
 
-**Version**: 3.0.0 | **Ratified**: 2026-11-25 | **Last Amended**: 2026-11-27
+**Amendment (2026-11-27, M9 and M11).** The owner directed conversion of issue work to Spec Kit.
+The definition-first requirement remains; the feature task lists now own cross-feature execution
+and completion. The issue tree is a navigation and intake record, not a competing work queue.
+
+**Version**: 4.0.0 | **Ratified**: 2026-11-25 | **Last Amended**: 2026-11-27

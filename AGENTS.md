@@ -140,20 +140,20 @@ Consequences:
 > agent (lean-cas-dsl constitution C14, C19).
 
 
-Select the next ready issue using `itree next dzackgarza/lean-categories`. Constitution
-[M11](.specify/memory/constitution.md#m11-definition-first-work-order-and-issue-tree) requires
-repository-wide definitions and constructions before independent theorems and lemmas; maintain
-native sub-issue order on intake. Read the [corpus task list](specs/002-foundational-corpus-sweeps/tasks.md)
-for the tasks and dependencies of the corpus programme, [TODO.md](TODO.md) for the closed DAG nodes and the
+Select the next unchecked Spec Kit task using the [repository-wide execution order](specs/002-foundational-corpus-sweeps/tasks.md#repository-wide-execution-order) and its actual prerequisites.
+Constitution [M11](.specify/memory/constitution.md#m11-definition-first-spec-kit-execution) requires
+repository-wide definitions and constructions before independent theorems and lemmas. Intake
+issues are routed to their owning features; the issue tree does not select work. Read the
+[corpus task list](specs/002-foundational-corpus-sweeps/tasks.md) for corpus obligations, [TODO.md](TODO.md) for the closed DAG nodes and the
 existing sweep records,
 [CONTRIBUTING.md](CONTRIBUTING.md) for named policies, and
 [COMPLAINTS.md](COMPLAINTS.md) for observed mathematical issues and papercuts.
 Record new issues when encountered under `LC-05`; logging never discharges the
 mathematical obligation. A task whose input another task produces follows that task, which the
 workstream does first (constitution M11).
-`.specify/feature.json` names the feature of the next applicable task for the selected issue
-or its actual prerequisite under constitution M11 (feature 001 T001, the tier-1 loop, comes
-before every task that runs tier 1); set it with `jq`.
+`.specify/feature.json` names the feature of the next applicable Spec Kit task or its actual
+prerequisite under constitution M11 (feature 001 T001, the tier-1 loop, comes before every task
+that runs tier 1); set it with `jq`.
 
 # Role in the programme: the single mathematical authority (always-on)
 

@@ -39,7 +39,7 @@ a projective variety.
 | M8 | Search before authoring; Mathlib vector bundles first | D5 |
 | M9 | No consumer request names a task of this feature | none |
 | M10 | Content changes to FOUNDATIONS go to the mathematician | none planned |
-| M11 | Executed as 002 T111 | D2 |
+| M11 | Definition-first Spec Kit order; 002 T111 checks aggregate acceptance | D2 |
 | M12, M13 | Records under LC-05, LC-11, LC-12; independent review | Contract O |
 | E1, E2, E4, E10 | Tier 1 per change; positive and separating examples; one Lean process | Contract O |
 | E3 | No contribution policy changes in this feature | none |

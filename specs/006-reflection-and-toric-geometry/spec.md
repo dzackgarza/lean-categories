@@ -147,4 +147,4 @@ $\mathbb P^2_k$; a fan morphism gives a toric morphism and composition is preser
 - Feature 002 task T121 delivers the comparison of the AET families and the Wythoff coarsened
   family (#180, #181); this feature consumes it and builds no second coarsened family.
 - This feature is a consumer intake of the research programme (constitution M9); it runs in its
-  own document order and does a declaration it needs that another feature's task owns by that task, at once (research D7).
+  repository-wide definition-first Spec Kit order and does a declaration it needs that another feature's task owns by that task, at once (research D7).

@@ -22,18 +22,14 @@ that it names.
 
 ## Execution order
 
-Select issues in definition-first native tree order (constitution M11); within each selected issue,
-execute its tasks in prerequisite order. For reference, the phases below are grouped by their
-kernel upstream tasks in the kernel task list: T123, T131, T138, T121, T119, T129, T120, T128,
-T124, T122, T132, T125, T136, T135, T137, T130, T118, T134, T133, T332, T328, T331, T329, T330,
-T334, T335, T336, T337, T333, T338, T339, T340, T341, T227, T146, T225, T226, T228, T229, T230,
-T231, T232, T233, T234; each kernel upstream task stands before its first consumer. The phases
-of the COMPLAINTS.md entries (Phases 46–49, FR-047 to FR-051) follow, since no kernel task is
-their upstream; the import of the two catalogue test modules (T084, FR-052) is in Phase 1
-(research D29). Within an issue, the search task comes before the declaration task; the one task
-of each of #212 to #225 runs its search first. Every declaration task also passes tier 1 at each change, adds its
-new modules to `LeanCategories/All.lean`, and is reviewed by an author who did not write it
-(constitution M10). A task closes its issue when its acceptance holds on `main`.
+Use the [repository-wide Spec Kit execution order](../002-foundational-corpus-sweeps/tasks.md#repository-wide-execution-order)
+under constitution M11. The task IDs here are the implementation units and their checkboxes
+own completion. The phase headings group related requirements, not a competing scheduler.
+Do the exact prerequisites of the selected task first, in their owning features. Definitions
+precede independent proof work, including across features. The phase headings retain the kernel consumer IDs for traceability; their numbering is not a
+second schedule. Run each issue's source/reuse search before its declaration task; #212–#225
+include that search in their own task. Every declaration task adds its modules to
+`LeanCategories/All.lean`, passes tier 1 and receives independent review (M10).
 
 ## Phase 1: Setup (fast feedback, logs and timing)
 
@@ -591,5 +587,5 @@ new modules to `LeanCategories/All.lean`, and is reviewed by an author who did n
 
 ## Implementation Strategy
 
-Deliver in definition-first issue-tree order, following actual prerequisites (constitution M11).
+Deliver in the repository-wide definition-first Spec Kit order (constitution M11).
 Each issue closes when its acceptance holds on `main`; the kernel then pins the revision. The milestone T042 runs once after the last phase.
